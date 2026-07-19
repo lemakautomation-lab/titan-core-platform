@@ -1,3 +1,5 @@
+import { environmentConfig } from "./environment.config";
+
 export const applicationConfig = {
     name: "TITAN Core Platform",
 
@@ -7,5 +9,5 @@ export const applicationConfig = {
 
     apiVersion: "v1",
 
-    environment: process.env.NODE_ENV || "development"
+    environment: environmentConfig.nodeEnv
 };

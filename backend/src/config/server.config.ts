@@ -1,7 +1,9 @@
+import { environmentConfig } from "./environment.config";
+
 export const serverConfig = {
-    port: Number(process.env.SERVER_PORT) || 3000,
+    port: environmentConfig.serverPort,
 
-    host: process.env.SERVER_HOST || "localhost",
+    host: environmentConfig.serverHost,
 
-    environment: process.env.NODE_ENV || "development"
+    environment: environmentConfig.nodeEnv
 };
