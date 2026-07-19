@@ -16,5 +16,8 @@
     "backend"
   ],
   "author": "TITAN Technologies",
-  "license": "PRIVATE"
+  "license": "PRIVATE",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
 }
