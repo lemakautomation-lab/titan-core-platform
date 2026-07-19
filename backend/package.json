@@ -1,0 +1,20 @@
+{
+  "name": "titan-core-backend",
+  "version": "1.0.0",
+  "description": "TITAN Technologies Core Platform Backend",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "ts-node src/server.ts",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "keywords": [
+    "TITAN",
+    "technology",
+    "platform",
+    "backend"
+  ],
+  "author": "TITAN Technologies",
+  "license": "PRIVATE"
+}

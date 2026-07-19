@@ -1,40 +1,65 @@
-# TITAN Backend Platform
+# TITAN Core Platform Backend
+
+## Overview
+
+The TITAN Core Platform Backend is the central server application for the TITAN Technologies ecosystem.
+
+It provides:
+
+- authentication services
+- API services
+- database communication
+- business logic
+- security controls
+- AI integration capabilities
 
 
-## Purpose
+## Architecture
 
-The TITAN backend provides the core services supporting all TITAN products.
+The backend is organised into:
 
-
----
-
-# Planned Services
-
-Initial services:
-
-- Authentication Service
-- User Management Service
-- API Gateway
-- Business Logic Services
-
-
----
-
-# Architecture Principles
-
-The backend will follow:
-
-- Secure design
-- Modular architecture
-- API-first development
-- Enterprise scalability
+- api
+- authentication
+- config
+- database
+- services
+- middleware
+- models
+- utils
+- tests
+- docs
 
 
----
+## Development Stack
 
-Status:
+Core technologies:
 
-Architecture Preparation
+- Node.js
+- TypeScript
+- Express
+- PostgreSQL
 
 
-End of Document
+## Environments
+
+TITAN supports:
+
+- Development
+- Staging
+- Production
+
+
+## Security Principles
+
+The backend follows:
+
+- secure authentication
+- environment separation
+- least privilege access
+- protected secrets
+- audit logging
+
+
+## Development
+
+Development instructions will be expanded as implementation progresses.
