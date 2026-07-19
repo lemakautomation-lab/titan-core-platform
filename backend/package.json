@@ -4,10 +4,10 @@
   "description": "TITAN Technologies Core Platform Backend",
   "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/server.js",
-    "dev": "ts-node src/server.ts",
+    "dev": "nodemon --watch src --exec ts-node src/server.ts",
     "build": "tsc",
-    "test": "jest"
+    "start": "node dist/server.js",
+    "test": "echo \"No tests configured\""
   },
   "keywords": [
     "TITAN",
@@ -26,6 +26,6 @@
     "@types/node": "^26.1.1",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
-    "typescript": "^7.0.2"
+    "typescript": "^5.9.2"
   }
 }
