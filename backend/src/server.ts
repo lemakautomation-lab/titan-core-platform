@@ -1,11 +1,9 @@
 import app from "./app";
+import { applicationConfig } from "./config/application.config";
+import { serverConfig } from "./config/server.config";
 
-
-const PORT = process.env.SERVER_PORT || 3000;
-
-
-app.listen(PORT, () => {
+app.listen(serverConfig.port, () => {
     console.log(
-        `TITAN Core Platform running on port ${PORT}`
+        `${applicationConfig.name} v${applicationConfig.version} running on ${serverConfig.host}:${serverConfig.port}`
     );
 });
