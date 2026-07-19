@@ -1,12 +1,24 @@
 # API
 
-The API layer exposes secure REST APIs for all TITAN products.
+The API directory contains the REST interfaces for every TITAN Technologies product.
 
-Responsibilities include:
+Current Standard
+
+REST API
+
+Future Standards
+
+- GraphQL
+- WebSockets
+
+Core Modules
 
 - Authentication
-- Authorisation
-- Request validation
-- Versioning
-- Rate limiting
-- Secure communication
+- Users
+- Organisations
+- Products
+- Health
+- AI
+- Notifications
+- Reports
+- Files
