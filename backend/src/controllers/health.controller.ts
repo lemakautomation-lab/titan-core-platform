@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
+import { healthService } from "../services/health.service";
 
 export const getHealth = (_req: Request, res: Response): void => {
+    const health = healthService.getHealth();
+
     res.json({
-        application: "TITAN Core Platform",
-        status: "online",
-        version: "1.0.0",
-        environment: process.env.NODE_ENV || "development"
+        success: true,
+        data: health
     });
 };
