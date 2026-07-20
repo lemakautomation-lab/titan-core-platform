@@ -2,6 +2,7 @@ import express from "express";
 import routes from "./routes";
 import { requestLogger } from "./middleware/request-logger.middleware";
 import { errorHandler } from "./middleware/error-handler.middleware";
+import protectedRoutes from "./routes/protected.routes";
 
 const app = express();
 
