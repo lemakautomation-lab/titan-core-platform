@@ -8,6 +8,7 @@ const authService = new AuthService();
 export class AuthController {
 
     async login(req: Request, res: Response) {
+        console.log("🔥 AUTH CONTROLLER LOGIN HIT");
 
         const { email, password } = req.body;
 
