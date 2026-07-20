@@ -1,0 +1,57 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: titan-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: titan_admin
+      POSTGRES_PASSWORD: titan_dev_password
+      POSTGRES_DB: titan_core
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - titan_postgres_data:/var/lib/postgresql/data
+
+    networks:
+      - titan-network
+
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: titan-pgadmin
+    restart: unless-stopped
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@titan-technologies.com
+      PGADMIN_DEFAULT_PASSWORD: titan_admin_password
+
+    ports:
+      - "5050:80"
+
+    depends_on:
+      - postgres
+
+    volumes:
+      - titan_pgadmin_data:/var/lib/pgadmin
+
+    networks:
+      - titan-network
+
+
+volumes:
+
+  titan_postgres_data:
+    name: titan_postgres_data
+
+  titan_pgadmin_data:
+    name: titan_pgadmin_data
+
+
+networks:
+
+  titan-network:
+    name: titan-network
