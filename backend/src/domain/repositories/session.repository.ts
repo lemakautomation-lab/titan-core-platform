@@ -1,21 +1,17 @@
+import { Session } from "../entities/session.entity";
+
 export interface SessionRepository {
-  findById(id: string): Promise<unknown | null>;
 
-  findByUserId(
-    userId: string
-  ): Promise<unknown[]>;
+    findById(id: string): Promise<Session | null>;
 
-  findActiveByToken(
-    token: string
-  ): Promise<unknown | null>;
+    findByUserId(userId: string): Promise<Session[]>;
 
-  create(data: unknown): Promise<unknown>;
+    findActiveByToken(token: string): Promise<Session | null>;
 
-  revoke(
-    id: string
-  ): Promise<void>;
+    create(session: Session): Promise<Session>;
 
-  delete(
-    id: string
-  ): Promise<void>;
+    revoke(id: string): Promise<void>;
+
+    delete(id: string): Promise<void>;
+
 }

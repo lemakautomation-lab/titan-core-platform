@@ -1,18 +1,17 @@
+import { User } from "../entities/user.entity";
+
 export interface UserRepository {
-  findById(id: string): Promise<unknown | null>;
 
-  findByEmail(email: string): Promise<unknown | null>;
+    findById(id: string): Promise<User | null>;
 
-  findAllByTenantId(
-    tenantId: string
-  ): Promise<unknown[]>;
+    findByEmail(email: string): Promise<User | null>;
 
-  create(data: unknown): Promise<unknown>;
+    findAllByTenantId(tenantId: string): Promise<User[]>;
 
-  update(
-    id: string,
-    data: unknown
-  ): Promise<unknown>;
+    create(user: User): Promise<User>;
 
-  delete(id: string): Promise<void>;
+    update(user: User): Promise<User>;
+
+    delete(id: string): Promise<void>;
+
 }

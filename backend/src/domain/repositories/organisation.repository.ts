@@ -1,14 +1,15 @@
+import { Organisation } from "../entities/organisation.entity";
+
 export interface OrganisationRepository {
-  findById(id: string): Promise<unknown | null>;
 
-  findAll(): Promise<unknown[]>;
+    findById(id: string): Promise<Organisation | null>;
 
-  create(data: unknown): Promise<unknown>;
+    findAll(): Promise<Organisation[]>;
 
-  update(
-    id: string,
-    data: unknown
-  ): Promise<unknown>;
+    create(organisation: Organisation): Promise<Organisation>;
 
-  delete(id: string): Promise<void>;
+    update(organisation: Organisation): Promise<Organisation>;
+
+    delete(id: string): Promise<void>;
+
 }

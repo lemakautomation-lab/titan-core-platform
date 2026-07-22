@@ -1,21 +1,17 @@
+import { Role } from "../entities/role.entity";
+
 export interface RoleRepository {
-  findById(id: string): Promise<unknown | null>;
 
-  findAllByTenantId(
-    tenantId: string
-  ): Promise<unknown[]>;
+    findById(id: string): Promise<Role | null>;
 
-  findByName(
-    name: string,
-    tenantId: string
-  ): Promise<unknown | null>;
+    findAll(): Promise<Role[]>;
 
-  create(data: unknown): Promise<unknown>;
+    findByName(name: string): Promise<Role | null>;
 
-  update(
-    id: string,
-    data: unknown
-  ): Promise<unknown>;
+    create(role: Role): Promise<Role>;
 
-  delete(id: string): Promise<void>;
+    update(role: Role): Promise<Role>;
+
+    delete(id: string): Promise<void>;
+
 }

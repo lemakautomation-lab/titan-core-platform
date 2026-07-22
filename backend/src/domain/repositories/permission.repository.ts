@@ -1,18 +1,17 @@
+import { Permission } from "../entities/permission.entity";
+
 export interface PermissionRepository {
-  findById(id: string): Promise<unknown | null>;
 
-  findAll(): Promise<unknown[]>;
+    findById(id: string): Promise<Permission | null>;
 
-  findByName(
-    name: string
-  ): Promise<unknown | null>;
+    findAll(): Promise<Permission[]>;
 
-  create(data: unknown): Promise<unknown>;
+    findByName(name: string): Promise<Permission | null>;
 
-  update(
-    id: string,
-    data: unknown
-  ): Promise<unknown>;
+    create(permission: Permission): Promise<Permission>;
 
-  delete(id: string): Promise<void>;
+    update(permission: Permission): Promise<Permission>;
+
+    delete(id: string): Promise<void>;
+
 }
