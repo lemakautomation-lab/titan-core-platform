@@ -1,23 +1,20 @@
+import { Tenant } from "../entities/tenant.entity";
+
 export interface TenantRepository {
 
     findById(
         id: string
-    ): Promise<unknown | null>;
+    ): Promise<Tenant | null>;
 
-
-    findAll(): Promise<unknown[]>;
-
+    findAll(): Promise<Tenant[]>;
 
     create(
-        data: unknown
-    ): Promise<unknown>;
-
+        tenant: Tenant
+    ): Promise<Tenant>;
 
     update(
-        id: string,
-        data: unknown
-    ): Promise<unknown>;
-
+        tenant: Tenant
+    ): Promise<Tenant>;
 
     delete(
         id: string
