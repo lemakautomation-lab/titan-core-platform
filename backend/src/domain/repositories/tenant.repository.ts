@@ -6,6 +6,10 @@ export interface TenantRepository {
         id: string
     ): Promise<Tenant | null>;
 
+    findBySlug(
+        slug: string
+    ): Promise<Tenant | null>;
+
     findAll(): Promise<Tenant[]>;
 
     create(

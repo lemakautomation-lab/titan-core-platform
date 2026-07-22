@@ -1,6 +1,22 @@
+import { randomUUID } from "crypto";
 import { RecordStatus } from "../enums/record-status.enum";
 
 export class Tenant {
+
+    public static create(name: string): Tenant {
+
+        const now = new Date();
+
+        return new Tenant(
+            randomUUID(),
+            name,
+            Tenant.generateSlug(name),
+            RecordStatus.ACTIVE,
+            now,
+            now,
+        );
+
+    }
 
     constructor(
 
@@ -45,6 +61,16 @@ export class Tenant {
     isActive(): boolean {
 
         return this.status === RecordStatus.ACTIVE;
+
+    }
+
+    private static generateSlug(name: string): string {
+
+        return name
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "");
 
     }
 
