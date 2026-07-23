@@ -25,7 +25,6 @@ const tenantController = new TenantController(
 );
 
 
-
 const organisationController =
     new OrganisationController(
 
@@ -37,8 +36,9 @@ const organisationController =
 
         organisationModule.updateOrganisationUseCase,
 
-    );
+        organisationModule.deleteOrganisationUseCase,
 
+    );
 
 
 router.use("/", healthRoutes);
@@ -48,12 +48,10 @@ router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 
 
-
 router.use(
     "/tenants",
     createTenantRoutes(tenantController),
 );
-
 
 
 router.use(
@@ -62,7 +60,6 @@ router.use(
         organisationController,
     ),
 );
-
 
 
 export default router;

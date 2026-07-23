@@ -55,9 +55,12 @@ export class PrismaOrganisationRepository implements OrganisationRepository {
 
     async delete(id: string): Promise<void> {
 
-        await this.database.prisma.organisation.delete({
+        await this.database.prisma.organisation.update({
             where: {
                 id,
+            },
+            data: {
+                status: "DELETED",
             },
         });
 

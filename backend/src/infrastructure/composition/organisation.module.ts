@@ -6,6 +6,7 @@ import { CreateOrganisationUseCase } from "../../application/use-cases/create-or
 import { GetOrganisationByIdUseCase } from "../../application/use-cases/get-organisation-by-id.use-case";
 import { ListOrganisationsUseCase } from "../../application/use-cases/list-organisations.use-case";
 import { UpdateOrganisationUseCase } from "../../application/use-cases/update-organisation.use-case";
+import { DeleteOrganisationUseCase } from "../../application/use-cases/delete-organisation.use-case";
 
 
 const databaseService = new DatabaseService();
@@ -43,6 +44,13 @@ export const organisationModule = {
     updateOrganisationUseCase:
 
         new UpdateOrganisationUseCase(
+            organisationRepository,
+        ),
+
+
+    deleteOrganisationUseCase:
+
+        new DeleteOrganisationUseCase(
             organisationRepository,
         ),
 

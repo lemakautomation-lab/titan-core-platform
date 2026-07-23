@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import { CreateOrganisationCommand } from "../../application/commands/create-organisation.command";
 import { UpdateOrganisationCommand } from "../../application/commands/update-organisation.command";
+import { DeleteOrganisationCommand } from "../../application/commands/delete-organisation.command";
 
 import { GetOrganisationByIdQuery } from "../../application/queries/organisation/get-organisation-by-id.query";
 import { ListOrganisationsQuery } from "../../application/queries/organisation/list-organisations.query";
@@ -10,6 +11,7 @@ import { CreateOrganisationUseCase } from "../../application/use-cases/create-or
 import { GetOrganisationByIdUseCase } from "../../application/use-cases/get-organisation-by-id.use-case";
 import { ListOrganisationsUseCase } from "../../application/use-cases/list-organisations.use-case";
 import { UpdateOrganisationUseCase } from "../../application/use-cases/update-organisation.use-case";
+import { DeleteOrganisationUseCase } from "../../application/use-cases/delete-organisation.use-case";
 
 
 export class OrganisationController {
@@ -25,6 +27,8 @@ export class OrganisationController {
 
         private readonly updateOrganisationUseCase: UpdateOrganisationUseCase,
 
+        private readonly deleteOrganisationUseCase: DeleteOrganisationUseCase,
+
     ) {}
 
 
@@ -34,17 +38,14 @@ export class OrganisationController {
         res: Response,
     ): Promise<void> {
 
-
         const command =
             new CreateOrganisationCommand(
                 req.body.tenantId,
                 req.body.name,
             );
 
-
         const result =
             await this.createOrganisationUseCase.execute(command);
-
 
         if (!result.isSuccess) {
 
@@ -54,7 +55,6 @@ export class OrganisationController {
 
             return;
         }
-
 
         res.status(201).json(result.value);
 
@@ -67,16 +67,13 @@ export class OrganisationController {
         res: Response,
     ): Promise<void> {
 
-
         const query =
             new GetOrganisationByIdQuery(
                 String(req.params.id),
             );
 
-
         const result =
             await this.getOrganisationByIdUseCase.execute(query);
-
 
         if (!result.isSuccess) {
 
@@ -86,7 +83,6 @@ export class OrganisationController {
 
             return;
         }
-
 
         res.status(200).json(result.value);
 
@@ -99,12 +95,10 @@ export class OrganisationController {
         res: Response,
     ): Promise<void> {
 
-
         const result =
             await this.listOrganisationsUseCase.execute(
                 new ListOrganisationsQuery(),
             );
-
 
         if (!result.isSuccess) {
 
@@ -114,7 +108,6 @@ export class OrganisationController {
 
             return;
         }
-
 
         res.status(200).json(result.value);
 
@@ -156,7 +149,6 @@ export class OrganisationController {
             );
 
 
-
         if (!result.isSuccess) {
 
             res.status(400).json({
@@ -167,8 +159,41 @@ export class OrganisationController {
         }
 
 
-
         res.status(200).json(result.value);
+
+    }
+
+
+
+    async delete(
+        req: Request,
+        res: Response,
+    ): Promise<void> {
+
+
+        const command =
+            new DeleteOrganisationCommand(
+                String(req.params.id),
+            );
+
+
+        const result =
+            await this.deleteOrganisationUseCase.execute(
+                command,
+            );
+
+
+        if (!result.isSuccess) {
+
+            res.status(404).json({
+                error: result.error,
+            });
+
+            return;
+        }
+
+
+        res.status(204).send();
 
     }
 
