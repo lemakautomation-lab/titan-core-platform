@@ -8,7 +8,13 @@ import { createTenantRoutes } from "../../presentation/routes/tenant.routes";
 import { TenantController } from "../../presentation/controllers/tenant.controller";
 import { tenantModule } from "../../infrastructure/composition/tenant.module";
 
+import { createOrganisationRoutes } from "../../presentation/routes/organisation.routes";
+import { OrganisationController } from "../../presentation/controllers/organisation.controller";
+import { organisationModule } from "../../infrastructure/composition/organisation.module";
+
+
 const router = Router();
+
 
 const tenantController = new TenantController(
     tenantModule.createTenantUseCase,
@@ -18,13 +24,32 @@ const tenantController = new TenantController(
     tenantModule.deleteTenantUseCase,
 );
 
+
+const organisationController =
+    new OrganisationController(
+        organisationModule.createOrganisationUseCase,
+    );
+
+
 router.use("/", healthRoutes);
+
 router.use("/auth", authRoutes);
+
 router.use("/users", userRoutes);
+
 
 router.use(
     "/tenants",
     createTenantRoutes(tenantController),
 );
+
+
+router.use(
+    "/organisations",
+    createOrganisationRoutes(
+        organisationController,
+    ),
+);
+
 
 export default router;
