@@ -25,10 +25,20 @@ const tenantController = new TenantController(
 );
 
 
+
 const organisationController =
     new OrganisationController(
+
         organisationModule.createOrganisationUseCase,
+
+        organisationModule.getOrganisationByIdUseCase,
+
+        organisationModule.listOrganisationsUseCase,
+
+        organisationModule.updateOrganisationUseCase,
+
     );
+
 
 
 router.use("/", healthRoutes);
@@ -38,10 +48,12 @@ router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 
 
+
 router.use(
     "/tenants",
     createTenantRoutes(tenantController),
 );
+
 
 
 router.use(
@@ -50,6 +62,7 @@ router.use(
         organisationController,
     ),
 );
+
 
 
 export default router;

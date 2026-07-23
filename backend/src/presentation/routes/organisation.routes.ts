@@ -11,10 +11,33 @@ export function createOrganisationRoutes(
     const router = Router();
 
 
+
     router.post(
         "/",
         controller.create.bind(controller),
     );
+
+
+
+    router.get(
+        "/",
+        controller.list.bind(controller),
+    );
+
+
+
+    router.get(
+        "/:id",
+        controller.getById.bind(controller),
+    );
+
+
+
+    router.put(
+        "/:id",
+        controller.update.bind(controller),
+    );
+
 
 
     return router;
