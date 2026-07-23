@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { TenantController } from "../controllers/tenant.controller";
+import { TenantController } from "../../presentation/controllers/tenant.controller";
 
 
 export function createTenantRoutes(

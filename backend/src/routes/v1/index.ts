@@ -14,10 +14,12 @@ const router = Router();
 
 const tenantController =
     new TenantController(
-    tenantModule.createTenantUseCase,
+        tenantModule.createTenantUseCase,
 
-    tenantModule.getTenantByIdUseCase,
-);
+        tenantModule.getTenantByIdUseCase,
+
+        tenantModule.listTenantsUseCase,
+    );
 
 
 router.use("/", healthRoutes);

@@ -6,6 +6,8 @@ import { CreateTenantUseCase } from "../../application/use-cases/create-tenant.u
 
 import { GetTenantByIdUseCase } from "../../application/use-cases/get-tenant-by-id.use-case";
 
+import { ListTenantsUseCase } from "../../application/use-cases/list-tenants.use-case";
+
 
 const databaseService = new DatabaseService();
 
@@ -22,6 +24,11 @@ export const tenantModule = {
 
     getTenantByIdUseCase:
         new GetTenantByIdUseCase(
+            tenantRepository,
+        ),
+
+    listTenantsUseCase:
+        new ListTenantsUseCase(
             tenantRepository,
         ),
 
