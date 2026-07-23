@@ -24,7 +24,14 @@ export class PrismaOrganisationRepository implements OrganisationRepository {
 
     async findAll(): Promise<Organisation[]> {
 
-        const organisations = await this.database.prisma.organisation.findMany();
+        const organisations = await this.database.prisma.organisation.findMany({
+            where: {
+                status: "ACTIVE",
+            },
+            orderBy: {
+                createdAt: "asc",
+            },
+        });
 
         return organisations.map(OrganisationMapper.toDomain);
 
