@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto";
+
 import { UserStatus } from "../enums/user-status.enum";
 
 export class User {
@@ -25,6 +27,32 @@ export class User {
         public updatedAt: Date,
 
     ) {}
+
+    static create(
+        tenantId: string,
+        organisationId: string | null,
+        email: string,
+        passwordHash: string,
+        firstName: string | null,
+        lastName: string | null,
+    ): User {
+
+        const now = new Date();
+
+        return new User(
+            randomUUID(),
+            tenantId,
+            organisationId,
+            email,
+            passwordHash,
+            firstName,
+            lastName,
+            UserStatus.ACTIVE,
+            now,
+            now,
+        );
+
+    }
 
     activate(): void {
         this.status = UserStatus.ACTIVE;

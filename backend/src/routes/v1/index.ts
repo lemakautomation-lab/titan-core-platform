@@ -2,11 +2,16 @@ import { Router } from "express";
 
 import { healthRoutes } from "../../modules/health";
 import { authRoutes } from "../../modules/auth";
-import { userRoutes } from "../../modules/users";
+
+import { createUserRoutes } from "../../presentation/routes/user.routes";
+import { UserController } from "../../presentation/controllers/user.controller";
+import { userModule } from "../../infrastructure/composition/user.module";
+
 
 import { createTenantRoutes } from "../../presentation/routes/tenant.routes";
 import { TenantController } from "../../presentation/controllers/tenant.controller";
 import { tenantModule } from "../../infrastructure/composition/tenant.module";
+
 
 import { createOrganisationRoutes } from "../../presentation/routes/organisation.routes";
 import { OrganisationController } from "../../presentation/controllers/organisation.controller";
@@ -14,6 +19,12 @@ import { organisationModule } from "../../infrastructure/composition/organisatio
 
 
 const router = Router();
+
+
+const userController =
+    new UserController(
+        userModule.createUserUseCase,
+    );
 
 
 const tenantController = new TenantController(
@@ -45,7 +56,11 @@ router.use("/", healthRoutes);
 
 router.use("/auth", authRoutes);
 
-router.use("/users", userRoutes);
+
+router.use(
+    "/users",
+    createUserRoutes(userController),
+);
 
 
 router.use(
