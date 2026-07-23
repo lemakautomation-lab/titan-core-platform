@@ -1,12 +1,11 @@
 import { UseCase } from "../common/use-case.interface";
-
 import { Result } from "../common/result";
 
 import { TenantRepository } from "../../domain/repositories/tenant.repository";
 import { Tenant } from "../../domain/entities/tenant.entity";
 
 import { TenantDto } from "../dto/tenant/tenant.dto";
-import { CreateTenantCommand } from "../commands/tenant/create-tenant.command";
+import { CreateTenantCommand } from "../commands/create-tenant.command";
 
 import { TenantApplicationMapper } from "../mappers/tenant.mapper";
 
@@ -21,15 +20,14 @@ export class CreateTenantUseCase
         command: CreateTenantCommand,
     ): Promise<Result<TenantDto>> {
 
-        const slug =
-    command.name
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9-]/g, "");
+        const slug = command.name
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "");
 
-const existingTenant =
-    await this.tenantRepository.findBySlug(slug);
+        const existingTenant =
+            await this.tenantRepository.findBySlug(slug);
 
         if (existingTenant) {
             return Result.failure("Tenant slug already exists.");
