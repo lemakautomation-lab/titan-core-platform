@@ -37,24 +37,42 @@ export class Tenant {
     activate(): void {
 
         this.status = RecordStatus.ACTIVE;
+        this.updatedAt = new Date();
 
     }
 
     deactivate(): void {
 
         this.status = RecordStatus.INACTIVE;
+        this.updatedAt = new Date();
 
     }
 
     suspend(): void {
 
         this.status = RecordStatus.SUSPENDED;
+        this.updatedAt = new Date();
 
     }
 
     delete(): void {
 
         this.status = RecordStatus.DELETED;
+        this.updatedAt = new Date();
+
+    }
+
+    updateDetails(
+
+        name: string,
+
+        slug: string,
+
+    ): void {
+
+        this.name = name;
+        this.slug = slug;
+        this.updatedAt = new Date();
 
     }
 

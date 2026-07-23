@@ -12,14 +12,17 @@ import { tenantModule } from "../../infrastructure/composition/tenant.module";
 const router = Router();
 
 
-const tenantController =
-    new TenantController(
-        tenantModule.createTenantUseCase,
+const tenantController = new TenantController(
 
-        tenantModule.getTenantByIdUseCase,
+    tenantModule.createTenantUseCase,
 
-        tenantModule.listTenantsUseCase,
-    );
+    tenantModule.getTenantByIdUseCase,
+
+    tenantModule.listTenantsUseCase,
+
+    tenantModule.updateTenantUseCase,
+
+);
 
 
 router.use("/", healthRoutes);

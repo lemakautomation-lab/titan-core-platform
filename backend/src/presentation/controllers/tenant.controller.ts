@@ -9,6 +9,9 @@ import { GetTenantByIdQuery } from "../../application/queries/tenant/get-tenant-
 import { ListTenantsUseCase } from "../../application/use-cases/list-tenants.use-case";
 import { ListTenantsQuery } from "../../application/queries/tenant/list-tenants.query";
 
+import { UpdateTenantUseCase } from "../../application/use-cases/update-tenant.use-case";
+import { UpdateTenantCommand } from "../../application/commands/update-tenant.command";
+
 
 export class TenantController {
 
@@ -18,6 +21,8 @@ export class TenantController {
         private readonly getTenantByIdUseCase: GetTenantByIdUseCase,
 
         private readonly listTenantsUseCase: ListTenantsUseCase,
+
+        private readonly updateTenantUseCase: UpdateTenantUseCase,
     ) {}
 
 
@@ -126,6 +131,54 @@ export class TenantController {
             if (!result.isSuccess) {
 
                 res.status(400).json({
+                    message: result.error,
+                });
+
+                return;
+            }
+
+
+            res.status(200).json(
+                result.value,
+            );
+
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+
+
+    async update(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+
+        try {
+
+            const command =
+                new UpdateTenantCommand(
+
+                    req.params.id as string,
+
+                    req.body.name,
+
+                    req.body.slug,
+
+                );
+
+
+            const result =
+                await this.updateTenantUseCase.execute(command);
+
+
+            if (!result.isSuccess) {
+
+                res.status(404).json({
                     message: result.error,
                 });
 
