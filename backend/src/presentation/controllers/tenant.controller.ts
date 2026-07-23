@@ -12,6 +12,9 @@ import { ListTenantsQuery } from "../../application/queries/tenant/list-tenants.
 import { UpdateTenantUseCase } from "../../application/use-cases/update-tenant.use-case";
 import { UpdateTenantCommand } from "../../application/commands/update-tenant.command";
 
+import { DeleteTenantUseCase } from "../../application/use-cases/delete-tenant.use-case";
+import { DeleteTenantCommand } from "../../application/commands/delete-tenant.command";
+
 
 export class TenantController {
 
@@ -23,6 +26,8 @@ export class TenantController {
         private readonly listTenantsUseCase: ListTenantsUseCase,
 
         private readonly updateTenantUseCase: UpdateTenantUseCase,
+
+        private readonly deleteTenantUseCase: DeleteTenantUseCase,
     ) {}
 
 
@@ -39,10 +44,8 @@ export class TenantController {
                     req.body.name,
                 );
 
-
             const result =
                 await this.createTenantUseCase.execute(command);
-
 
             if (!result.isSuccess) {
 
@@ -51,13 +54,12 @@ export class TenantController {
                 });
 
                 return;
-            }
 
+            }
 
             res.status(201).json(
                 result.value,
             );
-
 
         } catch (error) {
 
@@ -81,10 +83,8 @@ export class TenantController {
                     req.params.id as string,
                 );
 
-
             const result =
                 await this.getTenantByIdUseCase.execute(query);
-
 
             if (!result.isSuccess) {
 
@@ -93,13 +93,12 @@ export class TenantController {
                 });
 
                 return;
-            }
 
+            }
 
             res.status(200).json(
                 result.value,
             );
-
 
         } catch (error) {
 
@@ -123,10 +122,8 @@ export class TenantController {
             const query =
                 new ListTenantsQuery();
 
-
             const result =
                 await this.listTenantsUseCase.execute(query);
-
 
             if (!result.isSuccess) {
 
@@ -135,13 +132,12 @@ export class TenantController {
                 });
 
                 return;
-            }
 
+            }
 
             res.status(200).json(
                 result.value,
             );
-
 
         } catch (error) {
 
@@ -162,19 +158,13 @@ export class TenantController {
 
             const command =
                 new UpdateTenantCommand(
-
                     req.params.id as string,
-
                     req.body.name,
-
                     req.body.slug,
-
                 );
-
 
             const result =
                 await this.updateTenantUseCase.execute(command);
-
 
             if (!result.isSuccess) {
 
@@ -183,13 +173,49 @@ export class TenantController {
                 });
 
                 return;
-            }
 
+            }
 
             res.status(200).json(
                 result.value,
             );
 
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+
+
+    async delete(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+
+        try {
+
+            const command =
+                new DeleteTenantCommand(
+                    req.params.id as string,
+                );
+
+            const result =
+                await this.deleteTenantUseCase.execute(command);
+
+            if (!result.isSuccess) {
+
+                res.status(404).json({
+                    message: result.error,
+                });
+
+                return;
+
+            }
+
+            res.status(204).send();
 
         } catch (error) {
 
