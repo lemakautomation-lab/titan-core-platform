@@ -4,15 +4,22 @@ import { PrismaTenantRepository } from "../repositories/tenant.repository";
 import { PrismaUserRepository } from "../repositories/user.repository";
 
 import { CreateUserUseCase } from "../../application/use-cases/create-user.use-case";
+import { GetUserByIdUseCase } from "../../application/use-cases/get-user-by-id.use-case";
 
 
 const databaseService = new DatabaseService();
 
+
 const tenantRepository =
-    new PrismaTenantRepository(databaseService);
+    new PrismaTenantRepository(
+        databaseService,
+    );
+
 
 const userRepository =
-    new PrismaUserRepository(databaseService);
+    new PrismaUserRepository(
+        databaseService,
+    );
 
 
 export const userModule = {
@@ -22,6 +29,13 @@ export const userModule = {
         new CreateUserUseCase(
             userRepository,
             tenantRepository,
+        ),
+
+
+    getUserByIdUseCase:
+
+        new GetUserByIdUseCase(
+            userRepository,
         ),
 
 };

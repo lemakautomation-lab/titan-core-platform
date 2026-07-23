@@ -24,6 +24,7 @@ const router = Router();
 const userController =
     new UserController(
         userModule.createUserUseCase,
+        userModule.getUserByIdUseCase,
     );
 
 

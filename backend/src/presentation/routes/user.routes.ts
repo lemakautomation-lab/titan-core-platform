@@ -16,6 +16,12 @@ export function createUserRoutes(
     );
 
 
+    router.get(
+        "/:id",
+        controller.getById.bind(controller),
+    );
+
+
     return router;
 
 }
