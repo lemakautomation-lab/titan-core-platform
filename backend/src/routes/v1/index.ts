@@ -7,11 +7,9 @@ import { createUserRoutes } from "../../presentation/routes/user.routes";
 import { UserController } from "../../presentation/controllers/user.controller";
 import { userModule } from "../../infrastructure/composition/user.module";
 
-
 import { createTenantRoutes } from "../../presentation/routes/tenant.routes";
 import { TenantController } from "../../presentation/controllers/tenant.controller";
 import { tenantModule } from "../../infrastructure/composition/tenant.module";
-
 
 import { createOrganisationRoutes } from "../../presentation/routes/organisation.routes";
 import { OrganisationController } from "../../presentation/controllers/organisation.controller";
@@ -25,6 +23,7 @@ const userController =
     new UserController(
         userModule.createUserUseCase,
         userModule.getUserByIdUseCase,
+        userModule.listUsersUseCase,
     );
 
 

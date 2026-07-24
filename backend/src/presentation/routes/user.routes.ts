@@ -10,6 +10,12 @@ export function createUserRoutes(
     const router = Router();
 
 
+    router.get(
+        "/",
+        controller.list.bind(controller),
+    );
+
+
     router.post(
         "/",
         controller.create.bind(controller),

@@ -2,9 +2,11 @@ import { Request, Response } from "express";
 
 import { CreateUserCommand } from "../../application/commands/create-user.command";
 import { GetUserByIdQuery } from "../../application/queries/user/get-user-by-id.query";
+import { ListUsersQuery } from "../../application/queries/user/list-users.query";
 
 import { CreateUserUseCase } from "../../application/use-cases/create-user.use-case";
 import { GetUserByIdUseCase } from "../../application/use-cases/get-user-by-id.use-case";
+import { ListUsersUseCase } from "../../application/use-cases/list-users.use-case";
 
 
 export class UserController {
@@ -14,6 +16,8 @@ export class UserController {
         private readonly createUserUseCase: CreateUserUseCase,
 
         private readonly getUserByIdUseCase: GetUserByIdUseCase,
+
+        private readonly listUsersUseCase: ListUsersUseCase,
 
     ) {}
 
@@ -64,7 +68,6 @@ export class UserController {
     }
 
 
-
     async getById(
         req: Request,
         res: Response,
@@ -93,6 +96,48 @@ export class UserController {
 
         }
 
+
+        res.status(200).json(result.value);
+
+    }
+
+
+    async list(
+        req: Request,
+        res: Response,
+    ): Promise<void> {
+
+        const tenantId = String(req.query.tenantId ?? "");
+
+        if (!tenantId) {
+
+            res.status(400).json({
+                error: "tenantId query parameter is required.",
+            });
+
+            return;
+
+        }
+
+        const query =
+            new ListUsersQuery(
+                tenantId,
+            );
+
+        const result =
+            await this.listUsersUseCase.execute(
+                query,
+            );
+
+        if (!result.isSuccess) {
+
+            res.status(404).json({
+                error: result.error,
+            });
+
+            return;
+
+        }
 
         res.status(200).json(result.value);
 
