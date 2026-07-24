@@ -10,7 +10,7 @@ export class User {
 
         public readonly tenantId: string,
 
-        public readonly organisationId: string | null,
+        public organisationId: string | null,
 
         public email: string,
 
@@ -51,6 +51,30 @@ export class User {
             now,
             now,
         );
+
+    }
+
+    updateProfile(
+        organisationId: string | null,
+        email: string,
+        firstName: string | null,
+        lastName: string | null,
+    ): void {
+
+        this.organisationId = organisationId;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.updatedAt = new Date();
+
+    }
+
+    changePassword(
+        passwordHash: string,
+    ): void {
+
+        this.passwordHash = passwordHash;
+        this.updatedAt = new Date();
 
     }
 

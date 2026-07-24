@@ -28,6 +28,12 @@ export function createUserRoutes(
     );
 
 
+    router.put(
+        "/:id",
+        controller.update.bind(controller),
+    );
+
+
     return router;
 
 }

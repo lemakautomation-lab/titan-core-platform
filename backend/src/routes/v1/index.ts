@@ -24,6 +24,7 @@ const userController =
         userModule.createUserUseCase,
         userModule.getUserByIdUseCase,
         userModule.listUsersUseCase,
+        userModule.updateUserUseCase,
     );
 
 

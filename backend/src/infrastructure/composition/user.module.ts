@@ -6,6 +6,7 @@ import { PrismaUserRepository } from "../repositories/user.repository";
 import { CreateUserUseCase } from "../../application/use-cases/create-user.use-case";
 import { GetUserByIdUseCase } from "../../application/use-cases/get-user-by-id.use-case";
 import { ListUsersUseCase } from "../../application/use-cases/list-users.use-case";
+import { UpdateUserUseCase } from "../../application/use-cases/update-user.use-case";
 
 
 const databaseService = new DatabaseService();
@@ -45,6 +46,13 @@ export const userModule = {
         new ListUsersUseCase(
             userRepository,
             tenantRepository,
+        ),
+
+
+    updateUserUseCase:
+
+        new UpdateUserUseCase(
+            userRepository,
         ),
 
 };
