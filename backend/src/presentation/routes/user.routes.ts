@@ -34,6 +34,12 @@ export function createUserRoutes(
     );
 
 
+    router.delete(
+        "/:id",
+        controller.delete.bind(controller),
+    );
+
+
     return router;
 
 }
