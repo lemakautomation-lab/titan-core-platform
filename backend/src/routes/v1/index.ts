@@ -53,6 +53,7 @@ const roleController =
         roleModule.createRoleUseCase,
         roleModule.getRoleByIdUseCase,
         roleModule.listRolesUseCase,
+        roleModule.updateRoleUseCase,
     );
 
 router.use("/", healthRoutes);

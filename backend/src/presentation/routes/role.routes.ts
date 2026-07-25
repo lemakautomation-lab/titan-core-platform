@@ -10,6 +10,7 @@ export function createRoleRoutes(
 
     const router = Router();
 
+
     router.post(
 
         "/",
@@ -17,6 +18,7 @@ export function createRoleRoutes(
         controller.create.bind(controller),
 
     );
+
 
     router.get(
 
@@ -26,6 +28,7 @@ export function createRoleRoutes(
 
     );
 
+
     router.get(
 
         "/:id",
@@ -33,6 +36,16 @@ export function createRoleRoutes(
         controller.getById.bind(controller),
 
     );
+
+
+    router.put(
+
+        "/:id",
+
+        controller.update.bind(controller),
+
+    );
+
 
     return router;
 
