@@ -15,6 +15,10 @@ import { createOrganisationRoutes } from "../../presentation/routes/organisation
 import { OrganisationController } from "../../presentation/controllers/organisation.controller";
 import { organisationModule } from "../../infrastructure/composition/organisation.module";
 
+import { createRoleRoutes } from "../../presentation/routes/role.routes";
+import { RoleController } from "../../presentation/controllers/role.controller";
+import { roleModule } from "../../infrastructure/composition/role.module";
+
 
 const router = Router();
 
@@ -29,13 +33,14 @@ const userController =
     );
 
 
-const tenantController = new TenantController(
-    tenantModule.createTenantUseCase,
-    tenantModule.getTenantByIdUseCase,
-    tenantModule.listTenantsUseCase,
-    tenantModule.updateTenantUseCase,
-    tenantModule.deleteTenantUseCase,
-);
+const tenantController =
+    new TenantController(
+        tenantModule.createTenantUseCase,
+        tenantModule.getTenantByIdUseCase,
+        tenantModule.listTenantsUseCase,
+        tenantModule.updateTenantUseCase,
+        tenantModule.deleteTenantUseCase,
+    );
 
 
 const organisationController =
@@ -54,6 +59,16 @@ const organisationController =
     );
 
 
+const roleController =
+    new RoleController(
+
+        roleModule.getRoleByIdUseCase,
+
+        roleModule.listRolesUseCase,
+
+    );
+
+
 router.use("/", healthRoutes);
 
 router.use("/auth", authRoutes);
@@ -67,7 +82,9 @@ router.use(
 
 router.use(
     "/tenants",
-    createTenantRoutes(tenantController),
+    createTenantRoutes(
+        tenantController,
+    ),
 );
 
 
@@ -75,6 +92,14 @@ router.use(
     "/organisations",
     createOrganisationRoutes(
         organisationController,
+    ),
+);
+
+
+router.use(
+    "/roles",
+    createRoleRoutes(
+        roleController,
     ),
 );
 
