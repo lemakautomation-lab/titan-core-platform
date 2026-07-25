@@ -2,6 +2,7 @@ import { DatabaseService } from "../database/database.service";
 
 import { PrismaRoleRepository } from "../repositories/role.repository";
 
+import { CreateRoleUseCase } from "../../application/use-cases/create-role.use-case";
 import { GetRoleByIdUseCase } from "../../application/use-cases/get-role-by-id.use-case";
 import { ListRolesUseCase } from "../../application/use-cases/list-roles.use-case";
 
@@ -16,6 +17,13 @@ const roleRepository =
 
 
 export const roleModule = {
+
+    createRoleUseCase:
+
+        new CreateRoleUseCase(
+            roleRepository,
+        ),
+
 
     getRoleByIdUseCase:
 

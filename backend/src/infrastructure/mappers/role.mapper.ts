@@ -3,14 +3,22 @@ import { Role } from "../../domain/entities/role.entity";
 
 export class RoleMapper {
 
-    static toDomain(prisma: PrismaRole): Role {
+    static toDomain(
+        prisma: PrismaRole,
+    ): Role {
 
-        return new Role(
+        return Role.restore(
+
             prisma.id,
+
             prisma.name,
+
             prisma.description,
+
             prisma.createdAt,
+
             prisma.updatedAt,
+
         );
 
     }

@@ -2,17 +2,21 @@ import { Router } from "express";
 
 import { RoleController } from "../controllers/role.controller";
 
-
 export function createRoleRoutes(
 
     controller: RoleController,
 
 ): Router {
 
-
     const router = Router();
 
+    router.post(
 
+        "/",
+
+        controller.create.bind(controller),
+
+    );
 
     router.get(
 
@@ -22,8 +26,6 @@ export function createRoleRoutes(
 
     );
 
-
-
     router.get(
 
         "/:id",
@@ -32,9 +34,6 @@ export function createRoleRoutes(
 
     );
 
-
-
     return router;
-
 
 }

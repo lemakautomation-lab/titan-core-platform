@@ -1,20 +1,71 @@
 import { Request, Response } from "express";
 
+import { CreateRoleCommand } from "../../application/commands/create-role.command";
+
 import { GetRoleByIdQuery } from "../../application/queries/role/get-role-by-id.query";
 import { ListRolesQuery } from "../../application/queries/role/list-roles.query";
 
+import { CreateRoleUseCase } from "../../application/use-cases/create-role.use-case";
 import { GetRoleByIdUseCase } from "../../application/use-cases/get-role-by-id.use-case";
 import { ListRolesUseCase } from "../../application/use-cases/list-roles.use-case";
+
 
 export class RoleController {
 
     constructor(
+
+        private readonly createRoleUseCase: CreateRoleUseCase,
 
         private readonly getRoleByIdUseCase: GetRoleByIdUseCase,
 
         private readonly listRolesUseCase: ListRolesUseCase,
 
     ) {}
+
+
+    async create(
+
+        req: Request,
+
+        res: Response,
+
+    ): Promise<void> {
+
+        const command =
+            new CreateRoleCommand(
+
+                String(req.body.name),
+
+                req.body.description ?? null,
+
+            );
+
+
+        const result =
+            await this.createRoleUseCase.execute(
+                command,
+            );
+
+
+        if (!result.isSuccess) {
+
+            res.status(400).json({
+
+                error: result.error,
+
+            });
+
+            return;
+
+        }
+
+
+        res.status(201).json(
+            result.value,
+        );
+
+    }
+
 
     async getById(
 
@@ -26,13 +77,17 @@ export class RoleController {
 
         const query =
             new GetRoleByIdQuery(
+
                 String(req.params.id),
+
             );
+
 
         const result =
             await this.getRoleByIdUseCase.execute(
                 query,
             );
+
 
         if (!result.isSuccess) {
 
@@ -46,11 +101,13 @@ export class RoleController {
 
         }
 
+
         res.status(200).json(
             result.value,
         );
 
     }
+
 
     async list(
 
@@ -63,10 +120,12 @@ export class RoleController {
         const query =
             new ListRolesQuery();
 
+
         const result =
             await this.listRolesUseCase.execute(
                 query,
             );
+
 
         if (!result.isSuccess) {
 
@@ -79,6 +138,7 @@ export class RoleController {
             return;
 
         }
+
 
         res.status(200).json(
             result.value,

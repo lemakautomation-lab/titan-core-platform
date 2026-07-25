@@ -1,6 +1,8 @@
+import { randomUUID } from "crypto";
+
 export class Role {
 
-    constructor(
+    private constructor(
 
         public readonly id: string,
 
@@ -14,12 +16,84 @@ export class Role {
 
     ) {}
 
-    rename(name: string): void {
-        this.name = name;
+    static create(
+
+        name: string,
+
+        description: string | null,
+
+    ): Role {
+
+        const now = new Date();
+
+        return new Role(
+
+            randomUUID(),
+
+            name,
+
+            description,
+
+            now,
+
+            now,
+
+        );
+
     }
 
-    updateDescription(description: string | null): void {
+    static restore(
+
+        id: string,
+
+        name: string,
+
+        description: string | null,
+
+        createdAt: Date,
+
+        updatedAt: Date,
+
+    ): Role {
+
+        return new Role(
+
+            id,
+
+            name,
+
+            description,
+
+            createdAt,
+
+            updatedAt,
+
+        );
+
+    }
+
+    rename(
+
+        name: string,
+
+    ): void {
+
+        this.name = name;
+
+        this.updatedAt = new Date();
+
+    }
+
+    updateDescription(
+
+        description: string | null,
+
+    ): void {
+
         this.description = description;
+
+        this.updatedAt = new Date();
+
     }
 
 }

@@ -19,9 +19,7 @@ import { createRoleRoutes } from "../../presentation/routes/role.routes";
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { roleModule } from "../../infrastructure/composition/role.module";
 
-
 const router = Router();
-
 
 const userController =
     new UserController(
@@ -32,7 +30,6 @@ const userController =
         userModule.deleteUserUseCase,
     );
 
-
 const tenantController =
     new TenantController(
         tenantModule.createTenantUseCase,
@@ -42,51 +39,35 @@ const tenantController =
         tenantModule.deleteTenantUseCase,
     );
 
-
 const organisationController =
     new OrganisationController(
-
         organisationModule.createOrganisationUseCase,
-
         organisationModule.getOrganisationByIdUseCase,
-
         organisationModule.listOrganisationsUseCase,
-
         organisationModule.updateOrganisationUseCase,
-
         organisationModule.deleteOrganisationUseCase,
-
     );
-
 
 const roleController =
     new RoleController(
-
+        roleModule.createRoleUseCase,
         roleModule.getRoleByIdUseCase,
-
         roleModule.listRolesUseCase,
-
     );
-
 
 router.use("/", healthRoutes);
 
 router.use("/auth", authRoutes);
-
 
 router.use(
     "/users",
     createUserRoutes(userController),
 );
 
-
 router.use(
     "/tenants",
-    createTenantRoutes(
-        tenantController,
-    ),
+    createTenantRoutes(tenantController),
 );
-
 
 router.use(
     "/organisations",
@@ -95,13 +76,11 @@ router.use(
     ),
 );
 
-
 router.use(
     "/roles",
     createRoleRoutes(
         roleController,
     ),
 );
-
 
 export default router;
