@@ -67,6 +67,7 @@ const permissionController =
         permissionModule.getPermissionByIdUseCase,
         permissionModule.listPermissionsUseCase,
         permissionModule.updatePermissionUseCase,
+        permissionModule.deletePermissionUseCase,
     );
 
 router.use("/", healthRoutes);
@@ -105,6 +106,8 @@ router.use(
 );
 
 export default router;
+
+
 
 
 

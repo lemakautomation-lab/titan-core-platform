@@ -6,6 +6,7 @@ import { CreatePermissionUseCase } from "../../application/use-cases/create-perm
 import { GetPermissionByIdUseCase } from "../../application/use-cases/get-permission-by-id.use-case";
 import { ListPermissionsUseCase } from "../../application/use-cases/list-permissions.use-case";
 import { UpdatePermissionUseCase } from "../../application/use-cases/update-permission.use-case";
+import { DeletePermissionUseCase } from "../../application/use-cases/delete-permission.use-case";
 
 
 const databaseService = new DatabaseService();
@@ -43,6 +44,13 @@ export const permissionModule = {
     updatePermissionUseCase:
 
         new UpdatePermissionUseCase(
+            permissionRepository,
+        ),
+
+
+    deletePermissionUseCase:
+
+        new DeletePermissionUseCase(
             permissionRepository,
         ),
 

@@ -47,7 +47,15 @@ export function createPermissionRoutes(
     );
 
 
+    router.delete(
+
+        "/:id",
+
+        controller.delete.bind(controller),
+
+    );
+
+
     return router;
 
 }
-

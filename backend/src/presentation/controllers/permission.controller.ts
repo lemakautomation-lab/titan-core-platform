@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 import { CreatePermissionCommand } from "../../application/commands/create-permission.command";
+import { DeletePermissionCommand } from "../../application/commands/delete-permission.command";
 import { UpdatePermissionCommand } from "../../application/commands/update-permission.command";
 
 import { GetPermissionByIdQuery } from "../../application/queries/permission/get-permission-by-id.query";
@@ -10,6 +11,7 @@ import { CreatePermissionUseCase } from "../../application/use-cases/create-perm
 import { GetPermissionByIdUseCase } from "../../application/use-cases/get-permission-by-id.use-case";
 import { ListPermissionsUseCase } from "../../application/use-cases/list-permissions.use-case";
 import { UpdatePermissionUseCase } from "../../application/use-cases/update-permission.use-case";
+import { DeletePermissionUseCase } from "../../application/use-cases/delete-permission.use-case";
 
 
 export class PermissionController {
@@ -23,6 +25,8 @@ export class PermissionController {
         private readonly listPermissionsUseCase: ListPermissionsUseCase,
 
         private readonly updatePermissionUseCase: UpdatePermissionUseCase,
+
+        private readonly deletePermissionUseCase: DeletePermissionUseCase,
 
     ) {}
 
@@ -195,6 +199,47 @@ export class PermissionController {
         res.status(200).json(
             result.value,
         );
+
+    }
+
+
+    async delete(
+
+        req: Request,
+
+        res: Response,
+
+    ): Promise<void> {
+
+
+        const command =
+            new DeletePermissionCommand(
+
+                String(req.params.id),
+
+            );
+
+
+        const result =
+            await this.deletePermissionUseCase.execute(
+                command,
+            );
+
+
+        if (!result.isSuccess) {
+
+            res.status(404).json({
+
+                error: result.error,
+
+            });
+
+            return;
+
+        }
+
+
+        res.status(204).send();
 
     }
 
