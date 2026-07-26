@@ -3,15 +3,19 @@ import { Request, Response } from "express";
 import { CreateRoleCommand } from "../../application/commands/create-role.command";
 import { UpdateRoleCommand } from "../../application/commands/update-role.command";
 import { DeleteRoleCommand } from "../../application/commands/delete-role.command";
+import { AssignPermissionToRoleCommand } from "../../application/commands/assign-permission-to-role.command";
 
 import { GetRoleByIdQuery } from "../../application/queries/role/get-role-by-id.query";
 import { ListRolesQuery } from "../../application/queries/role/list-roles.query";
+import { GetRolePermissionsQuery } from "../../application/queries/role/get-role-permissions.query";
 
 import { CreateRoleUseCase } from "../../application/use-cases/create-role.use-case";
 import { GetRoleByIdUseCase } from "../../application/use-cases/get-role-by-id.use-case";
 import { ListRolesUseCase } from "../../application/use-cases/list-roles.use-case";
 import { UpdateRoleUseCase } from "../../application/use-cases/update-role.use-case";
 import { DeleteRoleUseCase } from "../../application/use-cases/delete-role.use-case";
+import { AssignPermissionToRoleUseCase } from "../../application/use-cases/assign-permission-to-role.use-case";
+import { GetRolePermissionsUseCase } from "../../application/use-cases/get-role-permissions.use-case";
 
 
 export class RoleController {
@@ -28,39 +32,30 @@ export class RoleController {
 
         private readonly deleteRoleUseCase: DeleteRoleUseCase,
 
+        private readonly assignPermissionToRoleUseCase: AssignPermissionToRoleUseCase,
+
+        private readonly getRolePermissionsUseCase: GetRolePermissionsUseCase,
+
     ) {}
 
 
-    async create(
-
-        req: Request,
-
-        res: Response,
-
-    ): Promise<void> {
+    async create(req: Request, res: Response): Promise<void> {
 
         const command =
             new CreateRoleCommand(
-
                 String(req.body.name),
-
                 req.body.description ?? null,
-
             );
 
 
         const result =
-            await this.createRoleUseCase.execute(
-                command,
-            );
+            await this.createRoleUseCase.execute(command);
 
 
         if (!result.isSuccess) {
 
             res.status(400).json({
-
                 error: result.error,
-
             });
 
             return;
@@ -68,41 +63,27 @@ export class RoleController {
         }
 
 
-        res.status(201).json(
-            result.value,
-        );
+        res.status(201).json(result.value);
 
     }
 
 
-    async getById(
-
-        req: Request,
-
-        res: Response,
-
-    ): Promise<void> {
+    async getById(req: Request, res: Response): Promise<void> {
 
         const query =
             new GetRoleByIdQuery(
-
                 String(req.params.id),
-
             );
 
 
         const result =
-            await this.getRoleByIdUseCase.execute(
-                query,
-            );
+            await this.getRoleByIdUseCase.execute(query);
 
 
         if (!result.isSuccess) {
 
             res.status(404).json({
-
                 error: result.error,
-
             });
 
             return;
@@ -110,37 +91,23 @@ export class RoleController {
         }
 
 
-        res.status(200).json(
-            result.value,
-        );
+        res.status(200).json(result.value);
 
     }
 
 
-    async list(
-
-        req: Request,
-
-        res: Response,
-
-    ): Promise<void> {
-
-        const query =
-            new ListRolesQuery();
-
+    async list(req: Request, res: Response): Promise<void> {
 
         const result =
             await this.listRolesUseCase.execute(
-                query,
+                new ListRolesQuery(),
             );
 
 
         if (!result.isSuccess) {
 
             res.status(400).json({
-
                 error: result.error,
-
             });
 
             return;
@@ -148,20 +115,12 @@ export class RoleController {
         }
 
 
-        res.status(200).json(
-            result.value,
-        );
+        res.status(200).json(result.value);
 
     }
 
 
-    async update(
-
-        req: Request,
-
-        res: Response,
-
-    ): Promise<void> {
+    async update(req: Request, res: Response): Promise<void> {
 
         const command =
             new UpdateRoleCommand(
@@ -176,8 +135,102 @@ export class RoleController {
 
 
         const result =
-            await this.updateRoleUseCase.execute(
-                command,
+            await this.updateRoleUseCase.execute(command);
+
+
+        if (!result.isSuccess) {
+
+            res.status(404).json({
+                error: result.error,
+            });
+
+            return;
+
+        }
+
+
+        res.status(200).json(result.value);
+
+    }
+
+
+    async delete(req: Request, res: Response): Promise<void> {
+
+        const result =
+            await this.deleteRoleUseCase.execute(
+                new DeleteRoleCommand(
+                    String(req.params.id),
+                ),
+            );
+
+
+        if (!result.isSuccess) {
+
+            res.status(404).json({
+                error: result.error,
+            });
+
+            return;
+
+        }
+
+
+        res.status(204).send();
+
+    }
+
+
+    async assignPermission(req: Request, res: Response): Promise<void> {
+
+
+        const result =
+
+            await this.assignPermissionToRoleUseCase.execute(
+
+                new AssignPermissionToRoleCommand(
+
+                    String(req.params.roleId),
+
+                    String(req.params.permissionId),
+
+                ),
+
+            );
+
+
+        if (!result.isSuccess) {
+
+            res.status(400).json({
+                error: result.error,
+            });
+
+            return;
+
+        }
+
+
+        res.status(201).json({
+
+            message: "Permission assigned to role.",
+
+        });
+
+    }
+
+
+    async getPermissions(req: Request, res: Response): Promise<void> {
+
+
+        const result =
+
+            await this.getRolePermissionsUseCase.execute(
+
+                new GetRolePermissionsQuery(
+
+                    String(req.params.id),
+
+                ),
+
             );
 
 
@@ -195,49 +248,12 @@ export class RoleController {
 
 
         res.status(200).json(
+
             result.value,
+
         );
 
     }
 
-
-    async delete(
-
-        req: Request,
-
-        res: Response,
-
-    ): Promise<void> {
-
-        const command =
-            new DeleteRoleCommand(
-
-                String(req.params.id),
-
-            );
-
-
-        const result =
-            await this.deleteRoleUseCase.execute(
-                command,
-            );
-
-
-        if (!result.isSuccess) {
-
-            res.status(404).json({
-
-                error: result.error,
-
-            });
-
-            return;
-
-        }
-
-
-        res.status(204).send();
-
-    }
 
 }

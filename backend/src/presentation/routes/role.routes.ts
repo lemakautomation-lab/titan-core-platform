@@ -56,6 +56,24 @@ export function createRoleRoutes(
     );
 
 
+    router.post(
+
+        "/:roleId/permissions/:permissionId",
+
+        controller.assignPermission.bind(controller),
+
+    );
+
+
+    router.get(
+
+        "/:id/permissions",
+
+        controller.getPermissions.bind(controller),
+
+    );
+
+
     return router;
 
 }

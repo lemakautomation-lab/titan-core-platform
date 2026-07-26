@@ -59,6 +59,8 @@ const roleController =
         roleModule.listRolesUseCase,
         roleModule.updateRoleUseCase,
         roleModule.deleteRoleUseCase,
+        roleModule.assignPermissionToRoleUseCase,
+          roleModule.getRolePermissionsUseCase,
     );
 
 const permissionController =
@@ -106,6 +108,7 @@ router.use(
 );
 
 export default router;
+
 
 
 
