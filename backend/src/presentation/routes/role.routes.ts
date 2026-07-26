@@ -47,6 +47,15 @@ export function createRoleRoutes(
     );
 
 
+    router.delete(
+
+        "/:id",
+
+        controller.delete.bind(controller),
+
+    );
+
+
     return router;
 
 }

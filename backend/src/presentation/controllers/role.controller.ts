@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import { CreateRoleCommand } from "../../application/commands/create-role.command";
 import { UpdateRoleCommand } from "../../application/commands/update-role.command";
+import { DeleteRoleCommand } from "../../application/commands/delete-role.command";
 
 import { GetRoleByIdQuery } from "../../application/queries/role/get-role-by-id.query";
 import { ListRolesQuery } from "../../application/queries/role/list-roles.query";
@@ -10,6 +11,7 @@ import { CreateRoleUseCase } from "../../application/use-cases/create-role.use-c
 import { GetRoleByIdUseCase } from "../../application/use-cases/get-role-by-id.use-case";
 import { ListRolesUseCase } from "../../application/use-cases/list-roles.use-case";
 import { UpdateRoleUseCase } from "../../application/use-cases/update-role.use-case";
+import { DeleteRoleUseCase } from "../../application/use-cases/delete-role.use-case";
 
 
 export class RoleController {
@@ -23,6 +25,8 @@ export class RoleController {
         private readonly listRolesUseCase: ListRolesUseCase,
 
         private readonly updateRoleUseCase: UpdateRoleUseCase,
+
+        private readonly deleteRoleUseCase: DeleteRoleUseCase,
 
     ) {}
 
@@ -159,7 +163,6 @@ export class RoleController {
 
     ): Promise<void> {
 
-
         const command =
             new UpdateRoleCommand(
 
@@ -197,5 +200,44 @@ export class RoleController {
 
     }
 
+
+    async delete(
+
+        req: Request,
+
+        res: Response,
+
+    ): Promise<void> {
+
+        const command =
+            new DeleteRoleCommand(
+
+                String(req.params.id),
+
+            );
+
+
+        const result =
+            await this.deleteRoleUseCase.execute(
+                command,
+            );
+
+
+        if (!result.isSuccess) {
+
+            res.status(404).json({
+
+                error: result.error,
+
+            });
+
+            return;
+
+        }
+
+
+        res.status(204).send();
+
+    }
 
 }

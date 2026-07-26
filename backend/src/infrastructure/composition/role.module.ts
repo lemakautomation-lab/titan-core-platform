@@ -6,6 +6,7 @@ import { CreateRoleUseCase } from "../../application/use-cases/create-role.use-c
 import { GetRoleByIdUseCase } from "../../application/use-cases/get-role-by-id.use-case";
 import { ListRolesUseCase } from "../../application/use-cases/list-roles.use-case";
 import { UpdateRoleUseCase } from "../../application/use-cases/update-role.use-case";
+import { DeleteRoleUseCase } from "../../application/use-cases/delete-role.use-case";
 
 
 const databaseService = new DatabaseService();
@@ -43,6 +44,13 @@ export const roleModule = {
     updateRoleUseCase:
 
         new UpdateRoleUseCase(
+            roleRepository,
+        ),
+
+
+    deleteRoleUseCase:
+
+        new DeleteRoleUseCase(
             roleRepository,
         ),
 
