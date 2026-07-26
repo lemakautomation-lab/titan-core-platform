@@ -64,6 +64,9 @@ const roleController =
 const permissionController =
     new PermissionController(
         permissionModule.createPermissionUseCase,
+        permissionModule.getPermissionByIdUseCase,
+        permissionModule.listPermissionsUseCase,
+        permissionModule.updatePermissionUseCase,
     );
 
 router.use("/", healthRoutes);
@@ -102,3 +105,7 @@ router.use(
 );
 
 export default router;
+
+
+
+

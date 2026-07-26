@@ -20,6 +20,34 @@ export function createPermissionRoutes(
     );
 
 
+    router.get(
+
+        "/",
+
+        controller.list.bind(controller),
+
+    );
+
+
+    router.get(
+
+        "/:id",
+
+        controller.getById.bind(controller),
+
+    );
+
+
+    router.put(
+
+        "/:id",
+
+        controller.update.bind(controller),
+
+    );
+
+
     return router;
 
 }
+
