@@ -5,12 +5,18 @@ export class PermissionMapper {
 
     static toDomain(prisma: PrismaPermission): Permission {
 
-        return new Permission(
+        return Permission.restore(
+
             prisma.id,
+
             prisma.name,
+
             prisma.description,
+
             prisma.createdAt,
+
             prisma.updatedAt,
+
         );
 
     }

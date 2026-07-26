@@ -19,6 +19,10 @@ import { createRoleRoutes } from "../../presentation/routes/role.routes";
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { roleModule } from "../../infrastructure/composition/role.module";
 
+import { createPermissionRoutes } from "../../presentation/routes/permission.routes";
+import { PermissionController } from "../../presentation/controllers/permission.controller";
+import { permissionModule } from "../../infrastructure/composition/permission.module";
+
 const router = Router();
 
 const userController =
@@ -57,6 +61,11 @@ const roleController =
         roleModule.deleteRoleUseCase,
     );
 
+const permissionController =
+    new PermissionController(
+        permissionModule.createPermissionUseCase,
+    );
+
 router.use("/", healthRoutes);
 
 router.use("/auth", authRoutes);
@@ -82,6 +91,13 @@ router.use(
     "/roles",
     createRoleRoutes(
         roleController,
+    ),
+);
+
+router.use(
+    "/permissions",
+    createPermissionRoutes(
+        permissionController,
     ),
 );
 
