@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { healthRoutes } from "../../modules/health";
-import { authRoutes } from "../../modules/auth";
+import { createAuthRoutes, AuthController } from "../../modules/auth";
 
 import { createUserRoutes } from "../../presentation/routes/user.routes";
 import { UserController } from "../../presentation/controllers/user.controller";
@@ -23,7 +23,13 @@ import { createPermissionRoutes } from "../../presentation/routes/permission.rou
 import { PermissionController } from "../../presentation/controllers/permission.controller";
 import { permissionModule } from "../../infrastructure/composition/permission.module";
 
+import { createSessionRoutes } from "../../presentation/routes/session.routes";
+import { SessionController } from "../../presentation/controllers/session.controller";
+import { sessionModule } from "../../infrastructure/composition/session.module";
+
 const router = Router();
+
+const authController = new AuthController();
 
 const userController =
     new UserController(
@@ -60,7 +66,7 @@ const roleController =
         roleModule.updateRoleUseCase,
         roleModule.deleteRoleUseCase,
         roleModule.assignPermissionToRoleUseCase,
-          roleModule.getRolePermissionsUseCase,
+        roleModule.getRolePermissionsUseCase,
     );
 
 const permissionController =
@@ -72,9 +78,14 @@ const permissionController =
         permissionModule.deletePermissionUseCase,
     );
 
+const sessionController =
+    new SessionController(
+        sessionModule.getSessionByIdUseCase,
+    );
+
 router.use("/", healthRoutes);
 
-router.use("/auth", authRoutes);
+router.use("/auth", createAuthRoutes(authController));
 
 router.use(
     "/users",
@@ -107,11 +118,13 @@ router.use(
     ),
 );
 
+router.use(
+    "/sessions",
+    createSessionRoutes(
+        sessionController,
+    ),
+);
+
 export default router;
-
-
-
-
-
 
 

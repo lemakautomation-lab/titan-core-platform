@@ -1,6 +1,10 @@
+import { randomUUID } from "crypto";
+
 import { SessionStatus } from "../enums/session-status.enum";
 
+
 export class Session {
+
 
     constructor(
 
@@ -20,16 +24,57 @@ export class Session {
 
     ) {}
 
-    revoke(): void {
-        this.status = SessionStatus.REVOKED;
+
+    static create(
+        userId: string,
+        refreshToken: string,
+        expiresAt: Date,
+    ): Session {
+
+        const now = new Date();
+
+        return new Session(
+
+            randomUUID(),
+
+            userId,
+
+            refreshToken,
+
+            SessionStatus.ACTIVE,
+
+            expiresAt,
+
+            now,
+
+            now,
+
+        );
+
     }
+
+
+    revoke(): void {
+
+        this.status = SessionStatus.REVOKED;
+
+        this.updatedAt = new Date();
+
+    }
+
 
     isActive(): boolean {
+
         return this.status === SessionStatus.ACTIVE;
+
     }
 
+
     isExpired(): boolean {
+
         return this.expiresAt.getTime() <= Date.now();
+
     }
+
 
 }

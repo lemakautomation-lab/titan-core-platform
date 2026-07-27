@@ -1,1 +1,3 @@
-export { default as authRoutes } from "./auth.routes";
+export { createAuthRoutes } from "./auth.routes";
+export * from "./auth.controller";
+export * from "./auth.module";

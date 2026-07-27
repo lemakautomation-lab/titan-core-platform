@@ -1,41 +1,77 @@
 import jwt from "jsonwebtoken";
+
 import { jwtConfig } from "../config/jwt.config";
 
-export interface JwtPayload {
-    userId: string;
-    email: string;
-    role: string;
-}
 
-export class JwtSecurity {
+export class JwtService {
 
-    generateAccessToken(payload: JwtPayload): string {
+
+    generateAccessToken(
+        payload: object,
+    ): string {
 
         return jwt.sign(
             payload,
             jwtConfig.secret,
             {
-                expiresIn: jwtConfig.expiresIn,
+                expiresIn: "15m",
                 issuer: jwtConfig.issuer,
-                audience: jwtConfig.audience
+                audience: jwtConfig.audience,
             }
         );
 
     }
 
-    verifyToken(token: string): JwtPayload {
+
+    generateRefreshToken(
+        payload: object,
+    ): string {
+
+        return jwt.sign(
+            payload,
+            jwtConfig.secret,
+            {
+                expiresIn: "7d",
+                issuer: jwtConfig.issuer,
+                audience: jwtConfig.audience,
+            }
+        );
+
+    }
+
+
+    verifyAccessToken(
+        token: string,
+    ): any {
 
         return jwt.verify(
             token,
             jwtConfig.secret,
             {
                 issuer: jwtConfig.issuer,
-                audience: jwtConfig.audience
+                audience: jwtConfig.audience,
             }
-        ) as JwtPayload;
+        );
+
+    }
+
+
+    verifyRefreshToken(
+        token: string,
+    ): any {
+
+        return jwt.verify(
+            token,
+            jwtConfig.secret,
+            {
+                issuer: jwtConfig.issuer,
+                audience: jwtConfig.audience,
+            }
+        );
 
     }
 
 }
 
-export const jwtSecurity = new JwtSecurity();
+
+export const jwtService = new JwtService();
