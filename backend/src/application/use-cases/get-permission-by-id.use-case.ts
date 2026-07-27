@@ -3,10 +3,10 @@ import { Result } from "../common/result";
 
 import { PermissionRepository } from "../../domain/repositories/permission.repository";
 
-import { GetPermissionByIdQuery } from "../queries/permission/get-permission-by-id.query";
-
 import { PermissionDto } from "../dto/permission/permission.dto";
 import { PermissionApplicationMapper } from "../mappers/permission.mapper";
+
+import { GetPermissionByIdQuery } from "../queries/permission/get-permission-by-id.query";
 
 export class GetPermissionByIdUseCase
     implements UseCase<GetPermissionByIdQuery, Result<PermissionDto>>

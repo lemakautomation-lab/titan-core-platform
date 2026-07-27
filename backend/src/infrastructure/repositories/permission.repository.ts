@@ -24,7 +24,11 @@ export class PrismaPermissionRepository implements PermissionRepository {
 
     async findAll(): Promise<Permission[]> {
 
-        const permissions = await this.database.prisma.permission.findMany();
+        const permissions = await this.database.prisma.permission.findMany({
+            orderBy: {
+                name: "asc",
+            },
+        });
 
         return permissions.map(PermissionMapper.toDomain);
 
