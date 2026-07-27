@@ -2,6 +2,8 @@ import { Router } from "express";
 
 import { AuthController } from "./auth.controller";
 
+import { authMiddleware } from "../../middleware/auth.middleware";
+
 
 export function createAuthRoutes(
     authController: AuthController,
@@ -25,6 +27,13 @@ export function createAuthRoutes(
     router.post(
         "/logout",
         authController.logout.bind(authController),
+    );
+
+
+    router.get(
+        "/me",
+        authMiddleware,
+        authController.me.bind(authController),
     );
 
 

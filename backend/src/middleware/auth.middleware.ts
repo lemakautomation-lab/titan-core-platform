@@ -1,46 +1,108 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
 
-export interface AuthRequest extends Request {
-    user?: any;
+import { jwtService } from "../security/jwt";
+
+
+export interface AuthenticatedUser {
+
+    userId: string;
+
+    tenantId: string;
+
+    role?: string;
+
 }
 
-export const authMiddleware = (
+
+export interface AuthRequest extends Request {
+
+    user?: AuthenticatedUser;
+
+}
+
+
+export function authMiddleware(
     req: AuthRequest,
     res: Response,
-    next: NextFunction
-) => {
+    next: NextFunction,
+): void {
 
-    const authHeader = req.headers.authorization;
 
-    if (!authHeader) {
-        return res.status(401).json({
-            authenticated: false,
-            message: "Authorization header missing"
+    const authorization =
+        req.headers.authorization;
+
+
+    if (!authorization) {
+
+        res.status(401).json({
+
+            message: "Authorization header missing",
+
         });
+
+        return;
+
     }
 
 
-    const token = authHeader.split(" ")[1];
+    const parts =
+        authorization.split(" ");
 
 
-    if (!token) {
-        return res.status(401).json({
-            authenticated: false,
-            message: "Token missing"
+    if (
+        parts.length !== 2 ||
+        parts[0] !== "Bearer"
+    ) {
+
+        res.status(401).json({
+
+            message: "Invalid authorization format",
+
         });
+
+        return;
+
     }
+
+
+    const token =
+        parts[1];
 
 
     try {
 
-        const decoded = jwt.verify(
-            token,
-            process.env.JWT_SECRET as string
-        );
+
+        const payload =
+            jwtService.verifyAccessToken(
+                token,
+            );
 
 
-        req.user = decoded;
+        if (
+            !payload.userId ||
+            !payload.tenantId
+        ) {
+
+            res.status(401).json({
+
+                message: "Invalid token payload",
+
+            });
+
+            return;
+
+        }
+
+
+        req.user = {
+
+            userId: payload.userId,
+
+            tenantId: payload.tenantId,
+
+            role: payload.role,
+
+        };
 
 
         next();
@@ -48,11 +110,19 @@ export const authMiddleware = (
 
     } catch (error) {
 
-        return res.status(401).json({
-            authenticated: false,
-            message: "Invalid token"
+
+        console.error(
+            "JWT VERIFY ERROR:",
+            error,
+        );
+
+
+        res.status(401).json({
+
+            message: "Invalid or expired token",
+
         });
 
     }
 
-};
+}

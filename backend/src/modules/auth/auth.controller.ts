@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 
 import { authModule } from "../../infrastructure/composition/auth.module";
 
+import { AuthRequest } from "../../middleware/auth.middleware";
+
 
 export class AuthController {
 
@@ -84,6 +86,27 @@ export class AuthController {
             success: true,
 
             message: "Logged out successfully",
+
+        });
+
+
+    }
+
+
+
+    async me(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+
+
+        res.status(200).json({
+
+            userId:
+                req.user!.userId,
+
+            tenantId:
+                req.user!.tenantId,
 
         });
 
