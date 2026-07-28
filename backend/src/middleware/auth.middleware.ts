@@ -2,17 +2,15 @@ import { Request, Response, NextFunction } from "express";
 
 import { jwtService } from "../security/jwt";
 
-
 export interface AuthenticatedUser {
 
     userId: string;
 
     tenantId: string;
 
-    role?: string;
+    roles: string[];
 
 }
-
 
 export interface AuthRequest extends Request {
 
@@ -20,17 +18,14 @@ export interface AuthRequest extends Request {
 
 }
 
-
 export function authMiddleware(
     req: AuthRequest,
     res: Response,
     next: NextFunction,
 ): void {
 
-
     const authorization =
         req.headers.authorization;
-
 
     if (!authorization) {
 
@@ -44,10 +39,8 @@ export function authMiddleware(
 
     }
 
-
     const parts =
         authorization.split(" ");
-
 
     if (
         parts.length !== 2 ||
@@ -64,19 +57,15 @@ export function authMiddleware(
 
     }
 
-
     const token =
         parts[1];
 
-
     try {
-
 
         const payload =
             jwtService.verifyAccessToken(
                 token,
             );
-
 
         if (
             !payload.userId ||
@@ -93,29 +82,24 @@ export function authMiddleware(
 
         }
 
-
         req.user = {
 
             userId: payload.userId,
 
             tenantId: payload.tenantId,
 
-            role: payload.role,
+            roles: payload.roles ?? [],
 
         };
 
-
         next();
 
-
     } catch (error) {
-
 
         console.error(
             "JWT VERIFY ERROR:",
             error,
         );
-
 
         res.status(401).json({
 

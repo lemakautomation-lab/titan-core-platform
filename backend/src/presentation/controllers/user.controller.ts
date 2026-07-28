@@ -56,16 +56,6 @@ export class UserController {
         const result =
             await this.createUserUseCase.execute(command);
 
-        if (!result.isSuccess) {
-
-            res.status(400).json({
-                error: result.error,
-            });
-
-            return;
-
-        }
-
         res.status(201).json(result.value);
 
     }
@@ -206,3 +196,4 @@ export class UserController {
     }
 
 }
+

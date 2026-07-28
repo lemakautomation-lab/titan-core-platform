@@ -7,24 +7,24 @@ import { LoginUseCase } from "../../application/use-cases/auth/login.use-case";
 import { RefreshTokenUseCase } from "../../application/use-cases/auth/refresh-token.use-case";
 import { LogoutUseCase } from "../../application/use-cases/auth/logout.use-case";
 
-
 const databaseService =
     new DatabaseService();
 
-
-const userRepository =
+export const userRepository =
     new PrismaUserRepository(
         databaseService,
     );
 
-
-const sessionRepository =
+export const sessionRepository =
     new PrismaSessionRepository(
         databaseService,
     );
 
-
 export const authModule = {
+
+    userRepository,
+
+    sessionRepository,
 
     loginUseCase:
 
@@ -33,13 +33,11 @@ export const authModule = {
             sessionRepository,
         ),
 
-
     refreshTokenUseCase:
 
         new RefreshTokenUseCase(
             sessionRepository,
         ),
-
 
     logoutUseCase:
 

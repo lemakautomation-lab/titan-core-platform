@@ -1,4 +1,5 @@
 import { User } from "../entities/user.entity";
+import { Role } from "../entities/role.entity";
 
 export interface UserRepository {
 
@@ -13,5 +14,7 @@ export interface UserRepository {
     update(user: User): Promise<User>;
 
     delete(id: string): Promise<void>;
+
+    findRoles(userId: string): Promise<Role[]>;
 
 }

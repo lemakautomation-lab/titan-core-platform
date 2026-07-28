@@ -10,6 +10,8 @@ declare global {
 
                 tenantId: string;
 
+                roles: string[];
+
             };
 
         }
@@ -17,6 +19,5 @@ declare global {
     }
 
 }
-
 
 export {};

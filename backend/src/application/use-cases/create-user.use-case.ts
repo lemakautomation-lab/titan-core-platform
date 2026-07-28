@@ -10,6 +10,11 @@ import { UserDto } from "../dto/user/user.dto";
 import { UserApplicationMapper } from "../mappers/user.mapper";
 
 import { passwordSecurity } from "../../security/bcrypt";
+import { ValidationException } from "../../shared/exceptions/validation.exception";
+
+import {
+    UserValidator,
+} from "../../shared/validation/validators/user.validator";
 
 export class CreateUserUseCase
     implements UseCase<CreateUserCommand, Result<UserDto>>
@@ -23,15 +28,34 @@ export class CreateUserUseCase
         command: CreateUserCommand,
     ): Promise<Result<UserDto>> {
 
+        const validation =
+            new UserValidator().validate({
+
+                tenantId: command.tenantId,
+
+                email: command.email,
+
+                password: command.password,
+
+            });
+
+        if (!validation.isValid) {
+
+            throw new ValidationException(validation.errors);
+
+        }
+
         const tenant =
             await this.tenantRepository.findById(
                 command.tenantId,
             );
 
         if (!tenant) {
+
             return Result.failure(
                 "Tenant not found.",
             );
+
         }
 
         const existingUser =
@@ -43,9 +67,11 @@ export class CreateUserUseCase
             existingUser &&
             existingUser.tenantId === command.tenantId
         ) {
+
             return Result.failure(
                 "Email already exists for this tenant.",
             );
+
         }
 
         const passwordHash =
@@ -62,11 +88,18 @@ export class CreateUserUseCase
             command.lastName,
         );
 
-        await this.userRepository.create(user);
+        await this.userRepository.create(
+            user,
+        );
 
         return Result.success(
             UserApplicationMapper.toDto(user),
         );
 
     }
+
 }
+
+
+
+

@@ -1,6 +1,7 @@
 import { CreateUserDto } from "../dto/create-user.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import { UsersRepository } from "../repositories/users.repository";
+import { HttpException } from "../../../shared/exceptions/http.exception";
 
 export class UsersService {
 
@@ -17,7 +18,13 @@ export class UsersService {
     createUser(dto: CreateUserDto) {
 
         if (this.repository.findByEmail(dto.email)) {
-            throw new Error("Email already exists");
+
+            throw new HttpException(
+                "Email already exists",
+                409,
+                "CONFLICT",
+            );
+
         }
 
         return this.repository.create(dto);
