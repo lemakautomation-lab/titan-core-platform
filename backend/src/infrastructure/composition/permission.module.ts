@@ -12,7 +12,7 @@ import { DeletePermissionUseCase } from "../../application/use-cases/delete-perm
 const databaseService = new DatabaseService();
 
 
-const permissionRepository =
+export const permissionRepository =
     new PrismaPermissionRepository(
         databaseService,
     );
@@ -20,38 +20,38 @@ const permissionRepository =
 
 export const permissionModule = {
 
-    createPermissionUseCase:
 
+    permissionRepository,
+
+
+    createPermissionUseCase:
         new CreatePermissionUseCase(
             permissionRepository,
         ),
 
 
     getPermissionByIdUseCase:
-
         new GetPermissionByIdUseCase(
             permissionRepository,
         ),
 
 
     listPermissionsUseCase:
-
         new ListPermissionsUseCase(
             permissionRepository,
         ),
 
 
     updatePermissionUseCase:
-
         new UpdatePermissionUseCase(
             permissionRepository,
         ),
 
 
     deletePermissionUseCase:
-
         new DeletePermissionUseCase(
             permissionRepository,
         ),
+
 
 };

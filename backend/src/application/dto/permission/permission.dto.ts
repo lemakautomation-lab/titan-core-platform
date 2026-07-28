@@ -1,17 +1,13 @@
-export class PermissionDto {
+export interface PermissionDto {
 
-    constructor(
+    id: string;
 
-        public readonly id: string,
+    name: string;
 
-        public readonly name: string,
+    description: string | null;
 
-        public readonly description: string | null,
+    createdAt: Date;
 
-        public readonly createdAt: Date,
-
-        public readonly updatedAt: Date,
-
-    ) {}
+    updatedAt: Date;
 
 }

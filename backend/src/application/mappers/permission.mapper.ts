@@ -1,5 +1,4 @@
 import { Permission } from "../../domain/entities/permission.entity";
-
 import { PermissionDto } from "../dto/permission/permission.dto";
 
 
@@ -10,20 +9,19 @@ export class PermissionApplicationMapper {
         permission: Permission,
     ): PermissionDto {
 
+        return {
 
-        return new PermissionDto(
+            id: permission.id,
 
-            permission.id,
+            name: permission.name,
 
-            permission.name,
+            description: permission.description,
 
-            permission.description,
+            createdAt: permission.createdAt,
 
-            permission.createdAt,
+            updatedAt: permission.updatedAt,
 
-            permission.updatedAt,
-
-        );
+        };
 
     }
 
