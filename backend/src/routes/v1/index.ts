@@ -38,6 +38,8 @@ const userController =
         userModule.listUsersUseCase,
         userModule.updateUserUseCase,
         userModule.deleteUserUseCase,
+        userModule.assignRoleToUserUseCase,
+        userModule.getUserRolesUseCase,
     );
 
 const tenantController =
@@ -126,5 +128,6 @@ router.use(
 );
 
 export default router;
+
 
 

@@ -1,15 +1,17 @@
-import { UserRepository } from "../../domain/repositories/user.repository";
-import { RoleRepository } from "../../domain/repositories/role.repository";
+import { PermissionResolutionService } from "./permission-resolution.service";
+
 
 export class AuthorizationService {
 
+
     constructor(
 
-        private readonly userRepository: UserRepository,
-
-        private readonly roleRepository: RoleRepository,
+        private readonly permissionResolutionService:
+            PermissionResolutionService,
 
     ) {}
+
+
 
     async hasPermission(
 
@@ -19,39 +21,16 @@ export class AuthorizationService {
 
     ): Promise<boolean> {
 
-        const roles =
-            await this.userRepository.findRoles(
-                userId,
-            );
 
-        if (roles.length === 0) {
-            return false;
-        }
+        return this.permissionResolutionService.hasPermission(
 
-        for (const role of roles) {
+            userId,
 
-            const permissions =
-                await this.roleRepository.findPermissions(
-                    role.id,
-                );
+            permissionName,
 
-            const hasPermission =
-                permissions.some(
-
-                    permission =>
-
-                        permission.name === permissionName,
-
-                );
-
-            if (hasPermission) {
-                return true;
-            }
-
-        }
-
-        return false;
+        );
 
     }
+
 
 }

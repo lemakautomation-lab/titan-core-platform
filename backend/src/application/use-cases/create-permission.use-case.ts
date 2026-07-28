@@ -24,10 +24,12 @@ export class CreatePermissionUseCase
 
     ): Promise<Result<PermissionDto>> {
 
+
         const existingPermission =
             await this.permissionRepository.findByName(
                 command.name,
             );
+
 
         if (existingPermission) {
 
@@ -37,18 +39,23 @@ export class CreatePermissionUseCase
 
         }
 
+
         const permission =
             Permission.create(
 
                 command.name,
 
-                command.description,
+                command.name,
+
+                command.description ?? "",
 
             );
+
 
         await this.permissionRepository.create(
             permission,
         );
+
 
         return Result.success(
 

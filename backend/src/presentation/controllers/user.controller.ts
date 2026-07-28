@@ -7,6 +7,12 @@ import { DeleteUserCommand } from "../../application/commands/delete-user.comman
 import { GetUserByIdQuery } from "../../application/queries/user/get-user-by-id.query";
 import { ListUsersQuery } from "../../application/queries/user/list-users.query";
 
+import { AssignRoleToUserCommand } from "../../application/commands/assign-role-to-user.command";
+import { GetUserRolesQuery } from "../../application/queries/user/get-user-roles.query";
+
+import { AssignRoleToUserUseCase } from "../../application/use-cases/assign-role-to-user.use-case";
+import { GetUserRolesUseCase } from "../../application/use-cases/get-user-roles.use-case";
+
 import { CreateUserUseCase } from "../../application/use-cases/create-user.use-case";
 import { GetUserByIdUseCase } from "../../application/use-cases/get-user-by-id.use-case";
 import { ListUsersUseCase } from "../../application/use-cases/list-users.use-case";
@@ -27,6 +33,10 @@ export class UserController {
         private readonly updateUserUseCase: UpdateUserUseCase,
 
         private readonly deleteUserUseCase: DeleteUserUseCase,
+
+private readonly assignRoleToUserUseCase: AssignRoleToUserUseCase,
+
+private readonly getUserRolesUseCase: GetUserRolesUseCase,
 
     ) {}
 
@@ -194,6 +204,66 @@ export class UserController {
         res.status(204).send();
 
     }
+    async assignRole(
+        req: Request,
+        res: Response,
+    ): Promise<void> {
 
+        const command =
+            new AssignRoleToUserCommand(
+
+                String(req.params.userId),
+
+                String(req.params.roleId),
+
+            );
+
+        const result =
+            await this.assignRoleToUserUseCase.execute(command);
+
+        if (!result.isSuccess) {
+
+            res.status(400).json({
+                error: result.error,
+            });
+
+            return;
+
+        }
+
+        res.status(204).send();
+
+    }
+
+
+    async getRoles(
+        req: Request,
+        res: Response,
+    ): Promise<void> {
+
+        const result =
+            await this.getUserRolesUseCase.execute(
+
+                new GetUserRolesQuery(
+
+                    String(req.params.userId),
+
+                ),
+
+            );
+
+        if (!result.isSuccess) {
+
+            res.status(404).json({
+                error: result.error,
+            });
+
+            return;
+
+        }
+
+        res.status(200).json(result.value);
+
+    }
 }
 

@@ -17,4 +17,14 @@ export interface UserRepository {
 
     findRoles(userId: string): Promise<Role[]>;
 
+    assignRole(
+        userId: string,
+        roleId: string,
+    ): Promise<void>;
+
+    hasRole(
+        userId: string,
+        roleId: string,
+    ): Promise<boolean>;
+
 }

@@ -2,12 +2,15 @@ import { DatabaseService } from "../database/database.service";
 
 import { PrismaTenantRepository } from "../repositories/tenant.repository";
 import { PrismaUserRepository } from "../repositories/user.repository";
+import { PrismaRoleRepository } from "../repositories/role.repository";
 
 import { CreateUserUseCase } from "../../application/use-cases/create-user.use-case";
 import { GetUserByIdUseCase } from "../../application/use-cases/get-user-by-id.use-case";
 import { ListUsersUseCase } from "../../application/use-cases/list-users.use-case";
 import { UpdateUserUseCase } from "../../application/use-cases/update-user.use-case";
 import { DeleteUserUseCase } from "../../application/use-cases/delete-user.use-case";
+import { AssignRoleToUserUseCase } from "../../application/use-cases/assign-role-to-user.use-case";
+import { GetUserRolesUseCase } from "../../application/use-cases/get-user-roles.use-case";
 
 
 const databaseService = new DatabaseService();
@@ -21,6 +24,12 @@ const tenantRepository =
 
 const userRepository =
     new PrismaUserRepository(
+        databaseService,
+    );
+
+
+const roleRepository =
+    new PrismaRoleRepository(
         databaseService,
     );
 
@@ -60,6 +69,21 @@ export const userModule = {
     deleteUserUseCase:
 
         new DeleteUserUseCase(
+            userRepository,
+        ),
+
+
+    assignRoleToUserUseCase:
+
+        new AssignRoleToUserUseCase(
+            userRepository,
+            roleRepository,
+        ),
+
+
+    getUserRolesUseCase:
+
+        new GetUserRolesUseCase(
             userRepository,
         ),
 

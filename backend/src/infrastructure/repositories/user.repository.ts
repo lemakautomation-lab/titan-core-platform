@@ -8,12 +8,14 @@ import { DatabaseService } from "../database/database.service";
 import { UserMapper } from "../mappers/user.mapper";
 import { RoleMapper } from "../mappers/role.mapper";
 
+
 export class PrismaUserRepository
 implements UserRepository {
 
     constructor(
         private readonly database: DatabaseService,
     ) {}
+
 
     async findById(
         id: string,
@@ -30,6 +32,7 @@ implements UserRepository {
 
     }
 
+
     async findByEmail(
         email: string,
     ): Promise<User | null> {
@@ -45,6 +48,7 @@ implements UserRepository {
 
     }
 
+
     async findAllByTenantId(
         tenantId: string,
     ): Promise<User[]> {
@@ -58,6 +62,7 @@ implements UserRepository {
 
     }
 
+
     async create(
         user: User,
     ): Promise<User> {
@@ -70,6 +75,7 @@ implements UserRepository {
         return UserMapper.toDomain(created);
 
     }
+
 
     async update(
         user: User,
@@ -87,6 +93,7 @@ implements UserRepository {
 
     }
 
+
     async delete(
         id: string,
     ): Promise<void> {
@@ -96,6 +103,7 @@ implements UserRepository {
         });
 
     }
+
 
     async findRoles(
         userId: string,
@@ -115,10 +123,61 @@ implements UserRepository {
             });
 
         return assignments.map(
-            assignment => RoleMapper.toDomain(
-                assignment.role,
-            ),
+            assignment =>
+                RoleMapper.toDomain(
+                    assignment.role,
+                ),
         );
+
+    }
+
+
+    async assignRole(
+
+        userId: string,
+
+        roleId: string,
+
+    ): Promise<void> {
+
+        await this.database.prisma.userRole.create({
+
+            data: {
+
+                userId,
+
+                roleId,
+
+            },
+
+        });
+
+    }
+
+
+    async hasRole(
+
+        userId: string,
+
+        roleId: string,
+
+    ): Promise<boolean> {
+
+        const assignment =
+            await this.database.prisma.userRole.findFirst({
+
+                where: {
+
+                    userId,
+
+                    roleId,
+
+                },
+
+            });
+
+
+        return !!assignment;
 
     }
 

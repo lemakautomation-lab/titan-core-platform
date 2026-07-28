@@ -2,13 +2,15 @@ import { randomUUID } from "crypto";
 
 export class Permission {
 
-    private constructor(
+    constructor(
 
         public readonly id: string,
 
+        public code: string,
+
         public name: string,
 
-        public description: string | null,
+        public description: string,
 
         public readonly createdAt: Date,
 
@@ -16,35 +18,43 @@ export class Permission {
 
     ) {}
 
+
+
     static create(
+
+        code: string,
 
         name: string,
 
-        description: string | null,
+        description?: string | null,
 
     ): Permission {
-
-        const now = new Date();
 
         return new Permission(
 
             randomUUID(),
 
+            code,
+
             name,
 
-            description,
+            description ?? "",
 
-            now,
+            new Date(),
 
-            now,
+            new Date(),
 
         );
 
     }
 
+
+
     static restore(
 
         id: string,
+
+        code: string,
 
         name: string,
 
@@ -52,7 +62,7 @@ export class Permission {
 
         createdAt: Date,
 
-        updatedAt: Date,
+        updatedAt?: Date,
 
     ): Permission {
 
@@ -60,17 +70,21 @@ export class Permission {
 
             id,
 
+            code,
+
             name,
 
-            description,
+            description ?? "",
 
             createdAt,
 
-            updatedAt,
+            updatedAt ?? createdAt,
 
         );
 
     }
+
+
 
     rename(
 
@@ -84,15 +98,41 @@ export class Permission {
 
     }
 
+
+
     updateDescription(
 
         description: string | null,
 
     ): void {
 
-        this.description = description;
+        this.description = description ?? "";
 
         this.updatedAt = new Date();
+
+    }
+
+
+
+    update(
+
+        name: string,
+
+        description?: string | null,
+
+    ): void {
+
+        this.rename(name);
+
+        this.updateDescription(description ?? "");
+
+    }
+
+
+
+    getCode(): string {
+
+        return this.code;
 
     }
 
