@@ -1,0 +1,20 @@
+import { UseCase } from "../common/use-case.interface";
+import { Result } from "../common/result";
+
+import { User } from "../../domain/entities/user.entity";
+import { UserRepository } from "../../domain/repositories/user.repository";
+import { TenantRepository } from "../../domain/repositories/tenant.repository";
+
+import { CreateUserCommand } from "../commands/create-user.command";
+import { UserDto } from "../dto/user/user.dto";
+import { UserApplicationMapper } from "../mappers/user.mapper";
+
+import { passwordSecurity } from "../../security/bcrypt";
+import { ValidationException } from "../../shared/exceptions/validation.exception";
+
+import {
+    UserValidator,
+} from "../../shared/validation/validators/user.validator";
+
+import { AuditLogService } from "../services/audit-log.service";
+import { AuditLogStatus } from "../../domain/entities/audit-log.entity";

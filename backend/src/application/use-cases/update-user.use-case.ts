@@ -10,12 +10,16 @@ import { UserApplicationMapper } from "../mappers/user.mapper";
 
 import { passwordSecurity } from "../../security/bcrypt";
 
+import { AuditLogService } from "../services/audit-log.service";
+import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
+
 export class UpdateUserUseCase
     implements UseCase<UpdateUserCommand, Result<UserDto>>
 {
 
     constructor(
         private readonly userRepository: UserRepository,
+        private readonly auditLogService: AuditLogService,
     ) {}
 
     async execute(
@@ -81,6 +85,22 @@ export class UpdateUserUseCase
                 user,
             );
 
+        await this.auditLogService.log(
+
+            updatedUser.tenantId,
+
+            updatedUser.id,
+
+            "USER_UPDATE",
+
+            "USER",
+
+            updatedUser.id,
+
+            AuditLogStatus.SUCCESS,
+
+        );
+
         return Result.success(
             UserApplicationMapper.toDto(
                 updatedUser,
@@ -90,3 +110,6 @@ export class UpdateUserUseCase
     }
 
 }
+
+
+

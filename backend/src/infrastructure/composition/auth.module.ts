@@ -7,37 +7,53 @@ import { LoginUseCase } from "../../application/use-cases/auth/login.use-case";
 import { RefreshTokenUseCase } from "../../application/use-cases/auth/refresh-token.use-case";
 import { LogoutUseCase } from "../../application/use-cases/auth/logout.use-case";
 
+import { auditLogModule } from "./audit-log.module";
+
+
 const databaseService =
     new DatabaseService();
+
 
 export const userRepository =
     new PrismaUserRepository(
         databaseService,
     );
 
+
 export const sessionRepository =
     new PrismaSessionRepository(
         databaseService,
     );
 
+
 export const authModule = {
+
 
     userRepository,
 
+
     sessionRepository,
+
 
     loginUseCase:
 
         new LoginUseCase(
+
             userRepository,
+
             sessionRepository,
+
+            auditLogModule.auditLogService,
+
         ),
+
 
     refreshTokenUseCase:
 
         new RefreshTokenUseCase(
             sessionRepository,
         ),
+
 
     logoutUseCase:
 

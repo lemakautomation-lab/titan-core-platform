@@ -16,12 +16,17 @@ import {
     UserValidator,
 } from "../../shared/validation/validators/user.validator";
 
+import { AuditLogService } from "../services/audit-log.service";
+import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
+
 export class CreateUserUseCase
     implements UseCase<CreateUserCommand, Result<UserDto>>
 {
     constructor(
         private readonly userRepository: UserRepository,
         private readonly tenantRepository: TenantRepository,
+
+        private readonly auditLogService: AuditLogService,
     ) {}
 
     async execute(
@@ -92,6 +97,22 @@ export class CreateUserUseCase
             user,
         );
 
+        await this.auditLogService.log(
+
+            user.tenantId,
+
+            user.id,
+
+            "USER_CREATE",
+
+            "USER",
+
+            user.id,
+
+            AuditLogStatus.SUCCESS,
+
+        );
+
         return Result.success(
             UserApplicationMapper.toDto(user),
         );
@@ -99,6 +120,11 @@ export class CreateUserUseCase
     }
 
 }
+
+
+
+
+
 
 
 

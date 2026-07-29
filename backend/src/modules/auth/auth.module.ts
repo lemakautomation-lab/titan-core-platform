@@ -7,6 +7,8 @@ import { LoginUseCase } from "../../application/use-cases/auth/login.use-case";
 import { RefreshTokenUseCase } from "../../application/use-cases/auth/refresh-token.use-case";
 import { LogoutUseCase } from "../../application/use-cases/auth/logout.use-case";
 
+import { auditLogModule } from "../../infrastructure/composition/audit-log.module";
+
 
 const databaseService =
     new DatabaseService();
@@ -30,8 +32,13 @@ export const authModule = {
     loginUseCase:
 
         new LoginUseCase(
+
             userRepository,
+
             sessionRepository,
+
+            auditLogModule.auditLogService,
+
         ),
 
 

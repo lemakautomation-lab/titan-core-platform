@@ -13,6 +13,8 @@ import { AssignRoleToUserUseCase } from "../../application/use-cases/assign-role
 import { RemoveRoleFromUserUseCase } from "../../application/use-cases/remove-role-from-user.use-case";
 import { GetUserRolesUseCase } from "../../application/use-cases/get-user-roles.use-case";
 
+import { auditLogModule } from "./audit-log.module";
+
 const databaseService = new DatabaseService();
 
 const tenantRepository =
@@ -37,6 +39,7 @@ export const userModule = {
         new CreateUserUseCase(
             userRepository,
             tenantRepository,
+            auditLogModule.auditLogService,
         ),
 
     getUserByIdUseCase:
@@ -56,12 +59,14 @@ export const userModule = {
 
         new UpdateUserUseCase(
             userRepository,
+            auditLogModule.auditLogService,
         ),
 
     deleteUserUseCase:
 
         new DeleteUserUseCase(
             userRepository,
+            auditLogModule.auditLogService,
         ),
 
     assignRoleToUserUseCase:
@@ -85,3 +90,7 @@ export const userModule = {
         ),
 
 };
+
+
+
+

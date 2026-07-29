@@ -21,8 +21,7 @@ model Tenant {
   status RecordStatus @default(ACTIVE)
 
   organisations Organisation[]
-  users         User[]
-  auditLogs     AuditLog[]
+  users         User[]`r`n  auditLogs     AuditLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -74,8 +73,7 @@ model User {
   organisation Organisation? @relation(fields: [organisationId], references: [id])
 
   userRoles UserRole[]
-  sessions  Session[]
-  auditLogs AuditLog[]
+  sessions  Session[]`r`n  auditLogs AuditLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -189,10 +187,16 @@ model AuditLog {
   metadata Json?
 
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  tenant Tenant @relation(
+    fields: [tenantId],
+    references: [id]
+  )
 
 
-  user User? @relation(fields: [userId], references: [id])
+  user User? @relation(
+    fields: [userId],
+    references: [id]
+  )
 
 
   createdAt DateTime @default(now())
@@ -205,7 +209,3 @@ model AuditLog {
   @@index([createdAt])
 
 }
-
-
-
-

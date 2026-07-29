@@ -5,6 +5,9 @@ import { UserRepository } from "../../domain/repositories/user.repository";
 
 import { DeleteUserCommand } from "../commands/delete-user.command";
 
+import { AuditLogService } from "../services/audit-log.service";
+import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
+
 
 export class DeleteUserUseCase
     implements UseCase<DeleteUserCommand, Result<void>>
@@ -12,6 +15,7 @@ export class DeleteUserUseCase
 
     constructor(
         private readonly userRepository: UserRepository,
+        private readonly auditLogService: AuditLogService,
     ) {}
 
     async execute(
@@ -37,6 +41,22 @@ export class DeleteUserUseCase
             user,
         );
 
+        await this.auditLogService.log(
+
+            user.tenantId,
+
+            user.id,
+
+            "USER_DELETE",
+
+            "USER",
+
+            user.id,
+
+            AuditLogStatus.SUCCESS,
+
+        );
+
         return Result.success(
             undefined,
         );
@@ -44,3 +64,6 @@ export class DeleteUserUseCase
     }
 
 }
+
+
+

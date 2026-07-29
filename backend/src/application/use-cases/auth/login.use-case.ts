@@ -10,6 +10,13 @@ import { jwtService } from "../../../security/jwt";
 
 import { UnauthorizedException } from "../../../shared/exceptions/unauthorized.exception";
 
+import {
+    AuditLogStatus,
+} from "../../../domain/entities/audit-log.entity";
+
+import { AuditLogService } from "../../services/audit-log.service";
+
+
 export class LoginUseCase {
 
     constructor(
@@ -18,58 +25,165 @@ export class LoginUseCase {
 
         private readonly sessionRepository: SessionRepository,
 
+        private readonly auditLogService: AuditLogService,
+
     ) {}
+
 
     async execute(
         command: LoginCommand,
     ) {
+
 
         const user =
             await this.userRepository.findByEmail(
                 command.email,
             );
 
+
         if (!user) {
+
+            await this.auditLogService.log(
+
+                command.tenantId,
+
+                null,
+
+                "USER_LOGIN",
+
+                "AUTH",
+
+                null,
+
+                AuditLogStatus.FAILURE,
+
+                {
+                    email: command.email,
+                },
+
+            );
+
+
             throw new UnauthorizedException(
                 "Invalid credentials",
             );
+
         }
+
 
         if (user.tenantId !== command.tenantId) {
+
+
+            await this.auditLogService.log(
+
+                command.tenantId,
+
+                user.id,
+
+                "USER_LOGIN",
+
+                "AUTH",
+
+                null,
+
+                AuditLogStatus.FAILURE,
+
+            );
+
+
             throw new UnauthorizedException(
                 "Invalid credentials",
             );
+
         }
+
+
 
         const passwordValid =
+
             await passwordSecurity.verify(
+
                 command.password,
+
                 user.passwordHash,
+
             );
 
+
+
         if (!passwordValid) {
+
+
+            await this.auditLogService.log(
+
+                user.tenantId,
+
+                user.id,
+
+                "USER_LOGIN",
+
+                "AUTH",
+
+                null,
+
+                AuditLogStatus.FAILURE,
+
+            );
+
+
             throw new UnauthorizedException(
                 "Invalid credentials",
             );
+
         }
 
+
+
         if (!user.isActive()) {
+
+
+            await this.auditLogService.log(
+
+                user.tenantId,
+
+                user.id,
+
+                "USER_LOGIN",
+
+                "AUTH",
+
+                null,
+
+                AuditLogStatus.FAILURE,
+
+            );
+
+
             throw new UnauthorizedException(
                 "User account inactive",
             );
+
         }
 
+
+
         const roles =
+
             await this.userRepository.findRoles(
                 user.id,
             );
 
+
         const roleNames =
+
             roles.map(
                 role => role.name,
             );
 
+
+
         const accessToken =
+
             jwtService.generateAccessToken({
 
                 userId: user.id,
@@ -80,49 +194,97 @@ export class LoginUseCase {
 
             });
 
+
+
         const refreshToken =
+
             jwtService.generateRefreshToken({
 
                 userId: user.id,
 
             });
 
+
+
         const expiresAt =
+
             new Date(
+
                 Date.now() + 7 * 24 * 60 * 60 * 1000,
+
             );
 
+
+
         const session =
+
             Session.create(
+
                 user.id,
+
                 refreshToken,
+
                 expiresAt,
+
             );
+
+
 
         await this.sessionRepository.create(
             session,
         );
 
+
+
+        await this.auditLogService.log(
+
+            user.tenantId,
+
+            user.id,
+
+            "USER_LOGIN",
+
+            "AUTH",
+
+            session.id,
+
+            AuditLogStatus.SUCCESS,
+
+        );
+
+
+
         return {
+
 
             user: {
 
+
                 id: user.id,
+
 
                 tenantId: user.tenantId,
 
+
                 email: user.email,
+
 
                 roles: roleNames,
 
+
             },
+
 
             accessToken,
 
+
             refreshToken,
+
 
         };
 
+
     }
+
 
 }
