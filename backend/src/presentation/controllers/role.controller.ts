@@ -4,6 +4,7 @@ import { CreateRoleCommand } from "../../application/commands/create-role.comman
 import { UpdateRoleCommand } from "../../application/commands/update-role.command";
 import { DeleteRoleCommand } from "../../application/commands/delete-role.command";
 import { AssignPermissionToRoleCommand } from "../../application/commands/assign-permission-to-role.command";
+import { DeletePermissionFromRoleCommand } from "../../application/commands/delete-permission-from-role.command";
 
 import { GetRoleByIdQuery } from "../../application/queries/role/get-role-by-id.query";
 import { ListRolesQuery } from "../../application/queries/role/list-roles.query";
@@ -16,9 +17,11 @@ import { UpdateRoleUseCase } from "../../application/use-cases/update-role.use-c
 import { DeleteRoleUseCase } from "../../application/use-cases/delete-role.use-case";
 import { AssignPermissionToRoleUseCase } from "../../application/use-cases/assign-permission-to-role.use-case";
 import { GetRolePermissionsUseCase } from "../../application/use-cases/get-role-permissions.use-case";
+import { DeletePermissionFromRoleUseCase } from "../../application/use-cases/delete-permission-from-role.use-case";
 
 
 export class RoleController {
+
 
     constructor(
 
@@ -36,20 +39,26 @@ export class RoleController {
 
         private readonly getRolePermissionsUseCase: GetRolePermissionsUseCase,
 
+        private readonly deletePermissionFromRoleUseCase: DeletePermissionFromRoleUseCase,
+
     ) {}
+
 
 
     async create(req: Request, res: Response): Promise<void> {
 
-        const command =
-            new CreateRoleCommand(
-                String(req.body.name),
-                req.body.description ?? null,
-            );
-
-
         const result =
-            await this.createRoleUseCase.execute(command);
+            await this.createRoleUseCase.execute(
+
+                new CreateRoleCommand(
+
+                    String(req.body.name),
+
+                    req.body.description ?? null,
+
+                ),
+
+            );
 
 
         if (!result.isSuccess) {
@@ -68,16 +77,19 @@ export class RoleController {
     }
 
 
+
     async getById(req: Request, res: Response): Promise<void> {
 
-        const query =
-            new GetRoleByIdQuery(
-                String(req.params.id),
-            );
-
-
         const result =
-            await this.getRoleByIdUseCase.execute(query);
+            await this.getRoleByIdUseCase.execute(
+
+                new GetRoleByIdQuery(
+
+                    String(req.params.id),
+
+                ),
+
+            );
 
 
         if (!result.isSuccess) {
@@ -96,11 +108,15 @@ export class RoleController {
     }
 
 
+
     async list(req: Request, res: Response): Promise<void> {
+
 
         const result =
             await this.listRolesUseCase.execute(
+
                 new ListRolesQuery(),
+
             );
 
 
@@ -120,22 +136,24 @@ export class RoleController {
     }
 
 
+
     async update(req: Request, res: Response): Promise<void> {
-
-        const command =
-            new UpdateRoleCommand(
-
-                String(req.params.id),
-
-                String(req.body.name),
-
-                req.body.description ?? null,
-
-            );
 
 
         const result =
-            await this.updateRoleUseCase.execute(command);
+            await this.updateRoleUseCase.execute(
+
+                new UpdateRoleCommand(
+
+                    String(req.params.id),
+
+                    String(req.body.name),
+
+                    req.body.description ?? null,
+
+                ),
+
+            );
 
 
         if (!result.isSuccess) {
@@ -154,13 +172,19 @@ export class RoleController {
     }
 
 
+
     async delete(req: Request, res: Response): Promise<void> {
+
 
         const result =
             await this.deleteRoleUseCase.execute(
+
                 new DeleteRoleCommand(
+
                     String(req.params.id),
+
                 ),
+
             );
 
 
@@ -180,11 +204,11 @@ export class RoleController {
     }
 
 
+
     async assignPermission(req: Request, res: Response): Promise<void> {
 
 
         const result =
-
             await this.assignPermissionToRoleUseCase.execute(
 
                 new AssignPermissionToRoleCommand(
@@ -218,11 +242,11 @@ export class RoleController {
     }
 
 
+
     async getPermissions(req: Request, res: Response): Promise<void> {
 
 
         const result =
-
             await this.getRolePermissionsUseCase.execute(
 
                 new GetRolePermissionsQuery(
@@ -237,9 +261,7 @@ export class RoleController {
         if (!result.isSuccess) {
 
             res.status(404).json({
-
                 error: result.error,
-
             });
 
             return;
@@ -247,11 +269,41 @@ export class RoleController {
         }
 
 
-        res.status(200).json(
+        res.status(200).json(result.value);
 
-            result.value,
+    }
 
-        );
+
+
+    async deletePermission(req: Request, res: Response): Promise<void> {
+
+
+        const result =
+            await this.deletePermissionFromRoleUseCase.execute(
+
+                new DeletePermissionFromRoleCommand(
+
+                    String(req.params.roleId),
+
+                    String(req.params.permissionId),
+
+                ),
+
+            );
+
+
+        if (!result.isSuccess) {
+
+            res.status(404).json({
+                error: result.error,
+            });
+
+            return;
+
+        }
+
+
+        res.status(204).send();
 
     }
 

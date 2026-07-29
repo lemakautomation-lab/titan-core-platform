@@ -12,56 +12,77 @@ import { DeleteRoleUseCase } from "../../application/use-cases/delete-role.use-c
 
 import { AssignPermissionToRoleUseCase } from "../../application/use-cases/assign-permission-to-role.use-case";
 import { GetRolePermissionsUseCase } from "../../application/use-cases/get-role-permissions.use-case";
+import { DeletePermissionFromRoleUseCase } from "../../application/use-cases/delete-permission-from-role.use-case";
+
 
 const databaseService = new DatabaseService();
+
 
 export const roleRepository =
     new PrismaRoleRepository(
         databaseService,
     );
 
+
 export const permissionRepository =
     new PrismaPermissionRepository(
         databaseService,
     );
+
 
 export const rolePermissionRepository =
     new PrismaRolePermissionRepository(
         databaseService,
     );
 
+
 export const roleModule = {
+
 
     roleRepository,
 
+
     permissionRepository,
 
+
     rolePermissionRepository,
+
+
 
     createRoleUseCase:
         new CreateRoleUseCase(
             roleRepository,
         ),
 
+
+
     getRoleByIdUseCase:
         new GetRoleByIdUseCase(
             roleRepository,
         ),
+
+
 
     listRolesUseCase:
         new ListRolesUseCase(
             roleRepository,
         ),
 
+
+
     updateRoleUseCase:
         new UpdateRoleUseCase(
             roleRepository,
         ),
 
+
+
     deleteRoleUseCase:
         new DeleteRoleUseCase(
             roleRepository,
         ),
+
+
 
     assignPermissionToRoleUseCase:
         new AssignPermissionToRoleUseCase(
@@ -70,11 +91,23 @@ export const roleModule = {
             rolePermissionRepository,
         ),
 
+
+
     getRolePermissionsUseCase:
         new GetRolePermissionsUseCase(
             roleRepository,
             rolePermissionRepository,
             permissionRepository,
         ),
+
+
+
+    deletePermissionFromRoleUseCase:
+        new DeletePermissionFromRoleUseCase(
+            roleRepository,
+            permissionRepository,
+            rolePermissionRepository,
+        ),
+
 
 };
