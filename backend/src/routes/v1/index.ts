@@ -39,6 +39,7 @@ const userController =
         userModule.updateUserUseCase,
         userModule.deleteUserUseCase,
         userModule.assignRoleToUserUseCase,
+        userModule.removeRoleFromUserUseCase,
         userModule.getUserRolesUseCase,
     );
 
@@ -128,6 +129,9 @@ router.use(
 );
 
 export default router;
+
+
+
 
 
 

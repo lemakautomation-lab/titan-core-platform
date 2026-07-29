@@ -46,6 +46,13 @@ export function createUserRoutes(
     );
 
 
+    router.delete(
+        "/:userId/roles/:roleId",
+        requirePermission("users.update"),
+        controller.removeRole.bind(controller),
+    );
+
+
     router.get(
         "/:id",
         requirePermission("users.read"),
@@ -70,4 +77,5 @@ export function createUserRoutes(
     return router;
 
 }
+
 

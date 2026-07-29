@@ -10,29 +10,25 @@ import { ListUsersUseCase } from "../../application/use-cases/list-users.use-cas
 import { UpdateUserUseCase } from "../../application/use-cases/update-user.use-case";
 import { DeleteUserUseCase } from "../../application/use-cases/delete-user.use-case";
 import { AssignRoleToUserUseCase } from "../../application/use-cases/assign-role-to-user.use-case";
+import { RemoveRoleFromUserUseCase } from "../../application/use-cases/remove-role-from-user.use-case";
 import { GetUserRolesUseCase } from "../../application/use-cases/get-user-roles.use-case";
 
-
 const databaseService = new DatabaseService();
-
 
 const tenantRepository =
     new PrismaTenantRepository(
         databaseService,
     );
 
-
 const userRepository =
     new PrismaUserRepository(
         databaseService,
     );
 
-
 const roleRepository =
     new PrismaRoleRepository(
         databaseService,
     );
-
 
 export const userModule = {
 
@@ -43,13 +39,11 @@ export const userModule = {
             tenantRepository,
         ),
 
-
     getUserByIdUseCase:
 
         new GetUserByIdUseCase(
             userRepository,
         ),
-
 
     listUsersUseCase:
 
@@ -58,20 +52,17 @@ export const userModule = {
             tenantRepository,
         ),
 
-
     updateUserUseCase:
 
         new UpdateUserUseCase(
             userRepository,
         ),
 
-
     deleteUserUseCase:
 
         new DeleteUserUseCase(
             userRepository,
         ),
-
 
     assignRoleToUserUseCase:
 
@@ -80,6 +71,12 @@ export const userModule = {
             roleRepository,
         ),
 
+    removeRoleFromUserUseCase:
+
+        new RemoveRoleFromUserUseCase(
+            userRepository,
+            roleRepository,
+        ),
 
     getUserRolesUseCase:
 

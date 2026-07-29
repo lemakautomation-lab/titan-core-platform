@@ -3,22 +3,21 @@ import { Request, Response } from "express";
 import { CreateUserCommand } from "../../application/commands/create-user.command";
 import { UpdateUserCommand } from "../../application/commands/update-user.command";
 import { DeleteUserCommand } from "../../application/commands/delete-user.command";
+import { AssignRoleToUserCommand } from "../../application/commands/assign-role-to-user.command";
+import { RemoveRoleFromUserCommand } from "../../application/commands/remove-role-from-user.command";
 
 import { GetUserByIdQuery } from "../../application/queries/user/get-user-by-id.query";
 import { ListUsersQuery } from "../../application/queries/user/list-users.query";
-
-import { AssignRoleToUserCommand } from "../../application/commands/assign-role-to-user.command";
 import { GetUserRolesQuery } from "../../application/queries/user/get-user-roles.query";
-
-import { AssignRoleToUserUseCase } from "../../application/use-cases/assign-role-to-user.use-case";
-import { GetUserRolesUseCase } from "../../application/use-cases/get-user-roles.use-case";
 
 import { CreateUserUseCase } from "../../application/use-cases/create-user.use-case";
 import { GetUserByIdUseCase } from "../../application/use-cases/get-user-by-id.use-case";
 import { ListUsersUseCase } from "../../application/use-cases/list-users.use-case";
 import { UpdateUserUseCase } from "../../application/use-cases/update-user.use-case";
 import { DeleteUserUseCase } from "../../application/use-cases/delete-user.use-case";
-
+import { AssignRoleToUserUseCase } from "../../application/use-cases/assign-role-to-user.use-case";
+import { RemoveRoleFromUserUseCase } from "../../application/use-cases/remove-role-from-user.use-case";
+import { GetUserRolesUseCase } from "../../application/use-cases/get-user-roles.use-case";
 
 export class UserController {
 
@@ -34,12 +33,13 @@ export class UserController {
 
         private readonly deleteUserUseCase: DeleteUserUseCase,
 
-private readonly assignRoleToUserUseCase: AssignRoleToUserUseCase,
+        private readonly assignRoleToUserUseCase: AssignRoleToUserUseCase,
 
-private readonly getUserRolesUseCase: GetUserRolesUseCase,
+        private readonly removeRoleFromUserUseCase: RemoveRoleFromUserUseCase,
+
+        private readonly getUserRolesUseCase: GetUserRolesUseCase,
 
     ) {}
-
 
     async create(
         req: Request,
@@ -70,19 +70,17 @@ private readonly getUserRolesUseCase: GetUserRolesUseCase,
 
     }
 
-
     async getById(
         req: Request,
         res: Response,
     ): Promise<void> {
 
-        const query =
-            new GetUserByIdQuery(
-                String(req.params.id),
-            );
-
         const result =
-            await this.getUserByIdUseCase.execute(query);
+            await this.getUserByIdUseCase.execute(
+                new GetUserByIdQuery(
+                    String(req.params.id),
+                ),
+            );
 
         if (!result.isSuccess) {
 
@@ -98,13 +96,13 @@ private readonly getUserRolesUseCase: GetUserRolesUseCase,
 
     }
 
-
     async list(
         req: Request,
         res: Response,
     ): Promise<void> {
 
-        const tenantId = String(req.query.tenantId ?? "");
+        const tenantId =
+            String(req.query.tenantId ?? "");
 
         if (!tenantId) {
 
@@ -136,7 +134,6 @@ private readonly getUserRolesUseCase: GetUserRolesUseCase,
         res.status(200).json(result.value);
 
     }
-
 
     async update(
         req: Request,
@@ -177,19 +174,17 @@ private readonly getUserRolesUseCase: GetUserRolesUseCase,
 
     }
 
-
     async delete(
         req: Request,
         res: Response,
     ): Promise<void> {
 
-        const command =
-            new DeleteUserCommand(
-                String(req.params.id),
-            );
-
         const result =
-            await this.deleteUserUseCase.execute(command);
+            await this.deleteUserUseCase.execute(
+                new DeleteUserCommand(
+                    String(req.params.id),
+                ),
+            );
 
         if (!result.isSuccess) {
 
@@ -204,22 +199,24 @@ private readonly getUserRolesUseCase: GetUserRolesUseCase,
         res.status(204).send();
 
     }
+
     async assignRole(
         req: Request,
         res: Response,
     ): Promise<void> {
 
-        const command =
-            new AssignRoleToUserCommand(
+        const result =
+            await this.assignRoleToUserUseCase.execute(
 
-                String(req.params.userId),
+                new AssignRoleToUserCommand(
 
-                String(req.params.roleId),
+                    String(req.params.userId),
+
+                    String(req.params.roleId),
+
+                ),
 
             );
-
-        const result =
-            await this.assignRoleToUserUseCase.execute(command);
 
         if (!result.isSuccess) {
 
@@ -235,6 +232,37 @@ private readonly getUserRolesUseCase: GetUserRolesUseCase,
 
     }
 
+    async removeRole(
+        req: Request,
+        res: Response,
+    ): Promise<void> {
+
+        const result =
+            await this.removeRoleFromUserUseCase.execute(
+
+                new RemoveRoleFromUserCommand(
+
+                    String(req.params.userId),
+
+                    String(req.params.roleId),
+
+                ),
+
+            );
+
+        if (!result.isSuccess) {
+
+            res.status(400).json({
+                error: result.error,
+            });
+
+            return;
+
+        }
+
+        res.status(204).send();
+
+    }
 
     async getRoles(
         req: Request,
@@ -265,5 +293,5 @@ private readonly getUserRolesUseCase: GetUserRolesUseCase,
         res.status(200).json(result.value);
 
     }
-}
 
+}

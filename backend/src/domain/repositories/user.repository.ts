@@ -3,21 +3,40 @@ import { Role } from "../entities/role.entity";
 
 export interface UserRepository {
 
-    findById(id: string): Promise<User | null>;
+    findById(
+        id: string,
+    ): Promise<User | null>;
 
-    findByEmail(email: string): Promise<User | null>;
+    findByEmail(
+        email: string,
+    ): Promise<User | null>;
 
-    findAllByTenantId(tenantId: string): Promise<User[]>;
+    findAllByTenantId(
+        tenantId: string,
+    ): Promise<User[]>;
 
-    create(user: User): Promise<User>;
+    create(
+        user: User,
+    ): Promise<User>;
 
-    update(user: User): Promise<User>;
+    update(
+        user: User,
+    ): Promise<User>;
 
-    delete(id: string): Promise<void>;
+    delete(
+        id: string,
+    ): Promise<void>;
 
-    findRoles(userId: string): Promise<Role[]>;
+    findRoles(
+        userId: string,
+    ): Promise<Role[]>;
 
     assignRole(
+        userId: string,
+        roleId: string,
+    ): Promise<void>;
+
+    removeRole(
         userId: string,
         roleId: string,
     ): Promise<void>;

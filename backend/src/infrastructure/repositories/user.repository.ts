@@ -153,7 +153,31 @@ implements UserRepository {
         });
 
     }
+    async removeRole(
 
+        userId: string,
+
+        roleId: string,
+
+    ): Promise<void> {
+
+        await this.database.prisma.userRole.delete({
+
+            where: {
+
+                userId_roleId: {
+
+                    userId,
+
+                    roleId,
+
+                },
+
+            },
+
+        });
+
+    }
 
     async hasRole(
 
@@ -182,3 +206,5 @@ implements UserRepository {
     }
 
 }
+
+
