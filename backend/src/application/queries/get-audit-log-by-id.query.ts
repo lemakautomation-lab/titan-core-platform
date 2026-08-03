@@ -1,6 +1,16 @@
 import { AuditLogRepository } from "../../domain/repositories/audit-log.repository";
 
 
+export interface GetAuditLogByIdQueryInput {
+
+    id: string;
+
+    tenantId: string;
+
+}
+
+
+
 export class GetAuditLogByIdQuery {
 
 
@@ -15,14 +25,16 @@ export class GetAuditLogByIdQuery {
 
     async execute(
 
-        id: string,
+        input: GetAuditLogByIdQueryInput,
 
     ) {
 
 
-        return this.auditLogRepository.findById(
+        return this.auditLogRepository.findByIdForTenant(
 
-            id,
+            input.id,
+
+            input.tenantId,
 
         );
 

@@ -189,11 +189,15 @@ export class AuditLogController {
 
         const auditLog =
 
-            await this.getAuditLogByIdQuery.execute(
+            await this.getAuditLogByIdQuery.execute({
 
-                String(req.params.id),
+                id:
+                    String(req.params.id),
 
-            );
+                tenantId:
+                    authUser.tenantId,
+
+            });
 
 
 
@@ -240,3 +244,4 @@ export class AuditLogController {
 
 
 }
+
