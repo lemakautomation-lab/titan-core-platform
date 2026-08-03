@@ -9,7 +9,7 @@ import { errorHandler } from "./middleware/error-handler.middleware";
 const app = express();
 
 
-// Security Middleware
+// Security Headers
 
 app.use(
 
@@ -18,14 +18,33 @@ app.use(
 );
 
 
-// Core Middleware
+// Request Body Protection
 
 app.use(
 
-    express.json(),
+    express.json({
+
+        limit: "1mb",
+
+    }),
 
 );
 
+
+app.use(
+
+    express.urlencoded({
+
+        extended: false,
+
+        limit: "1mb",
+
+    }),
+
+);
+
+
+// Request Logging
 
 app.use(
 
