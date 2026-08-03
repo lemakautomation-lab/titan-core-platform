@@ -1,9 +1,6 @@
 import { AuditLog } from "../../domain/entities/audit-log.entity";
 
-import {
-    AuditLogRepository,
-    AuditLogQuery,
-} from "../../domain/repositories/audit-log.repository";
+import { AuditLogRepository, AuditLogQuery } from "../../domain/repositories/audit-log.repository";
 
 import { DatabaseService } from "../database/database.service";
 
@@ -42,7 +39,9 @@ implements AuditLogRepository {
 
 
         return AuditLogMapper.toDomain(
+
             created,
+
         );
 
     }
@@ -67,6 +66,44 @@ implements AuditLogRepository {
                 },
 
             });
+
+
+
+        return auditLog
+
+            ? AuditLogMapper.toDomain(
+                auditLog,
+            )
+
+            : null;
+
+    }
+
+
+
+    async findByIdForTenant(
+
+        id: string,
+
+        tenantId: string,
+
+    ): Promise<AuditLog | null> {
+
+
+        const auditLog =
+
+            await this.database.prisma.auditLog.findFirst({
+
+                where: {
+
+                    id,
+
+                    tenantId,
+
+                },
+
+            });
+
 
 
         return auditLog
@@ -131,107 +168,74 @@ implements AuditLogRepository {
     }> {
 
 
-        const page = query.page ?? 1;
+        const where: any = {
 
-        const limit = query.limit ?? 50;
-
-
-        const where = {
-
-            tenantId: query.tenantId,
-
-            ...(query.action && {
-
-                action: query.action,
-
-            }),
-
-            ...(query.resource && {
-
-                resource: query.resource,
-
-            }),
-
-            ...(query.status && {
-
-                status: query.status as any,
-
-            }),
-
-            ...(query.userId && {
-
-                userId: query.userId,
-
-            }),
-
-            ...(query.resourceId && {
-
-                resourceId: query.resourceId,
-
-            }),
-
-            ...(query.from || query.to
-                ? {
-
-                    createdAt: {
-
-                        ...(query.from && {
-
-                            gte: query.from,
-
-                        }),
-
-                        ...(query.to && {
-
-                            lte: query.to,
-
-                        }),
-
-                    },
-
-                }
-                : {}),
+            tenantId:
+                query.tenantId,
 
         };
 
 
-        const [
-            auditLogs,
-            total,
-        ] = await Promise.all([
+        if (query.action) {
+
+            where.action = query.action;
+
+        }
 
 
-            this.database.prisma.auditLog.findMany({
+        if (query.resource) {
 
-                where,
+            where.resource = query.resource;
 
-                orderBy: {
-
-                    createdAt: "desc",
-
-                },
-
-                skip:
-
-                    (page - 1) * limit,
+        }
 
 
-                take:
+        if (query.status) {
 
-                    limit,
+            where.status = query.status;
 
-            }),
-
-
-
-            this.database.prisma.auditLog.count({
-
-                where,
-
-            }),
+        }
 
 
-        ]);
+        if (query.userId) {
+
+            where.userId = query.userId;
+
+        }
+
+
+        if (query.resourceId) {
+
+            where.resourceId = query.resourceId;
+
+        }
+
+
+
+        const [items, total] =
+
+            await Promise.all([
+
+                this.database.prisma.auditLog.findMany({
+
+                    where,
+
+                    orderBy: {
+
+                        createdAt: "desc",
+
+                    },
+
+                }),
+
+
+                this.database.prisma.auditLog.count({
+
+                    where,
+
+                }),
+
+            ]);
 
 
 
@@ -239,7 +243,7 @@ implements AuditLogRepository {
 
             items:
 
-                auditLogs.map(
+                items.map(
 
                     AuditLogMapper.toDomain,
 

@@ -6,6 +6,8 @@ import { AuditLogService } from "../../application/services/audit-log.service";
 
 import { GetAuditLogsQuery } from "../../application/queries/get-audit-logs.query";
 
+import { GetAuditLogByIdQuery } from "../../application/queries/get-audit-log-by-id.query";
+
 
 
 const database =
@@ -36,6 +38,16 @@ export const auditLogModule = {
     getAuditLogsQuery:
 
         new GetAuditLogsQuery(
+
+            auditLogRepository,
+
+        ),
+
+
+
+    getAuditLogByIdQuery:
+
+        new GetAuditLogByIdQuery(
 
             auditLogRepository,
 

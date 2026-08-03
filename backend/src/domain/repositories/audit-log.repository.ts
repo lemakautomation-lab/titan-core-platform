@@ -42,6 +42,16 @@ export interface AuditLogRepository {
 
 
 
+    findByIdForTenant(
+
+        id: string,
+
+        tenantId: string,
+
+    ): Promise<AuditLog | null>;
+
+
+
     findAllByTenantId(
         tenantId: string,
     ): Promise<AuditLog[]>;

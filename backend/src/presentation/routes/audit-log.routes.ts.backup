@@ -39,18 +39,6 @@ export function createAuditLogRoutes(
 
 
 
-    router.get(
-
-        "/:id",
-
-        requirePermission("audit.read"),
-
-        controller.getById.bind(controller),
-
-    );
-
-
-
     return router;
 
 
