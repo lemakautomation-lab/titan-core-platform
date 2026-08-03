@@ -1,16 +1,6 @@
 import { AuditLogRepository } from "../../domain/repositories/audit-log.repository";
 
 
-export interface GetAuditLogByIdQueryInput {
-
-    id: string;
-
-    tenantId: string;
-
-}
-
-
-
 export class GetAuditLogByIdQuery {
 
 
@@ -25,7 +15,10 @@ export class GetAuditLogByIdQuery {
 
     async execute(
 
-        input: GetAuditLogByIdQueryInput,
+        input: {
+            id: string;
+            tenantId: string;
+        },
 
     ) {
 
