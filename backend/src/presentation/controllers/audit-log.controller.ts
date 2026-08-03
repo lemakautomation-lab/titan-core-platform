@@ -6,7 +6,6 @@ import { GetAuditLogsQuery } from "../../application/queries/get-audit-logs.quer
 import { GetAuditLogByIdQuery } from "../../application/queries/get-audit-log-by-id.query";
 
 
-
 export class AuditLogController {
 
 
@@ -95,6 +94,16 @@ export class AuditLogController {
 
 
 
+        const totalPages =
+
+            Math.ceil(
+
+                result.total / result.limit,
+
+            );
+
+
+
         res.json({
 
             items:
@@ -127,13 +136,27 @@ export class AuditLogController {
 
                 ),
 
-            total:
-                result.total,
+
+            pagination: {
+
+                page:
+                    result.page,
+
+                limit:
+                    result.limit,
+
+                total:
+                    result.total,
+
+                totalPages,
+
+            },
 
         });
 
 
     }
+
 
 
 

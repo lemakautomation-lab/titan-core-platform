@@ -59,12 +59,18 @@ export interface AuditLogRepository {
 
 
     findMany(
+
         query: AuditLogQuery,
+
     ): Promise<{
 
         items: AuditLog[];
 
         total: number;
+
+        page: number;
+
+        limit: number;
 
     }>;
 

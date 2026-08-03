@@ -165,6 +165,10 @@ implements AuditLogRepository {
 
         total: number;
 
+        page: number;
+
+        limit: number;
+
     }> {
 
 
@@ -212,6 +216,54 @@ implements AuditLogRepository {
 
 
 
+        if (query.from || query.to) {
+
+            where.createdAt = {};
+
+
+            if (query.from) {
+
+                where.createdAt.gte = query.from;
+
+            }
+
+
+            if (query.to) {
+
+                where.createdAt.lte = query.to;
+
+            }
+
+        }
+
+
+
+        const page =
+
+            query.page && query.page > 0
+
+                ? query.page
+
+                : 1;
+
+
+
+        const limit =
+
+            query.limit && query.limit > 0
+
+                ? query.limit
+
+                : 50;
+
+
+
+        const skip =
+
+            (page - 1) * limit;
+
+
+
         const [items, total] =
 
             await Promise.all([
@@ -225,6 +277,10 @@ implements AuditLogRepository {
                         createdAt: "desc",
 
                     },
+
+                    skip,
+
+                    take: limit,
 
                 }),
 
@@ -251,6 +307,10 @@ implements AuditLogRepository {
 
 
             total,
+
+            page,
+
+            limit,
 
         };
 
