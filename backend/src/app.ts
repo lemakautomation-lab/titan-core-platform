@@ -3,6 +3,7 @@ import helmet from "helmet";
 
 import routes from "./routes";
 import { requestLogger } from "./middleware/request-logger.middleware";
+import { requestIdMiddleware } from "./middleware/request-id.middleware";
 import { errorHandler } from "./middleware/error-handler.middleware";
 
 
@@ -14,6 +15,15 @@ const app = express();
 app.use(
 
     helmet(),
+
+);
+
+
+// Request Correlation ID
+
+app.use(
+
+    requestIdMiddleware,
 
 );
 
