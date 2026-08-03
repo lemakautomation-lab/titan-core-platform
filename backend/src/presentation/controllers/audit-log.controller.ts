@@ -71,23 +71,30 @@ export class AuditLogController {
                     req.query.resourceId as string | undefined,
 
                 from:
-                    req.query.from
+                    req.query.from &&
+                    !isNaN(Date.parse(String(req.query.from)))
                         ? new Date(String(req.query.from))
                         : undefined,
 
                 to:
-                    req.query.to
+                    req.query.to &&
+                    !isNaN(Date.parse(String(req.query.to)))
                         ? new Date(String(req.query.to))
                         : undefined,
 
                 page:
-                    req.query.page
+                    req.query.page &&
+                    Number(req.query.page) > 0
                         ? Number(req.query.page)
                         : 1,
 
                 limit:
-                    req.query.limit
-                        ? Number(req.query.limit)
+                    req.query.limit &&
+                    Number(req.query.limit) > 0
+                        ? Math.min(
+                            Number(req.query.limit),
+                            100,
+                        )
                         : 50,
 
             });
@@ -244,5 +251,6 @@ export class AuditLogController {
 
 
 }
+
 
 
