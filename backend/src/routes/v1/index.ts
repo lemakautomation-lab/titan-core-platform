@@ -6,6 +6,7 @@ import { createTenantRoutes } from "../../presentation/routes/tenant.routes";
 import { createOrganisationRoutes } from "../../presentation/routes/organisation.routes";
 import { createPermissionRoutes } from "../../presentation/routes/permission.routes";
 import { createAuditLogRoutes } from "../../presentation/routes/audit-log.routes";
+import { createHealthRoutes } from "../../presentation/routes/health.routes";
 
 
 import { RoleController } from "../../presentation/controllers/role.controller";
@@ -14,6 +15,7 @@ import { TenantController } from "../../presentation/controllers/tenant.controll
 import { OrganisationController } from "../../presentation/controllers/organisation.controller";
 import { PermissionController } from "../../presentation/controllers/permission.controller";
 import { AuditLogController } from "../../presentation/controllers/audit-log.controller";
+import { HealthController } from "../../presentation/controllers/health.controller";
 
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
@@ -26,10 +28,13 @@ import { tenantModule } from "../../infrastructure/composition/tenant.module";
 import { organisationModule } from "../../infrastructure/composition/organisation.module";
 import { permissionModule } from "../../infrastructure/composition/permission.module";
 import { auditLogModule } from "../../infrastructure/composition/audit-log.module";
+import { DatabaseService } from "../../infrastructure/database/database.service";
 
 
 
 const router = Router();
+
+const healthController = new HealthController(new DatabaseService());
 
 
 
@@ -147,6 +152,12 @@ const auditLogController =
 
 
 router.use(
+    "/health",
+    createHealthRoutes(healthController),
+);
+
+
+router.use(
     "/auth",
     createAuthRoutes(authController),
 );
@@ -196,3 +207,6 @@ router.use(
 
 
 export default router;
+
+
+
