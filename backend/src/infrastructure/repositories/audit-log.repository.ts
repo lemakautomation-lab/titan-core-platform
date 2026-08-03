@@ -1,6 +1,9 @@
 import { AuditLog } from "../../domain/entities/audit-log.entity";
 
-import { AuditLogRepository } from "../../domain/repositories/audit-log.repository";
+import {
+    AuditLogRepository,
+    AuditLogQuery,
+} from "../../domain/repositories/audit-log.repository";
 
 import { DatabaseService } from "../database/database.service";
 
@@ -110,6 +113,143 @@ implements AuditLogRepository {
             AuditLogMapper.toDomain,
 
         );
+
+    }
+
+
+
+    async findMany(
+
+        query: AuditLogQuery,
+
+    ): Promise<{
+
+        items: AuditLog[];
+
+        total: number;
+
+    }> {
+
+
+        const page = query.page ?? 1;
+
+        const limit = query.limit ?? 50;
+
+
+        const where = {
+
+            tenantId: query.tenantId,
+
+            ...(query.action && {
+
+                action: query.action,
+
+            }),
+
+            ...(query.resource && {
+
+                resource: query.resource,
+
+            }),
+
+            ...(query.status && {
+
+                status: query.status as any,
+
+            }),
+
+            ...(query.userId && {
+
+                userId: query.userId,
+
+            }),
+
+            ...(query.resourceId && {
+
+                resourceId: query.resourceId,
+
+            }),
+
+            ...(query.from || query.to
+                ? {
+
+                    createdAt: {
+
+                        ...(query.from && {
+
+                            gte: query.from,
+
+                        }),
+
+                        ...(query.to && {
+
+                            lte: query.to,
+
+                        }),
+
+                    },
+
+                }
+                : {}),
+
+        };
+
+
+        const [
+            auditLogs,
+            total,
+        ] = await Promise.all([
+
+
+            this.database.prisma.auditLog.findMany({
+
+                where,
+
+                orderBy: {
+
+                    createdAt: "desc",
+
+                },
+
+                skip:
+
+                    (page - 1) * limit,
+
+
+                take:
+
+                    limit,
+
+            }),
+
+
+
+            this.database.prisma.auditLog.count({
+
+                where,
+
+            }),
+
+
+        ]);
+
+
+
+        return {
+
+            items:
+
+                auditLogs.map(
+
+                    AuditLogMapper.toDomain,
+
+                ),
+
+
+            total,
+
+        };
+
 
     }
 

@@ -1,32 +1,41 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 
 import { createRoleRoutes } from "../../presentation/routes/role.routes";
 import { createUserRoutes } from "../../presentation/routes/user.routes";
 import { createTenantRoutes } from "../../presentation/routes/tenant.routes";
 import { createOrganisationRoutes } from "../../presentation/routes/organisation.routes";
 import { createPermissionRoutes } from "../../presentation/routes/permission.routes";
+import { createAuditLogRoutes } from "../../presentation/routes/audit-log.routes";
+
 
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
 import { TenantController } from "../../presentation/controllers/tenant.controller";
 import { OrganisationController } from "../../presentation/controllers/organisation.controller";
 import { PermissionController } from "../../presentation/controllers/permission.controller";
+import { AuditLogController } from "../../presentation/controllers/audit-log.controller";
+
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
+
 
 import { roleModule } from "../../infrastructure/composition/role.module";
 import { userModule } from "../../infrastructure/composition/user.module";
 import { tenantModule } from "../../infrastructure/composition/tenant.module";
 import { organisationModule } from "../../infrastructure/composition/organisation.module";
 import { permissionModule } from "../../infrastructure/composition/permission.module";
+import { auditLogModule } from "../../infrastructure/composition/audit-log.module";
+
 
 
 const router = Router();
 
 
+
 const authController =
     new AuthController();
+
 
 
 const roleController =
@@ -51,6 +60,7 @@ const roleController =
     );
 
 
+
 const userController =
     new UserController(
 
@@ -73,6 +83,7 @@ const userController =
     );
 
 
+
 const tenantController =
     new TenantController(
 
@@ -87,6 +98,7 @@ const tenantController =
         tenantModule.deleteTenantUseCase,
 
     );
+
 
 
 const organisationController =
@@ -105,6 +117,7 @@ const organisationController =
     );
 
 
+
 const permissionController =
     new PermissionController(
 
@@ -121,10 +134,21 @@ const permissionController =
     );
 
 
+
+const auditLogController =
+    new AuditLogController(
+
+        auditLogModule.getAuditLogsQuery,
+
+    );
+
+
+
 router.use(
     "/auth",
     createAuthRoutes(authController),
 );
+
 
 
 router.use(
@@ -133,10 +157,12 @@ router.use(
 );
 
 
+
 router.use(
     "/users",
     createUserRoutes(userController),
 );
+
 
 
 router.use(
@@ -145,16 +171,26 @@ router.use(
 );
 
 
+
 router.use(
     "/organisations",
     createOrganisationRoutes(organisationController),
 );
 
 
+
 router.use(
     "/permissions",
     createPermissionRoutes(permissionController),
 );
+
+
+
+router.use(
+    "/audit-logs",
+    createAuditLogRoutes(auditLogController),
+);
+
 
 
 export default router;
