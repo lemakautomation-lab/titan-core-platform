@@ -8,6 +8,9 @@ import { UpdateRoleCommand } from "../commands/update-role.command";
 import { RoleDto } from "../dto/role/role.dto";
 import { RoleApplicationMapper } from "../mappers/role.mapper";
 
+import { AuditLogService } from "../services/audit-log.service";
+import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
+
 
 export class UpdateRoleUseCase
     implements UseCase<UpdateRoleCommand, Result<RoleDto>>
@@ -16,6 +19,8 @@ export class UpdateRoleUseCase
     constructor(
 
         private readonly roleRepository: RoleRepository,
+
+        private readonly auditLogService: AuditLogService,
 
     ) {}
 
@@ -70,6 +75,23 @@ export class UpdateRoleUseCase
                 role,
 
             );
+
+
+        await this.auditLogService.log(
+
+            command.tenantId,
+
+            command.userId,
+
+            "ROLE_UPDATE",
+
+            "ROLE",
+
+            command.id,
+
+            AuditLogStatus.SUCCESS,
+
+        );
 
 
         return Result.success(

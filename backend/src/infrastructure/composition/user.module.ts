@@ -74,6 +74,7 @@ export const userModule = {
         new AssignRoleToUserUseCase(
             userRepository,
             roleRepository,
+            auditLogModule.auditLogService,
         ),
 
     removeRoleFromUserUseCase:
@@ -81,16 +82,14 @@ export const userModule = {
         new RemoveRoleFromUserUseCase(
             userRepository,
             roleRepository,
+            auditLogModule.auditLogService,
         ),
 
     getUserRolesUseCase:
 
         new GetUserRolesUseCase(
             userRepository,
+            auditLogModule.auditLogService,
         ),
 
 };
-
-
-
-

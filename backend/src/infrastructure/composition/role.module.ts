@@ -14,6 +14,8 @@ import { AssignPermissionToRoleUseCase } from "../../application/use-cases/assig
 import { GetRolePermissionsUseCase } from "../../application/use-cases/get-role-permissions.use-case";
 import { DeletePermissionFromRoleUseCase } from "../../application/use-cases/delete-permission-from-role.use-case";
 
+import { auditLogModule } from "./audit-log.module";
+
 
 const databaseService = new DatabaseService();
 
@@ -48,10 +50,10 @@ export const roleModule = {
     rolePermissionRepository,
 
 
-
     createRoleUseCase:
         new CreateRoleUseCase(
             roleRepository,
+            auditLogModule.auditLogService,
         ),
 
 
@@ -73,6 +75,7 @@ export const roleModule = {
     updateRoleUseCase:
         new UpdateRoleUseCase(
             roleRepository,
+            auditLogModule.auditLogService,
         ),
 
 
@@ -80,6 +83,7 @@ export const roleModule = {
     deleteRoleUseCase:
         new DeleteRoleUseCase(
             roleRepository,
+            auditLogModule.auditLogService,
         ),
 
 
@@ -89,6 +93,7 @@ export const roleModule = {
             roleRepository,
             permissionRepository,
             rolePermissionRepository,
+            auditLogModule.auditLogService,
         ),
 
 
@@ -107,7 +112,10 @@ export const roleModule = {
             roleRepository,
             permissionRepository,
             rolePermissionRepository,
+            auditLogModule.auditLogService,
         ),
-
-
 };
+
+
+
+

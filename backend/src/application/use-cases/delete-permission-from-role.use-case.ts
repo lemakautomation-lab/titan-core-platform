@@ -4,6 +4,9 @@ import { RoleRepository } from "../../domain/repositories/role.repository";
 import { PermissionRepository } from "../../domain/repositories/permission.repository";
 import { RolePermissionRepository } from "../../domain/repositories/role-permission.repository";
 
+import { AuditLogService } from "../services/audit-log.service";
+import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
+
 
 export class DeletePermissionFromRoleUseCase {
 
@@ -15,6 +18,8 @@ export class DeletePermissionFromRoleUseCase {
         private readonly permissionRepository: PermissionRepository,
 
         private readonly rolePermissionRepository: RolePermissionRepository,
+
+        private readonly auditLogService: AuditLogService,
 
     ) {}
 
@@ -103,6 +108,24 @@ export class DeletePermissionFromRoleUseCase {
             command.roleId,
 
             command.permissionId,
+
+        );
+
+
+
+        await this.auditLogService.log(
+
+            command.tenantId,
+
+            command.userId,
+
+            "ROLE_PERMISSION_DELETE",
+
+            "ROLE_PERMISSION",
+
+            assignment.id,
+
+            AuditLogStatus.SUCCESS,
 
         );
 

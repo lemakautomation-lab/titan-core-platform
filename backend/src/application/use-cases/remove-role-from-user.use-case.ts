@@ -6,6 +6,12 @@ import { RoleRepository } from "../../domain/repositories/role.repository";
 
 import { RemoveRoleFromUserCommand } from "../commands/remove-role-from-user.command";
 
+import { AuditLogService } from "../services/audit-log.service";
+import {
+    AuditLogStatus,
+} from "../../domain/entities/audit-log.entity";
+
+
 export class RemoveRoleFromUserUseCase
     implements UseCase<RemoveRoleFromUserCommand, Result<void>>
 {
@@ -15,6 +21,8 @@ export class RemoveRoleFromUserUseCase
         private readonly userRepository: UserRepository,
 
         private readonly roleRepository: RoleRepository,
+
+        private readonly auditLogService: AuditLogService,
 
     ) {}
 
@@ -72,6 +80,22 @@ export class RemoveRoleFromUserUseCase
             command.userId,
 
             command.roleId,
+
+        );
+
+        await this.auditLogService.log(
+
+            user.tenantId,
+
+            user.id,
+
+            "USER_ROLE_REMOVE",
+
+            "USER_ROLE",
+
+            command.userId,
+
+            AuditLogStatus.SUCCESS,
 
         );
 

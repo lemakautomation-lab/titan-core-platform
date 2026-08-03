@@ -6,6 +6,10 @@ export class DeletePermissionFromRoleCommand {
 
         public readonly permissionId: string,
 
+        public readonly tenantId: string,
+
+        public readonly userId: string,
+
     ) {}
 
 }

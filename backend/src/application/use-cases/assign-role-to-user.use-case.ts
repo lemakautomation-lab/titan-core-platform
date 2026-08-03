@@ -6,6 +6,9 @@ import { RoleRepository } from "../../domain/repositories/role.repository";
 
 import { AssignRoleToUserCommand } from "../commands/assign-role-to-user.command";
 
+import { AuditLogService } from "../services/audit-log.service";
+import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
+
 export class AssignRoleToUserUseCase
     implements UseCase<AssignRoleToUserCommand, Result<void>>
 {
@@ -15,6 +18,8 @@ export class AssignRoleToUserUseCase
         private readonly userRepository: UserRepository,
 
         private readonly roleRepository: RoleRepository,
+
+        private readonly auditLogService: AuditLogService,
 
     ) {}
 
@@ -72,6 +77,22 @@ export class AssignRoleToUserUseCase
             command.userId,
 
             command.roleId,
+
+        );
+
+        await this.auditLogService.log(
+
+            user.tenantId,
+
+            user.id,
+
+            "USER_ROLE_ASSIGN",
+
+            "USER_ROLE",
+
+            command.userId,
+
+            AuditLogStatus.SUCCESS,
 
         );
 

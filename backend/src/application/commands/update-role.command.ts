@@ -8,6 +8,10 @@ export class UpdateRoleCommand {
 
         public readonly description: string | null,
 
+        public readonly tenantId: string,
+
+        public readonly userId: string,
+
     ) {}
 
 }

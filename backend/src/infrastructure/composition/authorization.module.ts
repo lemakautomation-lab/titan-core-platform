@@ -1,31 +1,39 @@
-import { AuthorizationService } from "../../application/services/authorization.service";
+import { DatabaseService } from "../database/database.service";
+
+import { PrismaUserRepository } from "../repositories/user.repository";
+import { PrismaRoleRepository } from "../repositories/role.repository";
+
 import { PermissionResolutionService } from "../../application/services/permission-resolution.service";
+import { AuthorizationService } from "../../application/services/authorization.service";
 
-import { authModule } from "./auth.module";
-import { roleModule } from "./role.module";
+const databaseService =
+    new DatabaseService();
 
-
-const permissionResolutionService =
-
-    new PermissionResolutionService(
-
-        authModule.userRepository,
-
-        roleModule.roleRepository,
-
+const userRepository =
+    new PrismaUserRepository(
+        databaseService,
     );
 
+const roleRepository =
+    new PrismaRoleRepository(
+        databaseService,
+    );
+
+const permissionResolutionService =
+    new PermissionResolutionService(
+        userRepository,
+        roleRepository,
+    );
+
+const authorizationService =
+    new AuthorizationService(
+        permissionResolutionService,
+    );
 
 export const authorizationModule = {
 
+    authorizationService,
 
-    authorizationService:
-
-        new AuthorizationService(
-
-            permissionResolutionService,
-
-        ),
-
+    permissionResolutionService,
 
 };

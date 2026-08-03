@@ -12,6 +12,9 @@ import { RolePermission } from "../../domain/entities/role-permission.entity";
 
 import { AssignPermissionToRoleCommand } from "../commands/assign-permission-to-role.command";
 
+import { AuditLogService } from "../services/audit-log.service";
+import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
+
 
 export class AssignPermissionToRoleUseCase
 
@@ -27,6 +30,8 @@ implements UseCase<AssignPermissionToRoleCommand, Result<void>>
         private readonly permissionRepository: PermissionRepository,
 
         private readonly rolePermissionRepository: RolePermissionRepository,
+
+        private readonly auditLogService: AuditLogService,
 
     ) {}
 
@@ -123,6 +128,24 @@ implements UseCase<AssignPermissionToRoleCommand, Result<void>>
         await this.rolePermissionRepository.create(
 
             rolePermission,
+
+        );
+
+
+
+        await this.auditLogService.log(
+
+            command.tenantId,
+
+            command.userId,
+
+            "ROLE_PERMISSION_ASSIGN",
+
+            "ROLE_PERMISSION",
+
+            rolePermission.id,
+
+            AuditLogStatus.SUCCESS,
 
         );
 

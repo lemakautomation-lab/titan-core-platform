@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 
+import { AuthRequest } from "../../middleware/auth.middleware";
+
 import { CreateRoleCommand } from "../../application/commands/create-role.command";
 import { UpdateRoleCommand } from "../../application/commands/update-role.command";
 import { DeleteRoleCommand } from "../../application/commands/delete-role.command";
@@ -45,7 +47,19 @@ export class RoleController {
 
 
 
-    async create(req: Request, res: Response): Promise<void> {
+    async create(req: AuthRequest, res: Response): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+
+            return;
+
+        }
 
         const result =
             await this.createRoleUseCase.execute(
@@ -56,10 +70,13 @@ export class RoleController {
 
                     req.body.description ?? null,
 
+                    authUser.tenantId,
+
+                    authUser.userId,
+
                 ),
 
             );
-
 
         if (!result.isSuccess) {
 
@@ -71,12 +88,9 @@ export class RoleController {
 
         }
 
-
         res.status(201).json(result.value);
 
     }
-
-
 
     async getById(req: Request, res: Response): Promise<void> {
 
@@ -91,7 +105,6 @@ export class RoleController {
 
             );
 
-
         if (!result.isSuccess) {
 
             res.status(404).json({
@@ -102,15 +115,11 @@ export class RoleController {
 
         }
 
-
         res.status(200).json(result.value);
 
     }
 
-
-
     async list(req: Request, res: Response): Promise<void> {
-
 
         const result =
             await this.listRolesUseCase.execute(
@@ -118,7 +127,6 @@ export class RoleController {
                 new ListRolesQuery(),
 
             );
-
 
         if (!result.isSuccess) {
 
@@ -130,15 +138,23 @@ export class RoleController {
 
         }
 
-
         res.status(200).json(result.value);
 
     }
 
+    async update(req: AuthRequest, res: Response): Promise<void> {
 
+        const authUser = req.user;
 
-    async update(req: Request, res: Response): Promise<void> {
+        if (!authUser) {
 
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+
+            return;
+
+        }
 
         const result =
             await this.updateRoleUseCase.execute(
@@ -151,10 +167,13 @@ export class RoleController {
 
                     req.body.description ?? null,
 
+                    authUser.tenantId,
+
+                    authUser.userId,
+
                 ),
 
             );
-
 
         if (!result.isSuccess) {
 
@@ -166,15 +185,23 @@ export class RoleController {
 
         }
 
-
         res.status(200).json(result.value);
 
     }
 
+    async delete(req: AuthRequest, res: Response): Promise<void> {
 
+        const authUser = req.user;
 
-    async delete(req: Request, res: Response): Promise<void> {
+        if (!authUser) {
 
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+
+            return;
+
+        }
 
         const result =
             await this.deleteRoleUseCase.execute(
@@ -183,10 +210,13 @@ export class RoleController {
 
                     String(req.params.id),
 
+                    authUser.tenantId,
+
+                    authUser.userId,
+
                 ),
 
             );
-
 
         if (!result.isSuccess) {
 
@@ -198,14 +228,24 @@ export class RoleController {
 
         }
 
-
         res.status(204).send();
 
     }
 
+    async assignPermission(req: AuthRequest, res: Response): Promise<void> {
+
+        const authUser = req.user;
 
 
-    async assignPermission(req: Request, res: Response): Promise<void> {
+        if (!authUser) {
+
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+
+            return;
+
+        }
 
 
         const result =
@@ -216,6 +256,10 @@ export class RoleController {
                     String(req.params.roleId),
 
                     String(req.params.permissionId),
+
+                    authUser.tenantId,
+
+                    authUser.userId,
 
                 ),
 
@@ -241,10 +285,7 @@ export class RoleController {
 
     }
 
-
-
     async getPermissions(req: Request, res: Response): Promise<void> {
-
 
         const result =
             await this.getRolePermissionsUseCase.execute(
@@ -257,7 +298,6 @@ export class RoleController {
 
             );
 
-
         if (!result.isSuccess) {
 
             res.status(404).json({
@@ -268,14 +308,23 @@ export class RoleController {
 
         }
 
-
         res.status(200).json(result.value);
 
     }
+    async deletePermission(req: AuthRequest, res: Response): Promise<void> {
+
+        const authUser = req.user;
 
 
+        if (!authUser) {
 
-    async deletePermission(req: Request, res: Response): Promise<void> {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+
+            return;
+
+        }
 
 
         const result =
@@ -286,6 +335,10 @@ export class RoleController {
                     String(req.params.roleId),
 
                     String(req.params.permissionId),
+
+                    authUser.tenantId,
+
+                    authUser.userId,
 
                 ),
 
@@ -307,5 +360,9 @@ export class RoleController {
 
     }
 
-
 }
+
+
+
+
+

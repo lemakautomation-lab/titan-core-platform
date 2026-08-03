@@ -6,6 +6,10 @@ export class CreateRoleCommand {
 
         public readonly description: string | null,
 
+        public readonly tenantId: string,
+
+        public readonly userId: string,
+
     ) {}
 
 }

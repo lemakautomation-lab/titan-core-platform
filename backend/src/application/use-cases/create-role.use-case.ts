@@ -8,6 +8,10 @@ import { CreateRoleCommand } from "../commands/create-role.command";
 import { RoleDto } from "../dto/role/role.dto";
 import { RoleApplicationMapper } from "../mappers/role.mapper";
 
+import { AuditLogService } from "../services/audit-log.service";
+import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
+
+
 export class CreateRoleUseCase
     implements UseCase<CreateRoleCommand, Result<RoleDto>>
 {
@@ -16,7 +20,10 @@ export class CreateRoleUseCase
 
         private readonly roleRepository: RoleRepository,
 
+        private readonly auditLogService: AuditLogService,
+
     ) {}
+
 
     async execute(
 
@@ -24,10 +31,12 @@ export class CreateRoleUseCase
 
     ): Promise<Result<RoleDto>> {
 
+
         const existingRole =
             await this.roleRepository.findByName(
                 command.name,
             );
+
 
         if (existingRole) {
 
@@ -36,6 +45,7 @@ export class CreateRoleUseCase
             );
 
         }
+
 
         const role =
             Role.create(
@@ -46,9 +56,28 @@ export class CreateRoleUseCase
 
             );
 
+
         await this.roleRepository.create(
             role,
         );
+
+
+        await this.auditLogService.log(
+
+            command.tenantId,
+
+            command.userId,
+
+            "ROLE_CREATE",
+
+            "ROLE",
+
+            role.id,
+
+            AuditLogStatus.SUCCESS,
+
+        );
+
 
         return Result.success(
 
