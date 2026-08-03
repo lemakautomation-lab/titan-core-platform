@@ -1,19 +1,57 @@
 import express from "express";
+import helmet from "helmet";
+
 import routes from "./routes";
 import { requestLogger } from "./middleware/request-logger.middleware";
 import { errorHandler } from "./middleware/error-handler.middleware";
-import protectedRoutes from "./routes/protected.routes";
+
 
 const app = express();
 
-// Middleware
-app.use(express.json());
-app.use(requestLogger);
+
+// Security Middleware
+
+app.use(
+
+    helmet(),
+
+);
+
+
+// Core Middleware
+
+app.use(
+
+    express.json(),
+
+);
+
+
+app.use(
+
+    requestLogger,
+
+);
+
 
 // Routes
-app.use("/", routes);
+
+app.use(
+
+    "/",
+
+    routes,
+
+);
+
 
 // Global Error Handler
-app.use(errorHandler);
+
+app.use(
+
+    errorHandler,
+
+);
+
 
 export default app;
