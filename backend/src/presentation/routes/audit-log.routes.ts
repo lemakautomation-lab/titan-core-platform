@@ -4,7 +4,8 @@ import { AuditLogController } from "../controllers/audit-log.controller";
 
 import { authMiddleware } from "../../middleware/auth.middleware";
 
-import { requirePermission } from "../../middleware/authorization.middleware";
+import { requireAuditAccess }
+    from "../../middleware/audit-authorization.middleware";
 
 
 
@@ -31,7 +32,7 @@ export function createAuditLogRoutes(
 
         "/",
 
-        requirePermission("audit.read"),
+        requireAuditAccess(),
 
         controller.list.bind(controller),
 
@@ -43,7 +44,7 @@ export function createAuditLogRoutes(
 
         "/:id",
 
-        requirePermission("audit.read"),
+        requireAuditAccess(),
 
         controller.getById.bind(controller),
 

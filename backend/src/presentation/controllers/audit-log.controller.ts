@@ -48,6 +48,11 @@ export class AuditLogController {
 
 
 
+        const auditOwnOnly =
+            (req as any).auditOwnOnly === true;
+
+
+
         const result =
 
             await this.getAuditLogsQuery.execute({
@@ -55,47 +60,67 @@ export class AuditLogController {
                 tenantId:
                     authUser.tenantId,
 
+
                 action:
                     req.query.action as string | undefined,
+
 
                 resource:
                     req.query.resource as string | undefined,
 
+
                 status:
                     req.query.status as string | undefined,
 
+
                 userId:
-                    req.query.userId as string | undefined,
+
+                    auditOwnOnly
+
+                        ? authUser.userId
+
+                        : req.query.userId as string | undefined,
+
 
                 resourceId:
                     req.query.resourceId as string | undefined,
 
+
                 from:
-                    req.query.from &&
-                    !isNaN(Date.parse(String(req.query.from)))
+
+                    req.query.from
+
                         ? new Date(String(req.query.from))
+
                         : undefined,
+
 
                 to:
-                    req.query.to &&
-                    !isNaN(Date.parse(String(req.query.to)))
+
+                    req.query.to
+
                         ? new Date(String(req.query.to))
+
                         : undefined,
 
+
                 page:
-                    req.query.page &&
-                    Number(req.query.page) > 0
+
+                    req.query.page
+
                         ? Number(req.query.page)
+
                         : 1,
 
+
                 limit:
-                    req.query.limit &&
-                    Number(req.query.limit) > 0
-                        ? Math.min(
-                            Number(req.query.limit),
-                            100,
-                        )
+
+                    req.query.limit
+
+                        ? Number(req.query.limit)
+
                         : 50,
+
 
             });
 
@@ -251,6 +276,3 @@ export class AuditLogController {
 
 
 }
-
-
-
