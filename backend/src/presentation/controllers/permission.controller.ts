@@ -1,4 +1,5 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import { AuthRequest } from "../../middleware/auth.middleware";
 
 import { CreatePermissionCommand } from "../../application/commands/create-permission.command";
 import { DeletePermissionCommand } from "../../application/commands/delete-permission.command";
@@ -31,13 +32,7 @@ export class PermissionController {
     ) {}
 
 
-    async create(
-
-        req: Request,
-
-        res: Response,
-
-    ): Promise<void> {
+    async create(req: AuthRequest, res: Response): Promise<void> {
 
         const command =
             new CreatePermissionCommand(
@@ -46,124 +41,66 @@ export class PermissionController {
 
                 req.body.description ?? null,
 
+                req.user!.tenantId,
+
+                req.user!.userId,
+
             );
 
 
         const result =
-            await this.createPermissionUseCase.execute(
-                command,
+            await this.createPermissionUseCase.execute(command);
+
+
+        res.status(result.isSuccess ? 201 : 400)
+            .json(
+                result.isSuccess
+                    ? result.value
+                    : { error: result.error }
             );
-
-
-        if (!result.isSuccess) {
-
-            res.status(400).json({
-
-                error: result.error,
-
-            });
-
-            return;
-
-        }
-
-
-        res.status(201).json(
-            result.value,
-        );
 
     }
 
 
-    async getById(
-
-        req: Request,
-
-        res: Response,
-
-    ): Promise<void> {
-
-        const query =
-            new GetPermissionByIdQuery(
-
-                String(req.params.id),
-
-            );
-
+    async getById(req: AuthRequest, res: Response): Promise<void> {
 
         const result =
             await this.getPermissionByIdUseCase.execute(
-                query,
+                new GetPermissionByIdQuery(
+                    String(req.params.id),
+                ),
             );
 
 
-        if (!result.isSuccess) {
-
-            res.status(404).json({
-
-                error: result.error,
-
-            });
-
-            return;
-
-        }
-
-
-        res.status(200).json(
-            result.value,
-        );
+        res.status(result.isSuccess ? 200 : 404)
+            .json(
+                result.isSuccess
+                    ? result.value
+                    : { error: result.error }
+            );
 
     }
 
 
-    async list(
-
-        req: Request,
-
-        res: Response,
-
-    ): Promise<void> {
-
-
-        const query =
-            new ListPermissionsQuery();
-
+    async list(req: AuthRequest, res: Response): Promise<void> {
 
         const result =
             await this.listPermissionsUseCase.execute(
-                query,
+                new ListPermissionsQuery(),
             );
 
 
-        if (!result.isSuccess) {
-
-            res.status(400).json({
-
-                error: result.error,
-
-            });
-
-            return;
-
-        }
-
-
-        res.status(200).json(
-            result.value,
-        );
+        res.status(result.isSuccess ? 200 : 400)
+            .json(
+                result.isSuccess
+                    ? result.value
+                    : { error: result.error }
+            );
 
     }
 
 
-    async update(
-
-        req: Request,
-
-        res: Response,
-
-    ): Promise<void> {
-
+    async update(req: AuthRequest, res: Response): Promise<void> {
 
         const command =
             new UpdatePermissionCommand(
@@ -174,64 +111,49 @@ export class PermissionController {
 
                 req.body.description ?? null,
 
+                req.user!.tenantId,
+
+                req.user!.userId,
+
             );
 
 
         const result =
-            await this.updatePermissionUseCase.execute(
-                command,
+            await this.updatePermissionUseCase.execute(command);
+
+
+        res.status(result.isSuccess ? 200 : 404)
+            .json(
+                result.isSuccess
+                    ? result.value
+                    : { error: result.error }
             );
-
-
-        if (!result.isSuccess) {
-
-            res.status(404).json({
-
-                error: result.error,
-
-            });
-
-            return;
-
-        }
-
-
-        res.status(200).json(
-            result.value,
-        );
 
     }
 
 
-    async delete(
-
-        req: Request,
-
-        res: Response,
-
-    ): Promise<void> {
-
-
-        const command =
-            new DeletePermissionCommand(
-
-                String(req.params.id),
-
-            );
-
+    async delete(req: AuthRequest, res: Response): Promise<void> {
 
         const result =
             await this.deletePermissionUseCase.execute(
-                command,
+
+                new DeletePermissionCommand(
+
+                    String(req.params.id),
+
+                    req.user!.tenantId,
+
+                    req.user!.userId,
+
+                ),
+
             );
 
 
         if (!result.isSuccess) {
 
             res.status(404).json({
-
                 error: result.error,
-
             });
 
             return;

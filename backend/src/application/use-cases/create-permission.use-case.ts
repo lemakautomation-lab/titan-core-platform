@@ -8,6 +8,10 @@ import { CreatePermissionCommand } from "../commands/create-permission.command";
 import { PermissionDto } from "../dto/permission/permission.dto";
 import { PermissionApplicationMapper } from "../mappers/permission.mapper";
 
+import { AuditLogService } from "../services/audit-log.service";
+import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
+
+
 export class CreatePermissionUseCase
     implements UseCase<CreatePermissionCommand, Result<PermissionDto>>
 {
@@ -16,7 +20,10 @@ export class CreatePermissionUseCase
 
         private readonly permissionRepository: PermissionRepository,
 
+        private readonly auditLogService: AuditLogService,
+
     ) {}
+
 
     async execute(
 
@@ -54,6 +61,23 @@ export class CreatePermissionUseCase
 
         await this.permissionRepository.create(
             permission,
+        );
+
+
+        await this.auditLogService.log(
+
+            command.tenantId,
+
+            command.userId,
+
+            "PERMISSION_CREATE",
+
+            "PERMISSION",
+
+            permission.id,
+
+            AuditLogStatus.SUCCESS,
+
         );
 
 

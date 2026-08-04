@@ -5,6 +5,10 @@ import { PermissionRepository } from "../../domain/repositories/permission.repos
 
 import { DeletePermissionCommand } from "../commands/delete-permission.command";
 
+import { AuditLogService } from "../services/audit-log.service";
+import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
+
+
 export class DeletePermissionUseCase
     implements UseCase<DeletePermissionCommand, Result<void>>
 {
@@ -13,7 +17,10 @@ export class DeletePermissionUseCase
 
         private readonly permissionRepository: PermissionRepository,
 
+        private readonly auditLogService: AuditLogService,
+
     ) {}
+
 
     async execute(
 
@@ -21,10 +28,12 @@ export class DeletePermissionUseCase
 
     ): Promise<Result<void>> {
 
+
         const permission =
             await this.permissionRepository.findById(
                 command.id,
             );
+
 
         if (!permission) {
 
@@ -34,9 +43,28 @@ export class DeletePermissionUseCase
 
         }
 
+
         await this.permissionRepository.delete(
             command.id,
         );
+
+
+        await this.auditLogService.log(
+
+            command.tenantId,
+
+            command.userId,
+
+            "PERMISSION_DELETE",
+
+            "PERMISSION",
+
+            command.id,
+
+            AuditLogStatus.SUCCESS,
+
+        );
+
 
         return Result.success(
             undefined,

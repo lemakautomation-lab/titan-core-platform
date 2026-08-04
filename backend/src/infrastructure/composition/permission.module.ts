@@ -8,6 +8,8 @@ import { ListPermissionsUseCase } from "../../application/use-cases/list-permiss
 import { UpdatePermissionUseCase } from "../../application/use-cases/update-permission.use-case";
 import { DeletePermissionUseCase } from "../../application/use-cases/delete-permission.use-case";
 
+import { auditLogModule } from "./audit-log.module";
+
 
 const databaseService = new DatabaseService();
 
@@ -26,7 +28,11 @@ export const permissionModule = {
 
     createPermissionUseCase:
         new CreatePermissionUseCase(
+
             permissionRepository,
+
+            auditLogModule.auditLogService,
+
         ),
 
 
@@ -44,13 +50,21 @@ export const permissionModule = {
 
     updatePermissionUseCase:
         new UpdatePermissionUseCase(
+
             permissionRepository,
+
+            auditLogModule.auditLogService,
+
         ),
 
 
     deletePermissionUseCase:
         new DeletePermissionUseCase(
+
             permissionRepository,
+
+            auditLogModule.auditLogService,
+
         ),
 
 
