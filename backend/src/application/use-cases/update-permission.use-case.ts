@@ -33,8 +33,11 @@ export class UpdatePermissionUseCase
 
 
         const permission =
+
             await this.permissionRepository.findById(
+
                 command.id,
+
             );
 
 
@@ -58,6 +61,7 @@ export class UpdatePermissionUseCase
 
 
         const updatedPermission =
+
             await this.permissionRepository.update(
                 permission,
             );
@@ -73,7 +77,7 @@ export class UpdatePermissionUseCase
 
             "PERMISSION",
 
-            updatedPermission.id,
+            permission.id,
 
             AuditLogStatus.SUCCESS,
 

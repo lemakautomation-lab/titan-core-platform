@@ -1,0 +1,32 @@
+        if (!user) {
+
+            if (command.tenantId) {
+
+                await this.auditLogService.log(
+
+                    command.tenantId,
+
+                    null,
+
+                    "USER_LOGIN",
+
+                    "AUTH",
+
+                    null,
+
+                    AuditLogStatus.FAILURE,
+
+                    {
+                        email: command.email,
+                    },
+
+                );
+
+            }
+
+
+            throw new UnauthorizedException(
+                "Invalid credentials",
+            );
+
+        }

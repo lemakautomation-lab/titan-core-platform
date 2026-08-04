@@ -27,6 +27,7 @@ export const permissionModule = {
 
 
     createPermissionUseCase:
+
         new CreatePermissionUseCase(
 
             permissionRepository,
@@ -37,18 +38,25 @@ export const permissionModule = {
 
 
     getPermissionByIdUseCase:
+
         new GetPermissionByIdUseCase(
+
             permissionRepository,
+
         ),
 
 
     listPermissionsUseCase:
+
         new ListPermissionsUseCase(
+
             permissionRepository,
+
         ),
 
 
     updatePermissionUseCase:
+
         new UpdatePermissionUseCase(
 
             permissionRepository,
@@ -59,6 +67,7 @@ export const permissionModule = {
 
 
     deletePermissionUseCase:
+
         new DeletePermissionUseCase(
 
             permissionRepository,
