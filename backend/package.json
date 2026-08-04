@@ -21,6 +21,8 @@
     "@prisma/adapter-pg": "^7.9.0",
     "@prisma/client": "^7.8.0",
     "bcrypt": "^6.0.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.6.2",
@@ -40,7 +42,7 @@
   },
   "allowScripts": {
     "bcrypt@6.0.0": true,
-    "prisma@7.8.0": true,
-    "@prisma/engines@7.8.0": true
+    "@prisma/engines@7.9.1": true,
+    "prisma@7.9.1": true
   }
 }
