@@ -1,6 +1,9 @@
 import { AuditLog } from "../../domain/entities/audit-log.entity";
 
-import { AuditLogRepository, AuditLogQuery } from "../../domain/repositories/audit-log.repository";
+import {
+    AuditLogRepository,
+    AuditLogQuery,
+} from "../../domain/repositories/audit-log.repository";
 
 import { DatabaseService } from "../database/database.service";
 
@@ -39,9 +42,7 @@ implements AuditLogRepository {
 
 
         return AuditLogMapper.toDomain(
-
             created,
-
         );
 
     }
@@ -66,7 +67,6 @@ implements AuditLogRepository {
                 },
 
             });
-
 
 
         return auditLog
@@ -105,7 +105,6 @@ implements AuditLogRepository {
             });
 
 
-
         return auditLog
 
             ? AuditLogMapper.toDomain(
@@ -135,14 +134,19 @@ implements AuditLogRepository {
 
                 },
 
-                orderBy: {
+                orderBy: [
 
-                    createdAt: "desc",
+                    {
+                        createdAt: "desc",
+                    },
 
-                },
+                    {
+                        id: "desc",
+                    },
+
+                ],
 
             });
-
 
 
         return auditLogs.map(
@@ -242,19 +246,30 @@ implements AuditLogRepository {
 
             query.page && query.page > 0
 
-                ? query.page
+                ? Math.floor(query.page)
 
                 : 1;
 
 
 
-        const limit =
+        const requestedLimit =
 
             query.limit && query.limit > 0
 
-                ? query.limit
+                ? Math.floor(query.limit)
 
                 : 50;
+
+
+        const limit =
+
+            Math.min(
+
+                requestedLimit,
+
+                100,
+
+            );
 
 
 
@@ -272,11 +287,17 @@ implements AuditLogRepository {
 
                     where,
 
-                    orderBy: {
+                    orderBy: [
 
-                        createdAt: "desc",
+                        {
+                            createdAt: "desc",
+                        },
 
-                    },
+                        {
+                            id: "desc",
+                        },
+
+                    ],
 
                     skip,
 
