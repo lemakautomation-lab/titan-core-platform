@@ -14,8 +14,12 @@ import {
     AuditLogStatus,
 } from "../../../domain/entities/audit-log.entity";
 
+import { AuditAction } from "../../../domain/security/audit-action";
+import { AuditResource } from "../../../domain/security/audit-resource";
+
 import { AuditLogService } from "../../services/audit-log.service";
 import { SecurityEventService } from "../../services/security-event.service";
+import { SecurityAnalyticsService } from "../../services/security-analytics.service";
 
 
 export class LoginUseCase {
@@ -30,6 +34,8 @@ export class LoginUseCase {
 
         private readonly securityEventService: SecurityEventService,
 
+        private readonly securityAnalyticsService: SecurityAnalyticsService,
+
     ) {}
 
     async execute(
@@ -41,19 +47,8 @@ export class LoginUseCase {
                 command.email,
             );
 
-        if (!user) {
 
-            await this.auditLogService.log(
-                command.tenantId,
-                null,
-                "USER_LOGIN",
-                "AUTH",
-                null,
-                AuditLogStatus.FAILURE,
-                {
-                    email: command.email,
-                },
-            );
+        if (!user) {
 
             await this.securityEventService.recordAuthenticationFailure(
                 command.tenantId,
@@ -73,16 +68,8 @@ export class LoginUseCase {
 
         }
 
-        if (user.tenantId !== command.tenantId) {
 
-            await this.auditLogService.log(
-                command.tenantId,
-                user.id,
-                "USER_LOGIN",
-                "AUTH",
-                null,
-                AuditLogStatus.FAILURE,
-            );
+        if (user.tenantId !== command.tenantId) {
 
             await this.securityEventService.recordAuthenticationFailure(
                 command.tenantId,
@@ -102,22 +89,36 @@ export class LoginUseCase {
 
         }
 
+
+        if (user.isLocked()) {
+
+            await this.securityEventService.recordAuthenticationFailure(
+                user.tenantId,
+                user.id,
+                {
+                    email: user.email,
+                    reason: "ACCOUNT_LOCKED",
+                    ipAddress: command.ipAddress,
+                    userAgent: command.userAgent,
+                    requestId: command.requestId,
+                },
+            );
+
+            throw new UnauthorizedException(
+                "Account locked",
+            );
+
+        }
+
+
         const passwordValid =
             await passwordSecurity.verify(
                 command.password,
                 user.passwordHash,
             );
 
-        if (!passwordValid) {
 
-            await this.auditLogService.log(
-                user.tenantId,
-                user.id,
-                "USER_LOGIN",
-                "AUTH",
-                null,
-                AuditLogStatus.FAILURE,
-            );
+        if (!passwordValid) {
 
             await this.securityEventService.recordAuthenticationFailure(
                 user.tenantId,
@@ -131,34 +132,57 @@ export class LoginUseCase {
                 },
             );
 
+
+            const thresholdExceeded =
+                await this.securityAnalyticsService
+                    .hasExceededFailedLoginThreshold(
+                        user.tenantId,
+                        user.email,
+                    );
+
+
+            if (thresholdExceeded) {
+
+                user.lock();
+
+                await this.userRepository.update(
+                    user,
+                );
+
+
+                await this.securityEventService.recordAuthenticationFailure(
+                    user.tenantId,
+                    user.id,
+                    {
+                        email: user.email,
+                        reason: AuditAction.ACCOUNT_LOCKED,
+                        ipAddress: command.ipAddress,
+                        userAgent: command.userAgent,
+                        requestId: command.requestId,
+                    },
+                );
+
+
+                await this.auditLogService.log(
+                    user.tenantId,
+                    user.id,
+                    AuditAction.ACCOUNT_LOCKED,
+                    AuditResource.AUTHENTICATION,
+                    null,
+                    AuditLogStatus.FAILURE,
+                );
+
+            }
+
+
             throw new UnauthorizedException(
                 "Invalid credentials",
             );
 
         }
 
+
         if (!user.isActive()) {
-
-            await this.auditLogService.log(
-                user.tenantId,
-                user.id,
-                "USER_LOGIN",
-                "AUTH",
-                null,
-                AuditLogStatus.FAILURE,
-            );
-
-            await this.securityEventService.recordAuthenticationFailure(
-                user.tenantId,
-                user.id,
-                {
-                    email: user.email,
-                    reason: "ACCOUNT_INACTIVE",
-                    ipAddress: command.ipAddress,
-                    userAgent: command.userAgent,
-                    requestId: command.requestId,
-                },
-            );
 
             throw new UnauthorizedException(
                 "User account inactive",
@@ -166,15 +190,18 @@ export class LoginUseCase {
 
         }
 
+
         const roles =
             await this.userRepository.findRoles(
                 user.id,
             );
 
+
         const roleNames =
             roles.map(
                 role => role.name,
             );
+
 
         const accessToken =
             jwtService.generateAccessToken({
@@ -183,15 +210,18 @@ export class LoginUseCase {
                 roles: roleNames,
             });
 
+
         const refreshToken =
             jwtService.generateRefreshToken({
                 userId: user.id,
             });
 
+
         const expiresAt =
             new Date(
                 Date.now() + 7 * 24 * 60 * 60 * 1000,
             );
+
 
         const session =
             Session.create(
@@ -200,9 +230,11 @@ export class LoginUseCase {
                 expiresAt,
             );
 
+
         await this.sessionRepository.create(
             session,
         );
+
 
         await this.auditLogService.log(
             user.tenantId,
@@ -212,6 +244,7 @@ export class LoginUseCase {
             session.id,
             AuditLogStatus.SUCCESS,
         );
+
 
         await this.securityEventService.recordAuthenticationSuccess(
             user.tenantId,
@@ -223,6 +256,7 @@ export class LoginUseCase {
                 requestId: command.requestId,
             },
         );
+
 
         return {
 
@@ -242,8 +276,3 @@ export class LoginUseCase {
     }
 
 }
-
-
-
-
-
