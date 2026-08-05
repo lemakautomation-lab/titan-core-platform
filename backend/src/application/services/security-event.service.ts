@@ -115,6 +115,8 @@ export class SecurityEventService {
 
         permission: string,
 
+        metadata?: Record<string, unknown>,
+
     ): Promise<void> {
 
 
@@ -144,6 +146,7 @@ export class SecurityEventService {
 
             {
                 permission,
+                ...(metadata ?? {}),
             },
 
         );
