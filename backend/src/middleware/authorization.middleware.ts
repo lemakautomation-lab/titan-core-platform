@@ -3,6 +3,10 @@ import { Request, Response, NextFunction } from "express";
 import { authorizationModule }
     from "../infrastructure/composition/authorization.module";
 
+import { requestContextService }
+    from "../shared/context/request-context.service";
+
+
 export function requirePermission(
     permission: string,
 ) {
@@ -22,6 +26,7 @@ export function requirePermission(
             const authUser =
                 (req as any).user;
 
+
             if (!authUser) {
 
                 return res.status(401).json({
@@ -38,6 +43,7 @@ export function requirePermission(
 
             }
 
+
             const allowed =
                 await authorizationModule
                     .authorizationService
@@ -48,6 +54,7 @@ export function requirePermission(
                         permission,
 
                     );
+
 
             if (!allowed) {
 
@@ -66,9 +73,32 @@ export function requirePermission(
 
             }
 
+
+            const context =
+                requestContextService.get();
+
+
+            if (context?.security) {
+
+                if (
+                    !context.security.permissions.includes(
+                        permission,
+                    )
+                ) {
+
+                    context.security.permissions.push(
+                        permission,
+                    );
+
+                }
+
+            }
+
+
             next();
 
         }
+
 
         catch (error) {
 

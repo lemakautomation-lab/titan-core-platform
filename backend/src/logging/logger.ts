@@ -1,15 +1,103 @@
+import { requestContextService } from "../shared/context/request-context.service";
+
+
+type LogMetadata = Record<string, unknown>;
+
+
 class Logger {
-    info(message: string): void {
-        console.log(`[INFO] ${message}`);
+
+
+    private buildEntry(
+        level: string,
+        message: string,
+        metadata?: LogMetadata,
+    ) {
+
+        const context =
+            requestContextService.get();
+
+
+        return {
+
+            timestamp:
+                new Date().toISOString(),
+
+            level,
+
+            message,
+
+            requestId:
+                context?.requestId ?? null,
+
+            userId:
+                context?.security?.userId ?? null,
+
+            tenantId:
+                context?.security?.tenantId ?? null,
+
+            ...metadata,
+
+        };
+
     }
 
-    warn(message: string): void {
-        console.warn(`[WARN] ${message}`);
+
+    info(
+        message: string,
+        metadata?: LogMetadata,
+    ): void {
+
+        console.log(
+            JSON.stringify(
+                this.buildEntry(
+                    "INFO",
+                    message,
+                    metadata,
+                ),
+            ),
+        );
+
     }
 
-    error(message: string): void {
-        console.error(`[ERROR] ${message}`);
+
+    warn(
+        message: string,
+        metadata?: LogMetadata,
+    ): void {
+
+        console.warn(
+            JSON.stringify(
+                this.buildEntry(
+                    "WARN",
+                    message,
+                    metadata,
+                ),
+            ),
+        );
+
     }
+
+
+    error(
+        message: string,
+        metadata?: LogMetadata,
+    ): void {
+
+        console.error(
+            JSON.stringify(
+                this.buildEntry(
+                    "ERROR",
+                    message,
+                    metadata,
+                ),
+            ),
+        );
+
+    }
+
+
 }
 
-export const logger = new Logger();
+
+export const logger =
+    new Logger();

@@ -257,20 +257,6 @@ export class LoginUseCase {
 
 
 
-        await this.securityEventService.recordAuthenticationSuccess(
-
-            user.tenantId,
-
-            user.id,
-
-            {
-                email: user.email,
-            },
-
-        );
-
-
-
         return {
 
 
@@ -305,3 +291,7 @@ export class LoginUseCase {
 
 
 }
+
+
+
+

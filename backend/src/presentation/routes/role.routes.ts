@@ -1,4 +1,4 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 
 import { RoleController } from "../controllers/role.controller";
 
@@ -12,8 +12,6 @@ export function createRoleRoutes(
 
 ): Router {
 
-    console.log('=== ROLE ROUTES LOADED ===');
-
 
     const router = Router();
 
@@ -23,13 +21,11 @@ export function createRoleRoutes(
     );
 
 
-
     router.post(
         "/",
         requirePermission("roles.create"),
         controller.create.bind(controller),
     );
-
 
 
     router.get(
@@ -39,13 +35,11 @@ export function createRoleRoutes(
     );
 
 
-
     router.get(
         "/:id",
         requirePermission("roles.read"),
         controller.getById.bind(controller),
     );
-
 
 
     router.put(
@@ -55,13 +49,11 @@ export function createRoleRoutes(
     );
 
 
-
     router.delete(
         "/:id",
         requirePermission("roles.delete"),
         controller.delete.bind(controller),
     );
-
 
 
     router.post(
@@ -71,13 +63,11 @@ export function createRoleRoutes(
     );
 
 
-
     router.get(
         "/:id/permissions",
         requirePermission("roles.read"),
         controller.getPermissions.bind(controller),
     );
-
 
 
     router.delete(
@@ -86,12 +76,7 @@ export function createRoleRoutes(
         controller.deletePermission.bind(controller),
     );
 
-    console.log('=== DELETE PERMISSION ROUTE REGISTERED ===');
-
-
 
     return router;
 
 }
-
-

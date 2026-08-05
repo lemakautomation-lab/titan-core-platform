@@ -4,6 +4,8 @@ import { PrismaAuditLogRepository } from "../repositories/audit-log.repository";
 
 import { AuditLogService } from "../../application/services/audit-log.service";
 
+import { SecurityEventService } from "../../application/services/security-event.service";
+
 import { GetAuditLogsQuery } from "../../application/queries/get-audit-logs.query";
 
 import { GetAuditLogByIdQuery } from "../../application/queries/get-audit-log-by-id.query";
@@ -22,14 +24,24 @@ const auditLogRepository =
 
 
 
+const auditLogService =
+    new AuditLogService(
+        auditLogRepository,
+    );
+
+
+
 export const auditLogModule = {
 
 
-    auditLogService:
+    auditLogService,
 
-        new AuditLogService(
 
-            auditLogRepository,
+    securityEventService:
+
+        new SecurityEventService(
+
+            auditLogService,
 
         ),
 

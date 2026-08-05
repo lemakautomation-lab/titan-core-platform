@@ -1,65 +1,128 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+
 import { jwtConfig } from "../../config/jwt.config";
+import { logger } from "../../logging/logger";
 
 
 export class AuthService {
 
+
     constructor() {
-        console.log("🔥 NEW TITAN AUTH SERVICE LOADED");
+
+        logger.info(
+            "Authentication service initialized",
+            {
+                event: "AUTH_SERVICE_INITIALIZED",
+            },
+        );
+
     }
 
+
     async login(email: string, password: string) {
-        console.log("🔥 NEW LOGIN FUNCTION RUNNING", email);
+
+
+        logger.info(
+            "Login attempt received",
+            {
+                event: "LOGIN_ATTEMPT",
+                identifierProvided: !!email,
+            },
+        );
+
 
         const user = {
+
             id: "001",
+
             email: "admin@titan.com",
+
             passwordHash: await bcrypt.hash(
                 "admin123",
-                10
+                10,
             ),
-            role: "admin"
+
+            role: "admin",
+
         };
 
 
-        const passwordValid = await bcrypt.compare(
-            password,
-            user.passwordHash
-        );
+        const passwordValid =
+            await bcrypt.compare(
+                password,
+                user.passwordHash,
+            );
 
 
         if (!passwordValid) {
 
+
+            logger.warn(
+                "Login failed",
+                {
+                    event: "LOGIN_FAILURE",
+                    reason: "INVALID_CREDENTIALS",
+                },
+            );
+
+
             return {
+
                 authenticated: false,
-                message: "Invalid credentials"
+
+                message: "Invalid credentials",
+
             };
 
         }
 
 
-        const token = jwt.sign(
+        const token =
+            jwt.sign(
+
+                {
+                    id: user.id,
+
+                    email: user.email,
+
+                    role: user.role,
+
+                },
+
+                jwtConfig.secret,
+
+                {
+                    expiresIn: "24h",
+                },
+
+            );
+
+
+        logger.info(
+            "Login successful",
             {
-                id: user.id,
-                email: user.email,
-                role: user.role
+                event: "LOGIN_SUCCESS",
             },
-            jwtConfig.secret,
-            {
-                expiresIn: "24h"
-            }
         );
 
 
         return {
+
             authenticated: true,
+
             user: {
+
                 id: user.id,
+
                 email: user.email,
-                role: user.role
+
+                role: user.role,
+
             },
-            token
+
+            token,
+
         };
 
     }

@@ -45,6 +45,8 @@ export const authModule = {
 
             auditLogModule.auditLogService,
 
+            auditLogModule.securityEventService,
+
         ),
 
 
@@ -62,3 +64,4 @@ export const authModule = {
         ),
 
 };
+

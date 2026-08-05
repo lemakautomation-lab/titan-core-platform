@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
+
 import { HttpException } from "../shared/exceptions/http.exception";
 import { ValidationException } from "../shared/exceptions/validation.exception";
+import { logger } from "../logging/logger";
 
 
 export function errorHandler(
@@ -10,9 +12,18 @@ export function errorHandler(
     next: NextFunction
 ) {
 
-    console.error("========== ERROR ==========");
-    console.error(error);
-    console.error("==========================");
+
+    logger.error(
+        "Unhandled application error",
+        {
+            path: req.originalUrl,
+            method: req.method,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : String(error),
+        },
+    );
 
 
     /*
@@ -66,10 +77,16 @@ export function errorHandler(
         Unknown Errors
         Prevents leaking internal details
     */
-    console.error("Unhandled exception stack:");
 
     if (error instanceof Error) {
-        console.error(error.stack);
+
+        logger.error(
+            "Unhandled exception stack",
+            {
+                stack: error.stack,
+            },
+        );
+
     }
 
 

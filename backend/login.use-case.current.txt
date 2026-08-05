@@ -255,19 +255,19 @@ export class LoginUseCase {
 
         );
 
+        await this.securityEventService.recordAuthenticationSuccess({
 
+            tenantId: user.tenantId,
 
-        await this.securityEventService.recordAuthenticationSuccess(
+            userId: user.id,
 
-            user.tenantId,
+            sessionId: session.id,
 
-            user.id,
+            ipAddress: command.ipAddress,
 
-            {
-                email: user.email,
-            },
+            userAgent: command.userAgent,
 
-        );
+        });
 
 
 
@@ -305,3 +305,5 @@ export class LoginUseCase {
 
 
 }
+
+
