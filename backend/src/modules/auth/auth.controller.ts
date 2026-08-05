@@ -1,15 +1,16 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 
 import { authModule } from "../../infrastructure/composition/auth.module";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
+import { RequestWithId } from "../../middleware/request-id.middleware";
 
 
 export class AuthController {
 
 
     async login(
-        req: Request,
+        req: RequestWithId,
         res: Response,
     ): Promise<void> {
 
@@ -22,6 +23,12 @@ export class AuthController {
                 email: req.body.email,
 
                 password: req.body.password,
+
+                ipAddress: req.ip,
+
+                userAgent: req.get("User-Agent") ?? undefined,
+
+                requestId: req.requestId,
 
             });
 
@@ -40,7 +47,7 @@ export class AuthController {
 
 
     async refresh(
-        req: Request,
+        req: RequestWithId,
         res: Response,
     ): Promise<void> {
 
@@ -68,7 +75,7 @@ export class AuthController {
 
 
     async logout(
-        req: Request,
+        req: RequestWithId,
         res: Response,
     ): Promise<void> {
 

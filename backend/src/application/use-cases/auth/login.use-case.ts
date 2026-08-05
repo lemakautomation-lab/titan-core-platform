@@ -61,6 +61,9 @@ export class LoginUseCase {
                 {
                     email: command.email,
                     reason: "USER_NOT_FOUND",
+                    ipAddress: command.ipAddress,
+                    userAgent: command.userAgent,
+                    requestId: command.requestId,
                 },
             );
 
@@ -87,6 +90,9 @@ export class LoginUseCase {
                 {
                     email: user.email,
                     reason: "TENANT_MISMATCH",
+                    ipAddress: command.ipAddress,
+                    userAgent: command.userAgent,
+                    requestId: command.requestId,
                 },
             );
 
@@ -119,6 +125,9 @@ export class LoginUseCase {
                 {
                     email: user.email,
                     reason: "INVALID_PASSWORD",
+                    ipAddress: command.ipAddress,
+                    userAgent: command.userAgent,
+                    requestId: command.requestId,
                 },
             );
 
@@ -145,6 +154,9 @@ export class LoginUseCase {
                 {
                     email: user.email,
                     reason: "ACCOUNT_INACTIVE",
+                    ipAddress: command.ipAddress,
+                    userAgent: command.userAgent,
+                    requestId: command.requestId,
                 },
             );
 
@@ -206,6 +218,9 @@ export class LoginUseCase {
             user.id,
             {
                 email: user.email,
+                ipAddress: command.ipAddress,
+                userAgent: command.userAgent,
+                requestId: command.requestId,
             },
         );
 
@@ -227,6 +242,7 @@ export class LoginUseCase {
     }
 
 }
+
 
 
 
