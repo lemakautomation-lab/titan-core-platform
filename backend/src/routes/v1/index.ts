@@ -7,6 +7,7 @@ import { createOrganisationRoutes } from "../../presentation/routes/organisation
 import { createPermissionRoutes } from "../../presentation/routes/permission.routes";
 import { createAuditLogRoutes } from "../../presentation/routes/audit-log.routes";
 import { createHealthRoutes } from "../../presentation/routes/health.routes";
+import { createSecurityRoutes } from "../../presentation/routes/security.routes";
 
 
 import { RoleController } from "../../presentation/controllers/role.controller";
@@ -16,6 +17,7 @@ import { OrganisationController } from "../../presentation/controllers/organisat
 import { PermissionController } from "../../presentation/controllers/permission.controller";
 import { AuditLogController } from "../../presentation/controllers/audit-log.controller";
 import { HealthController } from "../../presentation/controllers/health.controller";
+import { SecurityController } from "../../presentation/controllers/security.controller";
 
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
@@ -35,6 +37,11 @@ import { DatabaseService } from "../../infrastructure/database/database.service"
 const router = Router();
 
 const healthController = new HealthController(new DatabaseService());
+
+const securityController =
+    new SecurityController(
+        auditLogModule.securityAnalyticsService,
+    );
 
 
 
@@ -207,6 +214,7 @@ router.use(
 
 
 export default router;
+
 
 
 
