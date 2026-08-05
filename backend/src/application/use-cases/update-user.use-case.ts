@@ -12,6 +12,7 @@ import { passwordSecurity } from "../../security/bcrypt";
 
 import { AuditLogService } from "../services/audit-log.service";
 import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
+import { AuditAction } from "../../domain/security/audit-action";
 
 export class UpdateUserUseCase
     implements UseCase<UpdateUserCommand, Result<UserDto>>
@@ -91,7 +92,7 @@ export class UpdateUserUseCase
 
             updatedUser.id,
 
-            "USER_UPDATE",
+            AuditAction.USER_UPDATE,
 
             "USER",
 
@@ -110,6 +111,9 @@ export class UpdateUserUseCase
     }
 
 }
+
+
+
 
 
 

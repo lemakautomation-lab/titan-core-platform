@@ -7,6 +7,7 @@ import { DeleteUserCommand } from "../commands/delete-user.command";
 
 import { AuditLogService } from "../services/audit-log.service";
 import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
+import { AuditAction } from "../../domain/security/audit-action";
 
 
 export class DeleteUserUseCase
@@ -47,7 +48,7 @@ export class DeleteUserUseCase
 
             user.id,
 
-            "USER_DELETE",
+            AuditAction.USER_DELETE,
 
             "USER",
 
@@ -64,6 +65,7 @@ export class DeleteUserUseCase
     }
 
 }
+
 
 
 
