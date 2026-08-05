@@ -32,67 +32,63 @@ export class LoginUseCase {
 
     ) {}
 
-
     async execute(
         command: LoginCommand,
     ) {
-
 
         const user =
             await this.userRepository.findByEmail(
                 command.email,
             );
 
-
         if (!user) {
 
             await this.auditLogService.log(
-
                 command.tenantId,
-
                 null,
-
                 "USER_LOGIN",
-
                 "AUTH",
-
                 null,
-
                 AuditLogStatus.FAILURE,
-
                 {
                     email: command.email,
                 },
-
             );
 
+            await this.securityEventService.recordAuthenticationFailure(
+                command.tenantId,
+                null,
+                {
+                    email: command.email,
+                    reason: "USER_NOT_FOUND",
+                },
+            );
 
             throw new UnauthorizedException(
                 "Invalid credentials",
             );
 
         }
-
 
         if (user.tenantId !== command.tenantId) {
 
-
             await this.auditLogService.log(
-
                 command.tenantId,
-
                 user.id,
-
                 "USER_LOGIN",
-
                 "AUTH",
-
                 null,
-
                 AuditLogStatus.FAILURE,
-
             );
 
+            await this.securityEventService.recordAuthenticationFailure(
+                command.tenantId,
+                user.id,
+                {
+                    email: user.email,
+                    reason: "TENANT_MISMATCH",
+                },
+            );
 
             throw new UnauthorizedException(
                 "Invalid credentials",
@@ -100,39 +96,31 @@ export class LoginUseCase {
 
         }
 
-
-
         const passwordValid =
-
             await passwordSecurity.verify(
-
                 command.password,
-
                 user.passwordHash,
-
             );
-
-
 
         if (!passwordValid) {
 
-
             await this.auditLogService.log(
-
                 user.tenantId,
-
                 user.id,
-
                 "USER_LOGIN",
-
                 "AUTH",
-
                 null,
-
                 AuditLogStatus.FAILURE,
-
             );
 
+            await this.securityEventService.recordAuthenticationFailure(
+                user.tenantId,
+                user.id,
+                {
+                    email: user.email,
+                    reason: "INVALID_PASSWORD",
+                },
+            );
 
             throw new UnauthorizedException(
                 "Invalid credentials",
@@ -140,27 +128,25 @@ export class LoginUseCase {
 
         }
 
-
-
         if (!user.isActive()) {
 
-
             await this.auditLogService.log(
-
                 user.tenantId,
-
                 user.id,
-
                 "USER_LOGIN",
-
                 "AUTH",
-
                 null,
-
                 AuditLogStatus.FAILURE,
-
             );
 
+            await this.securityEventService.recordAuthenticationFailure(
+                user.tenantId,
+                user.id,
+                {
+                    email: user.email,
+                    reason: "ACCOUNT_INACTIVE",
+                },
+            );
 
             throw new UnauthorizedException(
                 "User account inactive",
@@ -168,141 +154,80 @@ export class LoginUseCase {
 
         }
 
-
-
         const roles =
-
             await this.userRepository.findRoles(
                 user.id,
             );
 
-
         const roleNames =
-
             roles.map(
                 role => role.name,
             );
 
-
-
         const accessToken =
-
             jwtService.generateAccessToken({
-
                 userId: user.id,
-
                 tenantId: user.tenantId,
-
                 roles: roleNames,
-
             });
-
-
 
         const refreshToken =
-
             jwtService.generateRefreshToken({
-
                 userId: user.id,
-
             });
 
-
-
         const expiresAt =
-
             new Date(
-
                 Date.now() + 7 * 24 * 60 * 60 * 1000,
-
             );
-
-
 
         const session =
-
             Session.create(
-
                 user.id,
-
                 refreshToken,
-
                 expiresAt,
-
             );
-
-
 
         await this.sessionRepository.create(
             session,
         );
 
-
-
         await this.auditLogService.log(
-
             user.tenantId,
-
             user.id,
-
             "USER_LOGIN",
-
             "AUTH",
-
             session.id,
-
             AuditLogStatus.SUCCESS,
-
         );
 
-
-
         await this.securityEventService.recordAuthenticationSuccess(
-
             user.tenantId,
-
             user.id,
-
             {
                 email: user.email,
             },
-
         );
-
-
 
         return {
 
-
             user: {
-
-
                 id: user.id,
-
-
                 tenantId: user.tenantId,
-
-
                 email: user.email,
-
-
                 roles: roleNames,
-
-
             },
-
 
             accessToken,
 
-
             refreshToken,
-
 
         };
 
-
     }
 
-
 }
+
+
+
 
