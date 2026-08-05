@@ -1,0 +1,13 @@
+export enum AuditResource {
+    AUTHENTICATION = "AUTHENTICATION",
+
+    AUTHORIZATION = "AUTHORIZATION",
+
+    USER = "USER",
+
+    ROLE = "ROLE",
+
+    PERMISSION = "PERMISSION",
+
+    SESSION = "SESSION",
+}

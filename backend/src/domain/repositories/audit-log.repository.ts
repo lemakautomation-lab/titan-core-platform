@@ -1,6 +1,5 @@
 import { AuditLog } from "../entities/audit-log.entity";
 
-
 export interface AuditLogQuery {
 
     tenantId: string;
@@ -25,54 +24,37 @@ export interface AuditLogQuery {
 
 }
 
-
-
 export interface AuditLogRepository {
-
 
     create(
         auditLog: AuditLog,
     ): Promise<AuditLog>;
 
-
-
     findById(
         id: string,
     ): Promise<AuditLog | null>;
 
-
-
     findByIdForTenant(
-
         id: string,
-
         tenantId: string,
-
     ): Promise<AuditLog | null>;
-
-
 
     findAllByTenantId(
         tenantId: string,
     ): Promise<AuditLog[]>;
 
-
-
     findMany(
-
         query: AuditLogQuery,
-
     ): Promise<{
-
         items: AuditLog[];
-
         total: number;
-
         page: number;
-
         limit: number;
-
     }>;
 
-
+    findSecurityEvents(
+        tenantId: string,
+        action: string,
+        from: Date,
+    ): Promise<AuditLog[]>;
 }

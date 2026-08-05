@@ -79,25 +79,58 @@ export class User {
     }
 
     activate(): void {
+
         this.status = UserStatus.ACTIVE;
+        this.updatedAt = new Date();
+
     }
 
     suspend(): void {
+
         this.status = UserStatus.SUSPENDED;
+        this.updatedAt = new Date();
+
     }
 
     deactivate(): void {
+
         this.status = UserStatus.INACTIVE;
+        this.updatedAt = new Date();
+
+    }
+
+    lock(): void {
+
+        this.status = UserStatus.LOCKED;
+        this.updatedAt = new Date();
+
+    }
+
+    unlock(): void {
+
+        this.status = UserStatus.ACTIVE;
+        this.updatedAt = new Date();
+
     }
 
     isActive(): boolean {
+
         return this.status === UserStatus.ACTIVE;
+
+    }
+
+    isLocked(): boolean {
+
+        return this.status === UserStatus.LOCKED;
+
     }
 
     getFullName(): string {
+
         return [this.firstName, this.lastName]
             .filter(Boolean)
             .join(" ");
+
     }
 
 }

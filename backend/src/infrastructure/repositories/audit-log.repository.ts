@@ -338,5 +338,59 @@ implements AuditLogRepository {
 
     }
 
+    async findSecurityEvents(
+
+        tenantId: string,
+
+        action: string,
+
+        from: Date,
+
+    ): Promise<AuditLog[]> {
+
+        const auditLogs =
+
+            await this.database.prisma.auditLog.findMany({
+
+                where: {
+
+                    tenantId,
+
+                    action,
+
+                    createdAt: {
+
+                        gte: from,
+
+                    },
+
+                },
+
+                orderBy: [
+
+                    {
+
+                        createdAt: "desc",
+
+                    },
+
+                    {
+
+                        id: "desc",
+
+                    },
+
+                ],
+
+            });
+
+        return auditLogs.map(
+
+            AuditLogMapper.toDomain,
+
+        );
+
+    }
 
 }
+
