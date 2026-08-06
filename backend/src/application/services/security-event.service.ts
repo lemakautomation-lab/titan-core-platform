@@ -27,15 +27,27 @@ export class SecurityEventService {
             },
         );
 
-        await this.auditLogService.log(
-            tenantId,
-            userId,
-            AuditAction.AUTH_SUCCESS,
-            AuditResource.AUTHENTICATION,
-            null,
-            AuditLogStatus.SUCCESS,
-            metadata ?? null,
-        );
+        try {
+
+            await this.auditLogService.log(
+                tenantId,
+                userId,
+                AuditAction.AUTH_SUCCESS,
+                AuditResource.AUTHENTICATION,
+                null,
+                AuditLogStatus.SUCCESS,
+                metadata ?? null,
+            );
+
+        } catch (error) {
+
+            logger.error(
+                "Failed to write authentication success audit log",
+                { error },
+            );
+
+        }
+
     }
 
     async recordAuthenticationFailure(
@@ -52,15 +64,30 @@ export class SecurityEventService {
             },
         );
 
-        await this.auditLogService.log(
-            tenantId,
-            userId,
-            AuditAction.AUTH_FAILURE,
-            AuditResource.AUTHENTICATION,
-            null,
-            AuditLogStatus.FAILURE,
-            metadata ?? null,
-        );
+        try {
+
+            await this.auditLogService.log(
+                tenantId,
+                userId,
+                AuditAction.AUTH_FAILURE,
+                AuditResource.AUTHENTICATION,
+                null,
+                AuditLogStatus.FAILURE,
+                metadata ?? null,
+            );
+
+        } catch (error) {
+
+            logger.error(
+                "Failed to write authentication failure audit log",
+                {
+                    tenantId,
+                    error,
+                },
+            );
+
+        }
+
     }
 
     async recordPermissionDenied(
@@ -79,17 +106,33 @@ export class SecurityEventService {
             },
         );
 
-        await this.auditLogService.log(
-            tenantId,
-            userId,
-            AuditAction.PERMISSION_DENIED,
-            AuditResource.AUTHORIZATION,
-            null,
-            AuditLogStatus.FAILURE,
-            {
-                permission,
-                ...(metadata ?? {}),
-            },
-        );
+        try {
+
+            await this.auditLogService.log(
+                tenantId,
+                userId,
+                AuditAction.PERMISSION_DENIED,
+                AuditResource.AUTHORIZATION,
+                null,
+                AuditLogStatus.FAILURE,
+                {
+                    permission,
+                    ...(metadata ?? {}),
+                },
+            );
+
+        } catch (error) {
+
+            logger.error(
+                "Failed to write permission denied audit log",
+                {
+                    tenantId,
+                    error,
+                },
+            );
+
+        }
+
     }
+
 }
