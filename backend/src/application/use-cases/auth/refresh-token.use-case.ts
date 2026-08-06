@@ -14,10 +14,24 @@ export class RefreshTokenUseCase {
         command: RefreshTokenCommand,
     ) {
 
-        const payload =
-            jwtService.verifyRefreshToken(
-                command.refreshToken,
+        let payload;
+
+        try {
+
+            payload =
+                jwtService.verifyRefreshToken(
+                    command.refreshToken,
+                );
+
+        } catch {
+
+            throw new HttpException(
+                "Invalid refresh token",
+                401,
+                "UNAUTHORIZED",
             );
+
+        }
 
         const session =
             await this.sessionRepository.findActiveByToken(
@@ -52,14 +66,14 @@ export class RefreshTokenUseCase {
             session.id,
         );
 
-        const newAccessToken =
+        const accessToken =
             jwtService.generateAccessToken({
 
                 userId: payload.userId,
 
             });
 
-        const newRefreshToken =
+        const refreshToken =
             jwtService.generateRefreshToken({
 
                 userId: payload.userId,
@@ -68,13 +82,13 @@ export class RefreshTokenUseCase {
 
         const expiresAt =
             new Date(
-                Date.now() + 7 * 24 * 60 * 60 * 1000
+                Date.now() + 7 * 24 * 60 * 60 * 1000,
             );
 
         const newSession =
             Session.create(
                 payload.userId,
-                newRefreshToken,
+                refreshToken,
                 expiresAt,
             );
 
@@ -84,9 +98,9 @@ export class RefreshTokenUseCase {
 
         return {
 
-            accessToken: newAccessToken,
+            accessToken,
 
-            refreshToken: newRefreshToken,
+            refreshToken,
 
         };
 
