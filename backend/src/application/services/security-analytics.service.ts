@@ -1,5 +1,5 @@
-import { AuditAction } from "../../domain/security/audit-action";
-import { AuditLogRepository } from "../../domain/repositories/audit-log.repository";
+import { SecurityEventRepository } from "../../domain/repositories/security-event.repository";
+import { SecurityEventType } from "../../domain/security/security-event-type";
 
 
 export class SecurityAnalyticsService {
@@ -9,7 +9,7 @@ export class SecurityAnalyticsService {
 
 
     constructor(
-        private readonly auditLogRepository: AuditLogRepository,
+        private readonly securityEventRepository: SecurityEventRepository,
     ) {}
 
 
@@ -38,15 +38,17 @@ export class SecurityAnalyticsService {
 
         const events =
 
-            await this.auditLogRepository.findSecurityEvents(
+            await this.securityEventRepository.findMany({
 
                 tenantId,
 
-                AuditAction.AUTH_FAILURE,
+                eventType:
+                    SecurityEventType.AUTHENTICATION_FAILURE,
 
-                this.getWindowStart(),
+                from:
+                    this.getWindowStart(),
 
-            );
+            });
 
 
 
@@ -117,15 +119,17 @@ export class SecurityAnalyticsService {
     ) {
 
 
-        return await this.auditLogRepository.findSecurityEvents(
+        return await this.securityEventRepository.findMany({
 
             tenantId,
 
-            AuditAction.ACCOUNT_LOCKED,
+            eventType:
+                SecurityEventType.ACCOUNT_LOCKED,
 
-            this.getWindowStart(60),
+            from:
+                this.getWindowStart(60),
 
-        );
+        });
 
 
     }
@@ -139,15 +143,17 @@ export class SecurityAnalyticsService {
     ) {
 
 
-        return await this.auditLogRepository.findSecurityEvents(
+        return await this.securityEventRepository.findMany({
 
             tenantId,
 
-            AuditAction.AUTH_FAILURE,
+            eventType:
+                SecurityEventType.AUTHENTICATION_FAILURE,
 
-            this.getWindowStart(60),
+            from:
+                this.getWindowStart(60),
 
-        );
+        });
 
 
     }

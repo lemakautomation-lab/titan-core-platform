@@ -378,4 +378,117 @@ describe("Authentication Login", () => {
     });
 
 
+
+    it("locks account after failed login threshold and persists lock event", async () => {
+
+        const { user, password } = await createTestUser();
+
+
+        const requestId =
+            `TITAN-042A-LOCK-${crypto.randomUUID()}`;
+
+
+        const userAgent =
+            "TITAN-042A-ACCOUNT-LOCK-TEST";
+
+
+        for (let attempt = 0; attempt < 5; attempt++) {
+
+            await request(app)
+                .post("/api/v1/auth/login")
+                .set("X-Request-Id", `${requestId}-${attempt}`)
+                .set("User-Agent", userAgent)
+                .send({
+
+                    tenantId: user.tenantId,
+
+                    email: user.email,
+
+                    password: "WrongPassword123!",
+
+                });
+
+        }
+
+
+        const lockedResponse =
+            await request(app)
+                .post("/api/v1/auth/login")
+                .set("X-Request-Id", requestId)
+                .set("User-Agent", userAgent)
+                .send({
+
+                    tenantId: user.tenantId,
+
+                    email: user.email,
+
+                    password: "WrongPassword123!",
+
+                });
+
+
+        expect(lockedResponse.status)
+            .toBe(401);
+
+
+
+        const userRecord =
+            await testPrisma.user.findUnique({
+
+                where: {
+                    id: user.id,
+                },
+
+            });
+
+
+        expect(userRecord?.status)
+            .toBe("LOCKED");
+
+
+
+        const securityEvents =
+            await testPrisma.securityEvent.findMany({
+
+                where: {
+
+                    userId: user.id,
+
+                    eventType: "ACCOUNT_LOCKED",
+
+                },
+
+            });
+
+
+        expect(securityEvents.length)
+            .toBeGreaterThanOrEqual(1);
+
+
+
+        const securityEvent =
+            securityEvents[
+                securityEvents.length - 1
+            ];
+
+
+        expect(securityEvent.userId)
+            .toBe(user.id);
+
+
+        expect(securityEvent.userAgent)
+            .toBe(userAgent);
+
+
+        expect(securityEvent.requestId)
+            .toBe(requestId);
+
+
+        expect(securityEvent.ipAddress)
+            .toBeDefined();
+
+
+    });
+
+
 });

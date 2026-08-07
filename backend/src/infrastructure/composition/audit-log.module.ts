@@ -1,4 +1,4 @@
-﻿import { DatabaseService } from "../database/database.service";
+import { DatabaseService } from "../database/database.service";
 
 import { PrismaAuditLogRepository } from "../repositories/audit-log.repository";
 
@@ -45,7 +45,7 @@ const securityEventService =
 
 const securityAnalyticsService =
     new SecurityAnalyticsService(
-        auditLogRepository,
+        securityEventRepository,
     );
 
 
