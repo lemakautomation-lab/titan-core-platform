@@ -1,6 +1,8 @@
-import { DatabaseService } from "../database/database.service";
+﻿import { DatabaseService } from "../database/database.service";
 
 import { PrismaAuditLogRepository } from "../repositories/audit-log.repository";
+
+import { PrismaSecurityEventRepository } from "../repositories/security-event.repository";
 
 import { AuditLogService } from "../../application/services/audit-log.service";
 
@@ -23,6 +25,12 @@ const auditLogRepository =
     );
 
 
+const securityEventRepository =
+    new PrismaSecurityEventRepository(
+        database,
+    );
+
+
 const auditLogService =
     new AuditLogService(
         auditLogRepository,
@@ -31,7 +39,7 @@ const auditLogService =
 
 const securityEventService =
     new SecurityEventService(
-        auditLogService,
+        securityEventRepository,
     );
 
 

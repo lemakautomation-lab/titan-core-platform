@@ -1,138 +1,415 @@
-import { AuditLogService } from "./audit-log.service";
+﻿import { SecurityEvent } from "../../domain/entities/security-event.entity";
 
-import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
-import { AuditAction } from "../../domain/security/audit-action";
-import { AuditResource } from "../../domain/security/audit-resource";
+import { SecurityEventRepository } from "../../domain/repositories/security-event.repository";
+
+import { SecurityEventType } from "../../domain/security/security-event-type";
 
 import { logger } from "../../logging/logger";
 
+
+export interface SecurityEventContext {
+
+    ipAddress?: string | null;
+
+    userAgent?: string | null;
+
+    requestId?: string | null;
+
+}
+
+
 export class SecurityEventService {
 
+
     constructor(
-        private readonly auditLogService: AuditLogService,
+
+        private readonly securityEventRepository: SecurityEventRepository,
+
     ) {}
 
+
+
     async recordAuthenticationSuccess(
-        tenantId: string,
-        userId: string,
+
+        tenantId: string | null,
+
+        userId: string | null,
+
         metadata?: Record<string, unknown>,
+
+        context?: SecurityEventContext,
+
     ): Promise<void> {
+
 
         logger.info(
+
             "Authentication successful",
+
             {
-                event: AuditAction.AUTH_SUCCESS,
+
+                event:
+                    SecurityEventType.AUTHENTICATION_SUCCESS,
+
                 userId,
+
                 tenantId,
+
+                requestId:
+                    context?.requestId ?? null,
+
             },
+
         );
+
 
         try {
 
-            await this.auditLogService.log(
-                tenantId,
-                userId,
-                AuditAction.AUTH_SUCCESS,
-                AuditResource.AUTHENTICATION,
-                null,
-                AuditLogStatus.SUCCESS,
-                metadata ?? null,
+
+            const securityEvent =
+
+                SecurityEvent.create(
+
+                    SecurityEventType.AUTHENTICATION_SUCCESS,
+
+                    tenantId,
+
+                    userId,
+
+                    context?.ipAddress ?? null,
+
+                    context?.userAgent ?? null,
+
+                    context?.requestId ?? null,
+
+                    metadata ?? null,
+
+                );
+
+
+            await this.securityEventRepository.create(
+
+                securityEvent,
+
             );
+
 
         } catch (error) {
 
+
             logger.error(
-                "Failed to write authentication success audit log",
-                { error },
+
+                "Failed to write authentication success security event",
+
+                {
+
+                    userId,
+
+                    tenantId,
+
+                    requestId:
+                        context?.requestId ?? null,
+
+                    error,
+
+                },
+
             );
 
         }
 
     }
+
+
 
     async recordAuthenticationFailure(
-        tenantId: string,
+
+        tenantId: string | null,
+
         userId: string | null,
+
         metadata?: Record<string, unknown>,
+
+        context?: SecurityEventContext,
+
     ): Promise<void> {
 
+
         logger.warn(
+
             "Authentication failed",
+
             {
-                event: AuditAction.AUTH_FAILURE,
+
+                event:
+                    SecurityEventType.AUTHENTICATION_FAILURE,
+
                 tenantId,
+
+                userId,
+
+                requestId:
+                    context?.requestId ?? null,
+
             },
+
         );
+
 
         try {
 
-            await this.auditLogService.log(
-                tenantId,
-                userId,
-                AuditAction.AUTH_FAILURE,
-                AuditResource.AUTHENTICATION,
-                null,
-                AuditLogStatus.FAILURE,
-                metadata ?? null,
+
+            const securityEvent =
+
+                SecurityEvent.create(
+
+                    SecurityEventType.AUTHENTICATION_FAILURE,
+
+                    tenantId,
+
+                    userId,
+
+                    context?.ipAddress ?? null,
+
+                    context?.userAgent ?? null,
+
+                    context?.requestId ?? null,
+
+                    metadata ?? null,
+
+                );
+
+
+            await this.securityEventRepository.create(
+
+                securityEvent,
+
             );
+
 
         } catch (error) {
 
+
             logger.error(
-                "Failed to write authentication failure audit log",
+
+                "Failed to write authentication failure security event",
+
                 {
+
                     tenantId,
+
+                    userId,
+
+                    requestId:
+                        context?.requestId ?? null,
+
                     error,
+
                 },
+
             );
 
         }
 
     }
+
+
+
+    async recordAccountLocked(
+
+        tenantId: string | null,
+
+        userId: string | null,
+
+        metadata?: Record<string, unknown>,
+
+        context?: SecurityEventContext,
+
+    ): Promise<void> {
+
+
+        logger.warn(
+
+            "Account locked",
+
+            {
+
+                event:
+                    SecurityEventType.ACCOUNT_LOCKED,
+
+                tenantId,
+
+                userId,
+
+                requestId:
+                    context?.requestId ?? null,
+
+            },
+
+        );
+
+
+        try {
+
+
+            const securityEvent =
+
+                SecurityEvent.create(
+
+                    SecurityEventType.ACCOUNT_LOCKED,
+
+                    tenantId,
+
+                    userId,
+
+                    context?.ipAddress ?? null,
+
+                    context?.userAgent ?? null,
+
+                    context?.requestId ?? null,
+
+                    metadata ?? null,
+
+                );
+
+
+            await this.securityEventRepository.create(
+
+                securityEvent,
+
+            );
+
+
+        } catch (error) {
+
+
+            logger.error(
+
+                "Failed to write account locked security event",
+
+                {
+
+                    tenantId,
+
+                    userId,
+
+                    requestId:
+                        context?.requestId ?? null,
+
+                    error,
+
+                },
+
+            );
+
+        }
+
+    }
+
+
 
     async recordPermissionDenied(
-        tenantId: string,
-        userId: string,
+
+        tenantId: string | null,
+
+        userId: string | null,
+
         permission: string,
+
         metadata?: Record<string, unknown>,
+
+        context?: SecurityEventContext,
+
     ): Promise<void> {
 
+
         logger.warn(
+
             "Permission denied",
+
             {
-                event: AuditAction.PERMISSION_DENIED,
+
+                event:
+                    SecurityEventType.AUTHORIZATION_FAILURE,
+
                 permission,
+
                 tenantId,
+
+                userId,
+
+                requestId:
+                    context?.requestId ?? null,
+
             },
+
         );
+
 
         try {
 
-            await this.auditLogService.log(
-                tenantId,
-                userId,
-                AuditAction.PERMISSION_DENIED,
-                AuditResource.AUTHORIZATION,
-                null,
-                AuditLogStatus.FAILURE,
-                {
-                    permission,
-                    ...(metadata ?? {}),
-                },
+
+            const securityEvent =
+
+                SecurityEvent.create(
+
+                    SecurityEventType.AUTHORIZATION_FAILURE,
+
+                    tenantId,
+
+                    userId,
+
+                    context?.ipAddress ?? null,
+
+                    context?.userAgent ?? null,
+
+                    context?.requestId ?? null,
+
+                    {
+
+                        permission,
+
+                        ...(metadata ?? {}),
+
+                    },
+
+                );
+
+
+            await this.securityEventRepository.create(
+
+                securityEvent,
+
             );
+
 
         } catch (error) {
 
+
             logger.error(
-                "Failed to write permission denied audit log",
+
+                "Failed to write authorization failure security event",
+
                 {
+
                     tenantId,
+
+                    userId,
+
+                    permission,
+
+                    requestId:
+                        context?.requestId ?? null,
+
                     error,
+
                 },
+
             );
 
         }
 
     }
+
 
 }

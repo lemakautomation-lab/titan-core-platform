@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { jwtService } from "../security/jwt";
 import { requestContextService } from "../shared/context/request-context.service";
 import { logger } from "../logging/logger";
-
+import { UnauthorizedException } from "../shared/exceptions/unauthorized.exception";
 
 export interface AuthenticatedUser {
 
@@ -15,13 +15,11 @@ export interface AuthenticatedUser {
 
 }
 
-
 export interface AuthRequest extends Request {
 
     user?: AuthenticatedUser;
 
 }
-
 
 export function authMiddleware(
     req: AuthRequest,
@@ -29,10 +27,8 @@ export function authMiddleware(
     next: NextFunction,
 ): void {
 
-
     const authorization =
         req.headers.authorization;
-
 
     if (!authorization) {
 
@@ -45,27 +41,21 @@ export function authMiddleware(
             },
         );
 
-
-        res.status(401).json({
-
-            message: "Authorization header missing",
-
-        });
-
-        return;
+        return next(
+            new UnauthorizedException(
+                "Authorization header missing",
+            ),
+        );
 
     }
 
-
     const parts =
         authorization.split(" ");
-
 
     if (
         parts.length !== 2 ||
         parts[0] !== "Bearer"
     ) {
-
 
         logger.warn(
             "Authentication failed: invalid authorization format",
@@ -76,21 +66,16 @@ export function authMiddleware(
             },
         );
 
-
-        res.status(401).json({
-
-            message: "Invalid authorization format",
-
-        });
-
-        return;
+        return next(
+            new UnauthorizedException(
+                "Invalid authorization format",
+            ),
+        );
 
     }
 
-
     const token =
         parts[1];
-
 
     try {
 
@@ -99,12 +84,10 @@ export function authMiddleware(
                 token,
             );
 
-
         if (
             !payload.userId ||
             !payload.tenantId
         ) {
-
 
             logger.warn(
                 "Authentication failed: invalid token payload",
@@ -115,18 +98,13 @@ export function authMiddleware(
                 },
             );
 
-
-            res.status(401).json({
-
-                message: "Invalid token payload",
-
-            });
-
-
-            return;
+            return next(
+                new UnauthorizedException(
+                    "Invalid token payload",
+                ),
+            );
 
         }
-
 
         const authenticatedUser = {
 
@@ -138,14 +116,11 @@ export function authMiddleware(
 
         };
 
-
         req.user =
             authenticatedUser;
 
-
         const context =
             requestContextService.get();
-
 
         if (context) {
 
@@ -169,7 +144,6 @@ export function authMiddleware(
 
         }
 
-
         logger.info(
             "Authentication successful",
             {
@@ -177,12 +151,9 @@ export function authMiddleware(
             },
         );
 
-
         next();
 
-
-    } catch (error) {
-
+    } catch {
 
         logger.warn(
             "Authentication failed: invalid or expired token",
@@ -193,12 +164,11 @@ export function authMiddleware(
             },
         );
 
-
-        res.status(401).json({
-
-            message: "Invalid or expired token",
-
-        });
+        return next(
+            new UnauthorizedException(
+                "Invalid or expired token",
+            ),
+        );
 
     }
 

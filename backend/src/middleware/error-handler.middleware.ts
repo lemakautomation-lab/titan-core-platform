@@ -4,14 +4,12 @@ import { HttpException } from "../shared/exceptions/http.exception";
 import { ValidationException } from "../shared/exceptions/validation.exception";
 import { logger } from "../logging/logger";
 
-
 export function errorHandler(
     error: unknown,
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
 ) {
-
 
     logger.error(
         "Unhandled application error",
@@ -25,11 +23,6 @@ export function errorHandler(
         },
     );
 
-
-    /*
-        Validation Errors
-        Returns structured field-level validation failures
-    */
     if (error instanceof ValidationException) {
 
         return res.status(error.statusCode).json({
@@ -37,7 +30,7 @@ export function errorHandler(
             success: false,
 
             error: {
-                type: "VALIDATION_ERROR",
+                code: error.code ?? "VALIDATION_ERROR",
                 message: error.message,
                 details: error.errors,
             },
@@ -47,13 +40,9 @@ export function errorHandler(
             path: req.originalUrl,
 
         });
+
     }
 
-
-    /*
-        Application HTTP Exceptions
-        Controlled errors thrown by the domain/application layers
-    */
     if (error instanceof HttpException) {
 
         return res.status(error.statusCode).json({
@@ -61,7 +50,7 @@ export function errorHandler(
             success: false,
 
             error: {
-                type: error.constructor.name,
+                code: error.code ?? "HTTP_ERROR",
                 message: error.message,
             },
 
@@ -70,13 +59,8 @@ export function errorHandler(
             path: req.originalUrl,
 
         });
+
     }
-
-
-    /*
-        Unknown Errors
-        Prevents leaking internal details
-    */
 
     if (error instanceof Error) {
 
@@ -89,13 +73,12 @@ export function errorHandler(
 
     }
 
-
     return res.status(500).json({
 
         success: false,
 
         error: {
-            type: "INTERNAL_SERVER_ERROR",
+            code: "INTERNAL_SERVER_ERROR",
             message: "An unexpected error occurred.",
         },
 
@@ -104,4 +87,5 @@ export function errorHandler(
         path: req.originalUrl,
 
     });
+
 }

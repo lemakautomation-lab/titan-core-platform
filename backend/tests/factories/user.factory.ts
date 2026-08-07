@@ -1,6 +1,7 @@
 import { testPrisma } from "../helpers/prisma-test.client";
 import { hashTestPassword } from "../helpers/password.helper";
 import { createTestTenant } from "./tenant.factory";
+import { assignPermissions } from "./rbac.factory";
 
 
 export async function createTestUser(
@@ -10,7 +11,9 @@ export async function createTestUser(
 
         password?: string;
 
-    }
+        permissions?: string[];
+
+    },
 
 ) {
 
@@ -25,7 +28,7 @@ export async function createTestUser(
 
     const passwordHash =
         await hashTestPassword(
-            password
+            password,
         );
 
 
@@ -41,18 +44,36 @@ export async function createTestUser(
                     overrides?.email ??
                     `test-${Date.now()}@titan.test`,
 
-                passwordHash
+                passwordHash,
 
-            }
+            },
 
         });
+
+
+    if (
+        overrides?.permissions &&
+        overrides.permissions.length > 0
+    ) {
+
+        await assignPermissions(
+
+            user.id,
+
+            overrides.permissions,
+
+        );
+
+    }
 
 
     return {
 
         user,
 
-        password
+        password,
+
+        tenant,
 
     };
 

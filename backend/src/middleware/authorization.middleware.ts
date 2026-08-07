@@ -15,6 +15,12 @@ import { RequestWithId }
 import { requestContextService }
     from "../shared/context/request-context.service";
 
+import { UnauthorizedException }
+    from "../shared/exceptions/unauthorized.exception";
+
+import { ForbiddenException }
+    from "../shared/exceptions/forbidden.exception";
+
 
 type AuthorizationRequest =
     AuthRequest & RequestWithId;
@@ -42,17 +48,13 @@ export function requirePermission(
 
             if (!authUser) {
 
-                return res.status(401).json({
+                return next(
 
-                    success: false,
+                    new UnauthorizedException(
+                        "Unauthorized",
+                    ),
 
-                    error: {
-
-                        message: "Unauthorized",
-
-                    },
-
-                });
+                );
 
             }
 
@@ -89,18 +91,13 @@ export function requirePermission(
 
                 );
 
-                return res.status(403).json({
+                return next(
 
-                    success: false,
+                    new ForbiddenException(
+                        "Forbidden",
+                    ),
 
-                    error: {
-
-                        message:
-                            "Forbidden",
-
-                    },
-
-                });
+                );
 
             }
 

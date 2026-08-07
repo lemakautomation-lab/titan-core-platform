@@ -127,6 +127,38 @@ model AuditLog {
   @@index([createdAt])
 }
 
+
+model SecurityEvent {
+  id         String            @id @default(uuid())
+  eventType  SecurityEventType
+  tenantId   String?
+  userId     String?
+  ipAddress  String?
+  userAgent  String?
+  requestId  String?
+  metadata   Json?
+  createdAt  DateTime          @default(now())
+
+  @@index([eventType])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([ipAddress])
+  @@index([requestId])
+  @@index([createdAt])
+  @@index([eventType, createdAt])
+  @@index([tenantId, createdAt])
+}
+enum SecurityEventType {
+  AUTHENTICATION_SUCCESS
+  AUTHENTICATION_FAILURE
+  AUTHORIZATION_FAILURE
+  INVALID_AUTH_HEADER
+  INVALID_TOKEN
+  TOKEN_EXPIRED
+  ACCOUNT_LOCKED
+  SUSPICIOUS_ACTIVITY
+  RATE_LIMIT_EXCEEDED
+}
 enum RecordStatus {
   ACTIVE
   INACTIVE
@@ -151,3 +183,5 @@ enum AuditLogStatus {
   SUCCESS
   FAILURE
 }
+
+

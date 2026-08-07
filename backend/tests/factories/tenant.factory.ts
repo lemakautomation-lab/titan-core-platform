@@ -1,3 +1,5 @@
+import crypto from "node:crypto";
+
 import { testPrisma } from "../helpers/prisma-test.client";
 
 
@@ -8,12 +10,12 @@ export async function createTestTenant() {
         data: {
 
             name:
-                "Test Tenant",
+                `Test Tenant ${crypto.randomUUID()}`,
 
             slug:
-                `test-tenant-${Date.now()}`
+                `test-tenant-${crypto.randomUUID()}`,
 
-        }
+        },
 
     });
 
