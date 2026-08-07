@@ -4,7 +4,12 @@
 
 import {
     SecurityEventRepository,
+    SecurityEventQuery,
 } from "../../domain/repositories/security-event.repository";
+
+import {
+    SecurityEventType,
+} from "../../domain/security/security-event-type";
 
 import {
     DatabaseService,
@@ -53,6 +58,118 @@ implements SecurityEventRepository {
         );
 
     }
+
+
+
+    async findMany(
+
+        query: SecurityEventQuery,
+
+    ): Promise<SecurityEvent[]> {
+
+
+        const events =
+
+            await this.database.prisma.securityEvent.findMany({
+
+                where: {
+
+                    tenantId:
+                        query.tenantId,
+
+                    userId:
+                        query.userId,
+
+                    eventType:
+                        query.eventType,
+
+                    createdAt: {
+
+                        gte:
+                            query.from,
+
+                        lte:
+                            query.to,
+
+                    },
+
+                },
+
+                orderBy: {
+
+                    createdAt: "desc",
+
+                },
+
+            });
+
+
+
+        return events.map(
+
+            event =>
+                SecurityEventMapper.toDomain(
+                    event,
+                ),
+
+        );
+
+    }
+
+
+
+    async findRecent(
+
+        tenantId: string,
+
+        from: Date,
+
+    ): Promise<SecurityEvent[]> {
+
+
+        return this.findMany({
+
+            tenantId,
+
+            from,
+
+        });
+
+    }
+
+
+
+    async countByType(
+
+        tenantId: string,
+
+        eventType: SecurityEventType,
+
+        from: Date,
+
+    ): Promise<number> {
+
+
+        return await this.database.prisma.securityEvent.count({
+
+            where: {
+
+                tenantId,
+
+                eventType,
+
+                createdAt: {
+
+                    gte: from,
+
+                },
+
+            },
+
+        });
+
+    }
+
 
 
 }
