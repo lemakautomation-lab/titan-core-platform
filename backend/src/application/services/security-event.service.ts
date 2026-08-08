@@ -1,4 +1,4 @@
-﻿import { SecurityEvent } from "../../domain/entities/security-event.entity";
+import { SecurityEvent } from "../../domain/entities/security-event.entity";
 
 import { SecurityEventRepository } from "../../domain/repositories/security-event.repository";
 
@@ -412,4 +412,73 @@ export class SecurityEventService {
     }
 
 
+
+    async recordTokenRefreshSuccess(
+        userId: string,
+        metadata?: Record<string, unknown>,
+        context?: SecurityEventContext,
+    ): Promise<void> {
+
+
+        const securityEvent =
+            SecurityEvent.create(
+
+                SecurityEventType.TOKEN_REFRESH_SUCCESS,
+
+                null,
+
+                userId,
+
+                context?.ipAddress ?? null,
+
+                context?.userAgent ?? null,
+
+                context?.requestId ?? null,
+
+                metadata ?? null,
+
+            );
+
+
+        await this.securityEventRepository.create(
+            securityEvent,
+        );
+
+    }
+
+
+
+    async recordTokenRefreshFailure(
+        metadata?: Record<string, unknown>,
+        context?: SecurityEventContext,
+    ): Promise<void> {
+
+
+        const securityEvent =
+            SecurityEvent.create(
+
+                SecurityEventType.TOKEN_REFRESH_FAILURE,
+
+                null,
+
+                null,
+
+                context?.ipAddress ?? null,
+
+                context?.userAgent ?? null,
+
+                context?.requestId ?? null,
+
+                metadata ?? null,
+
+            );
+
+
+        await this.securityEventRepository.create(
+            securityEvent,
+        );
+
+    }
+
 }
+

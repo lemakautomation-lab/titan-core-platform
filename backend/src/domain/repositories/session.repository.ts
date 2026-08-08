@@ -6,6 +6,8 @@ export interface SessionRepository {
 
     findByUserId(userId: string): Promise<Session[]>;
 
+    findByToken(token: string): Promise<Session | null>;
+
     findActiveByToken(token: string): Promise<Session | null>;
 
     create(session: Session): Promise<Session>;

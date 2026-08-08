@@ -1,0 +1,22 @@
+$path = ".\prisma\schema.prisma"
+
+$content = Get-Content $path -Raw
+
+$content = $content -replace `
+"enum SecurityEventType \{\r?\n  AUTHENTICATION_SUCCESS\r?\n  AUTHENTICATION_FAILURE\r?\n  AUTHORIZATION_FAILURE\r?\n  INVALID_AUTH_HEADER\r?\n  INVALID_TOKEN\r?\n  TOKEN_EXPIRED\r?\n  ACCOUNT_LOCKED\r?\n  SUSPICIOUS_ACTIVITY\r?\n  RATE_LIMIT_EXCEEDED\r?\n\}",
+"enum SecurityEventType {
+  AUTHENTICATION_SUCCESS
+  AUTHENTICATION_FAILURE
+  AUTHORIZATION_FAILURE
+  INVALID_AUTH_HEADER
+  INVALID_TOKEN
+  TOKEN_EXPIRED
+  TOKEN_REFRESH_SUCCESS
+  ACCOUNT_LOCKED
+  SUSPICIOUS_ACTIVITY
+  RATE_LIMIT_EXCEEDED
+}"
+
+Set-Content `
+    -Path $path `
+    -Value $content

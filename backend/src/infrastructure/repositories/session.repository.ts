@@ -12,9 +12,10 @@ export class PrismaSessionRepository implements SessionRepository {
 
     async findById(id: string): Promise<Session | null> {
 
-        const session = await this.database.prisma.session.findUnique({
-            where: { id },
-        });
+        const session =
+            await this.database.prisma.session.findUnique({
+                where: { id },
+            });
 
         return session
             ? SessionMapper.toDomain(session)
@@ -24,22 +25,39 @@ export class PrismaSessionRepository implements SessionRepository {
 
     async findByUserId(userId: string): Promise<Session[]> {
 
-        const sessions = await this.database.prisma.session.findMany({
-            where: { userId },
-        });
+        const sessions =
+            await this.database.prisma.session.findMany({
+                where: { userId },
+            });
 
         return sessions.map(SessionMapper.toDomain);
 
     }
 
+    async findByToken(token: string): Promise<Session | null> {
+
+        const session =
+            await this.database.prisma.session.findUnique({
+                where: {
+                    refreshToken: token,
+                },
+            });
+
+        return session
+            ? SessionMapper.toDomain(session)
+            : null;
+
+    }
+
     async findActiveByToken(token: string): Promise<Session | null> {
 
-        const session = await this.database.prisma.session.findFirst({
-            where: {
-                refreshToken: token,
-                status: "ACTIVE",
-            },
-        });
+        const session =
+            await this.database.prisma.session.findFirst({
+                where: {
+                    refreshToken: token,
+                    status: "ACTIVE",
+                },
+            });
 
         return session
             ? SessionMapper.toDomain(session)
@@ -49,11 +67,17 @@ export class PrismaSessionRepository implements SessionRepository {
 
     async create(session: Session): Promise<Session> {
 
-        const created = await this.database.prisma.session.create({
-            data: SessionMapper.toPersistence(session),
-        });
+        const created =
+            await this.database.prisma.session.create({
+                data:
+                    SessionMapper.toPersistence(
+                        session,
+                    ),
+            });
 
-        return SessionMapper.toDomain(created);
+        return SessionMapper.toDomain(
+            created,
+        );
 
     }
 
