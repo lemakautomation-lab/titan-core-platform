@@ -73,6 +73,57 @@ describe("Refresh Token", () => {
 
     });
 
+    it("rejects reuse of a rotated refresh token", async () => {
+
+        const {
+            user,
+            password,
+        } = await createTestUser();
+
+        const login =
+            await request(app)
+                .post("/api/v1/auth/login")
+                .send({
+                    tenantId: user.tenantId,
+                    email: user.email,
+                    password,
+                });
+
+        expect(login.status).toBe(200);
+
+        const originalRefresh =
+            login.body.data.refreshToken;
+
+        const rotation =
+            await request(app)
+                .post("/api/v1/auth/refresh")
+                .send({
+                    refreshToken: originalRefresh,
+                });
+
+        expect(rotation.status).toBe(200);
+
+        expect(
+            rotation.body.data.refreshToken
+        ).toBeDefined();
+
+        expect(
+            rotation.body.data.refreshToken
+        ).not.toBe(originalRefresh);
+
+        const replay =
+            await request(app)
+                .post("/api/v1/auth/refresh")
+                .send({
+                    refreshToken: originalRefresh,
+                });
+
+        expect(replay.status).toBe(401);
+
+        expect(replay.body.success).toBe(false);
+
+    });
+
     it("rejects an invalid refresh token", async () => {
 
         const response =
