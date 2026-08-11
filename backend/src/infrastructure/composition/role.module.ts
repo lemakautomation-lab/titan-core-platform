@@ -101,8 +101,6 @@ export const roleModule = {
     getRolePermissionsUseCase:
         new GetRolePermissionsUseCase(
             roleRepository,
-            rolePermissionRepository,
-            permissionRepository,
         ),
 
 
@@ -115,6 +113,8 @@ export const roleModule = {
             auditLogModule.auditLogService,
         ),
 };
+
+
 
 
 

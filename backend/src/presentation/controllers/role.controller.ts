@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
 
@@ -92,16 +92,24 @@ export class RoleController {
 
     }
 
-    async getById(req: Request, res: Response): Promise<void> {
+    async getById(req: AuthRequest, res: Response): Promise<void> {
+
+    const authUser = req.user;
+
+    if (!authUser) {
+        res.status(401).json({
+            error: "Unauthorized",
+        });
+        return;
+    }
 
         const result =
             await this.getRoleByIdUseCase.execute(
 
                 new GetRoleByIdQuery(
-
-                    String(req.params.id),
-
-                ),
+                String(req.params.id),
+                authUser.tenantId,
+            ),
 
             );
 
@@ -119,12 +127,23 @@ export class RoleController {
 
     }
 
-    async list(req: Request, res: Response): Promise<void> {
+    async list(req: AuthRequest, res: Response): Promise<void> {
+
+    const authUser = req.user;
+
+    if (!authUser) {
+        res.status(401).json({
+            error: "Unauthorized",
+        });
+        return;
+    }
 
         const result =
             await this.listRolesUseCase.execute(
 
-                new ListRolesQuery(),
+                new ListRolesQuery(
+                authUser.tenantId,
+            ),
 
             );
 
@@ -285,16 +304,24 @@ export class RoleController {
 
     }
 
-    async getPermissions(req: Request, res: Response): Promise<void> {
+    async getPermissions(req: AuthRequest, res: Response): Promise<void> {
+
+    const authUser = req.user;
+
+    if (!authUser) {
+        res.status(401).json({
+            error: "Unauthorized",
+        });
+        return;
+    }
 
         const result =
             await this.getRolePermissionsUseCase.execute(
 
                 new GetRolePermissionsQuery(
-
-                    String(req.params.id),
-
-                ),
+                String(req.params.id),
+                authUser.tenantId,
+            ),
 
             );
 
@@ -361,6 +388,8 @@ export class RoleController {
     }
 
 }
+
+
 
 
 

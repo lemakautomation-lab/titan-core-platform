@@ -8,6 +8,8 @@ export class UpdateOrganisationCommand {
 
         public readonly slug: string,
 
+        public readonly tenantId: string,
+
     ) {}
 
 }

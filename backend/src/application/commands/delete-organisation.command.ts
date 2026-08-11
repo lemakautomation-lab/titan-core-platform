@@ -4,6 +4,8 @@ export class DeleteOrganisationCommand {
 
         public readonly id: string,
 
+        public readonly tenantId: string,
+
     ) {}
 
 }

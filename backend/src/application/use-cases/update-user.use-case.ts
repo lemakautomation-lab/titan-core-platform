@@ -15,16 +15,21 @@ import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
 import { AuditAction } from "../../domain/security/audit-action";
 
 export class UpdateUserUseCase
-    implements UseCase<UpdateUserCommand, Result<UserDto>>
+implements UseCase<UpdateUserCommand, Result<UserDto>>
 {
 
     constructor(
+
         private readonly userRepository: UserRepository,
+
         private readonly auditLogService: AuditLogService,
+
     ) {}
 
     async execute(
+
         command: UpdateUserCommand,
+
     ): Promise<Result<UserDto>> {
 
         const user =
@@ -36,6 +41,17 @@ export class UpdateUserUseCase
 
             return Result.failure(
                 "User not found.",
+            );
+
+        }
+
+        if (
+            user.tenantId !==
+            command.tenantId
+        ) {
+
+            return Result.failure(
+                "Forbidden.",
             );
 
         }
@@ -62,10 +78,15 @@ export class UpdateUserUseCase
         }
 
         user.updateProfile(
+
             command.organisationId,
+
             command.email,
+
             command.firstName,
+
             command.lastName,
+
         );
 
         if (command.password) {
@@ -103,17 +124,13 @@ export class UpdateUserUseCase
         );
 
         return Result.success(
+
             UserApplicationMapper.toDto(
                 updatedUser,
             ),
+
         );
 
     }
 
 }
-
-
-
-
-
-

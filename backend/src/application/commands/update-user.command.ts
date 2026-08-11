@@ -14,6 +14,8 @@ export class UpdateUserCommand {
 
         public readonly lastName: string | null,
 
+        public readonly tenantId: string,
+
     ) {}
 
 }

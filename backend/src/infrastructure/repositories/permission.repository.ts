@@ -6,59 +6,51 @@ import { DatabaseService } from "../database/database.service";
 
 import { PermissionMapper } from "../mappers/permission.mapper";
 
-
 export class PrismaPermissionRepository
 implements PermissionRepository {
-
 
     constructor(
         private readonly database: DatabaseService,
     ) {}
 
-
     async findById(
         id: string,
+        tenantId?: string,
     ): Promise<Permission | null> {
 
-
         const permission =
-            await this.database.prisma.permission.findUnique({
+            await this.database.prisma.permission.findFirst({
 
                 where: {
                     id,
+                    ...(tenantId
+                        ? { tenantId }
+                        : {}),
                 },
 
             });
 
-
         return permission
             ? PermissionMapper.toDomain(permission)
             : null;
-
     }
 
-
     async findAll(): Promise<Permission[]> {
-
 
         const permissions =
             await this.database.prisma.permission.findMany();
 
-
         return permissions.map(
             PermissionMapper.toDomain,
         );
-
     }
-
 
     async findByName(
         name: string,
     ): Promise<Permission | null> {
 
-
         const permission =
-            await this.database.prisma.permission.findUnique({
+            await this.database.prisma.permission.findFirst({
 
                 where: {
                     name,
@@ -66,18 +58,14 @@ implements PermissionRepository {
 
             });
 
-
         return permission
             ? PermissionMapper.toDomain(permission)
             : null;
-
     }
-
 
     async create(
         permission: Permission,
     ): Promise<Permission> {
-
 
         const created =
             await this.database.prisma.permission.create({
@@ -89,26 +77,20 @@ implements PermissionRepository {
 
             });
 
-
         return PermissionMapper.toDomain(
             created,
         );
-
     }
-
 
     async update(
         permission: Permission,
     ): Promise<Permission> {
 
-
         const updated =
             await this.database.prisma.permission.update({
 
                 where: {
-
                     id: permission.id,
-
                 },
 
                 data:
@@ -118,36 +100,30 @@ implements PermissionRepository {
 
             });
 
-
         return PermissionMapper.toDomain(
             updated,
         );
-
     }
 
+    async delete(
+        id: string,
+    ): Promise<void> {
 
- async delete(
-    id: string,
-): Promise<void> {
+        await this.database.prisma.rolePermission.deleteMany({
 
-    await this.database.prisma.rolePermission.deleteMany({
+            where: {
+                permissionId: id,
+            },
 
-        where: {
-            permissionId: id,
-        },
+        });
 
-    });
+        await this.database.prisma.permission.delete({
 
+            where: {
+                id,
+            },
 
-    await this.database.prisma.permission.delete({
-
-        where: {
-            id,
-        },
-
-    });
-
-}
-
+        });
+    }
 
 }

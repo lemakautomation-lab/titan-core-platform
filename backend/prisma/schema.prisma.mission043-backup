@@ -17,8 +17,6 @@ model Tenant {
   auditLogs     AuditLog[]
   organisations Organisation[]
   users         User[]
-  roles         Role[]
-  permissions   Permission[]
 }
 
 model Organisation {
@@ -57,24 +55,18 @@ model User {
 
 model Role {
   id          String           @id @default(uuid())
-  name        String
+  name        String           @unique
   description String?
-  tenantId    String
-  tenant      Tenant           @relation(fields: [tenantId], references: [id])
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   permissions RolePermission[]
   userRoles   UserRole[]
-
-  @@unique([tenantId, name])
 }
 
 model Permission {
   id          String           @id @default(uuid())
-  name        String
+  name        String           @unique
   description String?
-  tenantId    String
-  tenant      Tenant           @relation(fields: [tenantId], references: [id])
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   roles       RolePermission[]
@@ -135,16 +127,17 @@ model AuditLog {
   @@index([createdAt])
 }
 
+
 model SecurityEvent {
-  id        String            @id @default(uuid())
-  eventType SecurityEventType
-  tenantId  String?
-  userId    String?
-  ipAddress String?
-  userAgent String?
-  requestId String?
-  metadata  Json?
-  createdAt DateTime          @default(now())
+  id         String            @id @default(uuid())
+  eventType  SecurityEventType
+  tenantId   String?
+  userId     String?
+  ipAddress  String?
+  userAgent  String?
+  requestId  String?
+  metadata   Json?
+  createdAt  DateTime          @default(now())
 
   @@index([eventType])
   @@index([tenantId])
@@ -155,7 +148,6 @@ model SecurityEvent {
   @@index([eventType, createdAt])
   @@index([tenantId, createdAt])
 }
-
 enum SecurityEventType {
   AUTHENTICATION_SUCCESS
   AUTHENTICATION_FAILURE
@@ -170,7 +162,6 @@ enum SecurityEventType {
   SUSPICIOUS_ACTIVITY
   RATE_LIMIT_EXCEEDED
 }
-
 enum RecordStatus {
   ACTIVE
   INACTIVE
@@ -195,3 +186,9 @@ enum AuditLogStatus {
   SUCCESS
   FAILURE
 }
+
+
+
+
+
+

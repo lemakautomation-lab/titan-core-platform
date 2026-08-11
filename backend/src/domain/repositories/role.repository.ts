@@ -3,18 +3,37 @@ import { Permission } from "../entities/permission.entity";
 
 export interface RoleRepository {
 
-    findById(id: string): Promise<Role | null>;
+    findById(
+        id: string,
+        tenantId: string,
+    ): Promise<Role | null>;
 
-    findAll(): Promise<Role[]>;
+    findAll(
+        tenantId: string,
+    ): Promise<Role[]>;
 
-    findByName(name: string): Promise<Role | null>;
+    findByName(
+        name: string,
+        tenantId: string,
+    ): Promise<Role | null>;
 
-    create(role: Role): Promise<Role>;
+    create(
+        role: Role,
+    ): Promise<Role>;
 
-    update(role: Role): Promise<Role>;
+    update(
+        role: Role,
+        tenantId: string,
+    ): Promise<Role>;
 
-    delete(id: string): Promise<void>;
+    delete(
+        id: string,
+        tenantId: string,
+    ): Promise<void>;
 
-    findPermissions(roleId: string): Promise<Permission[]>;
+    findPermissions(
+        roleId: string,
+        tenantId: string,
+    ): Promise<Permission[]>;
 
 }

@@ -6,6 +6,8 @@ export class Permission {
 
         public readonly id: string,
 
+        public readonly tenantId: string,
+
         public code: string,
 
         public name: string,
@@ -18,9 +20,9 @@ export class Permission {
 
     ) {}
 
-
-
     static create(
+
+        tenantId: string,
 
         code: string,
 
@@ -30,9 +32,13 @@ export class Permission {
 
     ): Permission {
 
+        const now = new Date();
+
         return new Permission(
 
             randomUUID(),
+
+            tenantId,
 
             code,
 
@@ -40,19 +46,19 @@ export class Permission {
 
             description ?? "",
 
-            new Date(),
+            now,
 
-            new Date(),
+            now,
 
         );
 
     }
 
-
-
     static restore(
 
         id: string,
+
+        tenantId: string,
 
         code: string,
 
@@ -70,6 +76,8 @@ export class Permission {
 
             id,
 
+            tenantId,
+
             code,
 
             name,
@@ -84,8 +92,6 @@ export class Permission {
 
     }
 
-
-
     rename(
 
         name: string,
@@ -98,8 +104,6 @@ export class Permission {
 
     }
 
-
-
     updateDescription(
 
         description: string | null,
@@ -111,8 +115,6 @@ export class Permission {
         this.updatedAt = new Date();
 
     }
-
-
 
     update(
 
@@ -127,8 +129,6 @@ export class Permission {
         this.updateDescription(description ?? "");
 
     }
-
-
 
     getCode(): string {
 

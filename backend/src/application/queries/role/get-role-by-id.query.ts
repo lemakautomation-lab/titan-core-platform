@@ -4,6 +4,8 @@ export class GetRoleByIdQuery {
 
         public readonly id: string,
 
+        public readonly tenantId: string,
+
     ) {}
 
 }

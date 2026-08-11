@@ -11,9 +11,8 @@ import {
     AuditLogStatus,
 } from "../../domain/entities/audit-log.entity";
 
-
 export class RemoveRoleFromUserUseCase
-    implements UseCase<RemoveRoleFromUserCommand, Result<void>>
+implements UseCase<RemoveRoleFromUserCommand, Result<void>>
 {
 
     constructor(
@@ -45,10 +44,22 @@ export class RemoveRoleFromUserUseCase
 
         }
 
+        if (
+            user.tenantId !==
+            command.tenantId
+        ) {
+
+            return Result.failure(
+                "Forbidden.",
+            );
+
+        }
+
         const role =
             await this.roleRepository.findById(
-                command.roleId,
-            );
+            command.roleId,
+            command.tenantId,
+        );
 
         if (!role) {
 
@@ -106,3 +117,7 @@ export class RemoveRoleFromUserUseCase
     }
 
 }
+
+
+
+

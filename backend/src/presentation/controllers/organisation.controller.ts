@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 
 import { CreateOrganisationCommand } from "../../application/commands/create-organisation.command";
 import { UpdateOrganisationCommand } from "../../application/commands/update-organisation.command";
@@ -13,9 +13,9 @@ import { ListOrganisationsUseCase } from "../../application/use-cases/list-organ
 import { UpdateOrganisationUseCase } from "../../application/use-cases/update-organisation.use-case";
 import { DeleteOrganisationUseCase } from "../../application/use-cases/delete-organisation.use-case";
 
+import { AuthRequest } from "../../middleware/auth.middleware";
 
 export class OrganisationController {
-
 
     constructor(
 
@@ -31,95 +31,117 @@ export class OrganisationController {
 
     ) {}
 
-
-
     async create(
-        req: Request,
+        req: AuthRequest,
         res: Response,
     ): Promise<void> {
 
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
         const command =
             new CreateOrganisationCommand(
-                req.body.tenantId,
+                authUser.tenantId,
                 req.body.name,
             );
 
         const result =
-            await this.createOrganisationUseCase.execute(command);
+            await this.createOrganisationUseCase.execute(
+                command,
+            );
 
         if (!result.isSuccess) {
-
             res.status(400).json({
                 error: result.error,
             });
-
             return;
         }
 
         res.status(201).json(result.value);
-
     }
 
-
-
     async getById(
-        req: Request,
+        req: AuthRequest,
         res: Response,
     ): Promise<void> {
 
-        const query =
-            new GetOrganisationByIdQuery(
-                String(req.params.id),
-            );
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
 
         const result =
-            await this.getOrganisationByIdUseCase.execute(query);
+            await this.getOrganisationByIdUseCase.execute(
+                new GetOrganisationByIdQuery(
+                    String(req.params.id),
+                    authUser.tenantId,
+                ),
+            );
 
         if (!result.isSuccess) {
-
             res.status(404).json({
                 error: result.error,
             });
-
             return;
         }
 
         res.status(200).json(result.value);
-
     }
 
-
-
     async list(
-        req: Request,
+        req: AuthRequest,
         res: Response,
     ): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
 
         const result =
             await this.listOrganisationsUseCase.execute(
-                new ListOrganisationsQuery(),
+                new ListOrganisationsQuery(
+                    authUser.tenantId,
+                ),
             );
 
         if (!result.isSuccess) {
-
             res.status(400).json({
                 error: result.error,
             });
-
             return;
         }
 
         res.status(200).json(result.value);
-
     }
 
-
-
     async update(
-        req: Request,
+        req: AuthRequest,
         res: Response,
     ): Promise<void> {
 
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
 
         const slug =
             req.body.name
@@ -128,74 +150,59 @@ export class OrganisationController {
                 .replace(/\s+/g, "-")
                 .replace(/[^a-z0-9-]/g, "");
 
-
-
         const command =
             new UpdateOrganisationCommand(
-
                 String(req.params.id),
-
                 req.body.name,
-
                 slug,
-
+                authUser.tenantId,
             );
-
-
 
         const result =
             await this.updateOrganisationUseCase.execute(
                 command,
             );
 
-
         if (!result.isSuccess) {
-
-            res.status(400).json({
-                error: result.error,
-            });
-
-            return;
-        }
-
-
-        res.status(200).json(result.value);
-
-    }
-
-
-
-    async delete(
-        req: Request,
-        res: Response,
-    ): Promise<void> {
-
-
-        const command =
-            new DeleteOrganisationCommand(
-                String(req.params.id),
-            );
-
-
-        const result =
-            await this.deleteOrganisationUseCase.execute(
-                command,
-            );
-
-
-        if (!result.isSuccess) {
-
             res.status(404).json({
                 error: result.error,
             });
-
             return;
         }
 
-
-        res.status(204).send();
-
+        res.status(200).json(result.value);
     }
 
+    async delete(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const result =
+            await this.deleteOrganisationUseCase.execute(
+                new DeleteOrganisationCommand(
+                    String(req.params.id),
+                    authUser.tenantId,
+                ),
+            );
+
+        if (!result.isSuccess) {
+            res.status(404).json({
+                error: result.error,
+            });
+            return;
+        }
+
+        res.status(204).send();
+    }
 
 }

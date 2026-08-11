@@ -9,18 +9,22 @@ import { AuditLogService } from "../services/audit-log.service";
 import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
 import { AuditAction } from "../../domain/security/audit-action";
 
-
 export class DeleteUserUseCase
-    implements UseCase<DeleteUserCommand, Result<void>>
+implements UseCase<DeleteUserCommand, Result<void>>
 {
 
     constructor(
+
         private readonly userRepository: UserRepository,
+
         private readonly auditLogService: AuditLogService,
+
     ) {}
 
     async execute(
+
         command: DeleteUserCommand,
+
     ): Promise<Result<void>> {
 
         const user =
@@ -32,6 +36,17 @@ export class DeleteUserUseCase
 
             return Result.failure(
                 "User not found.",
+            );
+
+        }
+
+        if (
+            user.tenantId !==
+            command.tenantId
+        ) {
+
+            return Result.failure(
+                "Forbidden.",
             );
 
         }
@@ -65,7 +80,3 @@ export class DeleteUserUseCase
     }
 
 }
-
-
-
-

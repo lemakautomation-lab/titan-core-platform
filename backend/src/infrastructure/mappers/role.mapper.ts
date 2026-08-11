@@ -11,6 +11,8 @@ export class RoleMapper {
 
             prisma.id,
 
+            prisma.tenantId,
+
             prisma.name,
 
             prisma.description,
@@ -30,6 +32,8 @@ export class RoleMapper {
         return {
 
             id: role.id,
+
+            tenantId: role.tenantId,
 
             name: role.name,
 

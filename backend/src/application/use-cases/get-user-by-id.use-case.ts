@@ -10,9 +10,8 @@ import { GetUserByIdQuery } from "../queries/user/get-user-by-id.query";
 
 import { UserApplicationMapper } from "../mappers/user.mapper";
 
-
 export class GetUserByIdUseCase
-    implements UseCase<GetUserByIdQuery, Result<UserDto>>
+implements UseCase<GetUserByIdQuery, Result<UserDto>>
 {
 
     constructor(
@@ -33,6 +32,18 @@ export class GetUserByIdUseCase
 
             return Result.failure(
                 "User not found.",
+            );
+
+        }
+
+
+        if (
+            user.tenantId !==
+            query.tenantId
+        ) {
+
+            return Result.failure(
+                "Forbidden.",
             );
 
         }

@@ -6,6 +6,8 @@ export class Role {
 
         public readonly id: string,
 
+        public readonly tenantId: string,
+
         public name: string,
 
         public description: string | null,
@@ -18,6 +20,8 @@ export class Role {
 
     static create(
 
+        tenantId: string,
+
         name: string,
 
         description: string | null,
@@ -29,6 +33,8 @@ export class Role {
         return new Role(
 
             randomUUID(),
+
+            tenantId,
 
             name,
 
@@ -46,6 +52,8 @@ export class Role {
 
         id: string,
 
+        tenantId: string,
+
         name: string,
 
         description: string | null,
@@ -59,6 +67,8 @@ export class Role {
         return new Role(
 
             id,
+
+            tenantId,
 
             name,
 

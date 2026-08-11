@@ -1,12 +1,10 @@
 import { UseCase } from "../common/use-case.interface";
+
 import { Result } from "../common/result";
 
 import { GetRolePermissionsQuery } from "../queries/role/get-role-permissions.query";
 
 import { RoleRepository } from "../../domain/repositories/role.repository";
-import { RolePermissionRepository } from "../../domain/repositories/role-permission.repository";
-import { PermissionRepository } from "../../domain/repositories/permission.repository";
-
 
 export class GetRolePermissionsUseCase
 implements UseCase<GetRolePermissionsQuery, Result<any[]>>
@@ -16,26 +14,20 @@ implements UseCase<GetRolePermissionsQuery, Result<any[]>>
 
         private readonly roleRepository: RoleRepository,
 
-        private readonly rolePermissionRepository: RolePermissionRepository,
-
-        private readonly permissionRepository: PermissionRepository,
-
     ) {}
 
-
     async execute(
-
         query: GetRolePermissionsQuery,
-
     ): Promise<Result<any[]>> {
 
-
         const role =
-
             await this.roleRepository.findById(
-                query.roleId,
-            );
 
+                query.roleId,
+
+                query.tenantId,
+
+            );
 
         if (!role) {
 
@@ -45,30 +37,19 @@ implements UseCase<GetRolePermissionsQuery, Result<any[]>>
 
         }
 
+        const permissions =
+            await this.roleRepository.findPermissions(
 
-        const assignments =
-
-            await this.rolePermissionRepository.findAllByRoleId(
                 query.roleId,
+
+                query.tenantId,
+
             );
 
+        return Result.success(
 
-        const permissions = [];
-
-
-        for (const assignment of assignments) {
-
-
-            const permission =
-
-                await this.permissionRepository.findById(
-                    assignment.permissionId,
-                );
-
-
-            if (permission) {
-
-                permissions.push({
+            permissions.map(
+                permission => ({
 
                     id: permission.id,
 
@@ -76,15 +57,9 @@ implements UseCase<GetRolePermissionsQuery, Result<any[]>>
 
                     description: permission.description,
 
-                });
+                }),
+            ),
 
-            }
-
-        }
-
-
-        return Result.success(
-            permissions,
         );
 
     }

@@ -6,17 +6,12 @@ import {
     AuditLogStatus,
 } from "../../domain/entities/audit-log.entity";
 
-
 export class GetUserRolesUseCase {
 
     constructor(
-
         private readonly userRepository: UserRepository,
-
         private readonly auditLogService: AuditLogService,
-
     ) {}
-
 
     async execute(
         query: GetUserRolesQuery,
@@ -26,7 +21,6 @@ export class GetUserRolesUseCase {
             await this.userRepository.findById(
                 query.userId,
             );
-
 
         if (!user) {
 
@@ -40,12 +34,25 @@ export class GetUserRolesUseCase {
 
         }
 
+        if (
+            user.tenantId !==
+            query.tenantId
+        ) {
+
+            return {
+
+                isSuccess: false,
+
+                error: "Forbidden.",
+
+            };
+
+        }
 
         const roles =
             await this.userRepository.findRoles(
                 query.userId,
             );
-
 
         await this.auditLogService.log(
 
@@ -62,7 +69,6 @@ export class GetUserRolesUseCase {
             AuditLogStatus.SUCCESS,
 
         );
-
 
         return {
 

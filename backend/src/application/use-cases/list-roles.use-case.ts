@@ -10,11 +10,9 @@ import { RoleApplicationMapper } from "../mappers/role.mapper";
 
 import { ListRolesQuery } from "../queries/role/list-roles.query";
 
-
 export class ListRolesUseCase
 implements UseCase<ListRolesQuery, Result<RoleDto[]>>
 {
-
 
     constructor(
 
@@ -22,22 +20,14 @@ implements UseCase<ListRolesQuery, Result<RoleDto[]>>
 
     ) {}
 
-
-
     async execute(
-
         query: ListRolesQuery,
-
     ): Promise<Result<RoleDto[]>> {
 
-
-        void query;
-
-
         const roles =
-            await this.roleRepository.findAll();
-
-
+            await this.roleRepository.findAll(
+                query.tenantId,
+            );
 
         return Result.success(
 
@@ -53,6 +43,5 @@ implements UseCase<ListRolesQuery, Result<RoleDto[]>>
         );
 
     }
-
 
 }

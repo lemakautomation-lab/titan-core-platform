@@ -13,8 +13,8 @@ import { CreateOrganisationCommand } from "../commands/create-organisation.comma
 import { OrganisationApplicationMapper } from "../mappers/organisation.mapper";
 
 export class CreateOrganisationUseCase
-    implements UseCase<CreateOrganisationCommand, Result<OrganisationDto>>
-{
+implements UseCase<CreateOrganisationCommand, Result<OrganisationDto>> {
+
     constructor(
         private readonly organisationRepository: OrganisationRepository,
     ) {}
@@ -48,7 +48,7 @@ export class CreateOrganisationUseCase
                 organisation,
             ),
         );
-
     }
 
 }
+

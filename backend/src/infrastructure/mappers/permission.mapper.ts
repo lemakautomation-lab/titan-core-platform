@@ -1,21 +1,26 @@
 import { Permission as PrismaPermission } from "../../generated/prisma/client";
+
 import { Permission } from "../../domain/entities/permission.entity";
 
 export class PermissionMapper {
 
     static toDomain(
+
         prisma: PrismaPermission,
+
     ): Permission {
 
         return Permission.restore(
 
             prisma.id,
 
-            prisma.name,
+            prisma.tenantId,
 
             prisma.name,
 
-            prisma.description ?? "",
+            prisma.name,
+
+            prisma.description,
 
             prisma.createdAt,
 
@@ -32,10 +37,11 @@ export class PermissionMapper {
 
     ) {
 
-
         return {
 
             id: permission.id,
+
+            tenantId: permission.tenantId,
 
             name: permission.name,
 

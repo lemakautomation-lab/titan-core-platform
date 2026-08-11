@@ -6,6 +6,8 @@ export class RemoveRoleFromUserCommand {
 
         public readonly roleId: string,
 
+        public readonly tenantId: string,
+
     ) {}
 
 }

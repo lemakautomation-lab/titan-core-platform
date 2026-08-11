@@ -19,26 +19,19 @@ import { AssignRoleToUserUseCase } from "../../application/use-cases/assign-role
 import { RemoveRoleFromUserUseCase } from "../../application/use-cases/remove-role-from-user.use-case";
 import { GetUserRolesUseCase } from "../../application/use-cases/get-user-roles.use-case";
 
+import { AuthRequest } from "../../middleware/auth.middleware";
+
 export class UserController {
 
     constructor(
-
         private readonly createUserUseCase: CreateUserUseCase,
-
         private readonly getUserByIdUseCase: GetUserByIdUseCase,
-
         private readonly listUsersUseCase: ListUsersUseCase,
-
         private readonly updateUserUseCase: UpdateUserUseCase,
-
         private readonly deleteUserUseCase: DeleteUserUseCase,
-
         private readonly assignRoleToUserUseCase: AssignRoleToUserUseCase,
-
         private readonly removeRoleFromUserUseCase: RemoveRoleFromUserUseCase,
-
         private readonly getUserRolesUseCase: GetUserRolesUseCase,
-
     ) {}
 
     async create(
@@ -48,113 +41,136 @@ export class UserController {
 
         const command =
             new CreateUserCommand(
-
                 req.body.tenantId,
-
                 req.body.organisationId ?? null,
-
                 req.body.email,
-
                 req.body.password,
-
                 req.body.firstName ?? null,
-
                 req.body.lastName ?? null,
-
             );
 
         const result =
             await this.createUserUseCase.execute(command);
 
-        res.status(201).json(result.value);
+        if (!result.isSuccess) {
+            res.status(400).json({
+                error: result.error,
+            });
+            return;
+        }
 
+        res.status(201).json(result.value);
     }
 
     async getById(
-        req: Request,
+        req: AuthRequest,
         res: Response,
     ): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
 
         const result =
             await this.getUserByIdUseCase.execute(
                 new GetUserByIdQuery(
                     String(req.params.id),
+                    authUser.tenantId,
                 ),
             );
 
         if (!result.isSuccess) {
 
+            if (result.error === "Forbidden.") {
+                res.status(403).json({
+                    error: result.error,
+                });
+                return;
+            }
+
             res.status(404).json({
                 error: result.error,
             });
-
             return;
-
         }
 
         res.status(200).json(result.value);
-
     }
 
     async list(
-        req: Request,
+        req: AuthRequest,
         res: Response,
     ): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
 
         const tenantId =
             String(req.query.tenantId ?? "");
 
         if (!tenantId) {
-
             res.status(400).json({
                 error: "tenantId query parameter is required.",
             });
-
             return;
+        }
 
+        if (tenantId !== authUser.tenantId) {
+            res.status(403).json({
+                error: "Forbidden",
+            });
+            return;
         }
 
         const result =
             await this.listUsersUseCase.execute(
-                new ListUsersQuery(
-                    tenantId,
-                ),
+                new ListUsersQuery(authUser.tenantId),
             );
 
         if (!result.isSuccess) {
-
             res.status(404).json({
                 error: result.error,
             });
-
             return;
-
         }
 
         res.status(200).json(result.value);
-
     }
 
     async update(
-        req: Request,
+        req: AuthRequest,
         res: Response,
     ): Promise<void> {
 
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
         const command =
             new UpdateUserCommand(
-
                 String(req.params.id),
-
                 req.body.organisationId ?? null,
-
                 req.body.email,
-
                 req.body.password ?? null,
-
                 req.body.firstName ?? null,
-
                 req.body.lastName ?? null,
-
+                authUser.tenantId,
             );
 
         const result =
@@ -162,136 +178,174 @@ export class UserController {
 
         if (!result.isSuccess) {
 
+            if (result.error === "Forbidden.") {
+                res.status(403).json({
+                    error: result.error,
+                });
+                return;
+            }
+
             res.status(400).json({
                 error: result.error,
             });
-
             return;
-
         }
 
         res.status(200).json(result.value);
-
     }
 
     async delete(
-        req: Request,
+        req: AuthRequest,
         res: Response,
     ): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
 
         const result =
             await this.deleteUserUseCase.execute(
                 new DeleteUserCommand(
                     String(req.params.id),
+                    authUser.tenantId,
                 ),
             );
 
         if (!result.isSuccess) {
 
+            if (result.error === "Forbidden.") {
+                res.status(403).json({
+                    error: result.error,
+                });
+                return;
+            }
+
             res.status(404).json({
                 error: result.error,
             });
-
             return;
-
         }
 
         res.status(204).send();
-
     }
 
     async assignRole(
-        req: Request,
+        req: AuthRequest,
         res: Response,
     ): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
 
         const result =
             await this.assignRoleToUserUseCase.execute(
-
                 new AssignRoleToUserCommand(
-
                     String(req.params.userId),
-
                     String(req.params.roleId),
-
+                    authUser.tenantId,
                 ),
-
             );
 
         if (!result.isSuccess) {
 
+            if (result.error === "Forbidden.") {
+                res.status(403).json({
+                    error: result.error,
+                });
+                return;
+            }
+
             res.status(400).json({
                 error: result.error,
             });
-
             return;
-
         }
 
         res.status(204).send();
-
     }
 
     async removeRole(
-        req: Request,
+        req: AuthRequest,
         res: Response,
     ): Promise<void> {
 
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
         const result =
             await this.removeRoleFromUserUseCase.execute(
-
                 new RemoveRoleFromUserCommand(
-
                     String(req.params.userId),
-
                     String(req.params.roleId),
-
+                    authUser.tenantId,
                 ),
-
             );
 
         if (!result.isSuccess) {
+
+            if (result.error === "Forbidden.") {
+                res.status(403).json({
+                    error: result.error,
+                });
+                return;
+            }
 
             res.status(400).json({
                 error: result.error,
             });
-
             return;
-
         }
 
         res.status(204).send();
-
     }
 
     async getRoles(
-        req: Request,
+        req: AuthRequest,
         res: Response,
     ): Promise<void> {
 
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
         const result =
             await this.getUserRolesUseCase.execute(
-
                 new GetUserRolesQuery(
-
                     String(req.params.userId),
-
+                    authUser.tenantId,
                 ),
-
             );
 
         if (!result.isSuccess) {
-
             res.status(404).json({
                 error: result.error,
             });
-
             return;
-
         }
 
         res.status(200).json(result.value);
-
     }
-
 }
+

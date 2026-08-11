@@ -8,9 +8,8 @@ import { DeleteRoleCommand } from "../commands/delete-role.command";
 import { AuditLogService } from "../services/audit-log.service";
 import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
 
-
 export class DeleteRoleUseCase
-    implements UseCase<DeleteRoleCommand, Result<void>>
+implements UseCase<DeleteRoleCommand, Result<void>>
 {
 
     constructor(
@@ -21,42 +20,34 @@ export class DeleteRoleUseCase
 
     ) {}
 
-
     async execute(
-
         command: DeleteRoleCommand,
-
     ): Promise<Result<void>> {
 
-
         const role =
-
             await this.roleRepository.findById(
 
                 command.id,
 
-            );
+                command.tenantId,
 
+            );
 
         if (!role) {
 
-
             return Result.failure(
-
                 "Role not found.",
-
             );
 
-
         }
-
 
         await this.roleRepository.delete(
 
             command.id,
 
-        );
+            command.tenantId,
 
+        );
 
         await this.auditLogService.log(
 
@@ -74,14 +65,13 @@ export class DeleteRoleUseCase
 
         );
 
-
         return Result.success(
-
             undefined,
-
         );
-
 
     }
 
 }
+
+
+

@@ -6,6 +6,8 @@ export class AssignRoleToUserCommand {
 
         public readonly roleId: string,
 
+        public readonly tenantId: string,
+
     ) {}
 
 }

@@ -4,6 +4,8 @@ export class GetRolePermissionsQuery {
 
         public readonly roleId: string,
 
+        public readonly tenantId: string,
+
     ) {}
 
 }

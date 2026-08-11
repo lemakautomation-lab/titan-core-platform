@@ -10,7 +10,7 @@ import { AuditLogService } from "../services/audit-log.service";
 import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
 
 export class AssignRoleToUserUseCase
-    implements UseCase<AssignRoleToUserCommand, Result<void>>
+implements UseCase<AssignRoleToUserCommand, Result<void>>
 {
 
     constructor(
@@ -42,10 +42,34 @@ export class AssignRoleToUserUseCase
 
         }
 
+
+        /*
+         * Tenant isolation:
+         *
+         * The tenantId comes from the authenticated JWT
+         * and is supplied by the controller.
+         *
+         * A user may only be assigned roles within their
+         * authenticated tenant boundary.
+         */
+
+        if (
+            user.tenantId !==
+            command.tenantId
+        ) {
+
+            return Result.failure(
+                "Forbidden.",
+            );
+
+        }
+
+
         const role =
             await this.roleRepository.findById(
-                command.roleId,
-            );
+            command.roleId,
+            command.tenantId,
+        );
 
         if (!role) {
 
@@ -54,6 +78,7 @@ export class AssignRoleToUserUseCase
             );
 
         }
+
 
         const alreadyAssigned =
             await this.userRepository.hasRole(
@@ -72,6 +97,7 @@ export class AssignRoleToUserUseCase
 
         }
 
+
         await this.userRepository.assignRole(
 
             command.userId,
@@ -79,6 +105,7 @@ export class AssignRoleToUserUseCase
             command.roleId,
 
         );
+
 
         await this.auditLogService.log(
 
@@ -96,6 +123,7 @@ export class AssignRoleToUserUseCase
 
         );
 
+
         return Result.success(
             undefined,
         );
@@ -103,3 +131,6 @@ export class AssignRoleToUserUseCase
     }
 
 }
+
+
+

@@ -1,20 +1,19 @@
+import { Role } from "../../domain/entities/role.entity";
+import { RoleDto } from "../dto/role/role.dto";
 import { UseCase } from "../common/use-case.interface";
 
 import { Result } from "../common/result";
 
 import { RoleRepository } from "../../domain/repositories/role.repository";
 
-import { RoleDto } from "../dto/role/role.dto";
 
 import { RoleApplicationMapper } from "../mappers/role.mapper";
 
 import { GetRoleByIdQuery } from "../queries/role/get-role-by-id.query";
 
-
 export class GetRoleByIdUseCase
 implements UseCase<GetRoleByIdQuery, Result<RoleDto>>
 {
-
 
     constructor(
 
@@ -22,20 +21,18 @@ implements UseCase<GetRoleByIdQuery, Result<RoleDto>>
 
     ) {}
 
-
-
     async execute(
-
         query: GetRoleByIdQuery,
-
     ): Promise<Result<RoleDto>> {
-
 
         const role =
             await this.roleRepository.findById(
-                query.id,
-            );
 
+                query.id,
+
+                query.tenantId,
+
+            );
 
         if (!role) {
 
@@ -44,7 +41,6 @@ implements UseCase<GetRoleByIdQuery, Result<RoleDto>>
             );
 
         }
-
 
         return Result.success(
 
@@ -56,5 +52,14 @@ implements UseCase<GetRoleByIdQuery, Result<RoleDto>>
 
     }
 
-
 }
+
+
+
+
+
+
+
+
+
+

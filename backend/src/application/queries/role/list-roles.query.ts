@@ -1,5 +1,9 @@
 export class ListRolesQuery {
 
-    constructor() {}
+    constructor(
+
+        public readonly tenantId: string,
+
+    ) {}
 
 }

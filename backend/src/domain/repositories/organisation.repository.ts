@@ -2,14 +2,27 @@ import { Organisation } from "../entities/organisation.entity";
 
 export interface OrganisationRepository {
 
-    findById(id: string): Promise<Organisation | null>;
+    findById(
+        id: string,
+        tenantId: string,
+    ): Promise<Organisation | null>;
 
-    findAll(): Promise<Organisation[]>;
+    findAll(
+        tenantId: string,
+    ): Promise<Organisation[]>;
 
-    create(organisation: Organisation): Promise<Organisation>;
+    create(
+        organisation: Organisation,
+    ): Promise<Organisation>;
 
-    update(organisation: Organisation): Promise<Organisation>;
+    update(
+        organisation: Organisation,
+        tenantId: string,
+    ): Promise<Organisation>;
 
-    delete(id: string): Promise<void>;
+    delete(
+        id: string,
+        tenantId: string,
+    ): Promise<void>;
 
 }

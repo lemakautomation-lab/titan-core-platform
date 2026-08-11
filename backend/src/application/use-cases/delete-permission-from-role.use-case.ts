@@ -35,10 +35,9 @@ export class DeletePermissionFromRoleUseCase {
         const role =
 
             await this.roleRepository.findById(
-
-                command.roleId,
-
-            );
+            command.roleId,
+            command.tenantId,
+        );
 
 
         if (!role) {
@@ -142,3 +141,6 @@ export class DeletePermissionFromRoleUseCase {
     }
 
 }
+
+
+
