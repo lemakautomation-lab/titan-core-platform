@@ -7,38 +7,53 @@ export async function createRole(
     permissions: string[] = [],
     description?: string,
 ) {
-    const role = await testPrisma.role.upsert({
-        where: {
-            tenantId_name: {
+
+    const role =
+        await testPrisma.role.upsert({
+
+            where: {
+                tenantId_name: {
+                    tenantId,
+                    name,
+                },
+            },
+
+            update: {
+                description,
+            },
+
+            create: {
                 tenantId,
                 name,
+                description,
             },
-        },
-        update: {
-            description,
-        },
-        create: {
-            tenantId,
-            name,
-            description,
-        },
-    });
+
+        });
 
     for (const permissionName of permissions) {
-        const permission = await createPermission(permissionName);
+
+        const permission =
+            await createPermission(
+                tenantId,
+                permissionName,
+            );
 
         await testPrisma.rolePermission.upsert({
+
             where: {
                 roleId_permissionId: {
                     roleId: role.id,
                     permissionId: permission.id,
                 },
             },
+
             update: {},
+
             create: {
                 roleId: role.id,
                 permissionId: permission.id,
             },
+
         });
     }
 

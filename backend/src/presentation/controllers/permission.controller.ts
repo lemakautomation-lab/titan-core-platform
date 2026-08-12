@@ -1,4 +1,5 @@
 import { Response } from "express";
+
 import { AuthRequest } from "../../middleware/auth.middleware";
 
 import { CreatePermissionCommand } from "../../application/commands/create-permission.command";
@@ -14,141 +15,178 @@ import { ListPermissionsUseCase } from "../../application/use-cases/list-permiss
 import { UpdatePermissionUseCase } from "../../application/use-cases/update-permission.use-case";
 import { DeletePermissionUseCase } from "../../application/use-cases/delete-permission.use-case";
 
-
 export class PermissionController {
 
     constructor(
-
         private readonly createPermissionUseCase: CreatePermissionUseCase,
-
         private readonly getPermissionByIdUseCase: GetPermissionByIdUseCase,
-
         private readonly listPermissionsUseCase: ListPermissionsUseCase,
-
         private readonly updatePermissionUseCase: UpdatePermissionUseCase,
-
         private readonly deletePermissionUseCase: DeletePermissionUseCase,
-
     ) {}
 
+    async create(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
 
-    async create(req: AuthRequest, res: Response): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+
+            return;
+        }
 
         const command =
             new CreatePermissionCommand(
-
                 String(req.body.name),
-
                 req.body.description ?? null,
-
-                req.user!.tenantId,
-
-                req.user!.userId,
-
+                authUser.tenantId,
+                authUser.userId,
             );
 
-
         const result =
-            await this.createPermissionUseCase.execute(command);
-
+            await this.createPermissionUseCase.execute(
+                command,
+            );
 
         res.status(result.isSuccess ? 201 : 400)
             .json(
                 result.isSuccess
                     ? result.value
-                    : { error: result.error }
+                    : { error: result.error },
             );
-
     }
 
+    async getById(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
 
-    async getById(req: AuthRequest, res: Response): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+
+            return;
+        }
 
         const result =
             await this.getPermissionByIdUseCase.execute(
                 new GetPermissionByIdQuery(
                     String(req.params.id),
+                    authUser.tenantId,
                 ),
             );
-
 
         res.status(result.isSuccess ? 200 : 404)
             .json(
                 result.isSuccess
                     ? result.value
-                    : { error: result.error }
+                    : { error: result.error },
             );
-
     }
 
+    async list(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
 
-    async list(req: AuthRequest, res: Response): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+
+            return;
+        }
 
         const result =
             await this.listPermissionsUseCase.execute(
-                new ListPermissionsQuery(),
+                new ListPermissionsQuery(
+                    authUser.tenantId,
+                ),
             );
-
 
         res.status(result.isSuccess ? 200 : 400)
             .json(
                 result.isSuccess
                     ? result.value
-                    : { error: result.error }
+                    : { error: result.error },
             );
-
     }
 
+    async update(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
 
-    async update(req: AuthRequest, res: Response): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+
+            return;
+        }
 
         const command =
             new UpdatePermissionCommand(
-
                 String(req.params.id),
-
                 String(req.body.name),
-
                 req.body.description ?? null,
-
-                req.user!.tenantId,
-
-                req.user!.userId,
-
+                authUser.tenantId,
+                authUser.userId,
             );
 
-
         const result =
-            await this.updatePermissionUseCase.execute(command);
-
+            await this.updatePermissionUseCase.execute(
+                command,
+            );
 
         res.status(result.isSuccess ? 200 : 404)
             .json(
                 result.isSuccess
                     ? result.value
-                    : { error: result.error }
+                    : { error: result.error },
             );
-
     }
 
+    async delete(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
 
-    async delete(req: AuthRequest, res: Response): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+
+            return;
+        }
 
         const result =
             await this.deletePermissionUseCase.execute(
-
                 new DeletePermissionCommand(
-
                     String(req.params.id),
-
-                    req.user!.tenantId,
-
-                    req.user!.userId,
-
+                    authUser.tenantId,
+                    authUser.userId,
                 ),
-
             );
-
 
         if (!result.isSuccess) {
 
@@ -157,12 +195,9 @@ export class PermissionController {
             });
 
             return;
-
         }
 
-
         res.status(204).send();
-
     }
 
 }

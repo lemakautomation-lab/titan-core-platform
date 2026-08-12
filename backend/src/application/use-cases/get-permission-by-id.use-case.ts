@@ -9,24 +9,21 @@ import { PermissionApplicationMapper } from "../mappers/permission.mapper";
 import { GetPermissionByIdQuery } from "../queries/permission/get-permission-by-id.query";
 
 export class GetPermissionByIdUseCase
-    implements UseCase<GetPermissionByIdQuery, Result<PermissionDto>>
+implements UseCase<GetPermissionByIdQuery, Result<PermissionDto>>
 {
 
     constructor(
-
         private readonly permissionRepository: PermissionRepository,
-
     ) {}
 
     async execute(
-
         query: GetPermissionByIdQuery,
-
     ): Promise<Result<PermissionDto>> {
 
         const permission =
             await this.permissionRepository.findById(
                 query.id,
+                query.tenantId,
             );
 
         if (!permission) {
@@ -34,17 +31,14 @@ export class GetPermissionByIdUseCase
             return Result.failure(
                 "Permission not found.",
             );
-
         }
 
         return Result.success(
-
             PermissionApplicationMapper.toDto(
                 permission,
             ),
-
         );
-
     }
 
 }
+

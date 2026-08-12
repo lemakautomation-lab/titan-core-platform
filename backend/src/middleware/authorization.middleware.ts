@@ -1,30 +1,28 @@
 import { Response, NextFunction } from "express";
 
 import { authorizationModule }
-    from "../infrastructure/composition/authorization.module";
+from "../infrastructure/composition/authorization.module";
 
 import { auditLogModule }
-    from "../infrastructure/composition/audit-log.module";
+from "../infrastructure/composition/audit-log.module";
 
 import { AuthRequest }
-    from "./auth.middleware";
+from "./auth.middleware";
 
 import { RequestWithId }
-    from "./request-id.middleware";
+from "./request-id.middleware";
 
 import { requestContextService }
-    from "../shared/context/request-context.service";
+from "../shared/context/request-context.service";
 
 import { UnauthorizedException }
-    from "../shared/exceptions/unauthorized.exception";
+from "../shared/exceptions/unauthorized.exception";
 
 import { ForbiddenException }
-    from "../shared/exceptions/forbidden.exception";
-
+from "../shared/exceptions/forbidden.exception";
 
 type AuthorizationRequest =
     AuthRequest & RequestWithId;
-
 
 export function requirePermission(
     permission: string,
@@ -45,19 +43,14 @@ export function requirePermission(
             const authUser =
                 req.user;
 
-
             if (!authUser) {
 
                 return next(
-
                     new UnauthorizedException(
                         "Unauthorized",
                     ),
-
                 );
-
             }
-
 
             const allowed =
                 await authorizationModule
@@ -66,10 +59,11 @@ export function requirePermission(
 
                         authUser.userId,
 
+                        authUser.tenantId,
+
                         permission,
 
                     );
-
 
             if (!allowed) {
 
@@ -85,26 +79,24 @@ export function requirePermission(
                         method: req.method,
                         path: req.originalUrl,
                         ipAddress: req.ip,
-                        userAgent: req.get("User-Agent") ?? undefined,
-                        requestId: req.requestId,
+                        userAgent:
+                            req.get("User-Agent") ??
+                            undefined,
+                        requestId:
+                            req.requestId,
                     },
 
                 );
 
                 return next(
-
                     new ForbiddenException(
                         "Forbidden",
                     ),
-
                 );
-
             }
-
 
             const context =
                 requestContextService.get();
-
 
             if (context?.security) {
 
@@ -117,22 +109,16 @@ export function requirePermission(
                     context.security.permissions.push(
                         permission,
                     );
-
                 }
-
             }
-
 
             next();
 
         }
-
         catch (error) {
 
             next(error);
 
         }
-
     };
-
 }

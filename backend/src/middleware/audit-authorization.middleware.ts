@@ -3,11 +3,9 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "./auth.middleware";
 
 import { authorizationModule }
-    from "../infrastructure/composition/authorization.module";
-
+from "../infrastructure/composition/authorization.module";
 
 export function requireAuditAccess() {
-
 
     return async (
 
@@ -19,9 +17,7 @@ export function requireAuditAccess() {
 
     ) => {
 
-
         const authUser = req.user;
-
 
         if (!authUser) {
 
@@ -35,7 +31,6 @@ export function requireAuditAccess() {
 
         }
 
-
         const canReadAll =
 
             await authorizationModule
@@ -44,10 +39,11 @@ export function requireAuditAccess() {
 
                     authUser.userId,
 
+                    authUser.tenantId,
+
                     "audit.read.all",
 
                 );
-
 
         if (canReadAll) {
 
@@ -57,7 +53,6 @@ export function requireAuditAccess() {
 
         }
 
-
         const canRead =
 
             await authorizationModule
@@ -66,10 +61,11 @@ export function requireAuditAccess() {
 
                     authUser.userId,
 
+                    authUser.tenantId,
+
                     "audit.read",
 
                 );
-
 
         if (!canRead) {
 
@@ -83,14 +79,10 @@ export function requireAuditAccess() {
 
         }
 
-
         (req as any).auditOwnOnly = true;
-
 
         next();
 
-
     };
-
 
 }

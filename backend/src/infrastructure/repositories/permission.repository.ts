@@ -15,7 +15,7 @@ implements PermissionRepository {
 
     async findById(
         id: string,
-        tenantId?: string,
+        tenantId: string,
     ): Promise<Permission | null> {
 
         const permission =
@@ -23,9 +23,7 @@ implements PermissionRepository {
 
                 where: {
                     id,
-                    ...(tenantId
-                        ? { tenantId }
-                        : {}),
+                    tenantId,
                 },
 
             });
@@ -35,10 +33,22 @@ implements PermissionRepository {
             : null;
     }
 
-    async findAll(): Promise<Permission[]> {
+    async findAll(
+        tenantId: string,
+    ): Promise<Permission[]> {
 
         const permissions =
-            await this.database.prisma.permission.findMany();
+            await this.database.prisma.permission.findMany({
+
+                where: {
+                    tenantId,
+                },
+
+                orderBy: {
+                    name: "asc",
+                },
+
+            });
 
         return permissions.map(
             PermissionMapper.toDomain,
@@ -47,6 +57,7 @@ implements PermissionRepository {
 
     async findByName(
         name: string,
+        tenantId: string,
     ): Promise<Permission | null> {
 
         const permission =
@@ -54,6 +65,7 @@ implements PermissionRepository {
 
                 where: {
                     name,
+                    tenantId,
                 },
 
             });
@@ -84,13 +96,15 @@ implements PermissionRepository {
 
     async update(
         permission: Permission,
+        tenantId: string,
     ): Promise<Permission> {
 
         const updated =
-            await this.database.prisma.permission.update({
+            await this.database.prisma.permission.updateMany({
 
                 where: {
                     id: permission.id,
+                    tenantId,
                 },
 
                 data:
@@ -100,27 +114,61 @@ implements PermissionRepository {
 
             });
 
+        if (updated.count !== 1) {
+
+            throw new Error(
+                "Permission not found in tenant.",
+            );
+        }
+
+        const persisted =
+            await this.database.prisma.permission.findFirst({
+
+                where: {
+                    id: permission.id,
+                    tenantId,
+                },
+
+            });
+
+        if (!persisted) {
+
+            throw new Error(
+                "Permission not found in tenant.",
+            );
+        }
+
         return PermissionMapper.toDomain(
-            updated,
+            persisted,
         );
     }
 
     async delete(
         id: string,
+        tenantId: string,
     ): Promise<void> {
+
+        const deleted =
+            await this.database.prisma.permission.deleteMany({
+
+                where: {
+                    id,
+                    tenantId,
+                },
+
+            });
+
+        if (deleted.count !== 1) {
+
+            throw new Error(
+                "Permission not found in tenant.",
+            );
+        }
 
         await this.database.prisma.rolePermission.deleteMany({
 
             where: {
                 permissionId: id,
-            },
-
-        });
-
-        await this.database.prisma.permission.delete({
-
-            where: {
-                id,
             },
 
         });

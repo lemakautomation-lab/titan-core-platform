@@ -8,14 +8,12 @@ import { DatabaseService } from "../database/database.service";
 import { UserMapper } from "../mappers/user.mapper";
 import { RoleMapper } from "../mappers/role.mapper";
 
-
 export class PrismaUserRepository
 implements UserRepository {
 
     constructor(
         private readonly database: DatabaseService,
     ) {}
-
 
     async findById(
         id: string,
@@ -29,9 +27,7 @@ implements UserRepository {
         return user
             ? UserMapper.toDomain(user)
             : null;
-
     }
-
 
     async findByEmail(
         email: string,
@@ -45,9 +41,7 @@ implements UserRepository {
         return user
             ? UserMapper.toDomain(user)
             : null;
-
     }
-
 
     async findAllByTenantId(
         tenantId: string,
@@ -59,9 +53,7 @@ implements UserRepository {
             });
 
         return users.map(UserMapper.toDomain);
-
     }
-
 
     async create(
         user: User,
@@ -73,9 +65,7 @@ implements UserRepository {
             });
 
         return UserMapper.toDomain(created);
-
     }
-
 
     async update(
         user: User,
@@ -90,9 +80,7 @@ implements UserRepository {
             });
 
         return UserMapper.toDomain(updated);
-
     }
-
 
     async delete(
         id: string,
@@ -101,12 +89,11 @@ implements UserRepository {
         await this.database.prisma.user.delete({
             where: { id },
         });
-
     }
-
 
     async findRoles(
         userId: string,
+        tenantId: string,
     ): Promise<Role[]> {
 
         const assignments =
@@ -114,6 +101,14 @@ implements UserRepository {
 
                 where: {
                     userId,
+
+                    user: {
+                        tenantId,
+                    },
+
+                    role: {
+                        tenantId,
+                    },
                 },
 
                 include: {
@@ -128,83 +123,55 @@ implements UserRepository {
                     assignment.role,
                 ),
         );
-
     }
 
-
     async assignRole(
-
         userId: string,
-
         roleId: string,
-
     ): Promise<void> {
 
         await this.database.prisma.userRole.create({
 
             data: {
-
                 userId,
-
                 roleId,
-
             },
 
         });
-
     }
+
     async removeRole(
-
         userId: string,
-
         roleId: string,
-
     ): Promise<void> {
 
         await this.database.prisma.userRole.delete({
 
             where: {
-
                 userId_roleId: {
-
                     userId,
-
                     roleId,
-
                 },
-
             },
 
         });
-
     }
 
     async hasRole(
-
         userId: string,
-
         roleId: string,
-
     ): Promise<boolean> {
 
         const assignment =
             await this.database.prisma.userRole.findFirst({
 
                 where: {
-
                     userId,
-
                     roleId,
-
                 },
 
             });
 
-
         return !!assignment;
-
     }
-
 }
-
-

@@ -29,6 +29,7 @@ export interface UserRepository {
 
     findRoles(
         userId: string,
+        tenantId: string,
     ): Promise<Role[]>;
 
     assignRole(
@@ -45,5 +46,4 @@ export interface UserRepository {
         userId: string,
         roleId: string,
     ): Promise<boolean>;
-
 }

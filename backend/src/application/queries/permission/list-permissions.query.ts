@@ -1,5 +1,7 @@
 export class ListPermissionsQuery {
 
-    constructor() {}
+    constructor(
+        public readonly tenantId: string,
+    ) {}
 
 }

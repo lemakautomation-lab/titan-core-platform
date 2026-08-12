@@ -10,48 +10,31 @@ import { PermissionApplicationMapper } from "../mappers/permission.mapper";
 
 import { ListPermissionsQuery } from "../queries/permission/list-permissions.query";
 
-
 export class ListPermissionsUseCase
 implements UseCase<ListPermissionsQuery, Result<PermissionDto[]>>
 {
 
-
     constructor(
-
         private readonly permissionRepository: PermissionRepository,
-
     ) {}
 
-
     async execute(
-
         query: ListPermissionsQuery,
-
     ): Promise<Result<PermissionDto[]>> {
 
-
-        void query;
-
-
         const permissions =
-            await this.permissionRepository.findAll();
-
+            await this.permissionRepository.findAll(
+                query.tenantId,
+            );
 
         return Result.success(
-
             permissions.map(
-
                 (permission) =>
-
                     PermissionApplicationMapper.toDto(
                         permission,
                     ),
-
             ),
-
         );
-
     }
-
 
 }

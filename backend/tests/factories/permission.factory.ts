@@ -1,33 +1,33 @@
 import { testPrisma } from "../helpers/prisma-test.client";
 
-
 export async function createPermission(
+    tenantId: string,
     name: string,
     description?: string,
 ) {
-
-    return testPrisma.permission.upsert({
-
+    const existing = await testPrisma.permission.findFirst({
         where: {
-
+            tenantId,
             name,
-
         },
-
-        update: {
-
-            description,
-
-        },
-
-        create: {
-
-            name,
-
-            description,
-
-        },
-
     });
 
+    if (existing) {
+        return testPrisma.permission.update({
+            where: {
+                id: existing.id,
+            },
+            data: {
+                description,
+            },
+        });
+    }
+
+    return testPrisma.permission.create({
+        data: {
+            tenantId,
+            name,
+            description,
+        },
+    });
 }

@@ -25,13 +25,9 @@ export class GetUserRolesUseCase {
         if (!user) {
 
             return {
-
                 isSuccess: false,
-
                 error: "User not found",
-
             };
-
         }
 
         if (
@@ -40,32 +36,24 @@ export class GetUserRolesUseCase {
         ) {
 
             return {
-
                 isSuccess: false,
-
                 error: "Forbidden.",
-
             };
-
         }
 
         const roles =
             await this.userRepository.findRoles(
                 query.userId,
+                query.tenantId,
             );
 
         await this.auditLogService.log(
 
             user.tenantId,
-
             user.id,
-
             "USER_ROLE_LIST",
-
             "USER_ROLE",
-
             query.userId,
-
             AuditLogStatus.SUCCESS,
 
         );
@@ -77,15 +65,11 @@ export class GetUserRolesUseCase {
             value: roles.map(role => ({
 
                 id: role.id,
-
                 name: role.name,
-
                 description: role.description,
 
             })),
 
         };
-
     }
-
 }

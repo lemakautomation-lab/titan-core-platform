@@ -10,11 +10,13 @@ export class PermissionResolutionService {
 
     async getUserPermissions(
         userId: string,
+        tenantId: string,
     ): Promise<string[]> {
 
         const roles =
             await this.userRepository.findRoles(
                 userId,
+                tenantId,
             );
 
         const permissions = new Set<string>();
@@ -24,15 +26,19 @@ export class PermissionResolutionService {
             const rolePermissions =
                 await this.roleRepository.findPermissions(
                     role.id,
-                    role.tenantId,
+                    tenantId,
                 );
 
             for (const permission of rolePermissions) {
 
-                permissions.add(
-                    permission.name,
-                );
+                if (
+                    permission.tenantId === tenantId
+                ) {
 
+                    permissions.add(
+                        permission.name,
+                    );
+                }
             }
         }
 
@@ -43,12 +49,14 @@ export class PermissionResolutionService {
 
     async hasPermission(
         userId: string,
+        tenantId: string,
         permissionName: string,
     ): Promise<boolean> {
 
         const permissions =
             await this.getUserPermissions(
                 userId,
+                tenantId,
             );
 
         return permissions.includes(
@@ -56,4 +64,3 @@ export class PermissionResolutionService {
         );
     }
 }
-

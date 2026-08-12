@@ -1,4 +1,4 @@
-﻿import { UserRepository } from "../../../domain/repositories/user.repository";
+import { UserRepository } from "../../../domain/repositories/user.repository";
 import { SessionRepository } from "../../../domain/repositories/session.repository";
 
 import { Session } from "../../../domain/entities/session.entity";
@@ -317,10 +317,9 @@ export class LoginUseCase {
         const roles =
 
             await this.userRepository.findRoles(
-
-                user.id,
-
-            );
+            user.id,
+            user.tenantId,
+        );
 
 
         const roleNames =
@@ -442,3 +441,6 @@ export class LoginUseCase {
     }
 
 }
+
+
+

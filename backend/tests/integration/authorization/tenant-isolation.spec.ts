@@ -90,8 +90,7 @@ describe("Authorization Tenant Isolation", () => {
 
 
             const role =
-                await createRole(
-                    `tenant-isolation-role-${Date.now()}`,
+                await createRole(tenantBUser.tenant.id, `tenant-isolation-role-${Date.now()}`,
                 );
 
 
@@ -357,8 +356,7 @@ describe("Authorization Tenant Isolation", () => {
 
 
             const role =
-                await createRole(
-                    `tenant-isolation-remove-role-${Date.now()}`,
+                await createRole(tenantBUser.tenant.id, `tenant-isolation-remove-role-${Date.now()}`,
                 );
 
 
@@ -407,3 +405,4 @@ describe("Authorization Tenant Isolation", () => {
     );
 
 });
+

@@ -4,13 +4,16 @@ export interface PermissionRepository {
 
     findById(
         id: string,
-        tenantId?: string,
+        tenantId: string,
     ): Promise<Permission | null>;
 
-    findAll(): Promise<Permission[]>;
+    findAll(
+        tenantId: string,
+    ): Promise<Permission[]>;
 
     findByName(
         name: string,
+        tenantId: string,
     ): Promise<Permission | null>;
 
     create(
@@ -19,10 +22,12 @@ export interface PermissionRepository {
 
     update(
         permission: Permission,
+        tenantId: string,
     ): Promise<Permission>;
 
     delete(
         id: string,
+        tenantId: string,
     ): Promise<void>;
 
 }
