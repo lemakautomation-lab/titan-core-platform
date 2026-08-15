@@ -176,6 +176,40 @@ implements UserRepository {
         tenantId: string,
     ): Promise<void> {
 
+        const user =
+            await this.database.prisma.user.findFirst({
+                where: {
+                    id: userId,
+                    tenantId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+        if (!user) {
+            throw new Error(
+                "Cannot assign role: user not found in tenant.",
+            );
+        }
+
+        const role =
+            await this.database.prisma.role.findFirst({
+                where: {
+                    id: roleId,
+                    tenantId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+        if (!role) {
+            throw new Error(
+                "Cannot assign role: role not found in tenant.",
+            );
+        }
+
         await this.database.prisma.userRole.create({
 
             data: {
@@ -191,6 +225,40 @@ implements UserRepository {
         roleId: string,
         tenantId: string,
     ): Promise<void> {
+
+        const user =
+            await this.database.prisma.user.findFirst({
+                where: {
+                    id: userId,
+                    tenantId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+        if (!user) {
+            throw new Error(
+                "Cannot remove role: user not found in tenant.",
+            );
+        }
+
+        const role =
+            await this.database.prisma.role.findFirst({
+                where: {
+                    id: roleId,
+                    tenantId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+        if (!role) {
+            throw new Error(
+                "Cannot remove role: role not found in tenant.",
+            );
+        }
 
         await this.database.prisma.userRole.delete({
 
