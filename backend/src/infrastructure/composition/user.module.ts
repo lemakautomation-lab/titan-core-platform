@@ -106,8 +106,11 @@ export const userModule = {
     unlockUserUseCase:
 
         new UnlockUserUseCase(
-            userRepository,
-            auditLogModule.auditLogService,
-        ),
+        userRepository,
+        auditLogModule.auditLogService,
+        permissionResolutionService,
+    ),
 
 };
+
+

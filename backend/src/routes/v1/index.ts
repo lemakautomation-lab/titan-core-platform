@@ -92,6 +92,8 @@ const userController =
 
         userModule.getUserRolesUseCase,
 
+        userModule.unlockUserUseCase,
+
     );
 
 
@@ -214,6 +216,7 @@ router.use(
 
 
 export default router;
+
 
 
 

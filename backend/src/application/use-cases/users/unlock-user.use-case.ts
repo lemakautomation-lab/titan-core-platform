@@ -10,13 +10,19 @@ import { AuditResource } from "../../../domain/security/audit-resource";
 
 import { AuditLogService } from "../../services/audit-log.service";
 
+import { PermissionResolutionService } from "../../services/permission-resolution.service";
+
+import { UnlockUserCommand } from "../../commands/unlock-user.command";
+
+import { UserStatus } from "../../../domain/enums/user-status.enum";
+
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 
 import { UnauthorizedException } from "../../../shared/exceptions/unauthorized.exception";
 
+import { ConflictException } from "../../../shared/exceptions/conflict.exception";
 
 export class UnlockUserUseCase {
-
 
     constructor(
 
@@ -24,25 +30,35 @@ export class UnlockUserUseCase {
 
         private readonly auditLogService: AuditLogService,
 
+        private readonly permissionResolutionService:
+            PermissionResolutionService,
+
     ) {}
 
 
-
     async execute(
-
-        tenantId: string,
-
-        userId: string,
-
-        actorUserId: string,
-
+        command: UnlockUserCommand,
     ) {
+
+        const actorHasPermission =
+            await this.permissionResolutionService.hasPermission(
+                command.actorUserId,
+                command.tenantId,
+                "users.update",
+            );
+
+        if (!actorHasPermission) {
+
+            throw new UnauthorizedException(
+                "Forbidden",
+            );
+
+        }
 
 
         const user =
-
             await this.userRepository.findById(
-                userId,
+                command.userId,
             );
 
 
@@ -55,8 +71,10 @@ export class UnlockUserUseCase {
         }
 
 
-
-        if (user.tenantId !== tenantId) {
+        if (
+            user.tenantId !==
+            command.tenantId
+        ) {
 
             throw new UnauthorizedException(
                 "User does not belong to tenant",
@@ -65,9 +83,19 @@ export class UnlockUserUseCase {
         }
 
 
+        if (
+            user.status !==
+            UserStatus.LOCKED
+        ) {
+
+            throw new ConflictException(
+                "User is not locked",
+            );
+
+        }
+
 
         user.unlock();
-
 
 
         await this.userRepository.update(
@@ -75,27 +103,26 @@ export class UnlockUserUseCase {
         );
 
 
-
         await this.auditLogService.log(
 
-            tenantId,
+            command.tenantId,
 
-            actorUserId,
+            command.actorUserId,
 
             AuditAction.ACCOUNT_UNLOCKED,
 
             AuditResource.USER,
 
-            userId,
+            command.userId,
 
             AuditLogStatus.SUCCESS,
 
             {
-                unlockedUserId: userId,
+                unlockedUserId:
+                    command.userId,
             },
 
         );
-
 
 
         return {

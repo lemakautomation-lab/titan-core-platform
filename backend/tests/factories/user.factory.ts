@@ -3,34 +3,32 @@ import { hashTestPassword } from "../helpers/password.helper";
 import { createTestTenant } from "./tenant.factory";
 import { assignPermissions } from "./rbac.factory";
 
-
 export async function createTestUser(
     overrides?: {
-
         email?: string;
-
         password?: string;
-
         permissions?: string[];
-
+        tenantId?: string;
     },
-
 ) {
 
     const tenant =
-        await createTestTenant();
-
+        overrides?.tenantId
+            ? await testPrisma.tenant.findUniqueOrThrow({
+                where: {
+                    id: overrides.tenantId,
+                },
+            })
+            : await createTestTenant();
 
     const password =
         overrides?.password ??
         "Password123!";
 
-
     const passwordHash =
         await hashTestPassword(
             password,
         );
-
 
     const user =
         await testPrisma.user.create({
@@ -42,7 +40,9 @@ export async function createTestUser(
 
                 email:
                     overrides?.email ??
-                    `test-${Date.now()}@titan.test`,
+                    `test-${Date.now()}-${Math.random()
+                        .toString(36)
+                        .slice(2)}@titan.test`,
 
                 passwordHash,
 
@@ -50,34 +50,21 @@ export async function createTestUser(
 
         });
 
-
     if (
         overrides?.permissions &&
         overrides.permissions.length > 0
     ) {
 
         await assignPermissions(
-
             user.id,
-
             overrides.permissions,
-
         );
 
     }
 
-
     return {
-
         user,
-
         password,
-
         tenant,
-
     };
-
 }
-
-
-

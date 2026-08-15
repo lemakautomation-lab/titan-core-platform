@@ -53,6 +53,13 @@ export function createUserRoutes(
     );
 
 
+    router.post(
+        "/:id/unlock",
+        requirePermission("users.update"),
+        controller.unlock.bind(controller),
+    );
+
+
     router.get(
         "/:id",
         requirePermission("users.read"),
@@ -77,5 +84,3 @@ export function createUserRoutes(
     return router;
 
 }
-
-
