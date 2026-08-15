@@ -266,6 +266,7 @@ export class UserController {
                     String(req.params.userId),
                     String(req.params.roleId),
                     authUser.tenantId,
+                    authUser.userId,
                 ),
             );
 
@@ -307,6 +308,7 @@ export class UserController {
                     String(req.params.userId),
                     String(req.params.roleId),
                     authUser.tenantId,
+                    authUser.userId,
                 ),
             );
 
@@ -360,6 +362,8 @@ export class UserController {
         res.status(200).json(result.value);
     }
 }
+
+
 
 
 

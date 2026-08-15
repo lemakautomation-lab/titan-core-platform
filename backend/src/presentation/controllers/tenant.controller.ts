@@ -1,4 +1,6 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+
+import { AuthRequest } from "../../middleware/auth.middleware";
 
 import { CreateTenantCommand } from "../../application/commands/create-tenant.command";
 import { UpdateTenantCommand } from "../../application/commands/update-tenant.command";
@@ -23,7 +25,16 @@ export class TenantController {
         private readonly deleteTenantUseCase: DeleteTenantUseCase,
     ) {}
 
-    async create(req: Request, res: Response): Promise<void> {
+    async create(req: AuthRequest, res: Response): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
 
         const command = new CreateTenantCommand(
             req.body.name,
@@ -40,13 +51,30 @@ export class TenantController {
         }
 
         res.status(201).json(result.value);
-
     }
 
-    async getById(req: Request, res: Response): Promise<void> {
+    async getById(req: AuthRequest, res: Response): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const tenantId = String(req.params.id);
+
+        if (tenantId !== authUser.tenantId) {
+            res.status(404).json({
+                error: "Tenant not found.",
+            });
+            return;
+        }
 
         const query = new GetTenantByIdQuery(
-            String(req.params.id),
+            tenantId,
         );
 
         const result =
@@ -60,10 +88,18 @@ export class TenantController {
         }
 
         res.status(200).json(result.value);
-
     }
 
-    async list(req: Request, res: Response): Promise<void> {
+    async list(req: AuthRequest, res: Response): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
 
         const result =
             await this.listTenantsUseCase.execute(
@@ -78,20 +114,39 @@ export class TenantController {
         }
 
         res.status(200).json(result.value);
-
     }
 
-    async update(req: Request, res: Response): Promise<void> {
+    async update(req: AuthRequest, res: Response): Promise<void> {
 
-        const slug = req.body.name
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const tenantId = String(req.params.id);
+
+        if (tenantId !== authUser.tenantId) {
+            res.status(404).json({
+                error: "Tenant not found.",
+            });
+            return;
+        }
+
+        const name = String(req.body.name);
+
+        const slug = name
             .trim()
             .toLowerCase()
             .replace(/\s+/g, "-")
             .replace(/[^a-z0-9-]/g, "");
 
         const command = new UpdateTenantCommand(
-            String(req.params.id),
-            req.body.name,
+            tenantId,
+            name,
             slug,
         );
 
@@ -106,13 +161,30 @@ export class TenantController {
         }
 
         res.status(200).json(result.value);
-
     }
 
-    async delete(req: Request, res: Response): Promise<void> {
+    async delete(req: AuthRequest, res: Response): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const tenantId = String(req.params.id);
+
+        if (tenantId !== authUser.tenantId) {
+            res.status(404).json({
+                error: "Tenant not found.",
+            });
+            return;
+        }
 
         const command = new DeleteTenantCommand(
-            String(req.params.id),
+            tenantId,
         );
 
         const result =
@@ -126,7 +198,5 @@ export class TenantController {
         }
 
         res.status(204).send();
-
     }
-
 }

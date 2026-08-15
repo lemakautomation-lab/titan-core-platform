@@ -98,9 +98,9 @@ implements UseCase<AssignRoleToUserCommand, Result<void>>
 
         await this.auditLogService.log(
 
-            user.tenantId,
+            command.tenantId,
 
-            user.id,
+            command.actorUserId,
 
             "USER_ROLE_ASSIGN",
 

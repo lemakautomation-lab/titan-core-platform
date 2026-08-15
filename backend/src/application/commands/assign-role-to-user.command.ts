@@ -8,6 +8,8 @@ export class AssignRoleToUserCommand {
 
         public readonly tenantId: string,
 
+        public readonly actorUserId: string,
+
     ) {}
 
 }

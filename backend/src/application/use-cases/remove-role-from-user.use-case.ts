@@ -100,9 +100,9 @@ implements UseCase<RemoveRoleFromUserCommand, Result<void>>
 
         await this.auditLogService.log(
 
-            user.tenantId,
+            command.tenantId,
 
-            user.id,
+            command.actorUserId,
 
             "USER_ROLE_REMOVE",
 

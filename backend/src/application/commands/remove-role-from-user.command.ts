@@ -8,6 +8,8 @@ export class RemoveRoleFromUserCommand {
 
         public readonly tenantId: string,
 
+        public readonly actorUserId: string,
+
     ) {}
 
 }
