@@ -65,8 +65,9 @@ export class CreateUserUseCase
 
         const existingUser =
             await this.userRepository.findByEmail(
-                command.email,
-            );
+            command.email,
+            command.tenantId,
+        );
 
         if (
             existingUser &&
@@ -120,6 +121,8 @@ export class CreateUserUseCase
     }
 
 }
+
+
 
 
 

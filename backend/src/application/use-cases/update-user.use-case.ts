@@ -60,8 +60,9 @@ implements UseCase<UpdateUserCommand, Result<UserDto>>
 
             const existingUser =
                 await this.userRepository.findByEmail(
-                    command.email,
-                );
+                command.email,
+                user.tenantId,
+            );
 
             if (
                 existingUser &&
@@ -134,3 +135,5 @@ implements UseCase<UpdateUserCommand, Result<UserDto>>
     }
 
 }
+
+

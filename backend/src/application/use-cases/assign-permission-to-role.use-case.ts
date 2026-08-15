@@ -54,6 +54,7 @@ implements UseCase<AssignPermissionToRoleCommand, Result<void>>
             await this.rolePermissionRepository.findByRoleAndPermission(
                 command.roleId,
                 command.permissionId,
+                command.tenantId,
             );
 
         if (existing) {
@@ -86,4 +87,3 @@ implements UseCase<AssignPermissionToRoleCommand, Result<void>>
         );
     }
 }
-

@@ -404,5 +404,61 @@ describe("Authorization Tenant Isolation", () => {
         },
     );
 
+    it(
+        "denies a user from creating a user in another tenant",
+        async () => {
+            const tenantAUser =
+                await createTestUser({
+                    permissions: [
+                        "users.create",
+                    ],
+                });
+            const tenantBUser =
+                await createTestUser();
+            const loginResponse =
+                await request(app)
+                    .post("/api/v1/auth/login")
+                    .send({
+                        tenantId:
+                            tenantAUser.tenant.id,
+                        email:
+                            tenantAUser.user.email,
+                        password:
+                            tenantAUser.password,
+                    });
+            expect(
+                loginResponse.status,
+            ).toBe(200);
+            const accessToken =
+                loginResponse.body.data.accessToken;
+            const response =
+                await request(app)
+                    .post("/api/v1/users")
+                    .set(
+                        "Authorization",
+                        `Bearer ${accessToken}`,
+                    )
+                    .send({
+                        tenantId:
+                            tenantBUser.tenant.id,
+                        organisationId: null,
+                        email:
+                            `cross-tenant-create-${Date.now()}@example.com`,
+                        password:
+                            "TestPassword123!",
+                        firstName:
+                            "CrossTenant",
+                        lastName:
+                            "Attempt",
+                    });
+            expect(
+                response.status,
+            ).toBe(403);
+        },
+    );
 });
+
+
+
+
 

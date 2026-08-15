@@ -9,11 +9,25 @@ export interface UserRepository {
 
     findByEmail(
         email: string,
+        tenantId: string,
     ): Promise<User | null>;
+
+    findByEmailAnyTenant(
+        email: string,
+    ): Promise<User | null>;
+
+    findAll(
+        tenantId: string,
+    ): Promise<User[]>;
 
     findAllByTenantId(
         tenantId: string,
     ): Promise<User[]>;
+
+    findRoles(
+        userId: string,
+        tenantId: string,
+    ): Promise<Role[]>;
 
     create(
         user: User,
@@ -27,23 +41,22 @@ export interface UserRepository {
         id: string,
     ): Promise<void>;
 
-    findRoles(
-        userId: string,
-        tenantId: string,
-    ): Promise<Role[]>;
-
     assignRole(
         userId: string,
         roleId: string,
+        tenantId: string,
     ): Promise<void>;
 
     removeRole(
         userId: string,
         roleId: string,
+        tenantId: string,
     ): Promise<void>;
 
     hasRole(
         userId: string,
         roleId: string,
+        tenantId: string,
     ): Promise<boolean>;
+
 }

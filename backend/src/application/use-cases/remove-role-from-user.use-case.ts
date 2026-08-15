@@ -57,9 +57,9 @@ implements UseCase<RemoveRoleFromUserCommand, Result<void>>
 
         const role =
             await this.roleRepository.findById(
-            command.roleId,
-            command.tenantId,
-        );
+                command.roleId,
+                command.tenantId,
+            );
 
         if (!role) {
 
@@ -76,6 +76,8 @@ implements UseCase<RemoveRoleFromUserCommand, Result<void>>
 
                 command.roleId,
 
+                command.tenantId,
+
             );
 
         if (!assigned) {
@@ -91,6 +93,8 @@ implements UseCase<RemoveRoleFromUserCommand, Result<void>>
             command.userId,
 
             command.roleId,
+
+            command.tenantId,
 
         );
 
@@ -117,7 +121,3 @@ implements UseCase<RemoveRoleFromUserCommand, Result<void>>
     }
 
 }
-
-
-
-

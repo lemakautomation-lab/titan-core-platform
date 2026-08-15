@@ -52,6 +52,7 @@ export class DeletePermissionFromRoleUseCase {
             await this.rolePermissionRepository.findByRoleAndPermission(
                 command.roleId,
                 command.permissionId,
+                command.tenantId,
             );
 
         if (!assignment) {
@@ -65,6 +66,7 @@ export class DeletePermissionFromRoleUseCase {
         await this.rolePermissionRepository.delete(
             command.roleId,
             command.permissionId,
+            command.tenantId,
         );
 
         await this.auditLogService.log(

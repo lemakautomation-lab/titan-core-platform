@@ -6,26 +6,20 @@ export interface RolePermissionRepository {
         rolePermission: RolePermission,
     ): Promise<RolePermission>;
 
-
     delete(
         roleId: string,
         permissionId: string,
+        tenantId: string,
     ): Promise<void>;
 
-
     findByRoleAndPermission(
-
         roleId: string,
-
         permissionId: string,
-
+        tenantId: string,
     ): Promise<RolePermission | null>;
 
-
     findAllByRoleId(
-
         roleId: string,
-
+        tenantId: string,
     ): Promise<RolePermission[]>;
-
 }

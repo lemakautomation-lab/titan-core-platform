@@ -14,23 +14,25 @@ implements RolePermissionRepository {
         rolePermission: RolePermission,
     ): Promise<RolePermission> {
 
-        const role = await this.database.prisma.role.findUnique({
-            where: {
-                id: rolePermission.roleId,
-            },
-            select: {
-                tenantId: true,
-            },
-        });
+        const role =
+            await this.database.prisma.role.findUnique({
+                where: {
+                    id: rolePermission.roleId,
+                },
+                select: {
+                    tenantId: true,
+                },
+            });
 
-        const permission = await this.database.prisma.permission.findUnique({
-            where: {
-                id: rolePermission.permissionId,
-            },
-            select: {
-                tenantId: true,
-            },
-        });
+        const permission =
+            await this.database.prisma.permission.findUnique({
+                where: {
+                    id: rolePermission.permissionId,
+                },
+                select: {
+                    tenantId: true,
+                },
+            });
 
         if (!role || !permission) {
             throw new Error(
@@ -57,7 +59,38 @@ implements RolePermissionRepository {
     async findByRoleAndPermission(
         roleId: string,
         permissionId: string,
+        tenantId: string,
     ): Promise<RolePermission | null> {
+
+        const role =
+            await this.database.prisma.role.findFirst({
+                where: {
+                    id: roleId,
+                    tenantId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+        if (!role) {
+            return null;
+        }
+
+        const permission =
+            await this.database.prisma.permission.findFirst({
+                where: {
+                    id: permissionId,
+                    tenantId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+        if (!permission) {
+            return null;
+        }
 
         const existing =
             await this.database.prisma.rolePermission.findUnique({
@@ -76,7 +109,23 @@ implements RolePermissionRepository {
 
     async findAllByRoleId(
         roleId: string,
+        tenantId: string,
     ): Promise<RolePermission[]> {
+
+        const role =
+            await this.database.prisma.role.findFirst({
+                where: {
+                    id: roleId,
+                    tenantId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+        if (!role) {
+            return [];
+        }
 
         const items =
             await this.database.prisma.rolePermission.findMany({
@@ -93,7 +142,42 @@ implements RolePermissionRepository {
     async delete(
         roleId: string,
         permissionId: string,
+        tenantId: string,
     ): Promise<void> {
+
+        const role =
+            await this.database.prisma.role.findFirst({
+                where: {
+                    id: roleId,
+                    tenantId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+        if (!role) {
+            throw new Error(
+                "Cannot delete role permission: role not found in tenant.",
+            );
+        }
+
+        const permission =
+            await this.database.prisma.permission.findFirst({
+                where: {
+                    id: permissionId,
+                    tenantId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+        if (!permission) {
+            throw new Error(
+                "Cannot delete role permission: permission not found in tenant.",
+            );
+        }
 
         await this.database.prisma.rolePermission.delete({
             where: {

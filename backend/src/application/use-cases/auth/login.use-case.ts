@@ -26,32 +26,19 @@ import {
 
 import { SecurityAnalyticsService } from "../../services/security-analytics.service";
 
-
 export class LoginUseCase {
 
-
     constructor(
-
         private readonly userRepository: UserRepository,
-
         private readonly sessionRepository: SessionRepository,
-
         private readonly auditLogService: AuditLogService,
-
         private readonly securityEventService: SecurityEventService,
-
         private readonly securityAnalyticsService: SecurityAnalyticsService,
-
     ) {}
 
-
-
     async execute(
-
         command: LoginCommand,
-
     ) {
-
 
         const securityContext: SecurityEventContext = {
 
@@ -68,53 +55,75 @@ export class LoginUseCase {
 
 
         const user =
-
             await this.userRepository.findByEmail(
-
                 command.email,
-
+                command.tenantId,
             );
-
 
 
         if (!user) {
 
+            const userForSecurityEvent =
+                await this.userRepository.findByEmailAnyTenant(
+                    command.email,
+                );
 
-            await this.securityEventService.recordAuthenticationFailure(
 
-                command.tenantId,
+            if (userForSecurityEvent) {
 
-                null,
+                await this.securityEventService.recordAuthenticationFailure(
 
-                {
+                    userForSecurityEvent.tenantId,
 
-                    email: command.email,
+                    userForSecurityEvent.id,
 
-                    reason: "USER_NOT_FOUND",
+                    {
 
-                },
+                        email: userForSecurityEvent.email,
 
-                securityContext,
+                        reason: "TENANT_MISMATCH",
 
-            );
+                    },
+
+                    securityContext,
+
+                );
+
+            } else {
+
+                await this.securityEventService.recordAuthenticationFailure(
+
+                    command.tenantId,
+
+                    null,
+
+                    {
+
+                        email: command.email,
+
+                        reason: "USER_NOT_FOUND",
+
+                    },
+
+                    securityContext,
+
+                );
+
+            }
 
 
             throw new UnauthorizedException(
-
                 "Invalid credentials",
-
             );
 
         }
 
 
-
         if (user.tenantId !== command.tenantId) {
-
 
             await this.securityEventService.recordAuthenticationFailure(
 
-                command.tenantId,
+                user.tenantId,
 
                 user.id,
 
@@ -132,17 +141,13 @@ export class LoginUseCase {
 
 
             throw new UnauthorizedException(
-
                 "Invalid credentials",
-
             );
 
         }
 
 
-
         if (user.isLocked()) {
-
 
             await this.securityEventService.recordAccountLocked(
 
@@ -164,29 +169,20 @@ export class LoginUseCase {
 
 
             throw new UnauthorizedException(
-
                 "Account locked",
-
             );
 
         }
 
 
-
         const passwordValid =
-
             await passwordSecurity.verify(
-
                 command.password,
-
                 user.passwordHash,
-
             );
 
 
-
         if (!passwordValid) {
-
 
             await this.securityEventService.recordAuthenticationFailure(
 
@@ -208,28 +204,20 @@ export class LoginUseCase {
 
 
             const thresholdExceeded =
-
                 await this.securityAnalyticsService
-
                     .hasExceededFailedLoginThreshold(
-
                         user.tenantId,
-
                         user.email,
-
                     );
 
 
             if (thresholdExceeded) {
 
-
                 user.lock();
 
 
                 await this.userRepository.update(
-
                     user,
-
                 );
 
 
@@ -273,17 +261,13 @@ export class LoginUseCase {
 
 
             throw new UnauthorizedException(
-
                 "Invalid credentials",
-
             );
 
         }
 
 
-
         if (!user.isActive()) {
-
 
             await this.securityEventService.recordAuthenticationFailure(
 
@@ -305,34 +289,26 @@ export class LoginUseCase {
 
 
             throw new UnauthorizedException(
-
                 "User account inactive",
-
             );
 
         }
 
 
-
         const roles =
-
             await this.userRepository.findRoles(
-            user.id,
-            user.tenantId,
-        );
+                user.id,
+                user.tenantId,
+            );
 
 
         const roleNames =
-
             roles.map(
-
                 role => role.name,
-
             );
 
 
         const accessToken =
-
             jwtService.generateAccessToken({
 
                 userId: user.id,
@@ -345,7 +321,6 @@ export class LoginUseCase {
 
 
         const refreshToken =
-
             jwtService.generateRefreshToken({
 
                 userId: user.id,
@@ -354,33 +329,22 @@ export class LoginUseCase {
 
 
         const expiresAt =
-
             new Date(
-
                 Date.now() +
-
                 7 * 24 * 60 * 60 * 1000,
-
             );
 
 
         const session =
-
             Session.create(
-
                 user.id,
-
                 refreshToken,
-
                 expiresAt,
-
             );
 
 
         await this.sessionRepository.create(
-
             session,
-
         );
 
 
@@ -441,6 +405,3 @@ export class LoginUseCase {
     }
 
 }
-
-
-

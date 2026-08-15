@@ -35,34 +35,46 @@ export class UserController {
     ) {}
 
     async create(
-        req: Request,
-        res: Response,
-    ): Promise<void> {
-
-        const command =
-            new CreateUserCommand(
-                req.body.tenantId,
-                req.body.organisationId ?? null,
-                req.body.email,
-                req.body.password,
-                req.body.firstName ?? null,
-                req.body.lastName ?? null,
-            );
-
-        const result =
-            await this.createUserUseCase.execute(command);
-
-        if (!result.isSuccess) {
-            res.status(400).json({
-                error: result.error,
-            });
-            return;
-        }
-
-        res.status(201).json(result.value);
+    req: AuthRequest,
+    res: Response,
+): Promise<void> {
+    const authUser = req.user;
+    if (!authUser) {
+        res.status(401).json({
+            error: "Unauthorized",
+        });
+        return;
     }
-
-    async getById(
+    const requestedTenantId =
+        req.body.tenantId;
+    if (
+        requestedTenantId &&
+        requestedTenantId !== authUser.tenantId
+    ) {
+        res.status(403).json({
+            error: "Forbidden",
+        });
+        return;
+    }
+    const command =
+        new CreateUserCommand(
+            authUser.tenantId,
+            req.body.organisationId ?? null,
+            req.body.email,
+            req.body.password,
+            req.body.firstName ?? null,
+            req.body.lastName ?? null,
+        );
+    const result =
+        await this.createUserUseCase.execute(command);
+    if (!result.isSuccess) {
+        res.status(400).json({
+            error: result.error,
+        });
+        return;
+    }
+    res.status(201).json(result.value);
+}async getById(
         req: AuthRequest,
         res: Response,
     ): Promise<void> {
@@ -348,4 +360,8 @@ export class UserController {
         res.status(200).json(result.value);
     }
 }
+
+
+
+
 

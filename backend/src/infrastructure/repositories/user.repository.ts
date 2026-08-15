@@ -31,11 +31,15 @@ implements UserRepository {
 
     async findByEmail(
         email: string,
+        tenantId: string,
     ): Promise<User | null> {
 
         const user =
             await this.database.prisma.user.findFirst({
-                where: { email },
+                where: {
+                    email,
+                    tenantId,
+                },
             });
 
         return user
@@ -43,16 +47,45 @@ implements UserRepository {
             : null;
     }
 
-    async findAllByTenantId(
+    async findByEmailAnyTenant(
+        email: string,
+    ): Promise<User | null> {
+
+        const user =
+            await this.database.prisma.user.findFirst({
+                where: {
+                    email,
+                },
+            });
+
+        return user
+            ? UserMapper.toDomain(user)
+            : null;
+    }
+
+    async findAll(
         tenantId: string,
     ): Promise<User[]> {
 
         const users =
             await this.database.prisma.user.findMany({
-                where: { tenantId },
+                where: {
+                    tenantId,
+                },
             });
 
-        return users.map(UserMapper.toDomain);
+        return users.map(
+            UserMapper.toDomain,
+        );
+    }
+
+    async findAllByTenantId(
+        tenantId: string,
+    ): Promise<User[]> {
+
+        return this.findAll(
+            tenantId,
+        );
     }
 
     async create(
@@ -61,10 +94,15 @@ implements UserRepository {
 
         const created =
             await this.database.prisma.user.create({
-                data: UserMapper.toPersistence(user),
+                data:
+                    UserMapper.toPersistence(
+                        user,
+                    ),
             });
 
-        return UserMapper.toDomain(created);
+        return UserMapper.toDomain(
+            created,
+        );
     }
 
     async update(
@@ -76,10 +114,15 @@ implements UserRepository {
                 where: {
                     id: user.id,
                 },
-                data: UserMapper.toPersistence(user),
+                data:
+                    UserMapper.toPersistence(
+                        user,
+                    ),
             });
 
-        return UserMapper.toDomain(updated);
+        return UserMapper.toDomain(
+            updated,
+        );
     }
 
     async delete(
@@ -87,7 +130,9 @@ implements UserRepository {
     ): Promise<void> {
 
         await this.database.prisma.user.delete({
-            where: { id },
+            where: {
+                id,
+            },
         });
     }
 
@@ -128,6 +173,7 @@ implements UserRepository {
     async assignRole(
         userId: string,
         roleId: string,
+        tenantId: string,
     ): Promise<void> {
 
         await this.database.prisma.userRole.create({
@@ -143,6 +189,7 @@ implements UserRepository {
     async removeRole(
         userId: string,
         roleId: string,
+        tenantId: string,
     ): Promise<void> {
 
         await this.database.prisma.userRole.delete({
@@ -160,6 +207,7 @@ implements UserRepository {
     async hasRole(
         userId: string,
         roleId: string,
+        tenantId: string,
     ): Promise<boolean> {
 
         const assignment =
@@ -168,10 +216,19 @@ implements UserRepository {
                 where: {
                     userId,
                     roleId,
+
+                    user: {
+                        tenantId,
+                    },
+
+                    role: {
+                        tenantId,
+                    },
                 },
 
             });
 
         return !!assignment;
     }
+
 }

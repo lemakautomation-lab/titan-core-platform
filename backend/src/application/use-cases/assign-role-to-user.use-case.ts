@@ -42,17 +42,6 @@ implements UseCase<AssignRoleToUserCommand, Result<void>>
 
         }
 
-
-        /*
-         * Tenant isolation:
-         *
-         * The tenantId comes from the authenticated JWT
-         * and is supplied by the controller.
-         *
-         * A user may only be assigned roles within their
-         * authenticated tenant boundary.
-         */
-
         if (
             user.tenantId !==
             command.tenantId
@@ -64,12 +53,11 @@ implements UseCase<AssignRoleToUserCommand, Result<void>>
 
         }
 
-
         const role =
             await this.roleRepository.findById(
-            command.roleId,
-            command.tenantId,
-        );
+                command.roleId,
+                command.tenantId,
+            );
 
         if (!role) {
 
@@ -79,13 +67,14 @@ implements UseCase<AssignRoleToUserCommand, Result<void>>
 
         }
 
-
         const alreadyAssigned =
             await this.userRepository.hasRole(
 
                 command.userId,
 
                 command.roleId,
+
+                command.tenantId,
 
             );
 
@@ -97,15 +86,15 @@ implements UseCase<AssignRoleToUserCommand, Result<void>>
 
         }
 
-
         await this.userRepository.assignRole(
 
             command.userId,
 
             command.roleId,
 
-        );
+            command.tenantId,
 
+        );
 
         await this.auditLogService.log(
 
@@ -123,7 +112,6 @@ implements UseCase<AssignRoleToUserCommand, Result<void>>
 
         );
 
-
         return Result.success(
             undefined,
         );
@@ -131,6 +119,3 @@ implements UseCase<AssignRoleToUserCommand, Result<void>>
     }
 
 }
-
-
-
