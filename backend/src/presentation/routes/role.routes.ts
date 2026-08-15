@@ -5,21 +5,15 @@ import { RoleController } from "../controllers/role.controller";
 import { authMiddleware } from "../../middleware/auth.middleware";
 import { requirePermission } from "../../middleware/authorization.middleware";
 
-
 export function createRoleRoutes(
-
     controller: RoleController,
-
 ): Router {
 
-
     const router = Router();
-
 
     router.use(
         authMiddleware,
     );
-
 
     router.post(
         "/",
@@ -27,13 +21,11 @@ export function createRoleRoutes(
         controller.create.bind(controller),
     );
 
-
     router.get(
         "/",
         requirePermission("roles.read"),
         controller.list.bind(controller),
     );
-
 
     router.get(
         "/:id",
@@ -41,13 +33,11 @@ export function createRoleRoutes(
         controller.getById.bind(controller),
     );
 
-
     router.put(
         "/:id",
         requirePermission("roles.update"),
         controller.update.bind(controller),
     );
-
 
     router.delete(
         "/:id",
@@ -55,13 +45,11 @@ export function createRoleRoutes(
         controller.delete.bind(controller),
     );
 
-
     router.post(
         "/:roleId/permissions/:permissionId",
-        requirePermission("roles.update"),
+        requirePermission("roles.permissions.manage"),
         controller.assignPermission.bind(controller),
     );
-
 
     router.get(
         "/:id/permissions",
@@ -69,14 +57,11 @@ export function createRoleRoutes(
         controller.getPermissions.bind(controller),
     );
 
-
     router.delete(
         "/:roleId/permissions/:permissionId",
-        requirePermission("roles.update"),
+        requirePermission("roles.permissions.manage"),
         controller.deletePermission.bind(controller),
     );
 
-
     return router;
-
 }

@@ -350,6 +350,7 @@ it(
             await createTestUser({
                 permissions: [
                     "roles.update",
+                "roles.permissions.manage",
                 ],
             });
 
@@ -420,6 +421,7 @@ it(
             await createTestUser({
                 permissions: [
                     "roles.update",
+                "roles.permissions.manage",
                 ],
             });
 
@@ -490,6 +492,7 @@ it(
             await createTestUser({
                 permissions: [
                     "roles.update",
+                "roles.permissions.manage",
                 ],
             });
 
@@ -567,6 +570,7 @@ it(
             await createTestUser({
                 permissions: [
                     "roles.update",
+                "roles.permissions.manage",
                 ],
             });
 
@@ -627,4 +631,5 @@ it(
 );
 
 });
+
 

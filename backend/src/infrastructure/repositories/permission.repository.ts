@@ -169,6 +169,14 @@ implements PermissionRepository {
 
             where: {
                 permissionId: id,
+
+                permission: {
+                    tenantId,
+                },
+
+                role: {
+                    tenantId,
+                },
             },
 
         });

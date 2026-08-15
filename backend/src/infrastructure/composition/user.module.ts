@@ -14,24 +14,32 @@ import { RemoveRoleFromUserUseCase } from "../../application/use-cases/remove-ro
 import { GetUserRolesUseCase } from "../../application/use-cases/get-user-roles.use-case";
 import { UnlockUserUseCase } from "../../application/use-cases/users/unlock-user.use-case";
 
+import { PermissionResolutionService } from "../../application/services/permission-resolution.service";
+
 import { auditLogModule } from "./audit-log.module";
 
 const databaseService = new DatabaseService();
 
 const tenantRepository =
-    new PrismaTenantRepository(
-        databaseService,
-    );
+new PrismaTenantRepository(
+    databaseService,
+);
 
 const userRepository =
-    new PrismaUserRepository(
-        databaseService,
-    );
+new PrismaUserRepository(
+    databaseService,
+);
 
 const roleRepository =
-    new PrismaRoleRepository(
-        databaseService,
-    );
+new PrismaRoleRepository(
+    databaseService,
+);
+
+const permissionResolutionService =
+new PermissionResolutionService(
+    userRepository,
+    roleRepository,
+);
 
 export const userModule = {
 
@@ -76,6 +84,7 @@ export const userModule = {
             userRepository,
             roleRepository,
             auditLogModule.auditLogService,
+            permissionResolutionService,
         ),
 
     removeRoleFromUserUseCase:
@@ -84,6 +93,7 @@ export const userModule = {
             userRepository,
             roleRepository,
             auditLogModule.auditLogService,
+            permissionResolutionService,
         ),
 
     getUserRolesUseCase:

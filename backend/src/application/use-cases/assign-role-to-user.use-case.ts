@@ -9,6 +9,8 @@ import { AssignRoleToUserCommand } from "../commands/assign-role-to-user.command
 import { AuditLogService } from "../services/audit-log.service";
 import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
 
+import { PermissionResolutionService } from "../services/permission-resolution.service";
+
 export class AssignRoleToUserUseCase
 implements UseCase<AssignRoleToUserCommand, Result<void>>
 {
@@ -20,6 +22,9 @@ implements UseCase<AssignRoleToUserCommand, Result<void>>
         private readonly roleRepository: RoleRepository,
 
         private readonly auditLogService: AuditLogService,
+
+        private readonly permissionResolutionService:
+            PermissionResolutionService,
 
     ) {}
 
@@ -63,6 +68,48 @@ implements UseCase<AssignRoleToUserCommand, Result<void>>
 
             return Result.failure(
                 "Role not found.",
+            );
+
+        }
+
+        const actorPermissions =
+            await this.permissionResolutionService
+                .getUserPermissions(
+                    command.actorUserId,
+                    command.tenantId,
+                );
+
+        const actorPermissionSet =
+            new Set(
+                actorPermissions,
+            );
+
+        const rolePermissions =
+            await this.roleRepository.findPermissions(
+                role.id,
+                command.tenantId,
+            );
+
+        if (rolePermissions.length === 0) {
+
+            return Result.failure(
+                "Forbidden.",
+            );
+
+        }
+
+        const canDelegateRole =
+            rolePermissions.every(
+                permission =>
+                    actorPermissionSet.has(
+                        permission.name,
+                    ),
+            );
+
+        if (!canDelegateRole) {
+
+            return Result.failure(
+                "Forbidden.",
             );
 
         }
