@@ -37,9 +37,15 @@ implements UseCase<UpdatePermissionCommand, Result<PermissionDto>>
             );
         }
 
-        permission.rename(
-            command.name,
-        );
+        if (
+            command.name !==
+            permission.name
+        ) {
+
+            return Result.failure(
+                "Permission name cannot be changed.",
+            );
+        }
 
         permission.updateDescription(
             command.description,
@@ -68,4 +74,3 @@ implements UseCase<UpdatePermissionCommand, Result<PermissionDto>>
     }
 
 }
-

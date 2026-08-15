@@ -563,27 +563,89 @@ it(
 );
 
 it(
-    "allows assigning a permission within the same tenant",
+"allows assigning a permission within the same tenant when the actor already holds that permission",
+async () => {
+
+    const tenantAUser =
+        await createTestUser({
+            permissions: [
+                "roles.update",
+                "roles.permissions.manage",
+            ],
+        });
+
+    const role =
+        await createRole(
+            tenantAUser.tenant.id,
+            `tenant-a-role-valid-assignment-${Date.now()}`,
+        );
+
+    const permission =
+        await createPermission(
+            tenantAUser.tenant.id,
+            "roles.update",
+        );
+
+    const loginResponse =
+        await request(app)
+            .post("/api/v1/auth/login")
+            .send({
+                tenantId:
+                    tenantAUser.tenant.id,
+                email:
+                    tenantAUser.user.email,
+                password:
+                    tenantAUser.password,
+            });
+
+    expect(loginResponse.status).toBe(200);
+
+    const accessToken =
+        loginResponse.body.data.accessToken;
+
+    const response =
+        await request(app)
+            .post(
+                `/api/v1/roles/${role.id}/permissions/${permission.id}`,
+            )
+            .set(
+                "Authorization",
+                `Bearer ${accessToken}`,
+            );
+
+    expect(response.status).toBe(201);
+
+    const assignment =
+        await testPrisma.rolePermission.findUnique({
+            where: {
+                roleId_permissionId: {
+                    roleId: role.id,
+                    permissionId: permission.id,
+                },
+            },
+        });
+
+    expect(assignment).not.toBeNull();
+
+},
+);
+
+
+it(
+    "cannot rename an existing permission into a privileged permission",
     async () => {
 
         const tenantAUser =
             await createTestUser({
                 permissions: [
-                    "roles.update",
-                "roles.permissions.manage",
+                    "permissions.update",
                 ],
             });
-
-        const role =
-            await createRole(
-                tenantAUser.tenant.id,
-                `tenant-a-role-valid-assignment-${Date.now()}`,
-            );
 
         const permission =
             await createPermission(
                 tenantAUser.tenant.id,
-                `tenant-a-permission-valid-assignment-${Date.now()}`,
+                "users.read",
             );
 
         const loginResponse =
@@ -605,31 +667,96 @@ it(
 
         const response =
             await request(app)
-                .post(
-                    `/api/v1/roles/${role.id}/permissions/${permission.id}`,
+                .put(
+                    `/api/v1/permissions/${permission.id}`,
                 )
                 .set(
                     "Authorization",
                     `Bearer ${accessToken}`,
-                );
+                )
+                .send({
+                    name: "roles.delete",
+                    description: "Privilege escalation attempt",
+                });
 
-        expect(response.status).toBe(201);
+        expect(response.status).toBe(404);
 
-        const assignment =
-            await testPrisma.rolePermission.findUnique({
+        const persistedPermission =
+            await testPrisma.permission.findUnique({
                 where: {
-                    roleId_permissionId: {
-                        roleId: role.id,
-                        permissionId: permission.id,
-                    },
+                    id: permission.id,
                 },
             });
 
-        expect(assignment).not.toBeNull();
+        expect(
+            persistedPermission?.name,
+        ).toBe("users.read");
 
+        expect(
+            persistedPermission?.description,
+        ).not.toBe(
+            "Privilege escalation attempt",
+        );
     },
 );
 
-});
 
+it(
+    "cannot create a privileged permission",
+    async () => {
+
+        const tenantAUser =
+            await createTestUser({
+                permissions: [
+                    "permissions.create",
+                ],
+            });
+
+        const loginResponse =
+            await request(app)
+                .post("/api/v1/auth/login")
+                .send({
+                    tenantId:
+                        tenantAUser.tenant.id,
+                    email:
+                        tenantAUser.user.email,
+                    password:
+                        tenantAUser.password,
+                });
+
+        expect(loginResponse.status).toBe(200);
+
+        const accessToken =
+            loginResponse.body.data.accessToken;
+
+        const response =
+            await request(app)
+                .post("/api/v1/permissions")
+                .set(
+                    "Authorization",
+                    `Bearer ${accessToken}`,
+                )
+                .send({
+                    name: "roles.delete",
+                    description:
+                        "Privilege escalation attempt",
+                });
+
+        expect(response.status).toBe(400);
+
+        const persistedPermission =
+            await testPrisma.permission.findFirst({
+                where: {
+                    tenantId:
+                        tenantAUser.tenant.id,
+                    name: "roles.delete",
+                },
+            });
+
+        expect(
+            persistedPermission,
+        ).toBeNull();
+    },
+);
+});
 

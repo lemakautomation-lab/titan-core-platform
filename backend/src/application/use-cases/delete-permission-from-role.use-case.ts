@@ -7,6 +7,8 @@ import { RolePermissionRepository } from "../../domain/repositories/role-permiss
 import { AuditLogService } from "../services/audit-log.service";
 import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
 
+import { PermissionResolutionService } from "../services/permission-resolution.service";
+
 export class DeletePermissionFromRoleUseCase {
 
     constructor(
@@ -14,6 +16,8 @@ export class DeletePermissionFromRoleUseCase {
         private readonly permissionRepository: PermissionRepository,
         private readonly rolePermissionRepository: RolePermissionRepository,
         private readonly auditLogService: AuditLogService,
+        private readonly permissionResolutionService:
+            PermissionResolutionService,
     ) {}
 
     async execute(
@@ -45,6 +49,21 @@ export class DeletePermissionFromRoleUseCase {
             return {
                 isSuccess: false,
                 error: "Permission not found.",
+            };
+        }
+
+        const actorHasPermission =
+            await this.permissionResolutionService.hasPermission(
+                command.userId,
+                command.tenantId,
+                permission.name,
+            );
+
+        if (!actorHasPermission) {
+
+            return {
+                isSuccess: false,
+                error: "Forbidden.",
             };
         }
 

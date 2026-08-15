@@ -11,6 +11,25 @@ import { PermissionApplicationMapper } from "../mappers/permission.mapper";
 import { AuditLogService } from "../services/audit-log.service";
 import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
 
+const RESERVED_PERMISSION_NAMES = new Set([
+    "users.read",
+    "users.create",
+    "users.update",
+    "users.delete",
+
+    "roles.read",
+    "roles.create",
+    "roles.update",
+    "roles.delete",
+
+    "permissions.read",
+    "permissions.create",
+    "permissions.update",
+    "permissions.delete",
+
+    "roles.permissions.manage",
+]);
+
 export class CreatePermissionUseCase
 implements UseCase<CreatePermissionCommand, Result<PermissionDto>>
 {
@@ -23,6 +42,17 @@ implements UseCase<CreatePermissionCommand, Result<PermissionDto>>
     async execute(
         command: CreatePermissionCommand,
     ): Promise<Result<PermissionDto>> {
+
+        if (
+            RESERVED_PERMISSION_NAMES.has(
+                command.name,
+            )
+        ) {
+
+            return Result.failure(
+                "Permission name is reserved.",
+            );
+        }
 
         const existingPermission =
             await this.permissionRepository.findByName(
@@ -66,4 +96,3 @@ implements UseCase<CreatePermissionCommand, Result<PermissionDto>>
     }
 
 }
-

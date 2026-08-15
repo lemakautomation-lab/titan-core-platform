@@ -12,6 +12,8 @@ import { AssignPermissionToRoleCommand } from "../commands/assign-permission-to-
 import { AuditLogService } from "../services/audit-log.service";
 import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
 
+import { PermissionResolutionService } from "../services/permission-resolution.service";
+
 export class AssignPermissionToRoleUseCase
 implements UseCase<AssignPermissionToRoleCommand, Result<void>>
 {
@@ -20,6 +22,8 @@ implements UseCase<AssignPermissionToRoleCommand, Result<void>>
         private readonly permissionRepository: PermissionRepository,
         private readonly rolePermissionRepository: RolePermissionRepository,
         private readonly auditLogService: AuditLogService,
+        private readonly permissionResolutionService:
+            PermissionResolutionService,
     ) {}
 
     async execute(
@@ -47,6 +51,19 @@ implements UseCase<AssignPermissionToRoleCommand, Result<void>>
         if (!permission) {
             return Result.failure(
                 "Permission not found.",
+            );
+        }
+
+        const actorHasPermission =
+            await this.permissionResolutionService.hasPermission(
+                command.userId,
+                command.tenantId,
+                permission.name,
+            );
+
+        if (!actorHasPermission) {
+            return Result.failure(
+                "Forbidden.",
             );
         }
 
