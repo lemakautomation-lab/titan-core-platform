@@ -148,17 +148,21 @@ implements PermissionRepository {
         tenantId: string,
     ): Promise<void> {
 
-        const deleted =
-            await this.database.prisma.permission.deleteMany({
+        const permission =
+            await this.database.prisma.permission.findFirst({
 
                 where: {
                     id,
                     tenantId,
                 },
 
+                select: {
+                    id: true,
+                },
+
             });
 
-        if (deleted.count !== 1) {
+        if (!permission) {
 
             throw new Error(
                 "Permission not found in tenant.",
@@ -180,6 +184,23 @@ implements PermissionRepository {
             },
 
         });
+
+        const deleted =
+            await this.database.prisma.permission.deleteMany({
+
+                where: {
+                    id,
+                    tenantId,
+                },
+
+            });
+
+        if (deleted.count !== 1) {
+
+            throw new Error(
+                "Permission not found in tenant.",
+            );
+        }
     }
 
 }

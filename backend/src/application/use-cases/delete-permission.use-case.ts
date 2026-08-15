@@ -8,6 +8,25 @@ import { DeletePermissionCommand } from "../commands/delete-permission.command";
 import { AuditLogService } from "../services/audit-log.service";
 import { AuditLogStatus } from "../../domain/entities/audit-log.entity";
 
+const RESERVED_PERMISSION_NAMES = new Set([
+    "users.read",
+    "users.create",
+    "users.update",
+    "users.delete",
+
+    "roles.read",
+    "roles.create",
+    "roles.update",
+    "roles.delete",
+
+    "permissions.read",
+    "permissions.create",
+    "permissions.update",
+    "permissions.delete",
+
+    "roles.permissions.manage",
+]);
+
 export class DeletePermissionUseCase
 implements UseCase<DeletePermissionCommand, Result<void>>
 {
@@ -34,6 +53,17 @@ implements UseCase<DeletePermissionCommand, Result<void>>
             );
         }
 
+        if (
+            RESERVED_PERMISSION_NAMES.has(
+                permission.name,
+            )
+        ) {
+
+            return Result.failure(
+                "Permission is protected.",
+            );
+        }
+
         await this.permissionRepository.delete(
             command.id,
             command.tenantId,
@@ -54,4 +84,3 @@ implements UseCase<DeletePermissionCommand, Result<void>>
     }
 
 }
-

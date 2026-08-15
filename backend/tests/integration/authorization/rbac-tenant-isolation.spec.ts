@@ -758,5 +758,237 @@ it(
         ).toBeNull();
     },
 );
+it(
+    "cannot delete a protected privileged permission",
+    async () => {
+
+        const tenantAUser =
+            await createTestUser({
+                permissions: [
+                    "permissions.delete",
+                ],
+            });
+
+        const permission =
+            await createPermission(
+                tenantAUser.tenant.id,
+                "roles.delete",
+            );
+
+        const loginResponse =
+            await request(app)
+                .post("/api/v1/auth/login")
+                .send({
+                    tenantId:
+                        tenantAUser.tenant.id,
+                    email:
+                        tenantAUser.user.email,
+                    password:
+                        tenantAUser.password,
+                });
+
+        expect(
+            loginResponse.status,
+        ).toBe(200);
+
+        const accessToken =
+            loginResponse.body.data.accessToken;
+
+        const response =
+            await request(app)
+                .delete(
+                    `/api/v1/permissions/${permission.id}`,
+                )
+                .set(
+                    "Authorization",
+                    `Bearer ${accessToken}`,
+                );
+
+        expect(
+            response.status,
+        ).toBe(404);
+
+        const persistedPermission =
+            await testPrisma.permission.findUnique({
+                where: {
+                    id:
+                        permission.id,
+                },
+            });
+
+        expect(
+            persistedPermission,
+        ).not.toBeNull();
+
+    },
+);
+
+
+it(
+    "deletes a normal permission and removes its role assignments",
+    async () => {
+
+        const tenantAUser =
+            await createTestUser({
+                permissions: [
+                    "permissions.delete",
+                ],
+            });
+
+        const role =
+            await createRole(
+                tenantAUser.tenant.id,
+                `permission-delete-role-${Date.now()}`,
+            );
+
+        const permission =
+            await createPermission(
+                tenantAUser.tenant.id,
+                `permission-delete-${Date.now()}`,
+            );
+
+        await testPrisma.rolePermission.create({
+            data: {
+                roleId:
+                    role.id,
+                permissionId:
+                    permission.id,
+            },
+        });
+
+        const loginResponse =
+            await request(app)
+                .post("/api/v1/auth/login")
+                .send({
+                    tenantId:
+                        tenantAUser.tenant.id,
+                    email:
+                        tenantAUser.user.email,
+                    password:
+                        tenantAUser.password,
+                });
+
+        expect(
+            loginResponse.status,
+        ).toBe(200);
+
+        const accessToken =
+            loginResponse.body.data.accessToken;
+
+        const response =
+            await request(app)
+                .delete(
+                    `/api/v1/permissions/${permission.id}`,
+                )
+                .set(
+                    "Authorization",
+                    `Bearer ${accessToken}`,
+                );
+
+        expect(
+            response.status,
+        ).toBe(204);
+
+        const persistedPermission =
+            await testPrisma.permission.findUnique({
+                where: {
+                    id:
+                        permission.id,
+                },
+            });
+
+        expect(
+            persistedPermission,
+        ).toBeNull();
+
+        const assignment =
+            await testPrisma.rolePermission.findUnique({
+                where: {
+                    roleId_permissionId: {
+                        roleId:
+                            role.id,
+                        permissionId:
+                            permission.id,
+                    },
+                },
+            });
+
+        expect(
+            assignment,
+        ).toBeNull();
+
+    },
+);
+
+
+it(
+    "cannot delete another tenant's permission",
+    async () => {
+
+        const tenantAUser =
+            await createTestUser({
+                permissions: [
+                    "permissions.delete",
+                ],
+            });
+
+        const tenantBUser =
+            await createTestUser();
+
+        const permission =
+            await createPermission(
+                tenantBUser.tenant.id,
+                `cross-tenant-delete-${Date.now()}`,
+            );
+
+        const loginResponse =
+            await request(app)
+                .post("/api/v1/auth/login")
+                .send({
+                    tenantId:
+                        tenantAUser.tenant.id,
+                    email:
+                        tenantAUser.user.email,
+                    password:
+                        tenantAUser.password,
+                });
+
+        expect(
+            loginResponse.status,
+        ).toBe(200);
+
+        const accessToken =
+            loginResponse.body.data.accessToken;
+
+        const response =
+            await request(app)
+                .delete(
+                    `/api/v1/permissions/${permission.id}`,
+                )
+                .set(
+                    "Authorization",
+                    `Bearer ${accessToken}`,
+                );
+
+        expect(
+            response.status,
+        ).toBe(404);
+
+        const persistedPermission =
+            await testPrisma.permission.findUnique({
+                where: {
+                    id:
+                        permission.id,
+                },
+            });
+
+        expect(
+            persistedPermission,
+        ).not.toBeNull();
+
+    },
+);
+
 });
+
 
