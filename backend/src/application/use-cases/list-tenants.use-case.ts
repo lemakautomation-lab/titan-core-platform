@@ -23,16 +23,20 @@ export class ListTenantsUseCase
         query: ListTenantsQuery,
     ): Promise<Result<TenantDto[]>> {
 
-        void query;
+        const tenant =
+            await this.tenantRepository.findById(
+                query.tenantId,
+            );
 
-        const tenants =
-            await this.tenantRepository.findAll();
+        if (!tenant) {
 
-        return Result.success(
-            tenants.map((tenant) =>
-                TenantApplicationMapper.toDto(tenant),
-            ),
-        );
+            return Result.success([]);
+
+        }
+
+        return Result.success([
+            TenantApplicationMapper.toDto(tenant),
+        ]);
 
     }
 

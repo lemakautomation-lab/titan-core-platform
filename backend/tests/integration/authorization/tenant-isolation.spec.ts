@@ -456,9 +456,66 @@ describe("Authorization Tenant Isolation", () => {
             ).toBe(403);
         },
     );
+    it(
+        "lists only the authenticated user's tenant",
+        async () => {
+
+            const tenantAUser =
+                await createTestUser({
+                    permissions: [
+                        "tenants.read",
+                    ],
+                });
+
+            const tenantBUser =
+                await createTestUser();
+
+            const loginResponse =
+                await request(app)
+                    .post("/api/v1/auth/login")
+                    .send({
+                        tenantId:
+                            tenantAUser.tenant.id,
+                        email:
+                            tenantAUser.user.email,
+                        password:
+                            tenantAUser.password,
+                    });
+
+            expect(
+                loginResponse.status,
+            ).toBe(200);
+
+            const accessToken =
+                loginResponse.body.data.accessToken;
+
+            const response =
+                await request(app)
+                    .get("/api/v1/tenants")
+                    .set(
+                        "Authorization",
+                        `Bearer ${accessToken}`,
+                    );
+
+            expect(
+                response.status,
+            ).toBe(200);
+
+            expect(
+                response.body,
+            ).toHaveLength(1);
+
+            expect(
+                response.body[0].id,
+            ).toBe(tenantAUser.tenant.id);
+
+            expect(
+                response.body.some(
+                    (tenant: { id: string }) =>
+                        tenant.id === tenantBUser.tenant.id,
+                ),
+            ).toBe(false);
+
+        },
+    );
 });
-
-
-
-
-

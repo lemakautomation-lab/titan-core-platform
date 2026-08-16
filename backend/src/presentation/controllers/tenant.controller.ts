@@ -103,7 +103,7 @@ export class TenantController {
 
         const result =
             await this.listTenantsUseCase.execute(
-                new ListTenantsQuery(),
+                new ListTenantsQuery(authUser.tenantId),
             );
 
         if (!result.isSuccess) {
@@ -200,3 +200,4 @@ export class TenantController {
         res.status(204).send();
     }
 }
+
