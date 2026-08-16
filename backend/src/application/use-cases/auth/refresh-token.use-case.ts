@@ -124,6 +124,39 @@ export class RefreshTokenUseCase {
         }
 
 
+        if (payload.userId !== session.userId) {
+
+
+            await this.securityEventService.recordTokenRefreshFailure(
+
+                {
+
+                    reason:
+                        "TOKEN_USER_MISMATCH",
+
+                    sessionId:
+                        session.id,
+
+                },
+
+                securityContext,
+
+            );
+
+
+            throw new HttpException(
+
+                "Invalid refresh token",
+
+                401,
+
+                "UNAUTHORIZED",
+
+            );
+
+        }
+
+
         if (!session.isActive()) {
 
 
@@ -214,7 +247,7 @@ export class RefreshTokenUseCase {
             jwtService.generateAccessToken({
 
                 userId:
-                    payload.userId,
+                    session.userId,
 
             });
 
@@ -224,7 +257,7 @@ export class RefreshTokenUseCase {
             jwtService.generateRefreshToken({
 
                 userId:
-                    payload.userId,
+                    session.userId,
 
             });
 
@@ -243,7 +276,7 @@ export class RefreshTokenUseCase {
 
             Session.create(
 
-                payload.userId,
+                session.userId,
 
                 refreshToken,
 
@@ -261,7 +294,7 @@ export class RefreshTokenUseCase {
 
         await this.securityEventService.recordTokenRefreshSuccess(
 
-            payload.userId,
+            session.userId,
 
             {
 

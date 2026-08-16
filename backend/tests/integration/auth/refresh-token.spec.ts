@@ -5,6 +5,7 @@ import app from "../../../src/app";
 
 import { createTestUser } from "../../factories/user.factory";
 import { testPrisma } from "../../helpers/prisma-test.client";
+import { jwtService } from "../../../src/security/jwt";
 
 describe("Refresh Token", () => {
 
@@ -203,6 +204,89 @@ describe("Refresh Token", () => {
     });
 
 
+
+    it("rejects a refresh token whose JWT user does not match the persisted session", async () => {
+
+        const {
+            user: sessionUser,
+        } = await createTestUser();
+
+        const {
+            user: tokenUser,
+        } = await createTestUser();
+
+        const refreshToken =
+            jwtService.generateRefreshToken({
+                userId: tokenUser.id,
+            });
+
+        const session =
+            await testPrisma.session.create({
+                data: {
+                    userId: sessionUser.id,
+                    refreshToken,
+                    status: "ACTIVE",
+                    expiresAt:
+                        new Date(
+                            Date.now() +
+                            7 * 24 * 60 * 60 * 1000,
+                        ),
+                },
+            });
+
+        const response =
+            await request(app)
+                .post("/api/v1/auth/refresh")
+                .set("User-Agent", "Token-Mismatch-Test-Agent")
+                .send({
+                    refreshToken,
+                });
+
+        expect(response.status).toBe(401);
+        expect(response.body.success).toBe(false);
+
+        const unchangedSession =
+            await testPrisma.session.findUnique({
+                where: {
+                    id: session.id,
+                },
+            });
+
+        expect(unchangedSession?.status)
+            .toBe("ACTIVE");
+
+        const securityEvents =
+            await testPrisma.securityEvent.findMany({
+                where: {
+                    eventType: "TOKEN_REFRESH_FAILURE",
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+            });
+
+        const securityEvent =
+            securityEvents[0];
+
+        expect(securityEvent.userId)
+            .toBeNull();
+
+        expect(securityEvent.userAgent)
+            .toBe("Token-Mismatch-Test-Agent");
+
+        expect(securityEvent.metadata)
+            .toBeDefined();
+
+        const metadata =
+            securityEvent.metadata as Record<string, unknown>;
+
+        expect(metadata.reason)
+            .toBe("TOKEN_USER_MISMATCH");
+
+        expect(metadata.sessionId)
+            .toBe(session.id);
+
+    });
     it("rejects an invalid refresh token and records refresh failure", async () => {
 
         const response =
@@ -254,3 +338,4 @@ describe("Refresh Token", () => {
     });
 
 });
+
