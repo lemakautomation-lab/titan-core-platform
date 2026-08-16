@@ -18,17 +18,23 @@ export class AuthController {
         const result =
             await authModule.loginUseCase.execute({
 
-                tenantId: req.body.tenantId,
+                tenantId:
+                    req.body.tenantId,
 
-                email: req.body.email,
+                email:
+                    req.body.email,
 
-                password: req.body.password,
+                password:
+                    req.body.password,
 
-                ipAddress: req.ip,
+                ipAddress:
+                    req.ip,
 
-                userAgent: req.get("User-Agent") ?? undefined,
+                userAgent:
+                    req.get("User-Agent") ?? undefined,
 
-                requestId: req.requestId,
+                requestId:
+                    req.requestId,
 
             });
 
@@ -40,7 +46,6 @@ export class AuthController {
             data: result,
 
         });
-
 
     }
 
@@ -58,6 +63,15 @@ export class AuthController {
                 refreshToken:
                     req.body.refreshToken,
 
+                ipAddress:
+                    req.ip,
+
+                userAgent:
+                    req.get("User-Agent") ?? undefined,
+
+                requestId:
+                    req.requestId,
+
             });
 
 
@@ -69,13 +83,12 @@ export class AuthController {
 
         });
 
-
     }
 
 
 
     async logout(
-        req: RequestWithId,
+        req: AuthRequest & RequestWithId,
         res: Response,
     ): Promise<void> {
 
@@ -84,6 +97,21 @@ export class AuthController {
 
             sessionId:
                 req.body.sessionId,
+
+            userId:
+                req.user!.userId,
+
+            tenantId:
+                req.user!.tenantId,
+
+            ipAddress:
+                req.ip,
+
+            userAgent:
+                req.get("User-Agent") ?? undefined,
+
+            requestId:
+                req.requestId,
 
         });
 
@@ -95,7 +123,6 @@ export class AuthController {
             message: "Logged out successfully",
 
         });
-
 
     }
 
@@ -117,8 +144,6 @@ export class AuthController {
 
         });
 
-
     }
-
 
 }

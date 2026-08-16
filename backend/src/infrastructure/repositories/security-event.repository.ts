@@ -1,4 +1,4 @@
-﻿import {
+import {
     SecurityEvent,
 } from "../../domain/entities/security-event.entity";
 
@@ -12,6 +12,10 @@ import {
 } from "../../domain/security/security-event-type";
 
 import {
+    SecurityEventType as PrismaSecurityEventType,
+} from "../../generated/prisma/enums";
+
+import {
     DatabaseService,
 } from "../database/database.service";
 
@@ -23,53 +27,34 @@ import {
 export class PrismaSecurityEventRepository
 implements SecurityEventRepository {
 
-
     constructor(
-
         private readonly database: DatabaseService,
-
     ) {}
 
 
-
     async create(
-
         securityEvent: SecurityEvent,
-
     ): Promise<SecurityEvent> {
 
-
         const created =
-
             await this.database.prisma.securityEvent.create({
-
                 data:
                     SecurityEventMapper.toPersistence(
                         securityEvent,
                     ),
-
             });
 
-
         return SecurityEventMapper.toDomain(
-
             created,
-
         );
-
     }
 
 
-
     async findMany(
-
         query: SecurityEventQuery,
-
     ): Promise<SecurityEvent[]> {
 
-
         const events =
-
             await this.database.prisma.securityEvent.findMany({
 
                 where: {
@@ -81,7 +66,9 @@ implements SecurityEventRepository {
                         query.userId,
 
                     eventType:
-                        query.eventType,
+                        query.eventType
+                            ? query.eventType as PrismaSecurityEventType
+                            : undefined,
 
                     createdAt: {
 
@@ -103,52 +90,32 @@ implements SecurityEventRepository {
 
             });
 
-
-
         return events.map(
-
             event =>
                 SecurityEventMapper.toDomain(
                     event,
                 ),
-
         );
-
     }
-
 
 
     async findRecent(
-
         tenantId: string,
-
         from: Date,
-
     ): Promise<SecurityEvent[]> {
 
-
         return this.findMany({
-
             tenantId,
-
             from,
-
         });
-
     }
 
 
-
     async countByType(
-
         tenantId: string,
-
         eventType: SecurityEventType,
-
         from: Date,
-
     ): Promise<number> {
-
 
         return await this.database.prisma.securityEvent.count({
 
@@ -156,20 +123,18 @@ implements SecurityEventRepository {
 
                 tenantId,
 
-                eventType,
+                eventType:
+                    eventType as PrismaSecurityEventType,
 
                 createdAt: {
 
-                    gte: from,
+                    gte:
+                        from,
 
                 },
 
             },
 
         });
-
     }
-
-
-
 }

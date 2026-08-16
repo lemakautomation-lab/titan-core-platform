@@ -26,6 +26,7 @@ export function createAuthRoutes(
     router.post(
         "/logout",
         authRateLimiter,
+        authMiddleware,
         authController.logout.bind(authController),
     );
 

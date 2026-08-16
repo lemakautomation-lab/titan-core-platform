@@ -8,7 +8,7 @@ import { testPrisma } from "../../helpers/prisma-test.client";
 
 describe("Refresh Token", () => {
 
-    it("rotates a valid refresh token", async () => {
+    it("rotates a valid refresh token and records a success security event", async () => {
 
         const {
             user,
@@ -29,9 +29,19 @@ describe("Refresh Token", () => {
         const originalRefresh =
             login.body.data.refreshToken;
 
+        const originalSession =
+            await testPrisma.session.findUnique({
+                where: {
+                    refreshToken: originalRefresh,
+                },
+            });
+
+        expect(originalSession).toBeDefined();
+
         const response =
             await request(app)
                 .post("/api/v1/auth/refresh")
+                .set("User-Agent", "Refresh-Test-Agent")
                 .send({
                     refreshToken: originalRefresh,
                 });
@@ -41,15 +51,15 @@ describe("Refresh Token", () => {
         expect(response.body.success).toBe(true);
 
         expect(
-            response.body.data.accessToken
+            response.body.data.accessToken,
         ).toBeDefined();
 
         expect(
-            response.body.data.refreshToken
+            response.body.data.refreshToken,
         ).toBeDefined();
 
         expect(
-            response.body.data.refreshToken
+            response.body.data.refreshToken,
         ).not.toBe(originalRefresh);
 
         const activeSessions =
@@ -71,9 +81,45 @@ describe("Refresh Token", () => {
         expect(activeSessions.length).toBe(1);
         expect(revokedSessions.length).toBe(1);
 
+        const securityEvents =
+            await testPrisma.securityEvent.findMany({
+                where: {
+                    userId: user.id,
+                    eventType: "TOKEN_REFRESH_SUCCESS",
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+            });
+
+        expect(securityEvents.length)
+            .toBeGreaterThanOrEqual(1);
+
+        const securityEvent =
+            securityEvents[0];
+
+        expect(securityEvent.userId)
+            .toBe(user.id);
+
+        expect(securityEvent.metadata)
+            .toBeDefined();
+
+        const metadata =
+            securityEvent.metadata as Record<string, unknown>;
+
+        expect(metadata.previousSessionId)
+            .toBe(originalSession!.id);
+
+        expect(metadata.newSessionId)
+            .toBe(activeSessions[0].id);
+
+        expect(securityEvent.userAgent)
+            .toBe("Refresh-Test-Agent");
+
     });
 
-    it("rejects reuse of a rotated refresh token", async () => {
+
+    it("rejects reuse of a rotated refresh token and records token reuse", async () => {
 
         const {
             user,
@@ -104,11 +150,11 @@ describe("Refresh Token", () => {
         expect(rotation.status).toBe(200);
 
         expect(
-            rotation.body.data.refreshToken
+            rotation.body.data.refreshToken,
         ).toBeDefined();
 
         expect(
-            rotation.body.data.refreshToken
+            rotation.body.data.refreshToken,
         ).not.toBe(originalRefresh);
 
         const replay =
@@ -122,13 +168,47 @@ describe("Refresh Token", () => {
 
         expect(replay.body.success).toBe(false);
 
+        const securityEvents =
+            await testPrisma.securityEvent.findMany({
+                where: {
+                    userId: user.id,
+                    eventType: "TOKEN_REUSE_DETECTED",
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+            });
+
+        expect(securityEvents.length)
+            .toBeGreaterThanOrEqual(1);
+
+        const securityEvent =
+            securityEvents[0];
+
+        expect(securityEvent.userId)
+            .toBe(user.id);
+
+        expect(securityEvent.metadata)
+            .toBeDefined();
+
+        const metadata =
+            securityEvent.metadata as Record<string, unknown>;
+
+        expect(metadata.reason)
+            .toBe("REVOKED_REFRESH_TOKEN_REUSE");
+
+        expect(metadata.sessionId)
+            .toBeDefined();
+
     });
 
-    it("rejects an invalid refresh token", async () => {
+
+    it("rejects an invalid refresh token and records refresh failure", async () => {
 
         const response =
             await request(app)
                 .post("/api/v1/auth/refresh")
+                .set("User-Agent", "Invalid-Refresh-Test-Agent")
                 .send({
                     refreshToken: "invalid-token",
                 });
@@ -136,6 +216,40 @@ describe("Refresh Token", () => {
         expect(response.status).toBe(401);
 
         expect(response.body.success).toBe(false);
+
+        const securityEvents =
+            await testPrisma.securityEvent.findMany({
+                where: {
+                    eventType: "TOKEN_REFRESH_FAILURE",
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+            });
+
+        expect(securityEvents.length)
+            .toBeGreaterThanOrEqual(1);
+
+        const securityEvent =
+            securityEvents[0];
+
+        expect(securityEvent.userId)
+            .toBeNull();
+
+        expect(securityEvent.tenantId)
+            .toBeNull();
+
+        expect(securityEvent.userAgent)
+            .toBe("Invalid-Refresh-Test-Agent");
+
+        expect(securityEvent.metadata)
+            .toBeDefined();
+
+        const metadata =
+            securityEvent.metadata as Record<string, unknown>;
+
+        expect(metadata.reason)
+            .toBe("INVALID_REFRESH_TOKEN");
 
     });
 

@@ -55,14 +55,24 @@ export const authModule = {
     refreshTokenUseCase:
 
         new RefreshTokenUseCase(
+
             sessionRepository,
+
+            auditLogModule.securityEventService,
+
         ),
 
 
     logoutUseCase:
 
         new LogoutUseCase(
+
             sessionRepository,
+
+            auditLogModule.securityEventService,
+
         ),
 
 };
+
+
