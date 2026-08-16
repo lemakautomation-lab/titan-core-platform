@@ -1,8 +1,11 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 
 import { GetSessionByIdQuery } from "../../application/queries/session/get-session-by-id.query";
 
 import { GetSessionByIdUseCase } from "../../application/use-cases/get-session-by-id.use-case";
+
+import { AuthRequest } from "../../middleware/auth.middleware";
+
 
 export class SessionController {
 
@@ -14,17 +17,30 @@ export class SessionController {
 
     async getById(
 
-        req: Request,
+        req: AuthRequest,
 
         res: Response,
 
     ): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+
+            return;
+        }
 
         const query =
 
             new GetSessionByIdQuery(
 
                 String(req.params.id),
+
+                authUser.tenantId,
 
             );
 

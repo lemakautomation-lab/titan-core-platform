@@ -10,11 +10,20 @@ export class PrismaSessionRepository implements SessionRepository {
         private readonly database: DatabaseService,
     ) {}
 
-    async findById(id: string): Promise<Session | null> {
+    async findById(
+        id: string,
+        tenantId: string,
+    ): Promise<Session | null> {
 
         const session =
-            await this.database.prisma.session.findUnique({
-                where: { id },
+            await this.database.prisma.session.findFirst({
+                where: {
+                    id,
+
+                    user: {
+                        tenantId,
+                    },
+                },
             });
 
         return session

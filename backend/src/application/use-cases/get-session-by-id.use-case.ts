@@ -30,6 +30,7 @@ implements UseCase<GetSessionByIdQuery, Result<SessionDto>>
         const session =
             await this.sessionRepository.findById(
                 query.id,
+                query.tenantId,
             );
 
         if (!session) {

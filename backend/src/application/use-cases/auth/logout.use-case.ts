@@ -21,16 +21,26 @@ export class LogoutUseCase {
         const session =
             await this.sessionRepository.findById(
                 command.sessionId,
+                command.tenantId,
             );
 
         if (!session) {
-            return;
-        }
 
-        if (session.userId !== command.userId) {
             throw new UnauthorizedException(
                 "Unauthorized session",
             );
+
+        }
+
+        if (
+            session.userId !==
+            command.userId
+        ) {
+
+            throw new UnauthorizedException(
+                "Unauthorized session",
+            );
+
         }
 
         await this.sessionRepository.revoke(
@@ -38,6 +48,7 @@ export class LogoutUseCase {
         );
 
         const securityContext: SecurityEventContext = {
+
             ipAddress:
                 command.ipAddress ?? null,
 
@@ -46,6 +57,7 @@ export class LogoutUseCase {
 
             requestId:
                 command.requestId ?? null,
+
         };
 
         await this.securityEventService.recordSessionRevoked(

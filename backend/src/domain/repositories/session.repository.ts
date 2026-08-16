@@ -2,7 +2,10 @@ import { Session } from "../entities/session.entity";
 
 export interface SessionRepository {
 
-    findById(id: string): Promise<Session | null>;
+    findById(
+        id: string,
+        tenantId: string,
+    ): Promise<Session | null>;
 
     findByUserId(userId: string): Promise<Session[]>;
 
