@@ -14,8 +14,6 @@ export class SessionApplicationMapper {
 
             session.userId,
 
-            session.refreshToken,
-
             session.status,
 
             session.expiresAt,

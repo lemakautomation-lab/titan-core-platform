@@ -62,6 +62,7 @@ describe("Session Authorization", () => {
 
         expect(response.status).toBe(200);
         expect(response.body.id).toBe(session!.id);
+        expect(response.body.refreshToken).toBeUndefined();
     });
 
 

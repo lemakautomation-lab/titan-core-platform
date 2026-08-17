@@ -8,8 +8,6 @@ export class SessionDto {
 
         public readonly userId: string,
 
-        public readonly refreshToken: string,
-
         public readonly status: SessionStatus,
 
         public readonly expiresAt: Date,
