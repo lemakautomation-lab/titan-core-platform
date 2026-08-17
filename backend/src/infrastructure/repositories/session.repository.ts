@@ -90,13 +90,22 @@ export class PrismaSessionRepository implements SessionRepository {
 
     }
 
-    async revoke(id: string): Promise<void> {
+    async revoke(
+        id: string,
+        userId: string,
+    ): Promise<void> {
 
-        await this.database.prisma.session.update({
-            where: { id },
+        await this.database.prisma.session.updateMany({
+
+            where: {
+                id,
+                userId,
+            },
+
             data: {
                 status: "REVOKED",
             },
+
         });
 
     }

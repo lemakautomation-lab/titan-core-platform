@@ -60,6 +60,7 @@ export class LogoutUseCase {
 
         await this.sessionRepository.revoke(
             session.id,
+            session.userId,
         );
 
         const securityContext: SecurityEventContext = {

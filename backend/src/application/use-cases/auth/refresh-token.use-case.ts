@@ -202,6 +202,8 @@ export class RefreshTokenUseCase {
 
                 session.id,
 
+                session.userId,
+
             );
 
 
@@ -304,6 +306,8 @@ export class RefreshTokenUseCase {
         await this.sessionRepository.revoke(
 
             session.id,
+
+            session.userId,
 
         );
 

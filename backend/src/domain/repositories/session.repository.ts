@@ -15,7 +15,10 @@ export interface SessionRepository {
 
     create(session: Session): Promise<Session>;
 
-    revoke(id: string): Promise<void>;
+    revoke(
+        id: string,
+        userId: string,
+    ): Promise<void>;
 
     delete(id: string): Promise<void>;
 
