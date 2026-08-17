@@ -1,5 +1,6 @@
 import express from "express";
 import helmet from "helmet";
+import cookieParser from "cookie-parser";
 
 import routes from "./routes";
 import { requestLogger } from "./middleware/request-logger.middleware";
@@ -29,6 +30,8 @@ app.use(express.urlencoded({
     extended: false,
     limit: "1mb",
 }));
+
+app.use(cookieParser());
 
 app.use(requestLogger);
 

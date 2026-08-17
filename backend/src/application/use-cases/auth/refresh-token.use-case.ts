@@ -1,3 +1,4 @@
+import { UserRepository } from "../../../domain/repositories/user.repository";
 import { SessionRepository } from "../../../domain/repositories/session.repository";
 import { Session } from "../../../domain/entities/session.entity";
 import { RefreshTokenCommand } from "./refresh-token.command";
@@ -15,6 +16,8 @@ export class RefreshTokenUseCase {
     constructor(
 
         private readonly sessionRepository: SessionRepository,
+
+        private readonly userRepository: UserRepository,
 
         private readonly securityEventService: SecurityEventService,
 
@@ -235,6 +238,69 @@ export class RefreshTokenUseCase {
         }
 
 
+        const user =
+
+            await this.userRepository.findById(
+
+                session.userId,
+
+            );
+
+
+        if (!user) {
+
+
+            await this.securityEventService.recordTokenRefreshFailure(
+
+                {
+
+                    reason:
+                        "USER_NOT_FOUND",
+
+                    sessionId:
+                        session.id,
+
+                    userId:
+                        session.userId,
+
+                },
+
+                securityContext,
+
+            );
+
+
+            throw new HttpException(
+
+                "Invalid refresh token",
+
+                401,
+
+                "UNAUTHORIZED",
+
+            );
+
+        }
+
+
+        const roles =
+
+            await this.userRepository.findRoles(
+
+                user.id,
+
+                user.tenantId,
+
+            );
+
+
+        const roleNames =
+
+            roles.map(
+                role => role.name,
+            );
+
+
         await this.sessionRepository.revoke(
 
             session.id,
@@ -247,7 +313,13 @@ export class RefreshTokenUseCase {
             jwtService.generateAccessToken({
 
                 userId:
-                    session.userId,
+                    user.id,
+
+                tenantId:
+                    user.tenantId,
+
+                roles:
+                    roleNames,
 
             });
 
@@ -257,7 +329,7 @@ export class RefreshTokenUseCase {
             jwtService.generateRefreshToken({
 
                 userId:
-                    session.userId,
+                    user.id,
 
             });
 
@@ -276,7 +348,7 @@ export class RefreshTokenUseCase {
 
             Session.create(
 
-                session.userId,
+                user.id,
 
                 refreshToken,
 
@@ -294,7 +366,7 @@ export class RefreshTokenUseCase {
 
         await this.securityEventService.recordTokenRefreshSuccess(
 
-            session.userId,
+            user.id,
 
             {
 

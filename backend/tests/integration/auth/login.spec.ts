@@ -1,4 +1,4 @@
-﻿import crypto from "node:crypto";
+import crypto from "node:crypto";
 import request from "supertest";
 import { describe, expect, it } from "vitest";
 
@@ -38,7 +38,10 @@ describe("Authentication Login", () => {
         expect(response.body.data).toBeDefined();
 
         expect(response.body.data.accessToken).toBeDefined();
-        expect(response.body.data.refreshToken).toBeDefined();
+        const setCookie = response.headers["set-cookie"];
+        expect(setCookie).toBeDefined();
+        expect(setCookie.length).toBeGreaterThan(0);
+        expect(setCookie.some((cookie: string) => cookie.toLowerCase().startsWith("titan_refresh_token="))).toBe(true);
 
         expect(response.body.data.user).toBeDefined();
         expect(response.body.data.user.email).toBe(user.email);
@@ -492,3 +495,4 @@ describe("Authentication Login", () => {
 
 
 });
+

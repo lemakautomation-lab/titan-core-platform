@@ -58,6 +58,8 @@ export const authModule = {
 
             sessionRepository,
 
+            userRepository,
+
             auditLogModule.securityEventService,
 
         ),
@@ -74,5 +76,3 @@ export const authModule = {
         ),
 
 };
-
-

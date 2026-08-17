@@ -5,6 +5,12 @@ import { authModule } from "../../infrastructure/composition/auth.module";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { RequestWithId } from "../../middleware/request-id.middleware";
 
+import {
+    REFRESH_TOKEN_COOKIE_NAME,
+    refreshTokenCookieOptions,
+    refreshTokenClearCookieOptions,
+} from "../../config/refresh-token-cookie.config";
+
 
 export class AuthController {
 
@@ -13,7 +19,6 @@ export class AuthController {
         req: RequestWithId,
         res: Response,
     ): Promise<void> {
-
 
         const result =
             await authModule.loginUseCase.execute({
@@ -39,11 +44,26 @@ export class AuthController {
             });
 
 
+        res.cookie(
+            REFRESH_TOKEN_COOKIE_NAME,
+            result.refreshToken,
+            refreshTokenCookieOptions,
+        );
+
+
         res.status(200).json({
 
             success: true,
 
-            data: result,
+            data: {
+
+                user:
+                    result.user,
+
+                accessToken:
+                    result.accessToken,
+
+            },
 
         });
 
@@ -56,12 +76,31 @@ export class AuthController {
         res: Response,
     ): Promise<void> {
 
+        const refreshToken =
+            req.cookies?.[
+                REFRESH_TOKEN_COOKIE_NAME
+            ];
+
+
+        if (!refreshToken) {
+
+            res.status(401).json({
+
+                success: false,
+
+                message: "Refresh token required",
+
+            });
+
+            return;
+
+        }
+
 
         const result =
             await authModule.refreshTokenUseCase.execute({
 
-                refreshToken:
-                    req.body.refreshToken,
+                refreshToken,
 
                 ipAddress:
                     req.ip,
@@ -75,11 +114,23 @@ export class AuthController {
             });
 
 
+        res.cookie(
+            REFRESH_TOKEN_COOKIE_NAME,
+            result.refreshToken,
+            refreshTokenCookieOptions,
+        );
+
+
         res.status(200).json({
 
             success: true,
 
-            data: result,
+            data: {
+
+                accessToken:
+                    result.accessToken,
+
+            },
 
         });
 
@@ -91,7 +142,6 @@ export class AuthController {
         req: AuthRequest & RequestWithId,
         res: Response,
     ): Promise<void> {
-
 
         await authModule.logoutUseCase.execute({
 
@@ -116,6 +166,12 @@ export class AuthController {
         });
 
 
+        res.clearCookie(
+            REFRESH_TOKEN_COOKIE_NAME,
+            refreshTokenClearCookieOptions,
+        );
+
+
         res.status(200).json({
 
             success: true,
@@ -132,7 +188,6 @@ export class AuthController {
         req: AuthRequest,
         res: Response,
     ): Promise<void> {
-
 
         res.status(200).json({
 

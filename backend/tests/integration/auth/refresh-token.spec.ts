@@ -9,7 +9,7 @@ import { jwtService } from "../../../src/security/jwt";
 
 describe("Refresh Token", () => {
 
-    it("rotates a valid refresh token and records a success security event", async () => {
+    it("rotates a valid refresh token and preserves authorization context in the new access token", async () => {
 
         const {
             user,
@@ -27,8 +27,41 @@ describe("Refresh Token", () => {
 
         expect(login.status).toBe(200);
 
+        const setCookie =
+            login.headers["set-cookie"];
+
+        expect(setCookie)
+            .toBeDefined();
+
+        expect(setCookie.length)
+            .toBeGreaterThan(0);
+
+        const originalRefreshCookie =
+            setCookie.find(
+                (cookie: string) =>
+                    cookie.toLowerCase().startsWith("titan_refresh_token="),
+            );
+
+        expect(originalRefreshCookie)
+            .toBeDefined();
+
+        const originalAccess =
+            login.body.data.accessToken;
+
+        const originalPayload =
+            jwtService.verifyAccessToken(
+                originalAccess,
+            );
+
+        const refreshCookieValue =
+            originalRefreshCookie!
+                .split(";")[0];
+
         const originalRefresh =
-            login.body.data.refreshToken;
+            refreshCookieValue
+                .substring(
+                    refreshCookieValue.indexOf("=") + 1,
+                );
 
         const originalSession =
             await testPrisma.session.findUnique({
@@ -37,19 +70,33 @@ describe("Refresh Token", () => {
                 },
             });
 
-        expect(originalSession).toBeDefined();
+        expect(originalSession)
+            .toBeDefined();
+
+        const requestId =
+            crypto.randomUUID();
 
         const response =
             await request(app)
                 .post("/api/v1/auth/refresh")
-                .set("User-Agent", "Refresh-Test-Agent")
-                .send({
-                    refreshToken: originalRefresh,
-                });
+                .set(
+                    "User-Agent",
+                    "Refresh-Test-Agent",
+                )
+                .set(
+                    "X-Request-Id",
+                    requestId,
+                )
+                .set(
+                    "Cookie",
+                    originalRefreshCookie!,
+                );
 
-        expect(response.status).toBe(200);
+        expect(response.status)
+            .toBe(200);
 
-        expect(response.body.success).toBe(true);
+        expect(response.body.success)
+            .toBe(true);
 
         expect(
             response.body.data.accessToken,
@@ -57,11 +104,42 @@ describe("Refresh Token", () => {
 
         expect(
             response.body.data.refreshToken,
-        ).toBeDefined();
+        ).toBeUndefined();
 
-        expect(
-            response.body.data.refreshToken,
-        ).not.toBe(originalRefresh);
+        const rotatedCookies =
+            response.headers["set-cookie"];
+
+        expect(rotatedCookies)
+            .toBeDefined();
+
+        expect(rotatedCookies.length)
+            .toBeGreaterThan(0);
+
+        const rotatedRefreshCookie =
+            rotatedCookies.find(
+                (cookie: string) =>
+                    cookie.toLowerCase().startsWith("titan_refresh_token="),
+            );
+
+        expect(rotatedRefreshCookie)
+            .toBeDefined();
+
+        expect(rotatedRefreshCookie)
+            .not.toBe(originalRefreshCookie);
+
+        const refreshedPayload =
+            jwtService.verifyAccessToken(
+                response.body.data.accessToken,
+            );
+
+        expect(refreshedPayload.userId)
+            .toBe(user.id);
+
+        expect(refreshedPayload.tenantId)
+            .toBe(user.tenantId);
+
+        expect(refreshedPayload.roles)
+            .toEqual(originalPayload.roles);
 
         const activeSessions =
             await testPrisma.session.findMany({
@@ -79,28 +157,32 @@ describe("Refresh Token", () => {
                 },
             });
 
-        expect(activeSessions.length).toBe(1);
-        expect(revokedSessions.length).toBe(1);
+        expect(activeSessions.length)
+            .toBe(1);
+
+        expect(revokedSessions.length)
+            .toBe(1);
 
         const securityEvents =
             await testPrisma.securityEvent.findMany({
                 where: {
                     userId: user.id,
                     eventType: "TOKEN_REFRESH_SUCCESS",
-                },
-                orderBy: {
-                    createdAt: "desc",
+                    requestId,
                 },
             });
 
         expect(securityEvents.length)
-            .toBeGreaterThanOrEqual(1);
+            .toBe(1);
 
         const securityEvent =
             securityEvents[0];
 
         expect(securityEvent.userId)
             .toBe(user.id);
+
+        expect(securityEvent.requestId)
+            .toBe(requestId);
 
         expect(securityEvent.metadata)
             .toBeDefined();
@@ -136,38 +218,94 @@ describe("Refresh Token", () => {
                     password,
                 });
 
-        expect(login.status).toBe(200);
+        expect(login.status)
+            .toBe(200);
+
+        const setCookie =
+            login.headers["set-cookie"];
+
+        expect(setCookie)
+            .toBeDefined();
+
+        expect(setCookie.length)
+            .toBeGreaterThan(0);
+
+        const originalRefreshCookie =
+            setCookie.find(
+                (cookie: string) =>
+                    cookie.toLowerCase().startsWith("titan_refresh_token="),
+            );
+
+        expect(originalRefreshCookie)
+            .toBeDefined();
 
         const originalRefresh =
-            login.body.data.refreshToken;
+            originalRefreshCookie!
+                .split(";")[0];
+
+        const rotationRequestId =
+            crypto.randomUUID();
 
         const rotation =
             await request(app)
                 .post("/api/v1/auth/refresh")
-                .send({
-                    refreshToken: originalRefresh,
-                });
+                .set(
+                    "X-Request-Id",
+                    rotationRequestId,
+                )
+                .set(
+                    "Cookie",
+                    originalRefreshCookie!,
+                );
 
-        expect(rotation.status).toBe(200);
+        expect(rotation.status)
+            .toBe(200);
 
         expect(
-            rotation.body.data.refreshToken,
+            rotation.body.data.accessToken,
         ).toBeDefined();
 
-        expect(
-            rotation.body.data.refreshToken,
-        ).not.toBe(originalRefresh);
+        const rotatedCookies =
+            rotation.headers["set-cookie"];
+
+        expect(rotatedCookies)
+            .toBeDefined();
+
+        expect(rotatedCookies.length)
+            .toBeGreaterThan(0);
+
+        const rotatedRefreshCookie =
+            rotatedCookies.find(
+                (cookie: string) =>
+                    cookie.toLowerCase().startsWith("titan_refresh_token="),
+            );
+
+        expect(rotatedRefreshCookie)
+            .toBeDefined();
+
+        expect(rotatedRefreshCookie)
+            .not.toBe(originalRefreshCookie);
+
+        const replayRequestId =
+            crypto.randomUUID();
 
         const replay =
             await request(app)
                 .post("/api/v1/auth/refresh")
-                .send({
-                    refreshToken: originalRefresh,
-                });
+                .set(
+                    "X-Request-Id",
+                    replayRequestId,
+                )
+                .set(
+                    "Cookie",
+                    originalRefreshCookie!,
+                );
 
-        expect(replay.status).toBe(401);
+        expect(replay.status)
+            .toBe(401);
 
-        expect(replay.body.success).toBe(false);
+        expect(replay.body.success)
+            .toBe(false);
 
         const securityEvents =
             await testPrisma.securityEvent.findMany({
@@ -204,7 +342,6 @@ describe("Refresh Token", () => {
     });
 
 
-
     it("rejects a refresh token whose JWT user does not match the persisted session", async () => {
 
         const {
@@ -234,16 +371,30 @@ describe("Refresh Token", () => {
                 },
             });
 
+        const requestId =
+            crypto.randomUUID();
+
         const response =
             await request(app)
                 .post("/api/v1/auth/refresh")
-                .set("User-Agent", "Token-Mismatch-Test-Agent")
-                .send({
-                    refreshToken,
-                });
+                .set(
+                    "User-Agent",
+                    "Token-Mismatch-Test-Agent",
+                )
+                .set(
+                    "X-Request-Id",
+                    requestId,
+                )
+                .set(
+                    "Cookie",
+                    `titan_refresh_token=${refreshToken}`,
+                );
 
-        expect(response.status).toBe(401);
-        expect(response.body.success).toBe(false);
+        expect(response.status)
+            .toBe(401);
+
+        expect(response.body.success)
+            .toBe(false);
 
         const unchangedSession =
             await testPrisma.session.findUnique({
@@ -258,12 +409,14 @@ describe("Refresh Token", () => {
         const securityEvents =
             await testPrisma.securityEvent.findMany({
                 where: {
-                    eventType: "TOKEN_REFRESH_FAILURE",
-                },
-                orderBy: {
-                    createdAt: "desc",
+                    eventType:
+                        "TOKEN_REFRESH_FAILURE",
+                    requestId,
                 },
             });
+
+        expect(securityEvents)
+            .toHaveLength(1);
 
         const securityEvent =
             securityEvents[0];
@@ -271,8 +424,16 @@ describe("Refresh Token", () => {
         expect(securityEvent.userId)
             .toBeNull();
 
+        expect(securityEvent.tenantId)
+            .toBeNull();
+
         expect(securityEvent.userAgent)
-            .toBe("Token-Mismatch-Test-Agent");
+            .toBe(
+                "Token-Mismatch-Test-Agent",
+            );
+
+        expect(securityEvent.requestId)
+            .toBe(requestId);
 
         expect(securityEvent.metadata)
             .toBeDefined();
@@ -287,32 +448,47 @@ describe("Refresh Token", () => {
             .toBe(session.id);
 
     });
+
+
     it("rejects an invalid refresh token and records refresh failure", async () => {
+
+        const requestId =
+            crypto.randomUUID();
 
         const response =
             await request(app)
                 .post("/api/v1/auth/refresh")
-                .set("User-Agent", "Invalid-Refresh-Test-Agent")
-                .send({
-                    refreshToken: "invalid-token",
-                });
+                .set(
+                    "User-Agent",
+                    "Invalid-Refresh-Test-Agent",
+                )
+                .set(
+                    "X-Request-Id",
+                    requestId,
+                )
+                .set(
+                    "Cookie",
+                    "titan_refresh_token=invalid-token",
+                );
 
-        expect(response.status).toBe(401);
+        expect(response.status)
+            .toBe(401);
 
-        expect(response.body.success).toBe(false);
+        expect(response.body.success)
+            .toBe(false);
 
         const securityEvents =
             await testPrisma.securityEvent.findMany({
                 where: {
-                    eventType: "TOKEN_REFRESH_FAILURE",
-                },
-                orderBy: {
-                    createdAt: "desc",
+                    eventType:
+                        "TOKEN_REFRESH_FAILURE",
+
+                    requestId,
                 },
             });
 
-        expect(securityEvents.length)
-            .toBeGreaterThanOrEqual(1);
+        expect(securityEvents)
+            .toHaveLength(1);
 
         const securityEvent =
             securityEvents[0];
@@ -324,7 +500,12 @@ describe("Refresh Token", () => {
             .toBeNull();
 
         expect(securityEvent.userAgent)
-            .toBe("Invalid-Refresh-Test-Agent");
+            .toBe(
+                "Invalid-Refresh-Test-Agent",
+            );
+
+        expect(securityEvent.requestId)
+            .toBe(requestId);
 
         expect(securityEvent.metadata)
             .toBeDefined();
@@ -338,4 +519,5 @@ describe("Refresh Token", () => {
     });
 
 });
+
 
