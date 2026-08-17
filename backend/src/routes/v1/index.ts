@@ -8,6 +8,7 @@ import { createPermissionRoutes } from "../../presentation/routes/permission.rou
 import { createAuditLogRoutes } from "../../presentation/routes/audit-log.routes";
 import { createHealthRoutes } from "../../presentation/routes/health.routes";
 import { createSecurityRoutes } from "../../presentation/routes/security.routes";
+import { createSessionRoutes } from "../../presentation/routes/session.routes";
 
 
 import { RoleController } from "../../presentation/controllers/role.controller";
@@ -18,6 +19,7 @@ import { PermissionController } from "../../presentation/controllers/permission.
 import { AuditLogController } from "../../presentation/controllers/audit-log.controller";
 import { HealthController } from "../../presentation/controllers/health.controller";
 import { SecurityController } from "../../presentation/controllers/security.controller";
+import { SessionController } from "../../presentation/controllers/session.controller";
 
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
@@ -31,6 +33,7 @@ import { organisationModule } from "../../infrastructure/composition/organisatio
 import { permissionModule } from "../../infrastructure/composition/permission.module";
 import { auditLogModule } from "../../infrastructure/composition/audit-log.module";
 import { DatabaseService } from "../../infrastructure/database/database.service";
+import { sessionModule } from "../../infrastructure/composition/session.module";
 
 
 
@@ -132,6 +135,11 @@ const organisationController =
 
 
 
+const sessionController =
+    new SessionController(
+        sessionModule.getSessionByIdUseCase,
+    );
+
 const permissionController =
     new PermissionController(
 
@@ -202,6 +210,11 @@ router.use(
 
 
 router.use(
+    "/sessions",
+    createSessionRoutes(sessionController),
+);
+
+router.use(
     "/permissions",
     createPermissionRoutes(permissionController),
 );
@@ -216,8 +229,3 @@ router.use(
 
 
 export default router;
-
-
-
-
-
