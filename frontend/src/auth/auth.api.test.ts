@@ -83,7 +83,6 @@ describe("auth.api", () => {
     });
 
     await logout(
-      "session-1",
       "access-token",
     );
 
@@ -94,9 +93,6 @@ describe("auth.api", () => {
         headers: {
           Authorization: "Bearer access-token",
         },
-        body: JSON.stringify({
-          sessionId: "session-1",
-        }),
       },
     );
 

@@ -138,12 +138,11 @@ describe("auth.service", () => {
       password: "password",
     });
 
-    await logout("session-1");
+    await logout();
 
     expect(
       logoutApi,
     ).toHaveBeenCalledWith(
-      "session-1",
       "access-token",
     );
 

@@ -18,6 +18,7 @@ import {
   LoginRequest,
 } from "./auth.types";
 
+
 export async function login(
   request: LoginRequest,
 ): Promise<AuthUser> {
@@ -34,6 +35,7 @@ export async function login(
   );
 
   return response.data.user;
+
 }
 
 
@@ -47,12 +49,11 @@ export async function refresh(): Promise<string> {
   );
 
   return response.data.accessToken;
+
 }
 
 
-export async function logout(
-  sessionId: string,
-): Promise<void> {
+export async function logout(): Promise<void> {
 
   const accessToken =
     getAccessToken();
@@ -62,12 +63,12 @@ export async function logout(
     clearAuthSession();
 
     return;
+
   }
 
   try {
 
     await logoutApi(
-      sessionId,
       accessToken,
     );
 

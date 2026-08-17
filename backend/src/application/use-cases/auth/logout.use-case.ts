@@ -19,9 +19,8 @@ export class LogoutUseCase {
     ): Promise<void> {
 
         const session =
-            await this.sessionRepository.findById(
-                command.sessionId,
-                command.tenantId,
+            await this.sessionRepository.findByToken(
+                command.refreshToken,
             );
 
         if (!session) {
@@ -36,6 +35,22 @@ export class LogoutUseCase {
             session.userId !==
             command.userId
         ) {
+
+            throw new UnauthorizedException(
+                "Unauthorized session",
+            );
+
+        }
+
+        if (!session.isActive()) {
+
+            throw new UnauthorizedException(
+                "Unauthorized session",
+            );
+
+        }
+
+        if (session.isExpired()) {
 
             throw new UnauthorizedException(
                 "Unauthorized session",

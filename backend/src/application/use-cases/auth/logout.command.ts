@@ -1,6 +1,6 @@
 export interface LogoutCommand {
 
-    sessionId: string;
+    refreshToken: string;
 
     userId: string;
 

@@ -143,10 +143,30 @@ export class AuthController {
         res: Response,
     ): Promise<void> {
 
+        const refreshToken =
+            req.cookies?.[
+                REFRESH_TOKEN_COOKIE_NAME
+            ];
+
+
+        if (!refreshToken) {
+
+            res.status(401).json({
+
+                success: false,
+
+                message: "Refresh token required",
+
+            });
+
+            return;
+
+        }
+
+
         await authModule.logoutUseCase.execute({
 
-            sessionId:
-                req.body.sessionId,
+            refreshToken,
 
             userId:
                 req.user!.userId,

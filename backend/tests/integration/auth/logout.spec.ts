@@ -21,7 +21,6 @@ function extractRefreshToken(
     expect(setCookie!.length)
         .toBeGreaterThan(0);
 
-
     const refreshCookie =
         setCookie!.find(
             (cookie: string) =>
@@ -32,15 +31,12 @@ function extractRefreshToken(
                     ),
         );
 
-
     expect(refreshCookie)
         .toBeDefined();
-
 
     const cookieValue =
         refreshCookie!
             .split(";")[0];
-
 
     return cookieValue.substring(
         cookieValue.indexOf("=") + 1,
@@ -52,7 +48,7 @@ function extractRefreshToken(
 describe("Logout Session Authorization", () => {
 
 
-    it("allows a user to revoke their own session", async () => {
+    it("allows a user to revoke their own session using the HttpOnly refresh cookie", async () => {
 
         const {
             user,
@@ -76,6 +72,21 @@ describe("Logout Session Authorization", () => {
 
         expect(login.status)
             .toBe(200);
+
+
+        const refreshCookie =
+            login.headers["set-cookie"]?.find(
+                (cookie: string) =>
+                    cookie
+                        .toLowerCase()
+                        .startsWith(
+                            `${REFRESH_TOKEN_COOKIE_NAME}=`,
+                        ),
+            );
+
+
+        expect(refreshCookie)
+            .toBeDefined();
 
 
         const refreshToken =
@@ -109,14 +120,18 @@ describe("Logout Session Authorization", () => {
                     "User-Agent",
                     "Logout-Test-Agent",
                 )
-                .send({
-                    sessionId:
-                        session!.id,
-                });
+                .set(
+                    "Cookie",
+                    refreshCookie!,
+                );
 
 
         expect(logout.status)
             .toBe(200);
+
+
+        expect(logout.body.success)
+            .toBe(true);
 
 
         const revoked =
@@ -186,77 +201,30 @@ describe("Logout Session Authorization", () => {
     });
 
 
-    it("rejects logout of another user's session", async () => {
+    it("rejects logout when the refresh cookie is missing", async () => {
 
-        const first =
-            await createTestUser();
-
-
-        const second =
-            await createTestUser();
+        const {
+            user,
+            password,
+        } = await createTestUser();
 
 
-        const firstLogin =
+        const login =
             await request(app)
                 .post("/api/v1/auth/login")
                 .send({
-
                     tenantId:
-                        first.user.tenantId,
+                        user.tenantId,
 
                     email:
-                        first.user.email,
+                        user.email,
 
-                    password:
-                        first.password,
-
+                    password,
                 });
 
 
-        expect(firstLogin.status)
+        expect(login.status)
             .toBe(200);
-
-
-        const secondLogin =
-            await request(app)
-                .post("/api/v1/auth/login")
-                .send({
-
-                    tenantId:
-                        second.user.tenantId,
-
-                    email:
-                        second.user.email,
-
-                    password:
-                        second.password,
-
-                });
-
-
-        expect(secondLogin.status)
-            .toBe(200);
-
-
-        const secondRefreshToken =
-            extractRefreshToken(
-                secondLogin.headers["set-cookie"],
-            );
-
-
-        const secondSession =
-            await testPrisma.session.findUnique({
-
-                where: {
-                    refreshToken:
-                        secondRefreshToken,
-                },
-
-            });
-
-
-        expect(secondSession)
-            .not.toBeNull();
 
 
         const logout =
@@ -264,38 +232,17 @@ describe("Logout Session Authorization", () => {
                 .post("/api/v1/auth/logout")
                 .set(
                     "Authorization",
-                    `Bearer ${firstLogin.body.data.accessToken}`,
-                )
-                .send({
-
-                    sessionId:
-                        secondSession!.id,
-
-                });
+                    `Bearer ${login.body.data.accessToken}`,
+                );
 
 
         expect(logout.status)
             .toBe(401);
 
-
-        const unchanged =
-            await testPrisma.session.findUnique({
-
-                where: {
-                    id:
-                        secondSession!.id,
-                },
-
-            });
-
-
-        expect(unchanged!.status)
-            .toBe("ACTIVE");
-
     });
 
 
-    it("blocks cross-tenant logout", async () => {
+    it("rejects logout when the refresh cookie belongs to another user", async () => {
 
         const first =
             await createTestUser();
@@ -303,10 +250,6 @@ describe("Logout Session Authorization", () => {
 
         const second =
             await createTestUser();
-
-
-        expect(first.user.tenantId)
-            .not.toBe(second.user.tenantId);
 
 
         const firstLogin =
@@ -351,6 +294,21 @@ describe("Logout Session Authorization", () => {
             .toBe(200);
 
 
+        const secondCookie =
+            secondLogin.headers["set-cookie"]?.find(
+                (cookie: string) =>
+                    cookie
+                        .toLowerCase()
+                        .startsWith(
+                            `${REFRESH_TOKEN_COOKIE_NAME}=`,
+                        ),
+            );
+
+
+        expect(secondCookie)
+            .toBeDefined();
+
+
         const secondRefreshToken =
             extractRefreshToken(
                 secondLogin.headers["set-cookie"],
@@ -379,12 +337,10 @@ describe("Logout Session Authorization", () => {
                     "Authorization",
                     `Bearer ${firstLogin.body.data.accessToken}`,
                 )
-                .send({
-
-                    sessionId:
-                        secondSession!.id,
-
-                });
+                .set(
+                    "Cookie",
+                    secondCookie!,
+                );
 
 
         expect(logout.status)
@@ -413,12 +369,7 @@ describe("Logout Session Authorization", () => {
         const response =
             await request(app)
                 .post("/api/v1/auth/logout")
-                .send({
-
-                    sessionId:
-                        "00000000-0000-0000-0000-000000000000",
-
-                });
+                .send({});
 
 
         expect(response.status)
