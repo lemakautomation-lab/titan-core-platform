@@ -12,7 +12,6 @@ import {
 
 export class RefreshTokenUseCase {
 
-
     constructor(
 
         private readonly sessionRepository: SessionRepository,
@@ -24,13 +23,11 @@ export class RefreshTokenUseCase {
     ) {}
 
 
-
     async execute(
 
         command: RefreshTokenCommand,
 
     ) {
-
 
         const securityContext: SecurityEventContext = {
 
@@ -51,29 +48,23 @@ export class RefreshTokenUseCase {
 
         try {
 
-
             payload =
                 jwtService.verifyRefreshToken(
                     command.refreshToken,
                 );
 
-
         } catch {
-
 
             await this.securityEventService.recordTokenRefreshFailure(
 
                 {
-
                     reason:
                         "INVALID_REFRESH_TOKEN",
-
                 },
 
                 securityContext,
 
             );
-
 
             throw new HttpException(
 
@@ -84,35 +75,27 @@ export class RefreshTokenUseCase {
                 "UNAUTHORIZED",
 
             );
-
         }
 
 
         const session =
-
             await this.sessionRepository.findByToken(
-
                 command.refreshToken,
-
             );
 
 
         if (!session) {
 
-
             await this.securityEventService.recordTokenRefreshFailure(
 
                 {
-
                     reason:
                         "SESSION_NOT_FOUND",
-
                 },
 
                 securityContext,
 
             );
-
 
             throw new HttpException(
 
@@ -123,29 +106,24 @@ export class RefreshTokenUseCase {
                 "UNAUTHORIZED",
 
             );
-
         }
 
 
         if (payload.userId !== session.userId) {
 
-
             await this.securityEventService.recordTokenRefreshFailure(
 
                 {
-
                     reason:
                         "TOKEN_USER_MISMATCH",
 
                     sessionId:
                         session.id,
-
                 },
 
                 securityContext,
 
             );
-
 
             throw new HttpException(
 
@@ -156,31 +134,26 @@ export class RefreshTokenUseCase {
                 "UNAUTHORIZED",
 
             );
-
         }
 
 
         if (!session.isActive()) {
-
 
             await this.securityEventService.recordTokenReuseDetected(
 
                 session.userId,
 
                 {
-
                     reason:
                         "REVOKED_REFRESH_TOKEN_REUSE",
 
                     sessionId:
                         session.id,
-
                 },
 
                 securityContext,
 
             );
-
 
             throw new HttpException(
 
@@ -191,12 +164,10 @@ export class RefreshTokenUseCase {
                 "UNAUTHORIZED",
 
             );
-
         }
 
 
         if (session.isExpired()) {
-
 
             await this.sessionRepository.revoke(
 
@@ -206,11 +177,9 @@ export class RefreshTokenUseCase {
 
             );
 
-
             await this.securityEventService.recordTokenRefreshFailure(
 
                 {
-
                     reason:
                         "REFRESH_TOKEN_EXPIRED",
 
@@ -219,13 +188,11 @@ export class RefreshTokenUseCase {
 
                     userId:
                         session.userId,
-
                 },
 
                 securityContext,
 
             );
-
 
             throw new HttpException(
 
@@ -236,26 +203,20 @@ export class RefreshTokenUseCase {
                 "UNAUTHORIZED",
 
             );
-
         }
 
 
         const user =
-
             await this.userRepository.findById(
-
                 session.userId,
-
             );
 
 
         if (!user) {
 
-
             await this.securityEventService.recordTokenRefreshFailure(
 
                 {
-
                     reason:
                         "USER_NOT_FOUND",
 
@@ -264,13 +225,11 @@ export class RefreshTokenUseCase {
 
                     userId:
                         session.userId,
-
                 },
 
                 securityContext,
 
             );
-
 
             throw new HttpException(
 
@@ -281,39 +240,23 @@ export class RefreshTokenUseCase {
                 "UNAUTHORIZED",
 
             );
-
         }
 
 
         const roles =
-
             await this.userRepository.findRoles(
-
                 user.id,
-
                 user.tenantId,
-
             );
 
 
         const roleNames =
-
             roles.map(
                 role => role.name,
             );
 
 
-        await this.sessionRepository.revoke(
-
-            session.id,
-
-            session.userId,
-
-        );
-
-
         const accessToken =
-
             jwtService.generateAccessToken({
 
                 userId:
@@ -329,7 +272,6 @@ export class RefreshTokenUseCase {
 
 
         const refreshToken =
-
             jwtService.generateRefreshToken({
 
                 userId:
@@ -339,17 +281,13 @@ export class RefreshTokenUseCase {
 
 
         const expiresAt =
-
             new Date(
-
                 Date.now() +
                 7 * 24 * 60 * 60 * 1000,
-
             );
 
 
         const newSession =
-
             Session.create(
 
                 user.id,
@@ -361,11 +299,46 @@ export class RefreshTokenUseCase {
             );
 
 
-        await this.sessionRepository.create(
+        const rotated =
+            await this.sessionRepository.rotate(
 
-            newSession,
+                session.id,
 
-        );
+                session.userId,
+
+                newSession,
+
+            );
+
+
+        if (!rotated) {
+
+            await this.securityEventService.recordTokenReuseDetected(
+
+                session.userId,
+
+                {
+                    reason:
+                        "REVOKED_REFRESH_TOKEN_REUSE",
+
+                    sessionId:
+                        session.id,
+                },
+
+                securityContext,
+
+            );
+
+            throw new HttpException(
+
+                "Invalid refresh token",
+
+                401,
+
+                "UNAUTHORIZED",
+
+            );
+        }
 
 
         await this.securityEventService.recordTokenRefreshSuccess(
@@ -373,13 +346,11 @@ export class RefreshTokenUseCase {
             user.id,
 
             {
-
                 previousSessionId:
                     session.id,
 
                 newSessionId:
                     newSession.id,
-
             },
 
             securityContext,

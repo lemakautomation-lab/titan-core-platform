@@ -15,6 +15,12 @@ export interface SessionRepository {
 
     create(session: Session): Promise<Session>;
 
+    rotate(
+        id: string,
+        userId: string,
+        successor: Session,
+    ): Promise<boolean>;
+
     revoke(
         id: string,
         userId: string,
