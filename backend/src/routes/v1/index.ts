@@ -10,7 +10,6 @@ import { createHealthRoutes } from "../../presentation/routes/health.routes";
 import { createSecurityRoutes } from "../../presentation/routes/security.routes";
 import { createSessionRoutes } from "../../presentation/routes/session.routes";
 
-
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
 import { TenantController } from "../../presentation/controllers/tenant.controller";
@@ -21,10 +20,8 @@ import { HealthController } from "../../presentation/controllers/health.controll
 import { SecurityController } from "../../presentation/controllers/security.controller";
 import { SessionController } from "../../presentation/controllers/session.controller";
 
-
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
-
 
 import { roleModule } from "../../infrastructure/composition/role.module";
 import { userModule } from "../../infrastructure/composition/user.module";
@@ -35,105 +32,63 @@ import { auditLogModule } from "../../infrastructure/composition/audit-log.modul
 import { DatabaseService } from "../../infrastructure/database/database.service";
 import { sessionModule } from "../../infrastructure/composition/session.module";
 
-
-
 const router = Router();
 
-const healthController = new HealthController(new DatabaseService());
+const healthController =
+    new HealthController(
+        new DatabaseService(),
+    );
 
 const securityController =
     new SecurityController(
         auditLogModule.securityAnalyticsService,
     );
 
-
-
 const authController =
     new AuthController();
 
-
-
 const roleController =
     new RoleController(
-
         roleModule.createRoleUseCase,
-
         roleModule.getRoleByIdUseCase,
-
         roleModule.listRolesUseCase,
-
         roleModule.updateRoleUseCase,
-
         roleModule.deleteRoleUseCase,
-
         roleModule.assignPermissionToRoleUseCase,
-
         roleModule.getRolePermissionsUseCase,
-
         roleModule.deletePermissionFromRoleUseCase,
-
     );
-
-
 
 const userController =
     new UserController(
-
         userModule.createUserUseCase,
-
         userModule.getUserByIdUseCase,
-
         userModule.listUsersUseCase,
-
         userModule.updateUserUseCase,
-
         userModule.deleteUserUseCase,
-
         userModule.assignRoleToUserUseCase,
-
         userModule.removeRoleFromUserUseCase,
-
         userModule.getUserRolesUseCase,
-
         userModule.unlockUserUseCase,
-
     );
-
-
 
 const tenantController =
     new TenantController(
-
         tenantModule.createTenantUseCase,
-
         tenantModule.getTenantByIdUseCase,
-
         tenantModule.listTenantsUseCase,
-
         tenantModule.updateTenantUseCase,
-
         tenantModule.deleteTenantUseCase,
-
     );
-
-
 
 const organisationController =
     new OrganisationController(
-
         organisationModule.createOrganisationUseCase,
-
         organisationModule.getOrganisationByIdUseCase,
-
         organisationModule.listOrganisationsUseCase,
-
         organisationModule.updateOrganisationUseCase,
-
         organisationModule.deleteOrganisationUseCase,
-
     );
-
-
 
 const sessionController =
     new SessionController(
@@ -142,72 +97,48 @@ const sessionController =
 
 const permissionController =
     new PermissionController(
-
         permissionModule.createPermissionUseCase,
-
         permissionModule.getPermissionByIdUseCase,
-
         permissionModule.listPermissionsUseCase,
-
         permissionModule.updatePermissionUseCase,
-
         permissionModule.deletePermissionUseCase,
-
     );
-
-
 
 const auditLogController =
     new AuditLogController(
-
         auditLogModule.getAuditLogsQuery,
-
         auditLogModule.getAuditLogByIdQuery,
-
     );
-
-
 
 router.use(
     "/health",
     createHealthRoutes(healthController),
 );
 
-
 router.use(
     "/auth",
     createAuthRoutes(authController),
 );
-
-
 
 router.use(
     "/roles",
     createRoleRoutes(roleController),
 );
 
-
-
 router.use(
     "/users",
     createUserRoutes(userController),
 );
-
-
 
 router.use(
     "/tenants",
     createTenantRoutes(tenantController),
 );
 
-
-
 router.use(
     "/organisations",
     createOrganisationRoutes(organisationController),
 );
-
-
 
 router.use(
     "/sessions",
@@ -219,13 +150,14 @@ router.use(
     createPermissionRoutes(permissionController),
 );
 
-
-
 router.use(
     "/audit-logs",
     createAuditLogRoutes(auditLogController),
 );
 
-
+router.use(
+    "/security",
+    createSecurityRoutes(securityController),
+);
 
 export default router;
