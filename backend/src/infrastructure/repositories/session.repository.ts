@@ -30,7 +30,9 @@ export class PrismaSessionRepository implements SessionRepository {
             : null;
     }
 
-    async findByUserId(userId: string): Promise<Session[]> {
+    async findByUserId(
+        userId: string,
+    ): Promise<Session[]> {
 
         const sessions =
             await this.database.prisma.session.findMany({
@@ -39,10 +41,14 @@ export class PrismaSessionRepository implements SessionRepository {
                 },
             });
 
-        return sessions.map(SessionMapper.toDomain);
+        return sessions.map(
+            SessionMapper.toDomain,
+        );
     }
 
-    async findByToken(token: string): Promise<Session | null> {
+    async findByToken(
+        token: string,
+    ): Promise<Session | null> {
 
         const session =
             await this.database.prisma.session.findUnique({
@@ -56,7 +62,9 @@ export class PrismaSessionRepository implements SessionRepository {
             : null;
     }
 
-    async findActiveByToken(token: string): Promise<Session | null> {
+    async findActiveByToken(
+        token: string,
+    ): Promise<Session | null> {
 
         const session =
             await this.database.prisma.session.findFirst({
@@ -71,7 +79,9 @@ export class PrismaSessionRepository implements SessionRepository {
             : null;
     }
 
-    async create(session: Session): Promise<Session> {
+    async create(
+        session: Session,
+    ): Promise<Session> {
 
         const created =
             await this.database.prisma.session.create({
@@ -124,23 +134,33 @@ export class PrismaSessionRepository implements SessionRepository {
     async revoke(
         id: string,
         userId: string,
-    ): Promise<void> {
+        tenantId: string,
+    ): Promise<boolean> {
 
-        await this.database.prisma.session.updateMany({
+        const result =
+            await this.database.prisma.session.updateMany({
 
-            where: {
-                id,
-                userId,
-            },
+                where: {
+                    id,
+                    userId,
+                    user: {
+                        tenantId,
+                    },
+                    status: "ACTIVE",
+                },
 
-            data: {
-                status: "REVOKED",
-            },
+                data: {
+                    status: "REVOKED",
+                },
 
-        });
+            });
+
+        return result.count === 1;
     }
 
-    async delete(id: string): Promise<void> {
+    async delete(
+        id: string,
+    ): Promise<void> {
 
         await this.database.prisma.session.delete({
             where: {

@@ -1,6 +1,7 @@
 import { SessionRepository } from "../../../domain/repositories/session.repository";
 import { LogoutCommand } from "./logout.command";
 import { UnauthorizedException } from "../../../shared/exceptions/unauthorized.exception";
+
 import {
     SecurityEventContext,
     SecurityEventService,
@@ -10,9 +11,15 @@ import {
 export class LogoutUseCase {
 
     constructor(
-        private readonly sessionRepository: SessionRepository,
-        private readonly securityEventService: SecurityEventService,
+
+        private readonly sessionRepository:
+            SessionRepository,
+
+        private readonly securityEventService:
+            SecurityEventService,
+
     ) {}
+
 
     async execute(
         command: LogoutCommand,
@@ -23,6 +30,7 @@ export class LogoutUseCase {
                 command.refreshToken,
             );
 
+
         if (!session) {
 
             throw new UnauthorizedException(
@@ -30,6 +38,7 @@ export class LogoutUseCase {
             );
 
         }
+
 
         if (
             session.userId !==
@@ -42,6 +51,7 @@ export class LogoutUseCase {
 
         }
 
+
         if (!session.isActive()) {
 
             throw new UnauthorizedException(
@@ -49,6 +59,7 @@ export class LogoutUseCase {
             );
 
         }
+
 
         if (session.isExpired()) {
 
@@ -58,31 +69,58 @@ export class LogoutUseCase {
 
         }
 
-        await this.sessionRepository.revoke(
-            session.id,
-            session.userId,
-        );
 
-        const securityContext: SecurityEventContext = {
+        const revoked =
+            await this.sessionRepository.revoke(
 
-            ipAddress:
-                command.ipAddress ?? null,
+                session.id,
 
-            userAgent:
-                command.userAgent ?? null,
+                session.userId,
 
-            requestId:
-                command.requestId ?? null,
+                command.tenantId,
 
-        };
+            );
+
+
+        if (!revoked) {
+
+            throw new UnauthorizedException(
+                "Unauthorized session",
+            );
+
+        }
+
+
+        const securityContext:
+            SecurityEventContext = {
+
+                ipAddress:
+                    command.ipAddress ?? null,
+
+                userAgent:
+                    command.userAgent ?? null,
+
+                requestId:
+                    command.requestId ?? null,
+
+            };
+
 
         await this.securityEventService.recordSessionRevoked(
+
             command.userId,
+
             {
+
                 sessionId:
                     session.id,
+
             },
+
             securityContext,
+
         );
+
     }
+
 }

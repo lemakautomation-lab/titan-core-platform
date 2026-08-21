@@ -108,6 +108,7 @@ model Session {
   id           String        @id @default(uuid())
   userId       String
   refreshToken String        @unique
+    jti          String        @unique
   status       SessionStatus @default(ACTIVE)
   expiresAt    DateTime
   createdAt    DateTime      @default(now())
@@ -198,6 +199,8 @@ enum AuditLogStatus {
   SUCCESS
   FAILURE
 }
+
+
 
 
 

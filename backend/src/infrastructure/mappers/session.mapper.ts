@@ -9,6 +9,7 @@ export class SessionMapper {
         return new Session(
             prisma.id,
             prisma.userId,
+            prisma.jti,
             prisma.refreshToken,
             prisma.status as SessionStatus,
             prisma.expiresAt,
@@ -27,6 +28,8 @@ export class SessionMapper {
             id: session.id,
 
             userId: session.userId,
+
+            jti: session.jti,
 
             refreshToken: session.refreshToken,
 

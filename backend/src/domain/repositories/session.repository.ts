@@ -7,13 +7,21 @@ export interface SessionRepository {
         tenantId: string,
     ): Promise<Session | null>;
 
-    findByUserId(userId: string): Promise<Session[]>;
+    findByUserId(
+        userId: string,
+    ): Promise<Session[]>;
 
-    findByToken(token: string): Promise<Session | null>;
+    findByToken(
+        token: string,
+    ): Promise<Session | null>;
 
-    findActiveByToken(token: string): Promise<Session | null>;
+    findActiveByToken(
+        token: string,
+    ): Promise<Session | null>;
 
-    create(session: Session): Promise<Session>;
+    create(
+        session: Session,
+    ): Promise<Session>;
 
     rotate(
         id: string,
@@ -24,8 +32,11 @@ export interface SessionRepository {
     revoke(
         id: string,
         userId: string,
-    ): Promise<void>;
+        tenantId: string,
+    ): Promise<boolean>;
 
-    delete(id: string): Promise<void>;
+    delete(
+        id: string,
+    ): Promise<void>;
 
 }

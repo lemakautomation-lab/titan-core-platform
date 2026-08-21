@@ -320,12 +320,19 @@ export class LoginUseCase {
             });
 
 
-        const refreshToken =
+        const generatedRefreshToken =
             jwtService.generateRefreshToken({
 
                 userId: user.id,
 
             });
+
+
+        const refreshToken =
+            generatedRefreshToken.token;
+
+        const jti =
+            generatedRefreshToken.jti;
 
 
         const expiresAt =
@@ -338,6 +345,7 @@ export class LoginUseCase {
         const session =
             Session.create(
                 user.id,
+                jti,
                 refreshToken,
                 expiresAt,
             );
@@ -405,3 +413,4 @@ export class LoginUseCase {
     }
 
 }
+

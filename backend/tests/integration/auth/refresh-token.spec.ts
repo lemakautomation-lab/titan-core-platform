@@ -361,7 +361,8 @@ describe("Refresh Token", () => {
             await testPrisma.session.create({
                 data: {
                     userId: sessionUser.id,
-                    refreshToken,
+                    refreshToken: refreshToken.token,
+                    jti: crypto.randomUUID(),
                     status: "ACTIVE",
                     expiresAt:
                         new Date(
@@ -387,7 +388,7 @@ describe("Refresh Token", () => {
                 )
                 .set(
                     "Cookie",
-                    `titan_refresh_token=${refreshToken}`,
+                    `titan_refresh_token=${refreshToken.token}`,
                 );
 
         expect(response.status)
@@ -449,6 +450,113 @@ describe("Refresh Token", () => {
 
     });
 
+
+    it("rejects a refresh token whose JWT JTI does not match the persisted session", async () => {
+
+        const {
+            user,
+        } = await createTestUser();
+
+        const generated =
+            jwtService.generateRefreshToken({
+                userId: user.id,
+            });
+
+        const session =
+            await testPrisma.session.create({
+                data: {
+                    userId: user.id,
+                    refreshToken: generated.token,
+                    jti: crypto.randomUUID(),
+                    status: "ACTIVE",
+                    expiresAt:
+                        new Date(
+                            Date.now() +
+                            7 * 24 * 60 * 60 * 1000,
+                        ),
+                },
+            });
+
+        expect(session.jti)
+            .not.toBe(generated.jti);
+
+        const requestId =
+            crypto.randomUUID();
+
+        const response =
+            await request(app)
+                .post("/api/v1/auth/refresh")
+                .set(
+                    "User-Agent",
+                    "JTI-Mismatch-Test-Agent",
+                )
+                .set(
+                    "X-Request-Id",
+                    requestId,
+                )
+                .set(
+                    "Cookie",
+                    `titan_refresh_token=${generated.token}`,
+                );
+
+        expect(response.status)
+            .toBe(401);
+
+        expect(response.body.success)
+            .toBe(false);
+
+        const unchangedSession =
+            await testPrisma.session.findUnique({
+                where: {
+                    id: session.id,
+                },
+            });
+
+        expect(unchangedSession?.status)
+            .toBe("ACTIVE");
+
+        const securityEvents =
+            await testPrisma.securityEvent.findMany({
+                where: {
+                    eventType:
+                        "TOKEN_REFRESH_FAILURE",
+                    requestId,
+                },
+            });
+
+        expect(securityEvents)
+            .toHaveLength(1);
+
+        const securityEvent =
+            securityEvents[0];
+
+        expect(securityEvent.userId)
+            .toBe(user.id);
+
+        expect(securityEvent.tenantId)
+            .toBe(user.tenantId);
+
+        expect(securityEvent.userAgent)
+            .toBe(
+                "JTI-Mismatch-Test-Agent",
+            );
+
+        expect(securityEvent.requestId)
+            .toBe(requestId);
+
+        const metadata =
+            securityEvent.metadata as Record<string, unknown>;
+
+        expect(metadata.reason)
+            .toBe("TOKEN_JTI_MISMATCH");
+
+        expect(metadata.sessionId)
+            .toBe(session.id);
+
+        expect(metadata.userId)
+            .toBe(user.id);
+
+    });
 
     it("rejects an invalid refresh token and records refresh failure", async () => {
 
@@ -759,4 +867,8 @@ describe("Refresh Token", () => {
 
     });
 });
+
+
+
+
 

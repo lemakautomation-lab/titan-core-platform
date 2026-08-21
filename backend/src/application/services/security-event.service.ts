@@ -266,13 +266,15 @@ export class SecurityEventService {
     async recordTokenRefreshFailure(
         metadata?: Record<string, unknown>,
         context?: SecurityEventContext,
+        tenantId?: string | null,
+        userId?: string | null,
     ): Promise<void> {
 
         const securityEvent =
             SecurityEvent.create(
                 SecurityEventType.TOKEN_REFRESH_FAILURE,
-                null,
-                null,
+                tenantId ?? null,
+                userId ?? null,
                 context?.ipAddress ?? null,
                 context?.userAgent ?? null,
                 context?.requestId ?? null,

@@ -12,6 +12,8 @@ export class Session {
 
         public readonly userId: string,
 
+        public readonly jti: string,
+
         public refreshToken: string,
 
         public status: SessionStatus,
@@ -27,6 +29,7 @@ export class Session {
 
     static create(
         userId: string,
+        jti: string,
         refreshToken: string,
         expiresAt: Date,
     ): Session {
@@ -38,6 +41,8 @@ export class Session {
             randomUUID(),
 
             userId,
+
+            jti,
 
             refreshToken,
 
