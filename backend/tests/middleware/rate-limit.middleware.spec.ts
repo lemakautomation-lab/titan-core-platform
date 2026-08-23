@@ -70,11 +70,11 @@ describe("Rate Limit Middleware", () => {
             });
 
             expect(
-                third.headers["ratelimit-limit"],
+                third.headers["x-ratelimit-limit"],
             ).toBe("2");
 
             expect(
-                third.headers["ratelimit-remaining"],
+                third.headers["x-ratelimit-remaining"],
             ).toBe("0");
 
         },
@@ -135,11 +135,11 @@ describe("Rate Limit Middleware", () => {
             });
 
             expect(
-                third.headers["ratelimit-limit"],
+                third.headers["x-ratelimit-limit"],
             ).toBe("2");
 
             expect(
-                third.headers["ratelimit-remaining"],
+                third.headers["x-ratelimit-remaining"],
             ).toBe("0");
 
         },
@@ -147,3 +147,4 @@ describe("Rate Limit Middleware", () => {
 
 
 });
+

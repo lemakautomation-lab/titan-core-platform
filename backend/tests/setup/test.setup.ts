@@ -1,38 +1,22 @@
-import dotenv from "dotenv";
-
-dotenv.config({
-    path: ".env.test",
-    override: true,
-});
-
 import {
     beforeEach,
-    afterEach,
-    beforeAll,
     afterAll,
-    vi,
 } from "vitest";
 
 import {
-    setupTestDatabase,
-} from "./database.setup";
+    rateLimitModule,
+} from "../../src/infrastructure/composition/rate-limit.module";
 
-import {
-    cleanupTestDatabase,
-} from "./database.cleanup";
 
-beforeAll(async () => {
-    await setupTestDatabase();
+beforeEach(async () => {
+
+    await rateLimitModule.resetRateLimiters();
+
 });
+
 
 afterAll(async () => {
-    await cleanupTestDatabase();
-});
 
-beforeEach(() => {
-    vi.clearAllMocks();
-});
+    await rateLimitModule.resetRateLimiters();
 
-afterEach(() => {
-    vi.restoreAllMocks();
 });

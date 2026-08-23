@@ -1,21 +1,34 @@
 import crypto from "node:crypto";
 import request from "supertest";
-import { describe, expect, it } from "vitest";
+import {
+    beforeEach,
+    describe,
+    expect,
+    it,
+} from "vitest";
 
 import app from "../../../src/app";
 
 import { testPrisma } from "../../helpers/prisma-test.client";
 import { createTestUser } from "../../factories/user.factory";
+import { rateLimitModule } from "../../../src/infrastructure/composition/rate-limit.module";
 
 
 describe("Authentication Login", () => {
+
+
+    beforeEach(async () => {
+
+        await rateLimitModule.resetAuthRateLimiter();
+
+    });
 
 
     it("successfully authenticates a valid user and persists security event context", async () => {
 
         const { user, password } = await createTestUser();
 
-        const requestId =
+        const clientRequestId =
             `TITAN-041F-${crypto.randomUUID()}`;
 
         const userAgent =
@@ -24,7 +37,7 @@ describe("Authentication Login", () => {
 
         const response = await request(app)
             .post("/api/v1/auth/login")
-            .set("X-Request-Id", requestId)
+            .set("X-Request-Id", clientRequestId)
             .set("User-Agent", userAgent)
             .send({
                 tenantId: user.tenantId,
@@ -38,13 +51,39 @@ describe("Authentication Login", () => {
         expect(response.body.data).toBeDefined();
 
         expect(response.body.data.accessToken).toBeDefined();
-        const setCookie = response.headers["set-cookie"];
-        expect(setCookie).toBeDefined();
-        expect(setCookie.length).toBeGreaterThan(0);
-        expect(setCookie.some((cookie: string) => cookie.toLowerCase().startsWith("titan_refresh_token="))).toBe(true);
 
-        expect(response.body.data.user).toBeDefined();
-        expect(response.body.data.user.email).toBe(user.email);
+        const setCookie =
+            response.headers["set-cookie"];
+
+        expect(setCookie).toBeDefined();
+
+        expect(setCookie.length)
+            .toBeGreaterThan(0);
+
+        expect(
+            setCookie.some(
+                (cookie: string) =>
+                    cookie
+                        .toLowerCase()
+                        .startsWith("titan_refresh_token="),
+            ),
+        ).toBe(true);
+
+        expect(response.body.data.user)
+            .toBeDefined();
+
+        expect(response.body.data.user.email)
+            .toBe(user.email);
+
+
+        const requestId =
+            response.headers["x-request-id"];
+
+        expect(requestId)
+            .toBeDefined();
+
+        expect(requestId)
+            .not.toBe(clientRequestId);
 
 
         const sessions =
@@ -57,7 +96,8 @@ describe("Authentication Login", () => {
             });
 
 
-        expect(sessions).toHaveLength(1);
+        expect(sessions)
+            .toHaveLength(1);
 
 
         const securityEvents =
@@ -75,7 +115,8 @@ describe("Authentication Login", () => {
             });
 
 
-        expect(securityEvents).toHaveLength(1);
+        expect(securityEvents)
+            .toHaveLength(1);
 
 
         const securityEvent =
@@ -119,7 +160,7 @@ describe("Authentication Login", () => {
 
         const { user } = await createTestUser();
 
-        const requestId =
+        const clientRequestId =
             `TITAN-041F-FAIL-${crypto.randomUUID()}`;
 
         const userAgent =
@@ -128,7 +169,7 @@ describe("Authentication Login", () => {
 
         const response = await request(app)
             .post("/api/v1/auth/login")
-            .set("X-Request-Id", requestId)
+            .set("X-Request-Id", clientRequestId)
             .set("User-Agent", userAgent)
             .send({
                 tenantId: user.tenantId,
@@ -137,9 +178,24 @@ describe("Authentication Login", () => {
             });
 
 
-        expect(response.status).toBe(401);
-        expect(response.body.success).toBe(false);
-        expect(response.body.data).toBeUndefined();
+        expect(response.status)
+            .toBe(401);
+
+        expect(response.body.success)
+            .toBe(false);
+
+        expect(response.body.data)
+            .toBeUndefined();
+
+
+        const requestId =
+            response.headers["x-request-id"];
+
+        expect(requestId)
+            .toBeDefined();
+
+        expect(requestId)
+            .not.toBe(clientRequestId);
 
 
         const sessions =
@@ -152,7 +208,8 @@ describe("Authentication Login", () => {
             });
 
 
-        expect(sessions).toHaveLength(0);
+        expect(sessions)
+            .toHaveLength(0);
 
 
         const securityEvents =
@@ -170,7 +227,8 @@ describe("Authentication Login", () => {
             });
 
 
-        expect(securityEvents).toHaveLength(1);
+        expect(securityEvents)
+            .toHaveLength(1);
 
 
         const securityEvent =
@@ -215,7 +273,7 @@ describe("Authentication Login", () => {
 
     it("rejects an unknown user and persists anonymous security event context", async () => {
 
-        const requestId =
+        const clientRequestId =
             `TITAN-041F-UNKNOWN-${crypto.randomUUID()}`;
 
         const userAgent =
@@ -224,7 +282,7 @@ describe("Authentication Login", () => {
 
         const response = await request(app)
             .post("/api/v1/auth/login")
-            .set("X-Request-Id", requestId)
+            .set("X-Request-Id", clientRequestId)
             .set("User-Agent", userAgent)
             .send({
                 tenantId: crypto.randomUUID(),
@@ -233,9 +291,24 @@ describe("Authentication Login", () => {
             });
 
 
-        expect(response.status).toBe(401);
-        expect(response.body.success).toBe(false);
-        expect(response.body.data).toBeUndefined();
+        expect(response.status)
+            .toBe(401);
+
+        expect(response.body.success)
+            .toBe(false);
+
+        expect(response.body.data)
+            .toBeUndefined();
+
+
+        const requestId =
+            response.headers["x-request-id"];
+
+        expect(requestId)
+            .toBeDefined();
+
+        expect(requestId)
+            .not.toBe(clientRequestId);
 
 
         const securityEvents =
@@ -248,7 +321,8 @@ describe("Authentication Login", () => {
             });
 
 
-        expect(securityEvents).toHaveLength(1);
+        expect(securityEvents)
+            .toHaveLength(1);
 
 
         const securityEvent =
@@ -295,7 +369,7 @@ describe("Authentication Login", () => {
 
         const { user, password } = await createTestUser();
 
-        const requestId =
+        const clientRequestId =
             `TITAN-041F-TENANT-${crypto.randomUUID()}`;
 
         const userAgent =
@@ -304,7 +378,7 @@ describe("Authentication Login", () => {
 
         const response = await request(app)
             .post("/api/v1/auth/login")
-            .set("X-Request-Id", requestId)
+            .set("X-Request-Id", clientRequestId)
             .set("User-Agent", userAgent)
             .send({
                 tenantId: crypto.randomUUID(),
@@ -313,9 +387,24 @@ describe("Authentication Login", () => {
             });
 
 
-        expect(response.status).toBe(401);
-        expect(response.body.success).toBe(false);
-        expect(response.body.data).toBeUndefined();
+        expect(response.status)
+            .toBe(401);
+
+        expect(response.body.success)
+            .toBe(false);
+
+        expect(response.body.data)
+            .toBeUndefined();
+
+
+        const requestId =
+            response.headers["x-request-id"];
+
+        expect(requestId)
+            .toBeDefined();
+
+        expect(requestId)
+            .not.toBe(clientRequestId);
 
 
         const sessions =
@@ -328,7 +417,8 @@ describe("Authentication Login", () => {
             });
 
 
-        expect(sessions).toHaveLength(0);
+        expect(sessions)
+            .toHaveLength(0);
 
 
         const securityEvents =
@@ -342,7 +432,8 @@ describe("Authentication Login", () => {
             });
 
 
-        expect(securityEvents).toHaveLength(1);
+        expect(securityEvents)
+            .toHaveLength(1);
 
 
         const securityEvent =
@@ -384,10 +475,13 @@ describe("Authentication Login", () => {
 
     it("locks account after failed login threshold and persists lock event", async () => {
 
-        const { user, password } = await createTestUser();
+        await rateLimitModule.resetAuthRateLimiter();
+
+        const { user } =
+            await createTestUser();
 
 
-        const requestId =
+        const clientRequestId =
             `TITAN-042A-LOCK-${crypto.randomUUID()}`;
 
 
@@ -395,21 +489,60 @@ describe("Authentication Login", () => {
             "TITAN-042A-ACCOUNT-LOCK-TEST";
 
 
+        let finalRequestId: string | undefined;
+
+
         for (let attempt = 0; attempt < 5; attempt++) {
 
-            await request(app)
-                .post("/api/v1/auth/login")
-                .set("X-Request-Id", `${requestId}-${attempt}`)
-                .set("User-Agent", userAgent)
-                .send({
+            const response =
+                await request(app)
+                    .post("/api/v1/auth/login")
+                    .set(
+                        "X-Request-Id",
+                        `${clientRequestId}-${attempt}`,
+                    )
+                    .set("User-Agent", userAgent)
+                    .send({
 
-                    tenantId: user.tenantId,
+                        tenantId:
+                            user.tenantId,
 
-                    email: user.email,
+                        email:
+                            user.email,
 
-                    password: "WrongPassword123!",
+                        password:
+                            "WrongPassword123!",
 
-                });
+                    });
+
+
+            finalRequestId =
+                response.headers["x-request-id"];
+
+
+            expect(finalRequestId)
+                .toBeDefined();
+
+
+            expect(finalRequestId)
+                .not.toBe(`${clientRequestId}-${attempt}`);
+
+
+            /*
+             * The account-lock control is intentionally tested independently
+             * of the authentication request-rate threshold. Reset the
+             * in-memory authentication limiter between failed attempts so
+             * all five requests reach the authentication use case.
+             *
+             * Do not reset after the final attempt; the subsequent request
+             * must exercise the LOCKED-account response path.
+             */
+
+            if (attempt < 4) {
+
+                await rateLimitModule.resetAuthRateLimiter();
+
+            }
 
         }
 
@@ -417,15 +550,18 @@ describe("Authentication Login", () => {
         const lockedResponse =
             await request(app)
                 .post("/api/v1/auth/login")
-                .set("X-Request-Id", requestId)
+                .set("X-Request-Id", clientRequestId)
                 .set("User-Agent", userAgent)
                 .send({
 
-                    tenantId: user.tenantId,
+                    tenantId:
+                        user.tenantId,
 
-                    email: user.email,
+                    email:
+                        user.email,
 
-                    password: "WrongPassword123!",
+                    password:
+                        "WrongPassword123!",
 
                 });
 
@@ -433,6 +569,16 @@ describe("Authentication Login", () => {
         expect(lockedResponse.status)
             .toBe(401);
 
+
+        const lockedRequestId =
+            lockedResponse.headers["x-request-id"];
+
+
+        expect(lockedRequestId)
+            .toBeDefined();
+
+        expect(lockedRequestId)
+            .not.toBe(clientRequestId);
 
 
         const userRecord =
@@ -449,15 +595,16 @@ describe("Authentication Login", () => {
             .toBe("LOCKED");
 
 
-
         const securityEvents =
             await testPrisma.securityEvent.findMany({
 
                 where: {
 
-                    userId: user.id,
+                    userId:
+                        user.id,
 
-                    eventType: "ACCOUNT_LOCKED",
+                    eventType:
+                        "ACCOUNT_LOCKED",
 
                 },
 
@@ -466,7 +613,6 @@ describe("Authentication Login", () => {
 
         expect(securityEvents.length)
             .toBeGreaterThanOrEqual(1);
-
 
 
         const securityEvent =
@@ -484,15 +630,13 @@ describe("Authentication Login", () => {
 
 
         expect(securityEvent.requestId)
-            .toBe(requestId);
+            .toBe(lockedRequestId);
 
 
         expect(securityEvent.ipAddress)
             .toBeDefined();
 
-
     });
 
 
 });
-

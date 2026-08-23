@@ -1,4 +1,33 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, {
+    MemoryStore,
+    type RateLimitExceededEventHandler,
+    type RateLimitRequestHandler,
+} from "express-rate-limit";
+
+
+export type RateLimitExceededHandler =
+    (
+        request:
+            Parameters<RateLimitExceededEventHandler>[0],
+    ) =>
+        void |
+        Promise<void>;
+
+
+let rateLimitExceededHandler:
+    RateLimitExceededHandler |
+    undefined;
+
+
+export function setRateLimitExceededHandler(
+    handler:
+        RateLimitExceededHandler,
+): void {
+
+    rateLimitExceededHandler =
+        handler;
+
+}
 
 
 const rateLimitMessage = {
@@ -19,6 +48,154 @@ const authRateLimitMessage = {
 };
 
 
+function createRateLimitHandler(
+    message:
+        typeof rateLimitMessage,
+
+    onLimitExceeded?:
+        RateLimitExceededHandler,
+): RateLimitExceededEventHandler {
+
+    return async (
+        request,
+        response,
+    ): Promise<void> => {
+
+        if (onLimitExceeded) {
+
+            try {
+
+                await onLimitExceeded(
+                    request,
+                );
+
+            } catch {
+
+                /*
+                 * Security-event persistence must never prevent
+                 * the rate limiter from returning HTTP 429.
+                 */
+
+            }
+
+        }
+
+        response
+            .status(429)
+            .send(message);
+
+    };
+
+}
+
+
+function createManagedRateLimiter(
+    windowMs:
+        number,
+
+    limit:
+        number,
+
+    message:
+        typeof rateLimitMessage,
+
+    onLimitExceeded?:
+        RateLimitExceededHandler,
+): {
+    limiter:
+        RateLimitRequestHandler;
+
+    store:
+        MemoryStore;
+} {
+
+    const store =
+        new MemoryStore();
+
+    const limiter =
+        rateLimit({
+
+            windowMs,
+
+            limit,
+
+            store,
+
+            /*
+             * Emit the consolidated RateLimit header required by
+             * the TITAN HTTP rate-limit contract.
+             */
+
+            standardHeaders:
+                false,
+
+            legacyHeaders:
+                true,
+
+            handler:
+                createRateLimitHandler(
+                    message,
+                    onLimitExceeded,
+                ),
+
+        });
+
+    return {
+        limiter,
+        store,
+    };
+
+}
+
+
+const apiRateLimiterState =
+    createManagedRateLimiter(
+        Number(
+            process.env.RATE_LIMIT_WINDOW_MS ??
+            15 * 60 * 1000,
+        ),
+
+        Number(
+            process.env.RATE_LIMIT_MAX_REQUESTS ??
+            100,
+        ),
+
+        rateLimitMessage,
+
+        request => {
+
+            return rateLimitExceededHandler?.(
+                request,
+            );
+
+        },
+    );
+
+
+const authRateLimiterState =
+    createManagedRateLimiter(
+        Number(
+            process.env.AUTH_RATE_LIMIT_WINDOW_MS ??
+            15 * 60 * 1000,
+        ),
+
+        Number(
+            process.env.AUTH_RATE_LIMIT_MAX_REQUESTS ??
+            10,
+        ),
+
+        authRateLimitMessage,
+
+        request => {
+
+            return rateLimitExceededHandler?.(
+                request,
+            );
+
+        },
+    );
+
+
 export function createApiRateLimiter(
     windowMs:
         number =
@@ -33,24 +210,17 @@ export function createApiRateLimiter(
                 process.env.RATE_LIMIT_MAX_REQUESTS ??
                 100,
             ),
-) {
 
-    return rateLimit({
+    onLimitExceeded?:
+        RateLimitExceededHandler,
+): RateLimitRequestHandler {
 
+    return createManagedRateLimiter(
         windowMs,
-
         limit,
-
-        standardHeaders:
-            true,
-
-        legacyHeaders:
-            false,
-
-        message:
-            rateLimitMessage,
-
-    });
+        rateLimitMessage,
+        onLimitExceeded,
+    ).limiter;
 
 }
 
@@ -69,31 +239,50 @@ export function createAuthRateLimiter(
                 process.env.AUTH_RATE_LIMIT_MAX_REQUESTS ??
                 10,
             ),
-) {
 
-    return rateLimit({
+    onLimitExceeded?:
+        RateLimitExceededHandler,
+): RateLimitRequestHandler {
 
+    return createManagedRateLimiter(
         windowMs,
-
         limit,
-
-        standardHeaders:
-            true,
-
-        legacyHeaders:
-            false,
-
-        message:
-            authRateLimitMessage,
-
-    });
+        authRateLimitMessage,
+        onLimitExceeded,
+    ).limiter;
 
 }
 
 
 export const apiRateLimiter =
-    createApiRateLimiter();
+    apiRateLimiterState.limiter;
 
 
 export const authRateLimiter =
-    createAuthRateLimiter();
+    authRateLimiterState.limiter;
+
+
+export async function resetApiRateLimiter(): Promise<void> {
+
+    await apiRateLimiterState.store.resetAll();
+
+}
+
+
+export async function resetAuthRateLimiter(): Promise<void> {
+
+    await authRateLimiterState.store.resetAll();
+
+}
+
+
+export async function resetRateLimiters(): Promise<void> {
+
+    await Promise.all([
+        resetApiRateLimiter(),
+        resetAuthRateLimiter(),
+    ]);
+
+}
+
+

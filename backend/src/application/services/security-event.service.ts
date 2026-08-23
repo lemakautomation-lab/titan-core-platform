@@ -87,8 +87,8 @@ export class SecurityEventService {
             {
                 event:
                     SecurityEventType.AUTHENTICATION_FAILURE,
-                tenantId,
                 userId,
+                tenantId,
                 requestId:
                     context?.requestId ?? null,
             },
@@ -241,6 +241,7 @@ export class SecurityEventService {
 
 
     async recordTokenRefreshSuccess(
+        tenantId: string,
         userId: string,
         metadata?: Record<string, unknown>,
         context?: SecurityEventContext,
@@ -249,7 +250,7 @@ export class SecurityEventService {
         const securityEvent =
             SecurityEvent.create(
                 SecurityEventType.TOKEN_REFRESH_SUCCESS,
-                null,
+                tenantId,
                 userId,
                 context?.ipAddress ?? null,
                 context?.userAgent ?? null,
@@ -288,6 +289,7 @@ export class SecurityEventService {
 
 
     async recordTokenReuseDetected(
+        tenantId: string | null,
         userId: string,
         metadata?: Record<string, unknown>,
         context?: SecurityEventContext,
@@ -298,6 +300,7 @@ export class SecurityEventService {
             {
                 event:
                     SecurityEventType.TOKEN_REUSE_DETECTED,
+                tenantId,
                 userId,
                 requestId:
                     context?.requestId ?? null,
@@ -309,7 +312,7 @@ export class SecurityEventService {
             const securityEvent =
                 SecurityEvent.create(
                     SecurityEventType.TOKEN_REUSE_DETECTED,
-                    null,
+                    tenantId,
                     userId,
                     context?.ipAddress ?? null,
                     context?.userAgent ?? null,
@@ -326,6 +329,7 @@ export class SecurityEventService {
             logger.error(
                 "Failed to write token reuse detection security event",
                 {
+                    tenantId,
                     userId,
                     requestId:
                         context?.requestId ?? null,
@@ -376,6 +380,59 @@ export class SecurityEventService {
             logger.error(
                 "Failed to write session revoked security event",
                 {
+                    userId,
+                    requestId:
+                        context?.requestId ?? null,
+                    error,
+                },
+            );
+
+        }
+    }
+
+
+    async recordRateLimitExceeded(
+        tenantId: string | null,
+        userId: string | null,
+        metadata?: Record<string, unknown>,
+        context?: SecurityEventContext,
+    ): Promise<void> {
+
+        logger.warn(
+            "Rate limit exceeded",
+            {
+                event:
+                    SecurityEventType.RATE_LIMIT_EXCEEDED,
+                tenantId,
+                userId,
+                requestId:
+                    context?.requestId ?? null,
+            },
+        );
+
+        try {
+
+            const securityEvent =
+                SecurityEvent.create(
+                    SecurityEventType.RATE_LIMIT_EXCEEDED,
+                    tenantId,
+                    userId,
+                    context?.ipAddress ?? null,
+                    context?.userAgent ?? null,
+                    context?.requestId ?? null,
+                    metadata ?? null,
+                );
+
+            await this.securityEventRepository.create(
+                securityEvent,
+            );
+
+        } catch (error) {
+
+            logger.error(
+                "Failed to write rate limit exceeded security event",
+                {
+                    tenantId,
                     userId,
                     requestId:
                         context?.requestId ?? null,

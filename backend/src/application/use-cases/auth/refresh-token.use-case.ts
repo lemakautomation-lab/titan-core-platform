@@ -23,9 +23,16 @@ export class RefreshTokenUseCase {
     async execute(command: RefreshTokenCommand) {
 
         const securityContext: SecurityEventContext = {
-            ipAddress: command.ipAddress ?? null,
-            userAgent: command.userAgent ?? null,
-            requestId: command.requestId ?? null,
+
+            ipAddress:
+                command.ipAddress ?? null,
+
+            userAgent:
+                command.userAgent ?? null,
+
+            requestId:
+                command.requestId ?? null,
+
         };
 
 
@@ -41,11 +48,17 @@ export class RefreshTokenUseCase {
         } catch {
 
             await this.securityEventService.recordTokenRefreshFailure(
+
                 {
                     reason:
                         "INVALID_REFRESH_TOKEN",
                 },
+
                 securityContext,
+
+                null,
+                null,
+
             );
 
             throw new HttpException(
@@ -65,11 +78,17 @@ export class RefreshTokenUseCase {
         if (!session) {
 
             await this.securityEventService.recordTokenRefreshFailure(
+
                 {
                     reason:
                         "SESSION_NOT_FOUND",
                 },
+
                 securityContext,
+
+                null,
+                payload.userId,
+
             );
 
             throw new HttpException(
@@ -80,16 +99,37 @@ export class RefreshTokenUseCase {
         }
 
 
+        const sessionUser =
+            await this.userRepository.findById(
+                session.userId,
+            );
+
+
         if (payload.userId !== session.userId) {
 
             await this.securityEventService.recordTokenRefreshFailure(
+
                 {
                     reason:
                         "TOKEN_USER_MISMATCH",
+
                     sessionId:
                         session.id,
+
+                    tokenUserId:
+                        payload.userId,
+
+                    sessionUserId:
+                        session.userId,
+
                 },
+
                 securityContext,
+
+                null,
+
+                null,
+
             );
 
             throw new HttpException(
@@ -102,23 +142,26 @@ export class RefreshTokenUseCase {
 
         if (payload.jti !== session.jti) {
 
-            const user =
-                await this.userRepository.findById(
-                    session.userId,
-                );
-
             await this.securityEventService.recordTokenRefreshFailure(
+
                 {
                     reason:
                         "TOKEN_JTI_MISMATCH",
+
                     sessionId:
                         session.id,
+
                     userId:
                         session.userId,
+
                 },
+
                 securityContext,
-                user?.tenantId ?? null,
+
+                sessionUser?.tenantId ?? null,
+
                 session.userId,
+
             );
 
             throw new HttpException(
@@ -132,14 +175,21 @@ export class RefreshTokenUseCase {
         if (!session.isActive()) {
 
             await this.securityEventService.recordTokenReuseDetected(
+
+                sessionUser?.tenantId ?? null,
+
                 session.userId,
+
                 {
                     reason:
                         "REVOKED_REFRESH_TOKEN_REUSE",
+
                     sessionId:
                         session.id,
                 },
+
                 securityContext,
+
             );
 
             throw new HttpException(
@@ -151,23 +201,29 @@ export class RefreshTokenUseCase {
 
 
         const user =
-            await this.userRepository.findById(
-                session.userId,
-            );
+            sessionUser;
 
 
         if (!user) {
 
             await this.securityEventService.recordTokenRefreshFailure(
+
                 {
                     reason:
                         "USER_NOT_FOUND",
+
                     sessionId:
                         session.id,
+
                     userId:
                         session.userId,
                 },
+
                 securityContext,
+
+                null,
+                session.userId,
+
             );
 
             throw new HttpException(
@@ -186,17 +242,27 @@ export class RefreshTokenUseCase {
                 user.tenantId,
             );
 
+
             await this.securityEventService.recordTokenRefreshFailure(
+
                 {
                     reason:
                         "REFRESH_TOKEN_EXPIRED",
+
                     sessionId:
                         session.id,
+
                     userId:
                         session.userId,
                 },
+
                 securityContext,
+
+                user.tenantId,
+                session.userId,
+
             );
+
 
             throw new HttpException(
                 "Refresh token expired",
@@ -214,17 +280,27 @@ export class RefreshTokenUseCase {
                 user.tenantId,
             );
 
+
             await this.securityEventService.recordTokenRefreshFailure(
+
                 {
                     reason:
                         "USER_NOT_ACTIVE",
+
                     sessionId:
                         session.id,
+
                     userId:
                         user.id,
                 },
+
                 securityContext,
+
+                user.tenantId,
+                user.id,
+
             );
+
 
             throw new HttpException(
                 "Invalid refresh token",
@@ -249,53 +325,75 @@ export class RefreshTokenUseCase {
 
         const accessToken =
             jwtService.generateAccessToken({
+
                 userId:
                     user.id,
+
                 tenantId:
                     user.tenantId,
+
                 roles:
                     roleNames,
+
             });
 
 
         const generatedRefreshToken =
             jwtService.generateRefreshToken({
+
                 userId:
                     user.id,
+
             });
 
 
         const newSession =
             Session.create(
+
                 user.id,
+
                 generatedRefreshToken.jti,
+
                 generatedRefreshToken.token,
+
                 new Date(
                     Date.now() +
                     7 * 24 * 60 * 60 * 1000,
                 ),
+
             );
 
 
         const rotated =
             await this.sessionRepository.rotate(
+
                 session.id,
+
                 session.userId,
+
                 newSession,
+
             );
 
 
         if (!rotated) {
 
             await this.securityEventService.recordTokenReuseDetected(
+
+                user.tenantId,
+
                 session.userId,
+
                 {
                     reason:
                         "REVOKED_REFRESH_TOKEN_REUSE",
+
                     sessionId:
                         session.id,
                 },
+
                 securityContext,
+
             );
 
             throw new HttpException(
@@ -307,23 +405,35 @@ export class RefreshTokenUseCase {
 
 
         await this.securityEventService.recordTokenRefreshSuccess(
+
+            user.tenantId,
+
             user.id,
+
             {
                 previousSessionId:
                     session.id,
+
                 newSessionId:
                     newSession.id,
             },
+
             securityContext,
+
         );
 
 
         return {
+
             accessToken,
+
             refreshToken:
                 generatedRefreshToken.token,
+
         };
+
     }
+
 }
 
 

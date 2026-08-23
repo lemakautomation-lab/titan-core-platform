@@ -1,27 +1,43 @@
 import { defineConfig } from "vitest/config";
 
-export default defineConfig({
-    test: {
-        globals: true,
-        environment: "node",
 
-        passWithNoTests: true,
+export default defineConfig({
+
+    test: {
+
+        globals:
+            true,
+
+        environment:
+            "node",
+
+        passWithNoTests:
+            true,
 
         setupFiles: [
-            "./tests/setup/test.setup.ts"
+            "./tests/setup/env.setup.ts",
+            "./tests/setup/test.setup.ts",
         ],
 
         include: [
-            "tests/**/*.spec.ts"
+            "tests/**/*.spec.ts",
         ],
 
         coverage: {
-            provider: "v8",
+
+            provider:
+                "v8",
+
             reporter: [
                 "text",
-                "html"
+                "html",
             ],
-            reportsDirectory: "./coverage"
-        }
-    }
+
+            reportsDirectory:
+                "./coverage",
+
+        },
+
+    },
+
 });
