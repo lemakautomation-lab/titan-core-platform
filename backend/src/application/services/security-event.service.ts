@@ -1,4 +1,4 @@
-import { SecurityEvent } from "../../domain/entities/security-event.entity";
+﻿import { SecurityEvent } from "../../domain/entities/security-event.entity";
 import { SecurityEventRepository } from "../../domain/repositories/security-event.repository";
 import { SecurityEventType } from "../../domain/security/security-event-type";
 import { logger } from "../../logging/logger";
@@ -22,6 +22,31 @@ export class SecurityEventService {
     ) {}
 
 
+    private async persist(
+        eventType: SecurityEventType,
+        tenantId: string | null,
+        userId: string | null,
+        metadata: Record<string, unknown> | null,
+        context?: SecurityEventContext,
+    ): Promise<void> {
+
+        const securityEvent =
+            SecurityEvent.create(
+                eventType,
+                tenantId,
+                userId,
+                context?.ipAddress ?? null,
+                context?.userAgent ?? null,
+                context?.requestId ?? null,
+                metadata,
+            );
+
+        await this.securityEventRepository.create(
+            securityEvent,
+        );
+    }
+
+
     async recordAuthenticationSuccess(
         tenantId: string | null,
         userId: string | null,
@@ -32,30 +57,21 @@ export class SecurityEventService {
         logger.info(
             "Authentication successful",
             {
-                event:
-                    SecurityEventType.AUTHENTICATION_SUCCESS,
+                event: SecurityEventType.AUTHENTICATION_SUCCESS,
                 userId,
                 tenantId,
-                requestId:
-                    context?.requestId ?? null,
+                requestId: context?.requestId ?? null,
             },
         );
 
         try {
 
-            const securityEvent =
-                SecurityEvent.create(
-                    SecurityEventType.AUTHENTICATION_SUCCESS,
-                    tenantId,
-                    userId,
-                    context?.ipAddress ?? null,
-                    context?.userAgent ?? null,
-                    context?.requestId ?? null,
-                    metadata ?? null,
-                );
-
-            await this.securityEventRepository.create(
-                securityEvent,
+            await this.persist(
+                SecurityEventType.AUTHENTICATION_SUCCESS,
+                tenantId,
+                userId,
+                metadata ?? null,
+                context,
             );
 
         } catch (error) {
@@ -65,8 +81,7 @@ export class SecurityEventService {
                 {
                     userId,
                     tenantId,
-                    requestId:
-                        context?.requestId ?? null,
+                    requestId: context?.requestId ?? null,
                     error,
                 },
             );
@@ -85,30 +100,21 @@ export class SecurityEventService {
         logger.warn(
             "Authentication failed",
             {
-                event:
-                    SecurityEventType.AUTHENTICATION_FAILURE,
+                event: SecurityEventType.AUTHENTICATION_FAILURE,
                 userId,
                 tenantId,
-                requestId:
-                    context?.requestId ?? null,
+                requestId: context?.requestId ?? null,
             },
         );
 
         try {
 
-            const securityEvent =
-                SecurityEvent.create(
-                    SecurityEventType.AUTHENTICATION_FAILURE,
-                    tenantId,
-                    userId,
-                    context?.ipAddress ?? null,
-                    context?.userAgent ?? null,
-                    context?.requestId ?? null,
-                    metadata ?? null,
-                );
-
-            await this.securityEventRepository.create(
-                securityEvent,
+            await this.persist(
+                SecurityEventType.AUTHENTICATION_FAILURE,
+                tenantId,
+                userId,
+                metadata ?? null,
+                context,
             );
 
         } catch (error) {
@@ -118,8 +124,7 @@ export class SecurityEventService {
                 {
                     tenantId,
                     userId,
-                    requestId:
-                        context?.requestId ?? null,
+                    requestId: context?.requestId ?? null,
                     error,
                 },
             );
@@ -138,30 +143,21 @@ export class SecurityEventService {
         logger.warn(
             "Account locked",
             {
-                event:
-                    SecurityEventType.ACCOUNT_LOCKED,
+                event: SecurityEventType.ACCOUNT_LOCKED,
                 tenantId,
                 userId,
-                requestId:
-                    context?.requestId ?? null,
+                requestId: context?.requestId ?? null,
             },
         );
 
         try {
 
-            const securityEvent =
-                SecurityEvent.create(
-                    SecurityEventType.ACCOUNT_LOCKED,
-                    tenantId,
-                    userId,
-                    context?.ipAddress ?? null,
-                    context?.userAgent ?? null,
-                    context?.requestId ?? null,
-                    metadata ?? null,
-                );
-
-            await this.securityEventRepository.create(
-                securityEvent,
+            await this.persist(
+                SecurityEventType.ACCOUNT_LOCKED,
+                tenantId,
+                userId,
+                metadata ?? null,
+                context,
             );
 
         } catch (error) {
@@ -171,8 +167,7 @@ export class SecurityEventService {
                 {
                     tenantId,
                     userId,
-                    requestId:
-                        context?.requestId ?? null,
+                    requestId: context?.requestId ?? null,
                     error,
                 },
             );
@@ -192,34 +187,25 @@ export class SecurityEventService {
         logger.warn(
             "Permission denied",
             {
-                event:
-                    SecurityEventType.AUTHORIZATION_FAILURE,
+                event: SecurityEventType.AUTHORIZATION_FAILURE,
                 permission,
                 tenantId,
                 userId,
-                requestId:
-                    context?.requestId ?? null,
+                requestId: context?.requestId ?? null,
             },
         );
 
         try {
 
-            const securityEvent =
-                SecurityEvent.create(
-                    SecurityEventType.AUTHORIZATION_FAILURE,
-                    tenantId,
-                    userId,
-                    context?.ipAddress ?? null,
-                    context?.userAgent ?? null,
-                    context?.requestId ?? null,
-                    {
-                        permission,
-                        ...(metadata ?? {}),
-                    },
-                );
-
-            await this.securityEventRepository.create(
-                securityEvent,
+            await this.persist(
+                SecurityEventType.AUTHORIZATION_FAILURE,
+                tenantId,
+                userId,
+                {
+                    permission,
+                    ...(metadata ?? {}),
+                },
+                context,
             );
 
         } catch (error) {
@@ -230,8 +216,7 @@ export class SecurityEventService {
                     tenantId,
                     userId,
                     permission,
-                    requestId:
-                        context?.requestId ?? null,
+                    requestId: context?.requestId ?? null,
                     error,
                 },
             );
@@ -247,19 +232,22 @@ export class SecurityEventService {
         context?: SecurityEventContext,
     ): Promise<void> {
 
-        const securityEvent =
-            SecurityEvent.create(
-                SecurityEventType.TOKEN_REFRESH_SUCCESS,
+        logger.info(
+            "Token refresh successful",
+            {
+                event: SecurityEventType.TOKEN_REFRESH_SUCCESS,
                 tenantId,
                 userId,
-                context?.ipAddress ?? null,
-                context?.userAgent ?? null,
-                context?.requestId ?? null,
-                metadata ?? null,
-            );
+                requestId: context?.requestId ?? null,
+            },
+        );
 
-        await this.securityEventRepository.create(
-            securityEvent,
+        await this.persist(
+            SecurityEventType.TOKEN_REFRESH_SUCCESS,
+            tenantId,
+            userId,
+            metadata ?? null,
+            context,
         );
     }
 
@@ -271,19 +259,22 @@ export class SecurityEventService {
         userId?: string | null,
     ): Promise<void> {
 
-        const securityEvent =
-            SecurityEvent.create(
-                SecurityEventType.TOKEN_REFRESH_FAILURE,
-                tenantId ?? null,
-                userId ?? null,
-                context?.ipAddress ?? null,
-                context?.userAgent ?? null,
-                context?.requestId ?? null,
-                metadata ?? null,
-            );
+        logger.warn(
+            "Token refresh failed",
+            {
+                event: SecurityEventType.TOKEN_REFRESH_FAILURE,
+                tenantId: tenantId ?? null,
+                userId: userId ?? null,
+                requestId: context?.requestId ?? null,
+            },
+        );
 
-        await this.securityEventRepository.create(
-            securityEvent,
+        await this.persist(
+            SecurityEventType.TOKEN_REFRESH_FAILURE,
+            tenantId ?? null,
+            userId ?? null,
+            metadata ?? null,
+            context,
         );
     }
 
@@ -298,30 +289,21 @@ export class SecurityEventService {
         logger.warn(
             "Refresh token reuse detected",
             {
-                event:
-                    SecurityEventType.TOKEN_REUSE_DETECTED,
+                event: SecurityEventType.TOKEN_REUSE_DETECTED,
                 tenantId,
                 userId,
-                requestId:
-                    context?.requestId ?? null,
+                requestId: context?.requestId ?? null,
             },
         );
 
         try {
 
-            const securityEvent =
-                SecurityEvent.create(
-                    SecurityEventType.TOKEN_REUSE_DETECTED,
-                    tenantId,
-                    userId,
-                    context?.ipAddress ?? null,
-                    context?.userAgent ?? null,
-                    context?.requestId ?? null,
-                    metadata ?? null,
-                );
-
-            await this.securityEventRepository.create(
-                securityEvent,
+            await this.persist(
+                SecurityEventType.TOKEN_REUSE_DETECTED,
+                tenantId,
+                userId,
+                metadata ?? null,
+                context,
             );
 
         } catch (error) {
@@ -331,8 +313,7 @@ export class SecurityEventService {
                 {
                     tenantId,
                     userId,
-                    requestId:
-                        context?.requestId ?? null,
+                    requestId: context?.requestId ?? null,
                     error,
                 },
             );
@@ -350,29 +331,20 @@ export class SecurityEventService {
         logger.info(
             "Session revoked",
             {
-                event:
-                    SecurityEventType.SESSION_REVOKED,
+                event: SecurityEventType.SESSION_REVOKED,
                 userId,
-                requestId:
-                    context?.requestId ?? null,
+                requestId: context?.requestId ?? null,
             },
         );
 
         try {
 
-            const securityEvent =
-                SecurityEvent.create(
-                    SecurityEventType.SESSION_REVOKED,
-                    null,
-                    userId,
-                    context?.ipAddress ?? null,
-                    context?.userAgent ?? null,
-                    context?.requestId ?? null,
-                    metadata ?? null,
-                );
-
-            await this.securityEventRepository.create(
-                securityEvent,
+            await this.persist(
+                SecurityEventType.SESSION_REVOKED,
+                null,
+                userId,
+                metadata ?? null,
+                context,
             );
 
         } catch (error) {
@@ -381,8 +353,7 @@ export class SecurityEventService {
                 "Failed to write session revoked security event",
                 {
                     userId,
-                    requestId:
-                        context?.requestId ?? null,
+                    requestId: context?.requestId ?? null,
                     error,
                 },
             );
@@ -401,30 +372,21 @@ export class SecurityEventService {
         logger.warn(
             "Rate limit exceeded",
             {
-                event:
-                    SecurityEventType.RATE_LIMIT_EXCEEDED,
+                event: SecurityEventType.RATE_LIMIT_EXCEEDED,
                 tenantId,
                 userId,
-                requestId:
-                    context?.requestId ?? null,
+                requestId: context?.requestId ?? null,
             },
         );
 
         try {
 
-            const securityEvent =
-                SecurityEvent.create(
-                    SecurityEventType.RATE_LIMIT_EXCEEDED,
-                    tenantId,
-                    userId,
-                    context?.ipAddress ?? null,
-                    context?.userAgent ?? null,
-                    context?.requestId ?? null,
-                    metadata ?? null,
-                );
-
-            await this.securityEventRepository.create(
-                securityEvent,
+            await this.persist(
+                SecurityEventType.RATE_LIMIT_EXCEEDED,
+                tenantId,
+                userId,
+                metadata ?? null,
+                context,
             );
 
         } catch (error) {
@@ -434,8 +396,7 @@ export class SecurityEventService {
                 {
                     tenantId,
                     userId,
-                    requestId:
-                        context?.requestId ?? null,
+                    requestId: context?.requestId ?? null,
                     error,
                 },
             );

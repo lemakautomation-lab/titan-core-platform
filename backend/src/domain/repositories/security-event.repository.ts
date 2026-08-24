@@ -1,4 +1,4 @@
-﻿import { SecurityEvent } from "../entities/security-event.entity";
+import { SecurityEvent } from "../entities/security-event.entity";
 import { SecurityEventType } from "../security/security-event-type";
 
 
@@ -10,6 +10,8 @@ export interface SecurityEventQuery {
 
     eventType?: SecurityEventType;
 
+    requestId?: string;
+
     from?: Date;
 
     to?: Date;
@@ -17,20 +19,16 @@ export interface SecurityEventQuery {
 }
 
 
-
 export interface SecurityEventRepository {
-
 
     create(
         securityEvent: SecurityEvent,
     ): Promise<SecurityEvent>;
 
 
-
     findMany(
         query: SecurityEventQuery,
     ): Promise<SecurityEvent[]>;
-
 
 
     findRecent(
@@ -39,13 +37,10 @@ export interface SecurityEventRepository {
     ): Promise<SecurityEvent[]>;
 
 
-
     countByType(
         tenantId: string,
         eventType: SecurityEventType,
         from: Date,
     ): Promise<number>;
-
-
 
 }

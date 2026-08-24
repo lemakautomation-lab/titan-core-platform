@@ -222,6 +222,7 @@ export class RefreshTokenUseCase {
                 securityContext,
 
                 null,
+
                 session.userId,
 
             );
@@ -259,6 +260,7 @@ export class RefreshTokenUseCase {
                 securityContext,
 
                 user.tenantId,
+
                 session.userId,
 
             );
@@ -297,6 +299,7 @@ export class RefreshTokenUseCase {
                 securityContext,
 
                 user.tenantId,
+
                 user.id,
 
             );

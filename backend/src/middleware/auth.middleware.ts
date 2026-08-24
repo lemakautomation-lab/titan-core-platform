@@ -4,6 +4,7 @@ import { jwtService } from "../security/jwt";
 import { requestContextService } from "../shared/context/request-context.service";
 import { logger } from "../logging/logger";
 import { UnauthorizedException } from "../shared/exceptions/unauthorized.exception";
+import { auditLogModule } from "../infrastructure/composition/audit-log.module";
 
 export interface AuthenticatedUser {
 
@@ -21,11 +22,47 @@ export interface AuthRequest extends Request {
 
 }
 
-export function authMiddleware(
+
+async function recordAuthenticationFailure(
+    req: Request,
+    reason: string,
+): Promise<void> {
+
+    const context =
+        requestContextService.get();
+
+    await auditLogModule.securityEventService.recordAuthenticationFailure(
+        null,
+        null,
+        {
+            reason,
+            method:
+                req.method,
+            path:
+                req.originalUrl,
+        },
+        {
+            ipAddress:
+                req.ip ?? null,
+
+            userAgent:
+                req.get("user-agent") ?? null,
+
+            requestId:
+                context?.requestId ??
+                req.get("X-Request-Id") ??
+                null,
+        },
+    );
+
+}
+
+
+export async function authMiddleware(
     req: AuthRequest,
     res: Response,
     next: NextFunction,
-): void {
+): Promise<void> {
 
     const authorization =
         req.headers.authorization;
@@ -39,6 +76,11 @@ export function authMiddleware(
                 reason: "MISSING_AUTH_HEADER",
                 path: req.originalUrl,
             },
+        );
+
+        await recordAuthenticationFailure(
+            req,
+            "MISSING_AUTH_HEADER",
         );
 
         return next(
@@ -64,6 +106,11 @@ export function authMiddleware(
                 reason: "INVALID_AUTH_FORMAT",
                 path: req.originalUrl,
             },
+        );
+
+        await recordAuthenticationFailure(
+            req,
+            "INVALID_AUTH_FORMAT",
         );
 
         return next(
@@ -96,6 +143,11 @@ export function authMiddleware(
                     reason: "INVALID_TOKEN_PAYLOAD",
                     path: req.originalUrl,
                 },
+            );
+
+            await recordAuthenticationFailure(
+                req,
+                "INVALID_TOKEN_PAYLOAD",
             );
 
             return next(
@@ -162,6 +214,11 @@ export function authMiddleware(
                 reason: "INVALID_OR_EXPIRED_TOKEN",
                 path: req.originalUrl,
             },
+        );
+
+        await recordAuthenticationFailure(
+            req,
+            "INVALID_OR_EXPIRED_TOKEN",
         );
 
         return next(

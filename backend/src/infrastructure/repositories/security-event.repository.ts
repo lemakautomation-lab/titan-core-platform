@@ -54,33 +54,78 @@ implements SecurityEventRepository {
         query: SecurityEventQuery,
     ): Promise<SecurityEvent[]> {
 
+        const where: {
+            tenantId?: string | null;
+            userId?: string | null;
+            eventType?: PrismaSecurityEventType;
+            requestId?: string | null;
+            createdAt?: {
+                gte?: Date;
+                lte?: Date;
+            };
+        } = {};
+
+
+        if (query.tenantId !== undefined) {
+
+            where.tenantId =
+                query.tenantId;
+
+        }
+
+
+        if (query.userId !== undefined) {
+
+            where.userId =
+                query.userId;
+
+        }
+
+
+        if (query.eventType !== undefined) {
+
+            where.eventType =
+                query.eventType as PrismaSecurityEventType;
+
+        }
+
+
+        if (query.requestId !== undefined) {
+
+            where.requestId =
+                query.requestId;
+
+        }
+
+
+        if (
+            query.from !== undefined ||
+            query.to !== undefined
+        ) {
+
+            where.createdAt = {};
+
+            if (query.from !== undefined) {
+
+                where.createdAt.gte =
+                    query.from;
+
+            }
+
+            if (query.to !== undefined) {
+
+                where.createdAt.lte =
+                    query.to;
+
+            }
+
+        }
+
+
         const events =
             await this.database.prisma.securityEvent.findMany({
 
-                where: {
-
-                    tenantId:
-                        query.tenantId,
-
-                    userId:
-                        query.userId,
-
-                    eventType:
-                        query.eventType
-                            ? query.eventType as PrismaSecurityEventType
-                            : undefined,
-
-                    createdAt: {
-
-                        gte:
-                            query.from,
-
-                        lte:
-                            query.to,
-
-                    },
-
-                },
+                where,
 
                 orderBy: {
 
@@ -89,6 +134,7 @@ implements SecurityEventRepository {
                 },
 
             });
+
 
         return events.map(
             event =>
@@ -105,8 +151,11 @@ implements SecurityEventRepository {
     ): Promise<SecurityEvent[]> {
 
         return this.findMany({
+
             tenantId,
+
             from,
+
         });
     }
 
