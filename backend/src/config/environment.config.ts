@@ -1,5 +1,6 @@
 const validEnvironments = [
     "development",
+    "test",
     "testing",
     "staging",
     "production"
@@ -13,18 +14,60 @@ if (!validEnvironments.includes(nodeEnv as typeof validEnvironments[number])) {
     );
 }
 
-const serverPort = Number(process.env.SERVER_PORT || 3000);
 
-if (Number.isNaN(serverPort) || serverPort <= 0 || serverPort > 65535) {
+const serverPort =
+    Number(
+        process.env.SERVER_PORT || 3000
+    );
+
+if (
+    Number.isNaN(serverPort) ||
+    serverPort <= 0 ||
+    serverPort > 65535
+) {
     throw new Error(
         `Invalid SERVER_PORT value: ${process.env.SERVER_PORT}`
     );
 }
 
-const serverHost = process.env.SERVER_HOST || "localhost";
+
+const serverHost =
+    process.env.SERVER_HOST || "localhost";
+
+
+const corsAllowedOrigins =
+    (
+        process.env.CORS_ALLOWED_ORIGINS ||
+        "http://localhost:5173"
+    )
+        .split(",")
+        .map(
+            (origin) =>
+                origin.trim(),
+        )
+        .filter(
+            (origin) =>
+                origin.length > 0,
+        );
+
+
+if (
+    corsAllowedOrigins.length === 0
+) {
+    throw new Error(
+        "CORS_ALLOWED_ORIGINS must contain at least one allowed origin.",
+    );
+}
+
 
 export const environmentConfig = {
+
     nodeEnv,
+
     serverPort,
-    serverHost
+
+    serverHost,
+
+    corsAllowedOrigins,
+
 };
