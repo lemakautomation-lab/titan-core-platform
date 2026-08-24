@@ -36,36 +36,24 @@ export function refresh(): Promise<RefreshResponse> {
 }
 
 
-export function logout(
-  accessToken: string,
-): Promise<LogoutResponse> {
+export function logout(): Promise<LogoutResponse> {
 
   return apiRequest<LogoutResponse>(
     "/auth/logout",
     {
       method: "POST",
-      headers: {
-        Authorization:
-          `Bearer ${accessToken}`,
-      },
     },
   );
 
 }
 
 
-export function me(
-  accessToken: string,
-): Promise<MeResponse> {
+export function me(): Promise<MeResponse> {
 
   return apiRequest<MeResponse>(
     "/auth/me",
     {
       method: "GET",
-      headers: {
-        Authorization:
-          `Bearer ${accessToken}`,
-      },
     },
   );
 

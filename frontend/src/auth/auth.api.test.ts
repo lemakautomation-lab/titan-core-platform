@@ -75,46 +75,38 @@ describe("auth.api", () => {
   });
 
 
-  it("calls logout with bearer authentication", async () => {
+  it("calls logout without supplying the refresh token or bearer token", async () => {
 
     apiRequestMock.mockResolvedValue({
       success: true,
       message: "Logged out successfully",
     });
 
-    await logout(
-      "access-token",
-    );
+    await logout();
 
     expect(apiRequestMock).toHaveBeenCalledWith(
       "/auth/logout",
       {
         method: "POST",
-        headers: {
-          Authorization: "Bearer access-token",
-        },
       },
     );
 
   });
 
 
-  it("calls me with bearer authentication", async () => {
+  it("calls me without explicitly supplying the access token", async () => {
 
     apiRequestMock.mockResolvedValue({
       userId: "user-1",
       tenantId: "tenant-1",
     });
 
-    await me("access-token");
+    await me();
 
     expect(apiRequestMock).toHaveBeenCalledWith(
       "/auth/me",
       {
         method: "GET",
-        headers: {
-          Authorization: "Bearer access-token",
-        },
       },
     );
 

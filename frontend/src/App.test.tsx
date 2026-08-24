@@ -23,11 +23,13 @@ import {
 import {
   getCurrentUser,
   login,
+  logout,
 } from "./auth/auth.service";
 
 vi.mock("./auth/auth.service", () => ({
   login: vi.fn(),
   getCurrentUser: vi.fn(),
+  logout: vi.fn(),
 }));
 
 const mockedLogin =
@@ -35,6 +37,9 @@ const mockedLogin =
 
 const mockedGetCurrentUser =
   vi.mocked(getCurrentUser);
+
+const mockedLogout =
+  vi.mocked(logout);
 
 const testUser = {
   id: "user-1",
@@ -53,6 +58,8 @@ describe("App", () => {
     mockedLogin.mockReset();
 
     mockedGetCurrentUser.mockReset();
+
+    mockedLogout.mockReset();
 
   });
 
@@ -315,6 +322,61 @@ describe("App", () => {
     ).toHaveTextContent(
       "Unable to sign in. Please check your credentials and try again.",
     );
+
+  });
+
+
+  it("logs out and returns to the login screen", async () => {
+
+    setAuthUser(testUser);
+
+    mockedGetCurrentUser.mockResolvedValue(
+      testUser,
+    );
+
+    mockedLogout.mockResolvedValue(
+      undefined,
+    );
+
+    render(<App />);
+
+    expect(
+      await screen.findByText(
+        testUser.email,
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole(
+        "button",
+        {
+          name: "Sign out",
+        },
+      ),
+    );
+
+    await waitFor(() => {
+
+      expect(
+        mockedLogout,
+      ).toHaveBeenCalledTimes(1);
+
+    });
+
+    expect(
+      await screen.findByRole(
+        "heading",
+        {
+          name: "Sign in",
+        },
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        testUser.email,
+      ),
+    ).not.toBeInTheDocument();
 
   });
 

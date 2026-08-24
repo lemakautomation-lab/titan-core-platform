@@ -2,10 +2,14 @@ import { AuthUser } from "./auth.types";
 
 interface AuthAppProps {
   user: AuthUser;
+  onLogout: () => void;
+  loggingOut: boolean;
 }
 
 export default function AuthApp({
   user,
+  onLogout,
+  loggingOut,
 }: AuthAppProps) {
 
   return (
@@ -16,6 +20,14 @@ export default function AuthApp({
         <p>
           Authenticated
         </p>
+
+        <button
+          type="button"
+          onClick={onLogout}
+          disabled={loggingOut}
+        >
+          {loggingOut ? "Signing out..." : "Sign out"}
+        </button>
       </header>
 
       <section>

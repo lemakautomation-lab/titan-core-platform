@@ -68,9 +68,7 @@ export async function logout(): Promise<void> {
 
   try {
 
-    await logoutApi(
-      accessToken,
-    );
+    await logoutApi();
 
   } finally {
 
@@ -93,9 +91,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   try {
 
     const response =
-      await meApi(
-        accessToken,
-      );
+      await meApi();
 
     const cachedUser =
       getAuthUser();

@@ -1,11 +1,9 @@
 import { SecurityEventRepository } from "../../domain/repositories/security-event.repository";
 import { SecurityEventType } from "../../domain/security/security-event-type";
+import { SecurityMonitoringConfig } from "../../config/security-monitoring.config";
 
 
 export class SecurityAnalyticsService {
-
-
-    private static readonly WINDOW_MINUTES = 15;
 
 
     constructor(
@@ -13,9 +11,8 @@ export class SecurityAnalyticsService {
     ) {}
 
 
-
     private getWindowStart(
-        minutes = SecurityAnalyticsService.WINDOW_MINUTES,
+        minutes = SecurityMonitoringConfig.failedLogin.windowMinutes,
     ): Date {
 
         return new Date(
@@ -24,7 +21,6 @@ export class SecurityAnalyticsService {
         );
 
     }
-
 
 
     async getFailedLoginCountByEmail(
@@ -51,20 +47,16 @@ export class SecurityAnalyticsService {
             });
 
 
-
         const normalizedEmail =
 
             email.trim().toLowerCase();
 
 
-
         return events.filter(event => {
-
 
             const metadata =
 
                 (event.metadata ?? {}) as Record<string, unknown>;
-
 
 
             return (
@@ -75,12 +67,9 @@ export class SecurityAnalyticsService {
 
             );
 
-
         }).length;
 
-
     }
-
 
 
     async hasExceededFailedLoginThreshold(
@@ -89,7 +78,8 @@ export class SecurityAnalyticsService {
 
         email: string,
 
-        threshold = 5,
+        threshold =
+            SecurityMonitoringConfig.failedLogin.maxAttempts,
 
     ): Promise<boolean> {
 
@@ -107,9 +97,7 @@ export class SecurityAnalyticsService {
 
         return failures >= threshold;
 
-
     }
-
 
 
     async getRecentAccountLockouts(
@@ -117,7 +105,6 @@ export class SecurityAnalyticsService {
         tenantId: string,
 
     ) {
-
 
         return await this.securityEventRepository.findMany({
 
@@ -131,9 +118,7 @@ export class SecurityAnalyticsService {
 
         });
 
-
     }
-
 
 
     async getAuthenticationFailures(
@@ -141,7 +126,6 @@ export class SecurityAnalyticsService {
         tenantId: string,
 
     ) {
-
 
         return await this.securityEventRepository.findMany({
 
@@ -155,9 +139,7 @@ export class SecurityAnalyticsService {
 
         });
 
-
     }
-
 
 
     async getSuspiciousAuthenticationActivity(
@@ -176,7 +158,6 @@ export class SecurityAnalyticsService {
             );
 
 
-
         const lockouts =
 
             await this.getRecentAccountLockouts(
@@ -186,19 +167,13 @@ export class SecurityAnalyticsService {
             );
 
 
-
         return {
 
-
             failedAttempts:
-
                 failures.length,
 
-
             accountLockouts:
-
                 lockouts.length,
-
 
             suspicious:
 
@@ -206,16 +181,11 @@ export class SecurityAnalyticsService {
 
                 lockouts.length > 0,
 
-
             windowMinutes:
-
                 60,
-
 
         };
 
-
     }
-
 
 }

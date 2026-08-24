@@ -6,6 +6,7 @@ import {
 
 import {
   getCurrentUser,
+  logout,
 } from "./auth/auth.service";
 
 import { AuthUser } from "./auth/auth.types";
@@ -13,10 +14,12 @@ import { AuthUser } from "./auth/auth.types";
 import LoginPage from "./auth/LoginPage";
 import AuthApp from "./auth/AuthApp";
 
+
 type AuthState =
   | "checking"
   | "authenticated"
   | "unauthenticated";
+
 
 export default function App() {
 
@@ -29,6 +32,9 @@ export default function App() {
         ? "checking"
         : "unauthenticated",
     );
+
+  const [loggingOut, setLoggingOut] =
+    useState(false);
 
 
   useEffect(() => {
@@ -120,6 +126,33 @@ export default function App() {
   }
 
 
+  async function handleLogout(): Promise<void> {
+
+    if (loggingOut) {
+      return;
+    }
+
+    setLoggingOut(true);
+
+    try {
+
+      await logout();
+
+    } finally {
+
+      setUser(null);
+
+      setAuthState(
+        "unauthenticated",
+      );
+
+      setLoggingOut(false);
+
+    }
+
+  }
+
+
   if (
     authState ===
     "checking"
@@ -164,6 +197,8 @@ export default function App() {
   return (
     <AuthApp
       user={user}
+      onLogout={handleLogout}
+      loggingOut={loggingOut}
     />
   );
 

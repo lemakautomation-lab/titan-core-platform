@@ -102,6 +102,10 @@ describe("auth.service", () => {
     ).toHaveBeenCalledTimes(1);
 
     expect(
+      refreshApi,
+    ).toHaveBeenCalledWith();
+
+    expect(
       accessToken,
     ).toBe("new-access-token");
 
@@ -142,9 +146,7 @@ describe("auth.service", () => {
 
     expect(
       logoutApi,
-    ).toHaveBeenCalledWith(
-      "access-token",
-    );
+    ).toHaveBeenCalledWith();
 
     expect(
       isAuthenticated(),
@@ -172,7 +174,7 @@ describe("auth.service", () => {
 
     await login({
       tenantId: "tenant-1",
-      email: user.email,
+      email: "user@example.com",
       password: "password",
     });
 
@@ -186,9 +188,7 @@ describe("auth.service", () => {
 
     expect(
       meApi,
-    ).toHaveBeenCalledWith(
-      "access-token",
-    );
+    ).toHaveBeenCalledWith();
 
     expect(
       currentUser,
@@ -304,3 +304,4 @@ describe("auth.service", () => {
   });
 
 });
+
