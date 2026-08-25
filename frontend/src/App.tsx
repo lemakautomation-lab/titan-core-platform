@@ -46,9 +46,7 @@ export default function App() {
         const currentUser =
           await getCurrentUser();
 
-        if (
-          currentUser
-        ) {
+        if (currentUser) {
 
           if (mounted) {
 
@@ -57,6 +55,7 @@ export default function App() {
             setAuthState(
               "authenticated",
             );
+
           }
 
           return;
@@ -97,13 +96,13 @@ export default function App() {
         setAuthState(
           "unauthenticated",
         );
+
       }
     }
 
     void validateSession();
 
     return () => {
-
       mounted = false;
     };
 
@@ -143,6 +142,7 @@ export default function App() {
       );
 
       setLoggingOut(false);
+
     }
   }
 
@@ -153,7 +153,7 @@ export default function App() {
 
     return (
       <main>
-        <h1>TITAN Core Platform</h1>
+        <h1>TITAN Health</h1>
 
         <p>
           Checking session...

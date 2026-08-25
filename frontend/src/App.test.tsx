@@ -1,4 +1,4 @@
-import {
+﻿import {
   beforeEach,
   describe,
   expect,
@@ -108,7 +108,11 @@ describe("App", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("Tenant: tenant-1"),
+      screen.getByText("Tenant"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("tenant-1"),
     ).toBeInTheDocument();
 
     expect(
@@ -167,7 +171,7 @@ describe("App", () => {
     ).not.toBeInTheDocument();
 
     expect(
-      screen.queryByText("Tenant: tenant-1"),
+      screen.queryByText("tenant-1"),
     ).not.toBeInTheDocument();
 
   });
@@ -372,7 +376,7 @@ describe("App", () => {
     ).not.toBeInTheDocument();
 
     expect(
-      screen.queryByText("Tenant: tenant-1"),
+      screen.queryByText("tenant-1"),
     ).not.toBeInTheDocument();
 
   });
