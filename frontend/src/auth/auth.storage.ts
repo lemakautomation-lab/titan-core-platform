@@ -1,47 +1,29 @@
 import { AuthUser } from "./auth.types";
 
-const ACCESS_TOKEN_KEY = "titan.accessToken";
-const AUTH_USER_KEY = "titan.authUser";
+let accessToken: string | null = null;
+let authUser: AuthUser | null = null;
 
 export function getAccessToken(): string | null {
-  return sessionStorage.getItem(ACCESS_TOKEN_KEY);
+  return accessToken;
 }
 
 export function setAccessToken(
-  accessToken: string,
+  token: string,
 ): void {
-  sessionStorage.setItem(
-    ACCESS_TOKEN_KEY,
-    accessToken,
-  );
+  accessToken = token;
 }
 
 export function getAuthUser(): AuthUser | null {
-  const value =
-    sessionStorage.getItem(AUTH_USER_KEY);
-
-  if (!value) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(value) as AuthUser;
-  } catch {
-    sessionStorage.removeItem(AUTH_USER_KEY);
-    return null;
-  }
+  return authUser;
 }
 
 export function setAuthUser(
   user: AuthUser,
 ): void {
-  sessionStorage.setItem(
-    AUTH_USER_KEY,
-    JSON.stringify(user),
-  );
+  authUser = user;
 }
 
 export function clearAuthSession(): void {
-  sessionStorage.removeItem(ACCESS_TOKEN_KEY);
-  sessionStorage.removeItem(AUTH_USER_KEY);
+  accessToken = null;
+  authUser = null;
 }

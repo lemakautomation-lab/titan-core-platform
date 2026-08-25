@@ -139,8 +139,7 @@ export async function apiRequest<T>(
 
   if (
     response.status === 401 &&
-    !path.startsWith("/auth/") &&
-    !options.headers
+    !path.startsWith("/auth/")
   ) {
 
     const refreshedToken =
@@ -153,10 +152,12 @@ export async function apiRequest<T>(
           options.headers,
         );
 
-      retryHeaders.set(
-        "Content-Type",
-        "application/json",
-      );
+      if (!retryHeaders.has("Content-Type")) {
+        retryHeaders.set(
+          "Content-Type",
+          "application/json",
+        );
+      }
 
       retryHeaders.set(
         "Authorization",

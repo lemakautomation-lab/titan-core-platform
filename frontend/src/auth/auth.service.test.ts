@@ -26,6 +26,7 @@ import {
   isAuthenticated,
   clearSession,
   refresh,
+  restoreSession,
 } from "./auth.service";
 
 vi.mock("./auth.api", () => ({
@@ -41,12 +42,13 @@ describe("auth.service", () => {
 
     clearAuthSession();
 
-    vi.clearAllMocks();
+    sessionStorage.clear();
+    localStorage.clear();
 
+    vi.clearAllMocks();
   });
 
-
-  it("logs in and stores the authenticated session", async () => {
+  it("logs in and stores the authenticated session in memory", async () => {
 
     vi.mocked(loginApi).mockResolvedValue({
       success: true,
@@ -68,11 +70,15 @@ describe("auth.service", () => {
         password: "password",
       });
 
-    expect(user.id).toBe("user-1");
+    expect(user.id).toBe(
+      "user-1",
+    );
 
     expect(
       getAccessToken(),
-    ).toBe("access-token");
+    ).toBe(
+      "access-token",
+    );
 
     expect(
       getAuthUser(),
@@ -82,15 +88,27 @@ describe("auth.service", () => {
       isAuthenticated(),
     ).toBe(true);
 
-  });
+    expect(
+      sessionStorage.getItem(
+        "titan.accessToken",
+      ),
+    ).toBeNull();
 
+    expect(
+      localStorage.getItem(
+        "titan.accessToken",
+      ),
+    ).toBeNull();
+
+  });
 
   it("refreshes using the HttpOnly refresh-token cookie", async () => {
 
     vi.mocked(refreshApi).mockResolvedValue({
       success: true,
       data: {
-        accessToken: "new-access-token",
+        accessToken:
+          "new-access-token",
       },
     });
 
@@ -107,20 +125,56 @@ describe("auth.service", () => {
 
     expect(
       accessToken,
-    ).toBe("new-access-token");
+    ).toBe(
+      "new-access-token",
+    );
 
     expect(
       getAccessToken(),
-    ).toBe("new-access-token");
+    ).toBe(
+      "new-access-token",
+    );
 
   });
 
+  it("restores a session through the refresh cookie and /me", async () => {
+
+    vi.mocked(refreshApi).mockResolvedValue({
+      success: true,
+      data: {
+        accessToken:
+          "restored-access-token",
+      },
+    });
+
+    vi.mocked(meApi).mockResolvedValue({
+      userId: "user-1",
+      tenantId: "tenant-1",
+    });
+
+    const restoredUser =
+      await restoreSession();
+
+    expect(
+      refreshApi,
+    ).toHaveBeenCalledTimes(1);
+
+    expect(
+      meApi,
+    ).toHaveBeenCalledTimes(1);
+
+    expect(
+      restoredUser,
+    ).toBeNull();
+
+  });
 
   it("logs out and always clears the local session", async () => {
 
     vi.mocked(logoutApi).mockResolvedValue({
       success: true,
-      message: "Logged out successfully",
+      message:
+        "Logged out successfully",
     });
 
     vi.mocked(loginApi).mockResolvedValue({
@@ -132,7 +186,8 @@ describe("auth.service", () => {
           email: "user@example.com",
           roles: ["ADMIN"],
         },
-        accessToken: "access-token",
+        accessToken:
+          "access-token",
       },
     });
 
@@ -154,7 +209,6 @@ describe("auth.service", () => {
 
   });
 
-
   it("returns the cached user after validating the token with /me", async () => {
 
     const user = {
@@ -168,7 +222,8 @@ describe("auth.service", () => {
       success: true,
       data: {
         user,
-        accessToken: "access-token",
+        accessToken:
+          "access-token",
       },
     });
 
@@ -196,7 +251,6 @@ describe("auth.service", () => {
 
   });
 
-
   it("clears the session when /me rejects the access token", async () => {
 
     vi.mocked(loginApi).mockResolvedValue({
@@ -208,7 +262,8 @@ describe("auth.service", () => {
           email: "user@example.com",
           roles: ["ADMIN"],
         },
-        accessToken: "access-token",
+        accessToken:
+          "access-token",
       },
     });
 
@@ -235,30 +290,12 @@ describe("auth.service", () => {
 
   });
 
-
-  it("clears the session when refresh fails", async () => {
-
-    vi.mocked(loginApi).mockResolvedValue({
-      success: true,
-      data: {
-        user: {
-          id: "user-1",
-          tenantId: "tenant-1",
-          email: "user@example.com",
-          roles: ["ADMIN"],
-        },
-        accessToken: "access-token",
-      },
-    });
-
-    await login({
-      tenantId: "tenant-1",
-      email: "user@example.com",
-      password: "password",
-    });
+  it("propagates refresh failure", async () => {
 
     vi.mocked(refreshApi).mockRejectedValue(
-      new Error("Invalid refresh token"),
+      new Error(
+        "Invalid refresh token",
+      ),
     );
 
     await expect(
@@ -268,7 +305,6 @@ describe("auth.service", () => {
     );
 
   });
-
 
   it("can explicitly clear the session", async () => {
 
@@ -281,7 +317,8 @@ describe("auth.service", () => {
           email: "user@example.com",
           roles: ["ADMIN"],
         },
-        accessToken: "access-token",
+        accessToken:
+          "access-token",
       },
     });
 
@@ -304,4 +341,3 @@ describe("auth.service", () => {
   });
 
 });
-

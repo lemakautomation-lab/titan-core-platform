@@ -11,11 +11,12 @@ import {
 describe("auth.storage", () => {
 
   beforeEach(() => {
+    clearAuthSession();
     sessionStorage.clear();
+    localStorage.clear();
   });
 
-
-  it("stores and retrieves the access token", () => {
+  it("stores and retrieves the access token in memory", () => {
 
     setAccessToken("access-token");
 
@@ -25,8 +26,21 @@ describe("auth.storage", () => {
 
   });
 
+  it("does not persist the access token in browser storage", () => {
 
-  it("stores and retrieves the authenticated user", () => {
+    setAccessToken("access-token");
+
+    expect(
+      sessionStorage.getItem("titan.accessToken"),
+    ).toBeNull();
+
+    expect(
+      localStorage.getItem("titan.accessToken"),
+    ).toBeNull();
+
+  });
+
+  it("stores and retrieves the authenticated user in memory", () => {
 
     const user = {
       id: "user-1",
@@ -43,6 +57,26 @@ describe("auth.storage", () => {
 
   });
 
+  it("does not persist the authenticated user in browser storage", () => {
+
+    const user = {
+      id: "user-1",
+      tenantId: "tenant-1",
+      email: "user@example.com",
+      roles: ["ADMIN"],
+    };
+
+    setAuthUser(user);
+
+    expect(
+      sessionStorage.getItem("titan.authUser"),
+    ).toBeNull();
+
+    expect(
+      localStorage.getItem("titan.authUser"),
+    ).toBeNull();
+
+  });
 
   it("returns null when no authenticated user exists", () => {
 
@@ -52,8 +86,7 @@ describe("auth.storage", () => {
 
   });
 
-
-  it("clears the complete access-token session", () => {
+  it("clears the complete in-memory authentication session", () => {
 
     setAccessToken("access-token");
 
@@ -76,11 +109,14 @@ describe("auth.storage", () => {
 
   });
 
-
   it("does not expose a refresh-token storage API", () => {
 
     expect(
       "refreshToken" in sessionStorage,
+    ).toBe(false);
+
+    expect(
+      "refreshToken" in localStorage,
     ).toBe(false);
 
   });

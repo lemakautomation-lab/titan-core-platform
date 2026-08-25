@@ -1,8 +1,8 @@
 import {
   login as loginApi,
-  refresh as refreshApi,
   logout as logoutApi,
   me as meApi,
+  refresh as refreshApi,
 } from "./auth.api";
 
 import {
@@ -17,7 +17,6 @@ import {
   AuthUser,
   LoginRequest,
 } from "./auth.types";
-
 
 export async function login(
   request: LoginRequest,
@@ -35,9 +34,7 @@ export async function login(
   );
 
   return response.data.user;
-
 }
-
 
 export async function refresh(): Promise<string> {
 
@@ -49,9 +46,7 @@ export async function refresh(): Promise<string> {
   );
 
   return response.data.accessToken;
-
 }
-
 
 export async function logout(): Promise<void> {
 
@@ -63,7 +58,6 @@ export async function logout(): Promise<void> {
     clearAuthSession();
 
     return;
-
   }
 
   try {
@@ -73,11 +67,8 @@ export async function logout(): Promise<void> {
   } finally {
 
     clearAuthSession();
-
   }
-
 }
-
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
 
@@ -103,7 +94,6 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     ) {
 
       return cachedUser;
-
     }
 
     clearAuthSession();
@@ -115,21 +105,31 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     clearAuthSession();
 
     return null;
-
   }
-
 }
 
+export async function restoreSession(): Promise<AuthUser | null> {
+
+  try {
+
+    await refresh();
+
+    return await getCurrentUser();
+
+  } catch {
+
+    clearAuthSession();
+
+    return null;
+  }
+}
 
 export function isAuthenticated(): boolean {
 
   return getAccessToken() !== null;
-
 }
-
 
 export function clearSession(): void {
 
   clearAuthSession();
-
 }

@@ -7,6 +7,7 @@ import {
 import {
   getCurrentUser,
   logout,
+  restoreSession,
 } from "./auth/auth.service";
 
 import { AuthUser } from "./auth/auth.types";
@@ -14,28 +15,25 @@ import { AuthUser } from "./auth/auth.types";
 import LoginPage from "./auth/LoginPage";
 import AuthApp from "./auth/AuthApp";
 
-
 type AuthState =
   | "checking"
   | "authenticated"
   | "unauthenticated";
 
-
 export default function App() {
 
   const [user, setUser] =
-    useState<AuthUser | null>(null);
+    useState<AuthUser | null>(
+      () => getAuthUser(),
+    );
 
   const [authState, setAuthState] =
-    useState<AuthState>(() =>
-      getAuthUser()
-        ? "checking"
-        : "unauthenticated",
+    useState<AuthState>(
+      "checking",
     );
 
   const [loggingOut, setLoggingOut] =
     useState(false);
-
 
   useEffect(() => {
 
@@ -43,39 +41,43 @@ export default function App() {
 
     async function validateSession(): Promise<void> {
 
-      if (!getAuthUser()) {
-
-        if (mounted) {
-
-          setAuthState(
-            "unauthenticated",
-          );
-
-        }
-
-        return;
-
-      }
-
       try {
 
         const currentUser =
           await getCurrentUser();
 
+        if (
+          currentUser
+        ) {
+
+          if (mounted) {
+
+            setUser(currentUser);
+
+            setAuthState(
+              "authenticated",
+            );
+          }
+
+          return;
+        }
+
+        const restoredUser =
+          await restoreSession();
+
         if (!mounted) {
           return;
         }
 
-        if (currentUser) {
+        if (restoredUser) {
 
-          setUser(currentUser);
+          setUser(restoredUser);
 
           setAuthState(
             "authenticated",
           );
 
           return;
-
         }
 
         setUser(null);
@@ -95,9 +97,7 @@ export default function App() {
         setAuthState(
           "unauthenticated",
         );
-
       }
-
     }
 
     void validateSession();
@@ -105,11 +105,9 @@ export default function App() {
     return () => {
 
       mounted = false;
-
     };
 
   }, []);
-
 
   function handleAuthenticated(
     authenticatedUser: AuthUser,
@@ -122,9 +120,7 @@ export default function App() {
     setAuthState(
       "authenticated",
     );
-
   }
-
 
   async function handleLogout(): Promise<void> {
 
@@ -147,11 +143,8 @@ export default function App() {
       );
 
       setLoggingOut(false);
-
     }
-
   }
-
 
   if (
     authState ===
@@ -167,9 +160,7 @@ export default function App() {
         </p>
       </main>
     );
-
   }
-
 
   if (
     authState ===
@@ -183,16 +174,11 @@ export default function App() {
         }
       />
     );
-
   }
-
 
   if (!user) {
-
     return null;
-
   }
-
 
   return (
     <AuthApp
@@ -201,5 +187,4 @@ export default function App() {
       loggingOut={loggingOut}
     />
   );
-
 }

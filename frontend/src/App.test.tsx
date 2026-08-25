@@ -1,11 +1,4 @@
 import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
-
-import {
   beforeEach,
   describe,
   expect,
@@ -13,41 +6,46 @@ import {
   vi,
 } from "vitest";
 
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+
 import App from "./App";
 
 import {
   clearAuthSession,
+  setAccessToken,
   setAuthUser,
 } from "./auth/auth.storage";
-
-import {
-  getCurrentUser,
-  login,
-  logout,
-} from "./auth/auth.service";
 
 vi.mock("./auth/auth.service", () => ({
   login: vi.fn(),
   getCurrentUser: vi.fn(),
+  restoreSession: vi.fn(),
   logout: vi.fn(),
 }));
 
-const mockedLogin =
-  vi.mocked(login);
+import {
+  getCurrentUser,
+  login,
+  restoreSession,
+  logout,
+} from "./auth/auth.service";
 
-const mockedGetCurrentUser =
+const getCurrentUserMock =
   vi.mocked(getCurrentUser);
 
-const mockedLogout =
+const loginMock =
+  vi.mocked(login);
+
+const restoreSessionMock =
+  vi.mocked(restoreSession);
+
+const logoutMock =
   vi.mocked(logout);
-
-const testUser = {
-  id: "user-1",
-  tenantId: "tenant-1",
-  email: "admin@titan.test",
-  roles: ["ADMIN"],
-};
-
 
 describe("App", () => {
 
@@ -55,226 +53,237 @@ describe("App", () => {
 
     clearAuthSession();
 
-    mockedLogin.mockReset();
+    sessionStorage.clear();
+    localStorage.clear();
 
-    mockedGetCurrentUser.mockReset();
+    vi.clearAllMocks();
 
-    mockedLogout.mockReset();
-
+    getCurrentUserMock.mockResolvedValue(null);
+    restoreSessionMock.mockResolvedValue(null);
+    logoutMock.mockResolvedValue(undefined);
   });
 
-
-  it("renders the login screen when no authenticated session exists", () => {
+  it("renders the login screen when no authenticated session exists", async () => {
 
     render(<App />);
 
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", {
+          name: "Sign in",
+        }),
+      ).toBeInTheDocument();
+    });
+
     expect(
-      screen.getByRole("heading", {
-        name: "TITAN Core Platform",
-      }),
+      screen.queryByText("Authenticated"),
+    ).not.toBeInTheDocument();
+
+  });
+
+  it("renders the authenticated application after /me validates the session", async () => {
+
+    const user = {
+      id: "user-1",
+      tenantId: "tenant-1",
+      email: "user@example.com",
+      roles: ["ADMIN"],
+    };
+
+    setAccessToken("access-token");
+    setAuthUser(user);
+
+    getCurrentUserMock.mockResolvedValue(user);
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Authenticated"),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getByText("user@example.com"),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole("heading", {
+      screen.getByText("Tenant: tenant-1"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("heading", {
         name: "Sign in",
       }),
-    ).toBeInTheDocument();
-
-    expect(
-      mockedGetCurrentUser,
-    ).not.toHaveBeenCalled();
+    ).not.toBeInTheDocument();
 
   });
 
+  it("restores the authenticated application through the refresh cookie", async () => {
 
-  it("validates a cached session with the backend before rendering the authenticated shell", async () => {
+    const user = {
+      id: "user-1",
+      tenantId: "tenant-1",
+      email: "user@example.com",
+      roles: ["ADMIN"],
+    };
 
-    setAuthUser(testUser);
-
-    mockedGetCurrentUser.mockResolvedValue(
-      testUser,
-    );
+    restoreSessionMock.mockResolvedValue(user);
 
     render(<App />);
 
-    expect(
-      screen.getByText(
-        "Checking session...",
-      ),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.queryByText(
-        testUser.email,
-      ),
-    ).not.toBeInTheDocument();
-
     await waitFor(() => {
-
       expect(
-        mockedGetCurrentUser,
-      ).toHaveBeenCalledTimes(1);
-
+        screen.getByText("Authenticated"),
+      ).toBeInTheDocument();
     });
 
     expect(
-      await screen.findByText(
-        testUser.email,
-      ),
-    ).toBeInTheDocument();
+      restoreSessionMock,
+    ).toHaveBeenCalledTimes(1);
 
     expect(
-      screen.getByText(
-        `Tenant: ${testUser.tenantId}`,
-      ),
+      screen.getByText("user@example.com"),
     ).toBeInTheDocument();
 
   });
 
+  it("does not render protected application content when session restoration fails", async () => {
 
-  it("rejects an invalid cached session and returns to login", async () => {
-
-    setAuthUser(testUser);
-
-    mockedGetCurrentUser.mockResolvedValue(
-      null,
-    );
+    restoreSessionMock.mockResolvedValue(null);
 
     render(<App />);
 
     await waitFor(() => {
-
       expect(
         screen.getByRole("heading", {
           name: "Sign in",
         }),
       ).toBeInTheDocument();
-
     });
 
     expect(
-      screen.queryByText(
-        testUser.email,
-      ),
+      screen.queryByText("Authenticated"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Tenant: tenant-1"),
     ).not.toBeInTheDocument();
 
   });
 
+  it("does not render protected application content while authentication is being checked", () => {
 
-  it("rejects a session when backend validation fails", async () => {
-
-    setAuthUser(testUser);
-
-    mockedGetCurrentUser.mockRejectedValue(
-      new Error("Unauthorized"),
+    getCurrentUserMock.mockReturnValue(
+      new Promise(() => {}),
     );
 
     render(<App />);
 
-    await waitFor(() => {
-
-      expect(
-        screen.getByRole("heading", {
-          name: "Sign in",
-        }),
-      ).toBeInTheDocument();
-
-    });
+    expect(
+      screen.getByText("Checking session..."),
+    ).toBeInTheDocument();
 
     expect(
-      screen.queryByText(
-        testUser.email,
-      ),
+      screen.queryByText("Authenticated"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("heading", {
+        name: "Sign in",
+      }),
     ).not.toBeInTheDocument();
 
   });
-
 
   it("authenticates through the auth service and renders the authenticated shell", async () => {
 
-    mockedLogin.mockResolvedValue(
-      testUser,
-    );
+    const user = {
+      id: "user-1",
+      tenantId: "tenant-1",
+      email: "admin@titan.test",
+      roles: ["ADMIN"],
+    };
+
+    loginMock.mockResolvedValue(user);
 
     render(<App />);
 
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", {
+          name: "Sign in",
+        }),
+      ).toBeInTheDocument();
+    });
+
     fireEvent.change(
-      screen.getByLabelText(
-        "Tenant ID",
-      ),
+      screen.getByLabelText("Tenant ID"),
       {
         target: {
-          value:
-            testUser.tenantId,
+          value: user.tenantId,
         },
       },
     );
 
     fireEvent.change(
-      screen.getByLabelText(
-        "Email",
-      ),
+      screen.getByLabelText("Email"),
       {
         target: {
-          value:
-            testUser.email,
+          value: user.email,
         },
       },
     );
 
     fireEvent.change(
-      screen.getByLabelText(
-        "Password",
-      ),
+      screen.getByLabelText("Password"),
       {
         target: {
-          value:
-            "ValidPassword123!",
+          value: "ValidPassword123!",
         },
       },
     );
 
     fireEvent.click(
-      screen.getByRole(
-        "button",
-        {
-          name: "Sign in",
-        },
-      ),
+      screen.getByRole("button", {
+        name: "Sign in",
+      }),
     );
 
-    expect(
-      await screen.findByText(
-        testUser.email,
-      ),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(user.email),
+      ).toBeInTheDocument();
+    });
 
     expect(
-      mockedLogin,
+      loginMock,
     ).toHaveBeenCalledWith({
-      tenantId:
-        testUser.tenantId,
-      email:
-        testUser.email,
-      password:
-        "ValidPassword123!",
+      tenantId: user.tenantId,
+      email: user.email,
+      password: "ValidPassword123!",
     });
 
   });
 
-
   it("displays a generic error when login fails", async () => {
 
-    mockedLogin.mockRejectedValue(
+    loginMock.mockRejectedValue(
       new Error("Unauthorized"),
     );
 
     render(<App />);
 
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", {
+          name: "Sign in",
+        }),
+      ).toBeInTheDocument();
+    });
+
     fireEvent.change(
-      screen.getByLabelText(
-        "Tenant ID",
-      ),
+      screen.getByLabelText("Tenant ID"),
       {
         target: {
           value: "tenant-1",
@@ -283,99 +292,87 @@ describe("App", () => {
     );
 
     fireEvent.change(
-      screen.getByLabelText(
-        "Email",
-      ),
+      screen.getByLabelText("Email"),
       {
         target: {
-          value:
-            "admin@titan.test",
+          value: "admin@titan.test",
         },
       },
     );
 
     fireEvent.change(
-      screen.getByLabelText(
-        "Password",
-      ),
+      screen.getByLabelText("Password"),
       {
         target: {
-          value:
-            "WrongPassword",
+          value: "WrongPassword",
         },
       },
     );
 
     fireEvent.click(
-      screen.getByRole(
-        "button",
-        {
-          name: "Sign in",
-        },
-      ),
+      screen.getByRole("button", {
+        name: "Sign in",
+      }),
     );
 
     expect(
-      await screen.findByRole(
-        "alert",
-      ),
+      await screen.findByRole("alert"),
     ).toHaveTextContent(
       "Unable to sign in. Please check your credentials and try again.",
     );
 
   });
 
-
   it("logs out and returns to the login screen", async () => {
 
-    setAuthUser(testUser);
+    const user = {
+      id: "user-1",
+      tenantId: "tenant-1",
+      email: "user@example.com",
+      roles: ["ADMIN"],
+    };
 
-    mockedGetCurrentUser.mockResolvedValue(
-      testUser,
-    );
+    setAccessToken("access-token");
+    setAuthUser(user);
 
-    mockedLogout.mockResolvedValue(
-      undefined,
-    );
+    getCurrentUserMock.mockResolvedValue(user);
 
     render(<App />);
 
-    expect(
-      await screen.findByText(
-        testUser.email,
-      ),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText("Authenticated"),
+      ).toBeInTheDocument();
+    });
 
     fireEvent.click(
-      screen.getByRole(
-        "button",
-        {
-          name: "Sign out",
-        },
-      ),
+      screen.getByRole("button", {
+        name: "Sign out",
+      }),
     );
 
     await waitFor(() => {
-
       expect(
-        mockedLogout,
-      ).toHaveBeenCalledTimes(1);
-
+        screen.getByRole("heading", {
+          name: "Sign in",
+        }),
+      ).toBeInTheDocument();
     });
 
     expect(
-      await screen.findByRole(
-        "heading",
-        {
-          name: "Sign in",
-        },
-      ),
-    ).toBeInTheDocument();
+      logoutMock,
+    ).toHaveBeenCalledTimes(1);
 
     expect(
-      screen.queryByText(
-        testUser.email,
-      ),
+      screen.queryByText("Authenticated"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("user@example.com"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Tenant: tenant-1"),
     ).not.toBeInTheDocument();
 
   });
