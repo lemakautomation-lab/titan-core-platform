@@ -58,6 +58,7 @@ describe("auth.service", () => {
           tenantId: "tenant-1",
           email: "user@example.com",
           roles: ["ADMIN"],
+      permissions: [],
         },
         accessToken: "access-token",
       },
@@ -150,6 +151,8 @@ describe("auth.service", () => {
     vi.mocked(meApi).mockResolvedValue({
       userId: "user-1",
       tenantId: "tenant-1",
+      roles: [],
+      permissions: [],
     });
 
     const restoredUser =
@@ -185,6 +188,7 @@ describe("auth.service", () => {
           tenantId: "tenant-1",
           email: "user@example.com",
           roles: ["ADMIN"],
+      permissions: [],
         },
         accessToken:
           "access-token",
@@ -216,6 +220,7 @@ describe("auth.service", () => {
       tenantId: "tenant-1",
       email: "user@example.com",
       roles: ["ADMIN"],
+      permissions: [],
     };
 
     vi.mocked(loginApi).mockResolvedValue({
@@ -236,6 +241,8 @@ describe("auth.service", () => {
     vi.mocked(meApi).mockResolvedValue({
       userId: user.id,
       tenantId: user.tenantId,
+      roles: user.roles,
+      permissions: user.permissions,
     });
 
     const currentUser =
@@ -261,6 +268,7 @@ describe("auth.service", () => {
           tenantId: "tenant-1",
           email: "user@example.com",
           roles: ["ADMIN"],
+      permissions: [],
         },
         accessToken:
           "access-token",
@@ -316,6 +324,7 @@ describe("auth.service", () => {
           tenantId: "tenant-1",
           email: "user@example.com",
           roles: ["ADMIN"],
+      permissions: [],
         },
         accessToken:
           "access-token",

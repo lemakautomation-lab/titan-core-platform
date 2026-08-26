@@ -168,7 +168,7 @@ export default function AuthApp({
               </strong>
 
               <span>
-                {user.roles.join(" Â· ")}
+                {user.roles.join(" · ")}
               </span>
 
             </div>
@@ -277,25 +277,25 @@ function Dashboard() {
 
         <MetricCard
           title="Athletes"
-          value="â€”"
+          value="—"
           detail="Connected athlete population"
         />
 
         <MetricCard
           title="Teams"
-          value="â€”"
+          value="—"
           detail="Active performance groups"
         />
 
         <MetricCard
           title="Training"
-          value="â€”"
+          value="—"
           detail="Current training programmes"
         />
 
         <MetricCard
           title="Recovery"
-          value="â€”"
+          value="—"
           detail="Recovery monitoring"
         />
 

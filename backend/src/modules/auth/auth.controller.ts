@@ -1,6 +1,7 @@
 import { Response } from "express";
 
 import { authModule } from "../../infrastructure/composition/auth.module";
+import { authorizationModule } from "../../infrastructure/composition/authorization.module";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { RequestWithId } from "../../middleware/request-id.middleware";
@@ -211,13 +212,35 @@ export class AuthController {
 
         res.set("Cache-Control", "no-store");
 
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const permissions =
+            await authorizationModule
+                .permissionResolutionService
+                .getUserPermissions(
+                    authUser.userId,
+                    authUser.tenantId,
+                );
+
         res.status(200).json({
 
             userId:
-                req.user!.userId,
+                authUser.userId,
 
             tenantId:
-                req.user!.tenantId,
+                authUser.tenantId,
+
+            roles:
+                authUser.roles,
+
+            permissions,
 
         });
 

@@ -19,6 +19,7 @@ model Tenant {
   users         User[]
   roles         Role[]
   permissions   Permission[]
+  athletes      Athlete[]
 }
 
 model Organisation {
@@ -31,6 +32,7 @@ model Organisation {
   updatedAt DateTime     @updatedAt
   tenant    Tenant       @relation(fields: [tenantId], references: [id])
   users     User[]
+  athletes  Athlete[]
 }
 
 model User {
@@ -53,8 +55,29 @@ model User {
   @@unique([tenantId, email])
   @@index([tenantId])
   @@index([organisationId])
+  athletes       Athlete[]
 }
 
+model Athlete {
+  id             String       @id @default(uuid())
+  tenantId       String
+  organisationId String?
+  userId         String?
+  firstName      String
+  lastName       String
+  dateOfBirth    DateTime?
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  tenant         Tenant        @relation(fields: [tenantId], references: [id])
+  organisation   Organisation? @relation(fields: [organisationId], references: [id])
+  user           User?         @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+  @@index([organisationId])
+  @@index([userId])
+}
 model Role {
   id          String           @id @default(uuid())
   name        String
@@ -199,6 +222,7 @@ enum AuditLogStatus {
   SUCCESS
   FAILURE
 }
+
 
 
 

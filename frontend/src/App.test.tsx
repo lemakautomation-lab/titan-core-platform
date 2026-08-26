@@ -1,4 +1,4 @@
-﻿import {
+import {
   beforeEach,
   describe,
   expect,
@@ -88,6 +88,7 @@ describe("App", () => {
       tenantId: "tenant-1",
       email: "user@example.com",
       roles: ["ADMIN"],
+      permissions: [],
     };
 
     setAccessToken("access-token");
@@ -130,6 +131,7 @@ describe("App", () => {
       tenantId: "tenant-1",
       email: "user@example.com",
       roles: ["ADMIN"],
+      permissions: [],
     };
 
     restoreSessionMock.mockResolvedValue(user);
@@ -207,6 +209,7 @@ describe("App", () => {
       tenantId: "tenant-1",
       email: "admin@titan.test",
       roles: ["ADMIN"],
+      permissions: [],
     };
 
     loginMock.mockResolvedValue(user);
@@ -334,6 +337,7 @@ describe("App", () => {
       tenantId: "tenant-1",
       email: "user@example.com",
       roles: ["ADMIN"],
+      permissions: [],
     };
 
     setAccessToken("access-token");

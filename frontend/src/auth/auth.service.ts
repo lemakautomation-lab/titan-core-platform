@@ -93,7 +93,23 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       cachedUser.tenantId === response.tenantId
     ) {
 
-      return cachedUser;
+      const authoritativeUser: AuthUser = {
+
+        ...cachedUser,
+
+        roles:
+          response.roles,
+
+        permissions:
+          response.permissions,
+
+      };
+
+      setAuthUser(
+        authoritativeUser,
+      );
+
+      return authoritativeUser;
     }
 
     clearAuthSession();

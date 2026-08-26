@@ -1,8 +1,9 @@
-export interface AuthUser {
+﻿export interface AuthUser {
   id: string;
   tenantId: string;
   email: string;
   roles: string[];
+  permissions: string[];
 }
 
 export interface LoginRequest {
@@ -34,4 +35,6 @@ export interface LogoutResponse {
 export interface MeResponse {
   userId: string;
   tenantId: string;
+  roles: string[];
+  permissions: string[];
 }

@@ -47,6 +47,7 @@ describe("auth.storage", () => {
       tenantId: "tenant-1",
       email: "user@example.com",
       roles: ["ADMIN"],
+      permissions: [],
     };
 
     setAuthUser(user);
@@ -64,6 +65,7 @@ describe("auth.storage", () => {
       tenantId: "tenant-1",
       email: "user@example.com",
       roles: ["ADMIN"],
+      permissions: [],
     };
 
     setAuthUser(user);
@@ -95,6 +97,7 @@ describe("auth.storage", () => {
       tenantId: "tenant-1",
       email: "user@example.com",
       roles: ["ADMIN"],
+      permissions: [],
     });
 
     clearAuthSession();
