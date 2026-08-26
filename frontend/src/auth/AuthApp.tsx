@@ -181,16 +181,12 @@ export default function AuthApp({
           </div>
 
           {activeSection === "Dashboard" ? (
-
-            <Dashboard />
-
-          ) : (
-
-            <ModulePlaceholder
-              section={activeSection}
-            />
-
-          )}
+  <Dashboard />
+) : activeSection === "Users" ? (
+  <UsersPage tenantId={user.tenantId} />
+) : (
+  <ModulePlaceholder section={activeSection} />
+)}
 
         </main>
 
