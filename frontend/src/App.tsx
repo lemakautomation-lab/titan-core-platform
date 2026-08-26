@@ -29,7 +29,10 @@ export default function App() {
 
   const [authState, setAuthState] =
     useState<AuthState>(
-      "checking",
+      () =>
+        getAuthUser()
+          ? "authenticated"
+          : "checking",
     );
 
   const [loggingOut, setLoggingOut] =
@@ -41,25 +44,30 @@ export default function App() {
 
     async function validateSession(): Promise<void> {
 
-      try {
+      /*
+       * If a successful login has already populated
+       * the in-memory session, do not bootstrap another
+       * refresh cycle.
+       */
+      const existingUser =
+        getAuthUser();
 
-        const currentUser =
-          await getCurrentUser();
+      if (existingUser) {
 
-        if (currentUser) {
+        if (mounted) {
 
-          if (mounted) {
+          setUser(existingUser);
 
-            setUser(currentUser);
+          setAuthState(
+            "authenticated",
+          );
 
-            setAuthState(
-              "authenticated",
-            );
-
-          }
-
-          return;
         }
+
+        return;
+      }
+
+      try {
 
         const restoredUser =
           await restoreSession();

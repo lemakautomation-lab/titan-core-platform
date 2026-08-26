@@ -209,6 +209,8 @@ export class AuthController {
         res: Response,
     ): Promise<void> {
 
+        res.set("Cache-Control", "no-store");
+
         res.status(200).json({
 
             userId:
@@ -222,3 +224,5 @@ export class AuthController {
     }
 
 }
+
+
