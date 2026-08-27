@@ -20,6 +20,7 @@ model Tenant {
   roles         Role[]
   permissions   Permission[]
   athletes      Athlete[]
+  athleteRelationships AthleteRelationship[]
 }
 
 model Organisation {
@@ -73,6 +74,7 @@ model Athlete {
   tenant         Tenant        @relation(fields: [tenantId], references: [id])
   organisation   Organisation? @relation(fields: [organisationId], references: [id])
   user           User?         @relation(fields: [userId], references: [id])
+  relationships  AthleteRelationship[]
 
   @@index([tenantId])
   @@index([organisationId])
@@ -227,5 +229,37 @@ enum AuditLogStatus {
 
 
 
+
+
+model AthleteRelationship {
+  id               String                 @id @default(uuid())
+  tenantId         String
+  athleteId        String
+  relationshipType AthleteRelationshipType
+  relatedEntityId  String
+  status           RecordStatus           @default(ACTIVE)
+  startsAt         DateTime?
+  endsAt           DateTime?
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+
+  tenant           Tenant                 @relation(fields: [tenantId], references: [id])
+  athlete          Athlete                @relation(fields: [athleteId], references: [id])
+
+  @@index([tenantId])
+  @@index([athleteId])
+  @@index([athleteId, relationshipType])
+  @@index([relatedEntityId])
+}
+
+enum AthleteRelationshipType {
+  TRAINER
+  COACH
+  TEAM
+  ACADEMY
+  CLUB
+  PERFORMANCE_PROFESSIONAL
+  ORGANISATION
+}
 
 

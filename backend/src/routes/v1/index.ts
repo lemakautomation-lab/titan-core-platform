@@ -9,6 +9,7 @@ import { createAuditLogRoutes } from "../../presentation/routes/audit-log.routes
 import { createHealthRoutes } from "../../presentation/routes/health.routes";
 import { createSecurityRoutes } from "../../presentation/routes/security.routes";
 import { createSessionRoutes } from "../../presentation/routes/session.routes";
+import { createAthleteRelationshipRoutes } from "../../presentation/routes/athlete-relationship.routes";
 
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
@@ -19,6 +20,7 @@ import { AuditLogController } from "../../presentation/controllers/audit-log.con
 import { HealthController } from "../../presentation/controllers/health.controller";
 import { SecurityController } from "../../presentation/controllers/security.controller";
 import { SessionController } from "../../presentation/controllers/session.controller";
+import { AthleteRelationshipController } from "../../presentation/controllers/athlete-relationship.controller";
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
@@ -31,6 +33,7 @@ import { permissionModule } from "../../infrastructure/composition/permission.mo
 import { auditLogModule } from "../../infrastructure/composition/audit-log.module";
 import { DatabaseService } from "../../infrastructure/database/database.service";
 import { sessionModule } from "../../infrastructure/composition/session.module";
+import { athleteRelationshipModule } from "../../infrastructure/composition/athlete-relationship.module";
 
 
 const router = Router();
@@ -105,6 +108,14 @@ const sessionController =
     );
 
 
+const athleteRelationshipController =
+    new AthleteRelationshipController(
+        athleteRelationshipModule.createAthleteRelationshipUseCase,
+        athleteRelationshipModule.getAthleteRelationshipByIdUseCase,
+        athleteRelationshipModule.listAthleteRelationshipsUseCase,
+    );
+
+
 const permissionController =
     new PermissionController(
         permissionModule.createPermissionUseCase,
@@ -163,6 +174,14 @@ router.use(
 router.use(
     "/sessions",
     createSessionRoutes(sessionController),
+);
+
+
+router.use(
+    "/athlete-relationships",
+    createAthleteRelationshipRoutes(
+        athleteRelationshipController,
+    ),
 );
 
 

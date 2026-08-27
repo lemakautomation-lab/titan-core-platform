@@ -1,0 +1,11 @@
+export enum AthleteRelationshipType {
+
+    TRAINER = "TRAINER",
+    COACH = "COACH",
+    TEAM = "TEAM",
+    ACADEMY = "ACADEMY",
+    CLUB = "CLUB",
+    PERFORMANCE_PROFESSIONAL = "PERFORMANCE_PROFESSIONAL",
+    ORGANISATION = "ORGANISATION",
+
+}
