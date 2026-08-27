@@ -8,19 +8,20 @@ datasource db {
 }
 
 model Tenant {
-  id            String         @id @default(uuid())
-  name          String
-  slug          String         @unique
-  status        RecordStatus   @default(ACTIVE)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  auditLogs     AuditLog[]
-  organisations Organisation[]
-  users         User[]
-  roles         Role[]
-  permissions   Permission[]
-  athletes      Athlete[]
+  id                   String                @id @default(uuid())
+  name                 String
+  slug                 String                @unique
+  status               RecordStatus          @default(ACTIVE)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  auditLogs            AuditLog[]
+  organisations        Organisation[]
+  users                User[]
+  roles                Role[]
+  permissions          Permission[]
+  athletes             Athlete[]
   athleteRelationships AthleteRelationship[]
+  athleteDigitalTwins  AthleteDigitalTwin[]
 }
 
 model Organisation {
@@ -52,11 +53,11 @@ model User {
   organisation   Organisation? @relation(fields: [organisationId], references: [id])
   tenant         Tenant        @relation(fields: [tenantId], references: [id])
   userRoles      UserRole[]
+  athletes       Athlete[]
 
   @@unique([tenantId, email])
   @@index([tenantId])
   @@index([organisationId])
-  athletes       Athlete[]
 }
 
 model Athlete {
@@ -71,15 +72,17 @@ model Athlete {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
-  tenant         Tenant        @relation(fields: [tenantId], references: [id])
-  organisation   Organisation? @relation(fields: [organisationId], references: [id])
-  user           User?         @relation(fields: [userId], references: [id])
-  relationships  AthleteRelationship[]
+  tenant              Tenant                @relation(fields: [tenantId], references: [id])
+  organisation        Organisation?         @relation(fields: [organisationId], references: [id])
+  user                User?                 @relation(fields: [userId], references: [id])
+  relationships       AthleteRelationship[]
+  athleteDigitalTwins AthleteDigitalTwin[]
 
   @@index([tenantId])
   @@index([organisationId])
   @@index([userId])
 }
+
 model Role {
   id          String           @id @default(uuid())
   name        String
@@ -95,16 +98,16 @@ model Role {
 }
 
 model Permission {
-id          String           @id @default(uuid())
-name        String
-description String?
-tenantId    String
-tenant      Tenant           @relation(fields: [tenantId], references: [id])
-createdAt   DateTime         @default(now())
-updatedAt   DateTime         @updatedAt
-roles       RolePermission[]
+  id          String           @id @default(uuid())
+  name        String
+  description String?
+  tenantId    String
+  tenant      Tenant           @relation(fields: [tenantId], references: [id])
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  roles       RolePermission[]
 
-@@unique([tenantId, name])
+  @@unique([tenantId, name])
 }
 
 model UserRole {
@@ -133,7 +136,7 @@ model Session {
   id           String        @id @default(uuid())
   userId       String
   refreshToken String        @unique
-    jti          String        @unique
+  jti          String        @unique
   status       SessionStatus @default(ACTIVE)
   expiresAt    DateTime
   createdAt    DateTime      @default(now())
@@ -225,26 +228,20 @@ enum AuditLogStatus {
   FAILURE
 }
 
-
-
-
-
-
-
 model AthleteRelationship {
-  id               String                 @id @default(uuid())
+  id               String                  @id @default(uuid())
   tenantId         String
   athleteId        String
   relationshipType AthleteRelationshipType
   relatedEntityId  String
-  status           RecordStatus           @default(ACTIVE)
+  status           RecordStatus            @default(ACTIVE)
   startsAt         DateTime?
   endsAt           DateTime?
-  createdAt        DateTime               @default(now())
-  updatedAt        DateTime               @updatedAt
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
 
-  tenant           Tenant                 @relation(fields: [tenantId], references: [id])
-  athlete          Athlete                @relation(fields: [athleteId], references: [id])
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  athlete Athlete @relation(fields: [athleteId], references: [id])
 
   @@index([tenantId])
   @@index([athleteId])
@@ -262,4 +259,18 @@ enum AthleteRelationshipType {
   ORGANISATION
 }
 
+model AthleteDigitalTwin {
+  id        String       @id @default(uuid())
+  tenantId  String
+  athleteId String
+  status    RecordStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  athlete Athlete @relation(fields: [athleteId], references: [id])
+
+  @@unique([tenantId, athleteId])
+  @@index([tenantId])
+  @@index([athleteId])
+}

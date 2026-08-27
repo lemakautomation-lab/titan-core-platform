@@ -10,6 +10,7 @@ import { createHealthRoutes } from "../../presentation/routes/health.routes";
 import { createSecurityRoutes } from "../../presentation/routes/security.routes";
 import { createSessionRoutes } from "../../presentation/routes/session.routes";
 import { createAthleteRelationshipRoutes } from "../../presentation/routes/athlete-relationship.routes";
+import { createAthleteDigitalTwinRoutes } from "../../presentation/routes/athlete-digital-twin.routes";
 
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
@@ -21,6 +22,7 @@ import { HealthController } from "../../presentation/controllers/health.controll
 import { SecurityController } from "../../presentation/controllers/security.controller";
 import { SessionController } from "../../presentation/controllers/session.controller";
 import { AthleteRelationshipController } from "../../presentation/controllers/athlete-relationship.controller";
+import { AthleteDigitalTwinController } from "../../presentation/controllers/athlete-digital-twin.controller";
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
@@ -34,6 +36,7 @@ import { auditLogModule } from "../../infrastructure/composition/audit-log.modul
 import { DatabaseService } from "../../infrastructure/database/database.service";
 import { sessionModule } from "../../infrastructure/composition/session.module";
 import { athleteRelationshipModule } from "../../infrastructure/composition/athlete-relationship.module";
+import { athleteDigitalTwinModule } from "../../infrastructure/composition/athlete-digital-twin.module";
 
 
 const router = Router();
@@ -116,6 +119,15 @@ const athleteRelationshipController =
     );
 
 
+const athleteDigitalTwinController =
+    new AthleteDigitalTwinController(
+        athleteDigitalTwinModule.createAthleteDigitalTwinUseCase,
+        athleteDigitalTwinModule.getAthleteDigitalTwinByIdUseCase,
+        athleteDigitalTwinModule.getAthleteDigitalTwinByAthleteIdUseCase,
+        athleteDigitalTwinModule.updateAthleteDigitalTwinLifecycleUseCase,
+    );
+
+
 const permissionController =
     new PermissionController(
         permissionModule.createPermissionUseCase,
@@ -181,6 +193,14 @@ router.use(
     "/athlete-relationships",
     createAthleteRelationshipRoutes(
         athleteRelationshipController,
+    ),
+);
+
+
+router.use(
+    "/athlete-digital-twins",
+    createAthleteDigitalTwinRoutes(
+        athleteDigitalTwinController,
     ),
 );
 
