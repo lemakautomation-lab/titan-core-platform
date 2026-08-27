@@ -25,6 +25,7 @@ import {
 } from "../../services/security-event.service";
 
 import { SecurityAnalyticsService } from "../../services/security-analytics.service";
+import { PermissionResolutionService } from "../../services/permission-resolution.service";
 
 export class LoginUseCase {
 
@@ -34,6 +35,7 @@ export class LoginUseCase {
         private readonly auditLogService: AuditLogService,
         private readonly securityEventService: SecurityEventService,
         private readonly securityAnalyticsService: SecurityAnalyticsService,
+        private readonly permissionResolutionService: PermissionResolutionService,
     ) {}
 
     async execute(
@@ -199,7 +201,6 @@ export class LoginUseCase {
                 },
 
                 securityContext,
-
             );
 
 
@@ -237,7 +238,6 @@ export class LoginUseCase {
                     },
 
                     securityContext,
-
                 );
 
 
@@ -305,6 +305,13 @@ export class LoginUseCase {
         const roleNames =
             roles.map(
                 role => role.name,
+            );
+
+
+        const permissions =
+            await this.permissionResolutionService.getUserPermissions(
+                user.id,
+                user.tenantId,
             );
 
 
@@ -402,6 +409,8 @@ export class LoginUseCase {
 
                 roles: roleNames,
 
+                permissions,
+
             },
 
             accessToken,
@@ -413,4 +422,5 @@ export class LoginUseCase {
     }
 
 }
+
 
