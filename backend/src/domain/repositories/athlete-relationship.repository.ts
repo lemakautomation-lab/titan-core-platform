@@ -1,5 +1,6 @@
 import { AthleteRelationship } from "../entities/athlete-relationship.entity";
 import { AthleteRelationshipType } from "../enums/athlete-relationship-type.enum";
+import { PaginationInput } from "../../application/common/pagination";
 
 export interface AthleteRelationshipRepository {
 
@@ -11,13 +12,21 @@ export interface AthleteRelationshipRepository {
     findAllByAthleteId(
         athleteId: string,
         tenantId: string,
-    ): Promise<AthleteRelationship[]>;
+        pagination: PaginationInput,
+    ): Promise<{
+        items: AthleteRelationship[];
+        total: number;
+    }>;
 
     findAllByType(
         athleteId: string,
         relationshipType: AthleteRelationshipType,
         tenantId: string,
-    ): Promise<AthleteRelationship[]>;
+        pagination: PaginationInput,
+    ): Promise<{
+        items: AthleteRelationship[];
+        total: number;
+    }>;
 
     create(
         relationship: AthleteRelationship,

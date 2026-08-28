@@ -41,25 +41,20 @@ import { athleteRelationshipModule } from "../../infrastructure/composition/athl
 import { athleteDigitalTwinModule } from "../../infrastructure/composition/athlete-digital-twin.module";
 import { sportModule } from "../../infrastructure/composition/sport.module";
 
-
 const router = Router();
-
 
 const healthController =
     new HealthController(
         new DatabaseService(),
     );
 
-
 const securityController =
     new SecurityController(
         auditLogModule.securityAnalyticsService,
     );
 
-
 const authController =
     new AuthController();
-
 
 const roleController =
     new RoleController(
@@ -72,7 +67,6 @@ const roleController =
         roleModule.getRolePermissionsUseCase,
         roleModule.deletePermissionFromRoleUseCase,
     );
-
 
 const userController =
     new UserController(
@@ -87,7 +81,6 @@ const userController =
         userModule.unlockUserUseCase,
     );
 
-
 const tenantController =
     new TenantController(
         tenantModule.createTenantUseCase,
@@ -96,7 +89,6 @@ const tenantController =
         tenantModule.updateTenantUseCase,
         tenantModule.deleteTenantUseCase,
     );
-
 
 const organisationController =
     new OrganisationController(
@@ -107,12 +99,10 @@ const organisationController =
         organisationModule.deleteOrganisationUseCase,
     );
 
-
 const sessionController =
     new SessionController(
         sessionModule.getSessionByIdUseCase,
     );
-
 
 const athleteRelationshipController =
     new AthleteRelationshipController(
@@ -121,31 +111,12 @@ const athleteRelationshipController =
         athleteRelationshipModule.listAthleteRelationshipsUseCase,
     );
 
-
 const athleteDigitalTwinController =
     new AthleteDigitalTwinController(
         athleteDigitalTwinModule.createAthleteDigitalTwinUseCase,
         athleteDigitalTwinModule.getAthleteDigitalTwinByIdUseCase,
         athleteDigitalTwinModule.getAthleteDigitalTwinByAthleteIdUseCase,
         athleteDigitalTwinModule.updateAthleteDigitalTwinLifecycleUseCase,
-    );
-
-
-    new SportController(
-        sportModule.createSportUseCase,
-        sportModule.getSportByIdUseCase,
-        sportModule.listSportsUseCase,
-        sportModule.updateSportUseCase,
-        sportModule.deleteSportUseCase,
-    );
-
-
-    new SportController(
-        sportModule.createSportUseCase,
-        sportModule.getSportByIdUseCase,
-        sportModule.listSportsUseCase,
-        sportModule.updateSportUseCase,
-        sportModule.deleteSportUseCase,
     );
 
 const sportController =
@@ -166,19 +137,16 @@ const permissionController =
         permissionModule.deletePermissionUseCase,
     );
 
-
 const auditLogController =
     new AuditLogController(
         auditLogModule.getAuditLogsQuery,
         auditLogModule.getAuditLogByIdQuery,
     );
 
-
 router.use(
     "/health",
     createHealthRoutes(healthController),
 );
-
 
 router.use(
     "/auth",
@@ -187,36 +155,30 @@ router.use(
     ),
 );
 
-
 router.use(
     "/roles",
     createRoleRoutes(roleController),
 );
-
 
 router.use(
     "/users",
     createUserRoutes(userController),
 );
 
-
 router.use(
     "/tenants",
     createTenantRoutes(tenantController),
 );
-
 
 router.use(
     "/organisations",
     createOrganisationRoutes(organisationController),
 );
 
-
 router.use(
     "/sessions",
     createSessionRoutes(sessionController),
 );
-
 
 router.use(
     "/athlete-relationships",
@@ -225,22 +187,12 @@ router.use(
     ),
 );
 
-
 router.use(
     "/athlete-digital-twins",
     createAthleteDigitalTwinRoutes(
         athleteDigitalTwinController,
     ),
 );
-
-
-router.use(
-    "/sports",
-    createSportRoutes(
-        sportController,
-    ),
-);
-
 
 router.use(
     "/sports",
@@ -254,19 +206,14 @@ router.use(
     createPermissionRoutes(permissionController),
 );
 
-
 router.use(
     "/audit-logs",
     createAuditLogRoutes(auditLogController),
 );
-
 
 router.use(
     "/security",
     createSecurityRoutes(securityController),
 );
 
-
 export default router;
-
-

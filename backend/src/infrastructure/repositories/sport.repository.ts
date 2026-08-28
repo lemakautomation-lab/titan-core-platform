@@ -1,6 +1,8 @@
 import { Sport } from "../../domain/entities/sport.entity";
 import { SportRepository } from "../../domain/repositories/sport.repository";
 
+import { PaginationInput } from "../../application/common/pagination";
+
 import { DatabaseService } from "../database/database.service";
 import { SportMapper } from "../mappers/sport.mapper";
 
@@ -50,22 +52,45 @@ implements SportRepository {
 
     async findAll(
         tenantId: string,
-    ): Promise<Sport[]> {
+        pagination: PaginationInput,
+    ): Promise<{
+        items: Sport[];
+        total: number;
+    }> {
 
-        const sports =
-            await this.database.prisma.sport.findMany({
-                where: {
-                    tenantId,
-                    status: "ACTIVE",
-                },
-                orderBy: {
-                    name: "asc",
-                },
-            });
+        const where = {
+            tenantId,
+            status: "ACTIVE" as const,
+        };
 
-        return sports.map(
-            SportMapper.toDomain,
-        );
+        const [sports, total] =
+            await this.database.prisma.$transaction([
+                this.database.prisma.sport.findMany({
+                    where,
+                    orderBy: [
+                        {
+                            name: "asc",
+                        },
+                        {
+                            id: "asc",
+                        },
+                    ],
+                    skip:
+                        (pagination.page - 1) *
+                        pagination.pageSize,
+                    take: pagination.pageSize,
+                }),
+                this.database.prisma.sport.count({
+                    where,
+                }),
+            ]);
+
+        return {
+            items: sports.map(
+                SportMapper.toDomain,
+            ),
+            total,
+        };
     }
 
     async create(

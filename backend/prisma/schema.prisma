@@ -23,18 +23,19 @@ model Tenant {
   athletes             Athlete[]
   athleteRelationships AthleteRelationship[]
   athleteDigitalTwins  AthleteDigitalTwin[]
+  performanceMetrics   PerformanceMetric[]
 }
 
 model Sport {
-  id        String       @id @default(uuid())
-  tenantId  String
-  name      String
-  slug      String
-  status    RecordStatus @default(ACTIVE)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  id                 String              @id @default(uuid())
+  tenantId           String
+  name               String
+  slug               String
+  status             RecordStatus        @default(ACTIVE)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  tenant             Tenant              @relation(fields: [tenantId], references: [id])
+  performanceMetrics PerformanceMetric[]
 
   @@unique([tenantId, slug])
   @@index([tenantId])
@@ -77,22 +78,22 @@ model User {
 }
 
 model Athlete {
-  id             String       @id @default(uuid())
-  tenantId       String
-  organisationId String?
-  userId         String?
-  firstName      String
-  lastName       String
-  dateOfBirth    DateTime?
-  status         RecordStatus @default(ACTIVE)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-
+  id                  String                @id @default(uuid())
+  tenantId            String
+  organisationId      String?
+  userId              String?
+  firstName           String
+  lastName            String
+  dateOfBirth         DateTime?
+  status              RecordStatus          @default(ACTIVE)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
   tenant              Tenant                @relation(fields: [tenantId], references: [id])
   organisation        Organisation?         @relation(fields: [organisationId], references: [id])
   user                User?                 @relation(fields: [userId], references: [id])
   relationships       AthleteRelationship[]
   athleteDigitalTwins AthleteDigitalTwin[]
+  performanceMetrics  PerformanceMetric[]
 
   @@index([tenantId])
   @@index([organisationId])
@@ -203,6 +204,68 @@ model SecurityEvent {
   @@index([tenantId, createdAt])
 }
 
+model AthleteRelationship {
+  id               String                  @id @default(uuid())
+  tenantId         String
+  athleteId        String
+  relationshipType AthleteRelationshipType
+  relatedEntityId  String
+  status           RecordStatus            @default(ACTIVE)
+  startsAt         DateTime?
+  endsAt           DateTime?
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  athlete Athlete @relation(fields: [athleteId], references: [id])
+
+  @@index([tenantId])
+  @@index([athleteId])
+  @@index([athleteId, relationshipType])
+  @@index([relatedEntityId])
+}
+
+model AthleteDigitalTwin {
+  id        String       @id @default(uuid())
+  tenantId  String
+  athleteId String
+  status    RecordStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  athlete Athlete @relation(fields: [athleteId], references: [id])
+
+  @@unique([tenantId, athleteId])
+  @@index([tenantId])
+  @@index([athleteId])
+}
+
+model PerformanceMetric {
+  id          String       @id @default(uuid())
+  tenantId    String
+  athleteId   String
+  sportId     String
+  name        String
+  slug        String
+  description String?
+  unit        String?
+  dataType    String
+  status      RecordStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  athlete Athlete @relation(fields: [athleteId], references: [id])
+  sport   Sport   @relation(fields: [sportId], references: [id])
+
+  @@unique([tenantId, athleteId, sportId, slug])
+  @@index([tenantId])
+  @@index([athleteId])
+  @@index([sportId])
+  @@index([tenantId, athleteId])
+}
+
 enum SecurityEventType {
   AUTHENTICATION_SUCCESS
   AUTHENTICATION_FAILURE
@@ -217,6 +280,16 @@ enum SecurityEventType {
   ACCOUNT_LOCKED
   SUSPICIOUS_ACTIVITY
   RATE_LIMIT_EXCEEDED
+}
+
+enum AthleteRelationshipType {
+  TRAINER
+  COACH
+  TEAM
+  ACADEMY
+  CLUB
+  PERFORMANCE_PROFESSIONAL
+  ORGANISATION
 }
 
 enum RecordStatus {
@@ -242,51 +315,4 @@ enum SessionStatus {
 enum AuditLogStatus {
   SUCCESS
   FAILURE
-}
-
-model AthleteRelationship {
-  id               String                  @id @default(uuid())
-  tenantId         String
-  athleteId        String
-  relationshipType AthleteRelationshipType
-  relatedEntityId  String
-  status           RecordStatus            @default(ACTIVE)
-  startsAt         DateTime?
-  endsAt           DateTime?
-  createdAt        DateTime                @default(now())
-  updatedAt        DateTime                @updatedAt
-
-  tenant  Tenant  @relation(fields: [tenantId], references: [id])
-  athlete Athlete @relation(fields: [athleteId], references: [id])
-
-  @@index([tenantId])
-  @@index([athleteId])
-  @@index([athleteId, relationshipType])
-  @@index([relatedEntityId])
-}
-
-enum AthleteRelationshipType {
-  TRAINER
-  COACH
-  TEAM
-  ACADEMY
-  CLUB
-  PERFORMANCE_PROFESSIONAL
-  ORGANISATION
-}
-
-model AthleteDigitalTwin {
-  id        String       @id @default(uuid())
-  tenantId  String
-  athleteId String
-  status    RecordStatus @default(ACTIVE)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-
-  tenant  Tenant  @relation(fields: [tenantId], references: [id])
-  athlete Athlete @relation(fields: [athleteId], references: [id])
-
-  @@unique([tenantId, athleteId])
-  @@index([tenantId])
-  @@index([athleteId])
 }

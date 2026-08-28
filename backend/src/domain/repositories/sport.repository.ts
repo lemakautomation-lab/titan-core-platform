@@ -1,4 +1,5 @@
 import { Sport } from "../entities/sport.entity";
+import { PaginationInput } from "../../application/common/pagination";
 
 export interface SportRepository {
 
@@ -14,7 +15,11 @@ export interface SportRepository {
 
     findAll(
         tenantId: string,
-    ): Promise<Sport[]>;
+        pagination: PaginationInput,
+    ): Promise<{
+        items: Sport[];
+        total: number;
+    }>;
 
     create(
         sport: Sport,

@@ -2,6 +2,8 @@ import { AthleteRelationship } from "../../domain/entities/athlete-relationship.
 import { AthleteRelationshipRepository } from "../../domain/repositories/athlete-relationship.repository";
 import { AthleteRelationshipType } from "../../domain/enums/athlete-relationship-type.enum";
 
+import { PaginationInput } from "../../application/common/pagination";
+
 import { DatabaseService } from "../database/database.service";
 import { AthleteRelationshipMapper } from "../mappers/athlete-relationship.mapper";
 
@@ -33,45 +35,91 @@ implements AthleteRelationshipRepository {
     async findAllByAthleteId(
         athleteId: string,
         tenantId: string,
-    ): Promise<AthleteRelationship[]> {
+        pagination: PaginationInput,
+    ): Promise<{
+        items: AthleteRelationship[];
+        total: number;
+    }> {
 
-        const relationships =
-            await this.database.prisma.athleteRelationship.findMany({
-                where: {
-                    athleteId,
-                    tenantId,
-                },
-                orderBy: {
-                    createdAt: "asc",
-                },
-            });
+        const where = {
+            athleteId,
+            tenantId,
+        };
 
-        return relationships.map(
-            AthleteRelationshipMapper.toDomain,
-        );
+        const [relationships, total] =
+            await this.database.prisma.$transaction([
+                this.database.prisma.athleteRelationship.findMany({
+                    where,
+                    orderBy: [
+                        {
+                            createdAt: "asc",
+                        },
+                        {
+                            id: "asc",
+                        },
+                    ],
+                    skip:
+                        (pagination.page - 1) *
+                        pagination.pageSize,
+                    take: pagination.pageSize,
+                }),
+                this.database.prisma.athleteRelationship.count({
+                    where,
+                }),
+            ]);
+
+        return {
+            items: relationships.map(
+                AthleteRelationshipMapper.toDomain,
+            ),
+            total,
+        };
     }
 
     async findAllByType(
         athleteId: string,
         relationshipType: AthleteRelationshipType,
         tenantId: string,
-    ): Promise<AthleteRelationship[]> {
+        pagination: PaginationInput,
+    ): Promise<{
+        items: AthleteRelationship[];
+        total: number;
+    }> {
 
-        const relationships =
-            await this.database.prisma.athleteRelationship.findMany({
-                where: {
-                    athleteId,
-                    relationshipType,
-                    tenantId,
-                },
-                orderBy: {
-                    createdAt: "asc",
-                },
-            });
+        const where = {
+            athleteId,
+            relationshipType,
+            tenantId,
+        };
 
-        return relationships.map(
-            AthleteRelationshipMapper.toDomain,
-        );
+        const [relationships, total] =
+            await this.database.prisma.$transaction([
+                this.database.prisma.athleteRelationship.findMany({
+                    where,
+                    orderBy: [
+                        {
+                            createdAt: "asc",
+                        },
+                        {
+                            id: "asc",
+                        },
+                    ],
+                    skip:
+                        (pagination.page - 1) *
+                        pagination.pageSize,
+                    take: pagination.pageSize,
+                }),
+                this.database.prisma.athleteRelationship.count({
+                    where,
+                }),
+            ]);
+
+        return {
+            items: relationships.map(
+                AthleteRelationshipMapper.toDomain,
+            ),
+            total,
+        };
     }
 
     async create(
@@ -152,5 +200,4 @@ implements AthleteRelationshipRepository {
             );
         }
     }
-
 }

@@ -10,6 +10,7 @@ import { GetAthleteRelationshipByIdUseCase } from "../../application/use-cases/g
 import { ListAthleteRelationshipsUseCase } from "../../application/use-cases/list-athlete-relationships.use-case";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
+import { parsePagination } from "../../application/common/pagination";
 
 
 export class AthleteRelationshipController {
@@ -114,11 +115,30 @@ export class AthleteRelationshipController {
             return;
         }
 
+        let pagination;
+
+        try {
+            pagination =
+                parsePagination(
+                    req.query.page,
+                    req.query.pageSize,
+                );
+        } catch (error) {
+            res.status(400).json({
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : "Invalid pagination parameters.",
+            });
+            return;
+        }
+
         const result =
             await this.listAthleteRelationshipsUseCase.execute(
                 new ListAthleteRelationshipsQuery(
                     String(req.params.athleteId),
                     authUser.tenantId,
+                    pagination,
                 ),
             );
 
@@ -133,3 +153,4 @@ export class AthleteRelationshipController {
     }
 
 }
+

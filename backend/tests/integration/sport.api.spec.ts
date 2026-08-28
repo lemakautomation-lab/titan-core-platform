@@ -109,7 +109,7 @@ describe("Sport API Tenant Isolation and RBAC", () => {
             ).toBe(200);
 
             expect(
-                listResponse.body.some(
+                listResponse.body.data.some(
                     (sport: { id: string }) =>
                         sport.id === sportId,
                 ),
@@ -310,7 +310,7 @@ describe("Sport API Tenant Isolation and RBAC", () => {
             ).toBe(200);
 
             expect(
-                response.body.some(
+                response.body.data.some(
                     (item: { id: string }) =>
                         item.id === sport.id,
                 ),
@@ -456,3 +456,5 @@ describe("Sport API Tenant Isolation and RBAC", () => {
     );
 
 });
+
+

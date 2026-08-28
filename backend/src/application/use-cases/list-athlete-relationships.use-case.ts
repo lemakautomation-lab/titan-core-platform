@@ -8,31 +8,51 @@ import { AthleteRelationshipApplicationMapper } from "../mappers/athlete-relatio
 
 import { ListAthleteRelationshipsQuery } from "../queries/athlete-relationship/list-athlete-relationships.query";
 
+import {
+    createPaginationMeta,
+    PaginatedResult,
+} from "../common/pagination";
+
 export class ListAthleteRelationshipsUseCase
-implements UseCase<ListAthleteRelationshipsQuery, Result<AthleteRelationshipDto[]>> {
+implements UseCase<
+    ListAthleteRelationshipsQuery,
+    Result<PaginatedResult<AthleteRelationshipDto>>
+> {
 
     constructor(
-        private readonly athleteRelationshipRepository: AthleteRelationshipRepository,
+        private readonly athleteRelationshipRepository:
+            AthleteRelationshipRepository,
     ) {}
 
     async execute(
         query: ListAthleteRelationshipsQuery,
-    ): Promise<Result<AthleteRelationshipDto[]>> {
+    ): Promise<
+        Result<PaginatedResult<AthleteRelationshipDto>>
+    > {
 
-        const relationships =
+        const result =
             await this.athleteRelationshipRepository.findAllByAthleteId(
                 query.athleteId,
                 query.tenantId,
+                {
+                    page: query.page,
+                    pageSize: query.pageSize,
+                },
             );
 
-        return Result.success(
-            relationships.map(
+        return Result.success({
+            data: result.items.map(
                 (relationship) =>
                     AthleteRelationshipApplicationMapper.toDto(
                         relationship,
                     ),
             ),
-        );
+            pagination:
+                createPaginationMeta(
+                    query.page,
+                    query.pageSize,
+                    result.total,
+                ),
+        });
     }
-
 }

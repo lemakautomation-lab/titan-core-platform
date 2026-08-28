@@ -1,4 +1,4 @@
-import request from "supertest";
+﻿import request from "supertest";
 import { describe, expect, it } from "vitest";
 
 import app from "../../../src/app";
@@ -186,8 +186,17 @@ describe("Athlete Relationship API Tenant Isolation", () => {
             ).toBe(200);
 
             expect(
-                response.body,
+                response.body.data,
             ).toHaveLength(0);
+
+            expect(
+                response.body.pagination,
+            ).toEqual({
+                page: 1,
+                pageSize: 25,
+                total: 0,
+                totalPages: 0,
+            });
 
             await testPrisma.athleteRelationship.deleteMany({
                 where: {
@@ -206,3 +215,4 @@ describe("Athlete Relationship API Tenant Isolation", () => {
     );
 
 });
+

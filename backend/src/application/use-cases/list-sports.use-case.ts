@@ -4,6 +4,11 @@ import { ListSportsQuery } from "../queries/sport/list-sports.query";
 
 import { SportDto } from "../dto/sport/sport.dto";
 
+import {
+    PaginatedResult,
+    createPaginationMeta,
+} from "../common/pagination";
+
 import { Result } from "../common/result";
 
 import { UseCase } from "../common/use-case.interface";
@@ -11,7 +16,7 @@ import { UseCase } from "../common/use-case.interface";
 import { SportApplicationMapper } from "../mappers/sport.mapper";
 
 export class ListSportsUseCase
-implements UseCase<ListSportsQuery, Result<SportDto[]>>
+implements UseCase<ListSportsQuery, Result<PaginatedResult<SportDto>>>
 {
 
     constructor(
@@ -22,20 +27,35 @@ implements UseCase<ListSportsQuery, Result<SportDto[]>>
 
     async execute(
         query: ListSportsQuery,
-    ): Promise<Result<SportDto[]>> {
+    ): Promise<Result<PaginatedResult<SportDto>>> {
 
-        const sports =
+        const result =
             await this.sportRepository.findAll(
                 query.tenantId,
+                {
+                    page:
+                        query.page,
+
+                    pageSize:
+                        query.pageSize,
+                },
             );
 
-        return Result.success(
+        return Result.success({
 
-            sports.map(
-                SportApplicationMapper.toDto,
-            ),
+            data:
+                result.items.map(
+                    SportApplicationMapper.toDto,
+                ),
 
-        );
+            pagination:
+                createPaginationMeta(
+                    query.page,
+                    query.pageSize,
+                    result.total,
+                ),
+
+        });
 
     }
 

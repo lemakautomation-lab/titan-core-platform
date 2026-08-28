@@ -14,6 +14,7 @@ import { UpdateSportUseCase } from "../../application/use-cases/update-sport.use
 import { DeleteSportUseCase } from "../../application/use-cases/delete-sport.use-case";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
+import { parsePagination } from "../../application/common/pagination";
 
 export class SportController {
 
@@ -86,10 +87,29 @@ export class SportController {
             return;
         }
 
+        let pagination;
+
+        try {
+            pagination =
+                parsePagination(
+                    req.query.page,
+                    req.query.pageSize,
+                );
+        } catch (error) {
+            res.status(400).json({
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : "Invalid pagination parameters.",
+            });
+            return;
+        }
+
         const result =
             await this.listSportsUseCase.execute(
                 new ListSportsQuery(
                     authUser.tenantId,
+                    pagination,
                 ),
             );
 
@@ -155,3 +175,4 @@ export class SportController {
         res.status(204).send();
     }
 }
+
