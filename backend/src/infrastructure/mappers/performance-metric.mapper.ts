@@ -32,7 +32,7 @@ export class PerformanceMetricInfrastructureMapper {
       description: row.description,
       unit: row.unit,
       dataType: row.dataType,
-      status: this.toDomainStatus(row.status),
+      status: PerformanceMetricInfrastructureMapper.toDomainStatus(row.status),
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     });

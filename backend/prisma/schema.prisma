@@ -24,6 +24,8 @@ model Tenant {
   athleteRelationships AthleteRelationship[]
   athleteDigitalTwins  AthleteDigitalTwin[]
   performanceMetrics   PerformanceMetric[]
+  exercises            Exercise[]
+
 }
 
 model Sport {
@@ -36,9 +38,10 @@ model Sport {
   updatedAt          DateTime            @updatedAt
   tenant             Tenant              @relation(fields: [tenantId], references: [id])
   performanceMetrics PerformanceMetric[]
-
   @@unique([tenantId, slug])
   @@index([tenantId])
+  exercises          Exercise[]
+
 }
 
 model Organisation {
@@ -241,6 +244,32 @@ model AthleteDigitalTwin {
   @@index([athleteId])
 }
 
+
+model Exercise {
+  id                String       @id @default(uuid())
+  tenantId          String
+  name              String
+  slug              String
+  description       String?
+  movement          String
+  muscleGroups      String[]
+  equipment         String[]
+  trainingObjective String
+  difficulty        String
+  trainingPhase     String?
+  sportId           String?
+  status            RecordStatus @default(ACTIVE)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  tenant            Tenant       @relation(fields: [tenantId], references: [id])
+  sport             Sport?       @relation(fields: [sportId], references: [id])
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([sportId])
+  @@index([tenantId, sportId])
+}
 model PerformanceMetric {
   id          String       @id @default(uuid())
   tenantId    String
@@ -316,3 +345,5 @@ enum AuditLogStatus {
   SUCCESS
   FAILURE
 }
+
+

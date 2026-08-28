@@ -12,6 +12,8 @@ import { createSessionRoutes } from "../../presentation/routes/session.routes";
 import { createAthleteRelationshipRoutes } from "../../presentation/routes/athlete-relationship.routes";
 import { createAthleteDigitalTwinRoutes } from "../../presentation/routes/athlete-digital-twin.routes";
 import { createSportRoutes } from "../../presentation/routes/sport.routes";
+import { createExerciseRoutes } from "../../presentation/routes/exercise.routes";
+import { createPerformanceMetricRoutes } from "../../presentation/routes/performance-metric.routes";
 
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
@@ -25,6 +27,8 @@ import { SessionController } from "../../presentation/controllers/session.contro
 import { AthleteRelationshipController } from "../../presentation/controllers/athlete-relationship.controller";
 import { AthleteDigitalTwinController } from "../../presentation/controllers/athlete-digital-twin.controller";
 import { SportController } from "../../presentation/controllers/sport.controller";
+import { ExerciseController } from "../../presentation/controllers/exercise.controller";
+import { PerformanceMetricController } from "../../presentation/controllers/performance-metric.controller";
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
@@ -40,6 +44,8 @@ import { sessionModule } from "../../infrastructure/composition/session.module";
 import { athleteRelationshipModule } from "../../infrastructure/composition/athlete-relationship.module";
 import { athleteDigitalTwinModule } from "../../infrastructure/composition/athlete-digital-twin.module";
 import { sportModule } from "../../infrastructure/composition/sport.module";
+import { exerciseModule } from "../../infrastructure/composition/exercise.module";
+import { performanceMetricModule } from "../../infrastructure/composition/performance-metric.module";
 
 const router = Router();
 
@@ -126,6 +132,23 @@ const sportController =
         sportModule.listSportsUseCase,
         sportModule.updateSportUseCase,
         sportModule.deleteSportUseCase,
+    );
+
+const performanceMetricController =
+    new PerformanceMetricController(
+        performanceMetricModule.createPerformanceMetricUseCase,
+        performanceMetricModule.getPerformanceMetricByIdUseCase,
+        performanceMetricModule.listPerformanceMetricsUseCase,
+        performanceMetricModule.updatePerformanceMetricUseCase,
+        performanceMetricModule.deletePerformanceMetricUseCase,
+    );
+const exerciseController =
+    new ExerciseController(
+        exerciseModule.createExerciseUseCase,
+        exerciseModule.getExerciseByIdUseCase,
+        exerciseModule.listExercisesUseCase,
+        exerciseModule.updateExerciseUseCase,
+        exerciseModule.deleteExerciseUseCase,
     );
 
 const permissionController =
@@ -217,3 +240,19 @@ router.use(
 );
 
 export default router;
+
+router.use(
+    "/performance-metrics",
+    createPerformanceMetricRoutes(
+        performanceMetricController,
+    ),
+);
+router.use(
+    "/exercises",
+    createExerciseRoutes(
+        exerciseController,
+    ),
+);
+
+
+

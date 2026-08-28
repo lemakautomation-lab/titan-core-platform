@@ -1,16 +1,21 @@
 import { PerformanceMetric } from "../../domain/entities/performance-metric.entity";
 import { PerformanceMetricRepository } from "../../domain/repositories/performance-metric.repository";
 import { UpdatePerformanceMetricCommand } from "../commands/update-performance-metric.command";
+import { PerformanceMetricDto } from "../dto/performance-metric/performance-metric.dto";
+import { PerformanceMetricMapper } from "../mappers/performance-metric.mapper";
 
 export class UpdatePerformanceMetricUseCase {
   constructor(
     private readonly repository: PerformanceMetricRepository
   ) {}
 
-  async execute(command: UpdatePerformanceMetricCommand) {
+  async execute(
+    command: UpdatePerformanceMetricCommand,
+  ): Promise<PerformanceMetricDto> {
+
     const metric = await this.repository.findById(
       command.id,
-      command.tenantId
+      command.tenantId,
     );
 
     if (!metric) {
@@ -40,6 +45,8 @@ export class UpdatePerformanceMetricUseCase {
       updatedAt: new Date(),
     });
 
-    return this.repository.update(updated);
+    const result = await this.repository.update(updated);
+
+    return PerformanceMetricMapper.toDto(result);
   }
 }

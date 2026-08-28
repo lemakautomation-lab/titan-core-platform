@@ -45,6 +45,16 @@ async function main() {
         "sports.create",
         "sports.update",
         "sports.delete",
+
+        "exercises.read",
+        "exercises.create",
+        "exercises.update",
+        "exercises.delete",
+
+        "performance-metrics.read",
+        "performance-metrics.create",
+        "performance-metrics.update",
+        "performance-metrics.delete",
     ];
 
     const permissions = [];
@@ -129,4 +139,6 @@ main()
             await prisma.$disconnect();
         },
     );
+
+
 
