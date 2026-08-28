@@ -16,12 +16,28 @@ model Tenant {
   updatedAt            DateTime              @updatedAt
   auditLogs            AuditLog[]
   organisations        Organisation[]
+  sports               Sport[]
   users                User[]
   roles                Role[]
   permissions          Permission[]
   athletes             Athlete[]
   athleteRelationships AthleteRelationship[]
   athleteDigitalTwins  AthleteDigitalTwin[]
+}
+
+model Sport {
+  id        String       @id @default(uuid())
+  tenantId  String
+  name      String
+  slug      String
+  status    RecordStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
 }
 
 model Organisation {

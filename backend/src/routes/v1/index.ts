@@ -11,6 +11,7 @@ import { createSecurityRoutes } from "../../presentation/routes/security.routes"
 import { createSessionRoutes } from "../../presentation/routes/session.routes";
 import { createAthleteRelationshipRoutes } from "../../presentation/routes/athlete-relationship.routes";
 import { createAthleteDigitalTwinRoutes } from "../../presentation/routes/athlete-digital-twin.routes";
+import { createSportRoutes } from "../../presentation/routes/sport.routes";
 
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
@@ -23,6 +24,7 @@ import { SecurityController } from "../../presentation/controllers/security.cont
 import { SessionController } from "../../presentation/controllers/session.controller";
 import { AthleteRelationshipController } from "../../presentation/controllers/athlete-relationship.controller";
 import { AthleteDigitalTwinController } from "../../presentation/controllers/athlete-digital-twin.controller";
+import { SportController } from "../../presentation/controllers/sport.controller";
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
@@ -37,6 +39,7 @@ import { DatabaseService } from "../../infrastructure/database/database.service"
 import { sessionModule } from "../../infrastructure/composition/session.module";
 import { athleteRelationshipModule } from "../../infrastructure/composition/athlete-relationship.module";
 import { athleteDigitalTwinModule } from "../../infrastructure/composition/athlete-digital-twin.module";
+import { sportModule } from "../../infrastructure/composition/sport.module";
 
 
 const router = Router();
@@ -128,6 +131,32 @@ const athleteDigitalTwinController =
     );
 
 
+    new SportController(
+        sportModule.createSportUseCase,
+        sportModule.getSportByIdUseCase,
+        sportModule.listSportsUseCase,
+        sportModule.updateSportUseCase,
+        sportModule.deleteSportUseCase,
+    );
+
+
+    new SportController(
+        sportModule.createSportUseCase,
+        sportModule.getSportByIdUseCase,
+        sportModule.listSportsUseCase,
+        sportModule.updateSportUseCase,
+        sportModule.deleteSportUseCase,
+    );
+
+const sportController =
+    new SportController(
+        sportModule.createSportUseCase,
+        sportModule.getSportByIdUseCase,
+        sportModule.listSportsUseCase,
+        sportModule.updateSportUseCase,
+        sportModule.deleteSportUseCase,
+    );
+
 const permissionController =
     new PermissionController(
         permissionModule.createPermissionUseCase,
@@ -206,6 +235,21 @@ router.use(
 
 
 router.use(
+    "/sports",
+    createSportRoutes(
+        sportController,
+    ),
+);
+
+
+router.use(
+    "/sports",
+    createSportRoutes(
+        sportController,
+    ),
+);
+
+router.use(
     "/permissions",
     createPermissionRoutes(permissionController),
 );
@@ -224,3 +268,5 @@ router.use(
 
 
 export default router;
+
+

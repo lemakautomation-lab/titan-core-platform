@@ -40,6 +40,11 @@ async function main() {
         "permissions.delete",
 
         "roles.permissions.manage",
+
+        "sports.read",
+        "sports.create",
+        "sports.update",
+        "sports.delete",
     ];
 
     const permissions = [];
@@ -124,3 +129,4 @@ main()
             await prisma.$disconnect();
         },
     );
+
