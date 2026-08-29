@@ -3,6 +3,8 @@
 import {
   AthleteDigitalTwinDto,
   getAthleteDigitalTwinByAthleteId,
+  updateAthleteDigitalTwinLifecycle,
+  AthleteDigitalTwinLifecycleAction,
 } from "./athlete-digital-twin.api";
 
 type Props = {
@@ -20,6 +22,9 @@ export default function AthleteDigitalTwinPage({
 
   const [error, setError] =
     useState<string | null>(null);
+
+  const [actionLoading, setActionLoading] =
+    useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -56,6 +61,33 @@ export default function AthleteDigitalTwinPage({
       mounted = false;
     };
   }, [athleteId]);
+
+  async function handleLifecycleAction(
+    action: AthleteDigitalTwinLifecycleAction,
+  ) {
+    if (!twin || actionLoading) {
+      return;
+    }
+
+    setActionLoading(true);
+    setError(null);
+
+    try {
+      const updated =
+        await updateAthleteDigitalTwinLifecycle(
+          twin.id,
+          action,
+        );
+
+      setTwin(updated);
+    } catch {
+      setError(
+        "Unable to update digital twin. Please try again.",
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  }
 
   return (
     <section className="titan-users-page">
@@ -101,41 +133,85 @@ export default function AthleteDigitalTwinPage({
           </div>
         )}
 
-        {!loading && !error && twin && (
-          <div className="titan-users-table-wrapper">
-            <table className="titan-users-table">
-              <tbody>
-                <tr>
-                  <th>Twin ID</th>
-                  <td>{twin.id}</td>
-                </tr>
+        {!loading && twin && (
+          <>
+            <div className="titan-users-table-wrapper">
+              <table className="titan-users-table">
+                <tbody>
+                  <tr>
+                    <th>Twin ID</th>
+                    <td>{twin.id}</td>
+                  </tr>
 
-                <tr>
-                  <th>Athlete ID</th>
-                  <td>{twin.athleteId}</td>
-                </tr>
+                  <tr>
+                    <th>Athlete ID</th>
+                    <td>{twin.athleteId}</td>
+                  </tr>
 
-                <tr>
-                  <th>Status</th>
-                  <td>
-                    <span className="titan-user-status">
-                      {twin.status}
-                    </span>
-                  </td>
-                </tr>
+                  <tr>
+                    <th>Status</th>
+                    <td>
+                      <span className="titan-user-status">
+                        {twin.status}
+                      </span>
+                    </td>
+                  </tr>
 
-                <tr>
-                  <th>Created</th>
-                  <td>{twin.createdAt}</td>
-                </tr>
+                  <tr>
+                    <th>Created</th>
+                    <td>{twin.createdAt}</td>
+                  </tr>
 
-                <tr>
-                  <th>Updated</th>
-                  <td>{twin.updatedAt}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                  <tr>
+                    <th>Updated</th>
+                    <td>{twin.updatedAt}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div style={{ marginTop: "1rem" }}>
+              <button
+                type="button"
+                disabled={actionLoading}
+                onClick={() =>
+                  void handleLifecycleAction("ACTIVATE")
+                }
+              >
+                Activate
+              </button>{" "}
+
+              <button
+                type="button"
+                disabled={actionLoading}
+                onClick={() =>
+                  void handleLifecycleAction("DEACTIVATE")
+                }
+              >
+                Deactivate
+              </button>{" "}
+
+              <button
+                type="button"
+                disabled={actionLoading}
+                onClick={() =>
+                  void handleLifecycleAction("SUSPEND")
+                }
+              >
+                Suspend
+              </button>{" "}
+
+              <button
+                type="button"
+                disabled={actionLoading}
+                onClick={() =>
+                  void handleLifecycleAction("DELETE")
+                }
+              >
+                Delete
+              </button>
+            </div>
+          </>
         )}
       </section>
     </section>

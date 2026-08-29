@@ -9,6 +9,12 @@ export interface AthleteDigitalTwinDto {
   updatedAt: string;
 }
 
+export type AthleteDigitalTwinLifecycleAction =
+  | "ACTIVATE"
+  | "DEACTIVATE"
+  | "SUSPEND"
+  | "DELETE";
+
 export async function getAthleteDigitalTwinByAthleteId(
   athleteId: string,
 ): Promise<AthleteDigitalTwinDto> {
@@ -34,6 +40,21 @@ export async function createAthleteDigitalTwin(
       method: "POST",
       body: JSON.stringify({
         athleteId,
+      }),
+    },
+  );
+}
+
+export async function updateAthleteDigitalTwinLifecycle(
+  id: string,
+  action: AthleteDigitalTwinLifecycleAction,
+): Promise<AthleteDigitalTwinDto> {
+  return apiRequest<AthleteDigitalTwinDto>(
+    `/athlete-digital-twin/${id}/lifecycle`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({
+        action,
       }),
     },
   );
