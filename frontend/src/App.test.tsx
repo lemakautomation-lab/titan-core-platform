@@ -28,6 +28,43 @@ vi.mock("./auth/auth.service", () => ({
   logout: vi.fn(),
 }));
 
+vi.mock("./auth/AuthApp", () => ({
+  default: ({
+    user,
+    onLogout,
+    loggingOut,
+  }: {
+    user: {
+      email: string;
+      tenantId: string;
+    };
+    onLogout: () => Promise<void>;
+    loggingOut: boolean;
+  }) => (
+    <section>
+      <h1>Authenticated</h1>
+
+      <span>{user.email}</span>
+
+      <span>Tenant</span>
+
+      <strong>{user.tenantId}</strong>
+
+      <button
+        type="button"
+        onClick={() => {
+          void onLogout();
+        }}
+        disabled={loggingOut}
+      >
+        {loggingOut
+          ? "Signing out..."
+          : "Sign out"}
+      </button>
+    </section>
+  ),
+}));
+
 import {
   getCurrentUser,
   login,
@@ -152,6 +189,10 @@ describe("App", () => {
       screen.getByText("user@example.com"),
     ).toBeInTheDocument();
 
+    expect(
+      screen.getByText("tenant-1"),
+    ).toBeInTheDocument();
+
   });
 
   it("does not render protected application content when session restoration fails", async () => {
@@ -180,7 +221,7 @@ describe("App", () => {
 
   it("does not render protected application content while authentication is being checked", () => {
 
-    getCurrentUserMock.mockReturnValue(
+    restoreSessionMock.mockReturnValue(
       new Promise(() => {}),
     );
 
@@ -259,9 +300,13 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(user.email),
+        screen.getByText("Authenticated"),
       ).toBeInTheDocument();
     });
+
+    expect(
+      screen.getByText(user.email),
+    ).toBeInTheDocument();
 
     expect(
       loginMock,

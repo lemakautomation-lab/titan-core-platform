@@ -1,19 +1,24 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  BrowserRouter,
+} from "react-router-dom";
 
 import {
   getAuthUser,
 } from "./auth/auth.storage";
 
 import {
-  getCurrentUser,
   logout,
   restoreSession,
 } from "./auth/auth.service";
 
 import { AuthUser } from "./auth/auth.types";
 
-import LoginPage from "./auth/LoginPage";
-import AuthApp from "./auth/AuthApp";
+import AppRouter from "./app/AppRouter";
 
 type AuthState =
   | "checking"
@@ -21,7 +26,6 @@ type AuthState =
   | "unauthenticated";
 
 export default function App() {
-
   const [user, setUser] =
     useState<AuthUser | null>(
       () => getAuthUser(),
@@ -39,36 +43,24 @@ export default function App() {
     useState(false);
 
   useEffect(() => {
-
     let mounted = true;
 
     async function validateSession(): Promise<void> {
-
-      /*
-       * If a successful login has already populated
-       * the in-memory session, do not bootstrap another
-       * refresh cycle.
-       */
       const existingUser =
         getAuthUser();
 
       if (existingUser) {
-
         if (mounted) {
-
           setUser(existingUser);
-
           setAuthState(
             "authenticated",
           );
-
         }
 
         return;
       }
 
       try {
-
         const restoredUser =
           await restoreSession();
 
@@ -77,34 +69,26 @@ export default function App() {
         }
 
         if (restoredUser) {
-
           setUser(restoredUser);
-
           setAuthState(
             "authenticated",
           );
-
           return;
         }
 
         setUser(null);
-
         setAuthState(
           "unauthenticated",
         );
-
       } catch {
-
         if (!mounted) {
           return;
         }
 
         setUser(null);
-
         setAuthState(
           "unauthenticated",
         );
-
       }
     }
 
@@ -113,24 +97,18 @@ export default function App() {
     return () => {
       mounted = false;
     };
-
   }, []);
 
   function handleAuthenticated(
     authenticatedUser: AuthUser,
   ): void {
-
-    setUser(
-      authenticatedUser,
-    );
-
+    setUser(authenticatedUser);
     setAuthState(
       "authenticated",
     );
   }
 
   async function handleLogout(): Promise<void> {
-
     if (loggingOut) {
       return;
     }
@@ -138,61 +116,27 @@ export default function App() {
     setLoggingOut(true);
 
     try {
-
       await logout();
-
     } finally {
-
       setUser(null);
-
       setAuthState(
         "unauthenticated",
       );
-
       setLoggingOut(false);
-
     }
   }
 
-  if (
-    authState ===
-    "checking"
-  ) {
-
-    return (
-      <main>
-        <h1>TITAN Health</h1>
-
-        <p>
-          Checking session...
-        </p>
-      </main>
-    );
-  }
-
-  if (
-    authState ===
-    "unauthenticated"
-  ) {
-
-    return (
-      <LoginPage
+  return (
+    <BrowserRouter>
+      <AppRouter
+        authState={authState}
+        user={user}
         onAuthenticated={
           handleAuthenticated
         }
+        onLogout={handleLogout}
+        loggingOut={loggingOut}
       />
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
-
-  return (
-    <AuthApp
-      user={user}
-      onLogout={handleLogout}
-      loggingOut={loggingOut}
-    />
+    </BrowserRouter>
   );
 }

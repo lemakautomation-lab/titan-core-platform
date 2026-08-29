@@ -1,411 +1,52 @@
-import { useState } from "react";
+import {
+  Link,
+  Outlet,
+} from "react-router-dom";
 
 import { AuthUser } from "./auth.types";
-import UsersPage from "../users/UsersPage";
 
-interface AuthAppProps {
+type AuthAppProps = {
   user: AuthUser;
-  onLogout: () => void;
+  onLogout: () => Promise<void>;
   loggingOut: boolean;
-}
-
-type NavigationItem =
-  | "Dashboard"
-  | "Athletes"
-  | "Teams"
-  | "Training"
-  | "Performance"
-  | "Nutrition"
-  | "Recovery"
-  | "Wearables"
-  | "Programmes"
-  | "Reports"
-  | "Administration"
-  | "Users";
-
-const navigation: NavigationItem[] = [
-  "Dashboard",
-  "Athletes",
-  "Teams",
-  "Training",
-  "Performance",
-  "Nutrition",
-  "Recovery",
-  "Wearables",
-  "Programmes",
-  "Reports",
-  "Administration",
-  "Users",
-];
-
-function canAccess(
-  item: NavigationItem,
-  permissions: string[],
-): boolean {
-
-  const normalizedPermissions =
-    permissions.map((permission) =>
-      permission.trim().toLowerCase(),
-    );
-
-  switch (item) {
-
-    case "Users":
-      return normalizedPermissions.includes(
-        "users.read",
-      );
-
-    case "Administration":
-      return [
-        "roles.read",
-        "permissions.read",
-      ].some((permission) =>
-        normalizedPermissions.includes(permission),
-      );
-
-    default:
-      return true;
-  }
-}
+};
 
 export default function AuthApp({
   user,
   onLogout,
   loggingOut,
 }: AuthAppProps) {
-
-  const allowedNavigation =
-    navigation.filter((item) =>
-      canAccess(item, user.permissions),
-    );
-
-  const [activeSection, setActiveSection] =
-    useState<NavigationItem>(
-      allowedNavigation.includes("Dashboard")
-        ? "Dashboard"
-        : allowedNavigation[0] ?? "Dashboard",
-    );
-
-  const safeActiveSection =
-    allowedNavigation.includes(activeSection)
-      ? activeSection
-      : "Dashboard";
-
   return (
-    <div className="titan-shell">
-
-      <aside className="titan-sidebar">
-
-        <div className="titan-brand">
-
-          <div className="titan-brand-mark">
-            T
-          </div>
-
-          <div>
-            <strong>TITAN</strong>
-            <span>HEALTH</span>
-          </div>
-
-        </div>
-
-        <nav
-          aria-label="Primary navigation"
-          className="titan-navigation"
-        >
-
-          {allowedNavigation.map((item) => (
-
-            <button
-              key={item}
-              type="button"
-              className={
-                safeActiveSection === item
-                  ? "titan-nav-item titan-nav-item-active"
-                  : "titan-nav-item"
-              }
-              onClick={() => setActiveSection(item)}
-            >
-              {item}
-            </button>
-
-          ))}
-
+    <div>
+      <header>
+        <nav aria-label="Primary navigation">
+          <Link to="/users">
+            Users
+          </Link>
         </nav>
 
-        <div className="titan-sidebar-footer">
-          Enterprise Platform
+        <div>
+          <span>
+            {user.email}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => {
+              void onLogout();
+            }}
+            disabled={loggingOut}
+          >
+            {loggingOut
+              ? "Signing out..."
+              : "Sign out"}
+          </button>
         </div>
+      </header>
 
-      </aside>
-
-      <section className="titan-main">
-
-        <header className="titan-header">
-
-          <div>
-
-            <span className="titan-header-label">
-              HUMAN PERFORMANCE OPERATING SYSTEM
-            </span>
-
-            <h1>
-              TITAN HEALTH
-            </h1>
-
-            <span className="titan-authenticated">
-              Authenticated
-            </span>
-
-          </div>
-
-          <div className="titan-user-menu">
-
-            <div className="titan-user-details">
-
-              <strong>
-                {user.email}
-              </strong>
-
-              <span>
-                {user.roles.join(" · ")}
-              </span>
-
-            </div>
-
-            <button
-              type="button"
-              onClick={onLogout}
-              disabled={loggingOut}
-              className="titan-logout"
-            >
-              {
-                loggingOut
-                  ? "Signing out..."
-                  : "Sign out"
-              }
-            </button>
-
-          </div>
-
-        </header>
-
-        <main className="titan-content">
-
-          <div className="titan-page-heading">
-
-            <div>
-
-              <span className="titan-eyebrow">
-                {safeActiveSection}
-              </span>
-
-              <h2>
-                {
-                  safeActiveSection === "Dashboard"
-                    ? "Performance Command Centre"
-                    : safeActiveSection
-                }
-              </h2>
-
-            </div>
-
-            <div className="titan-tenant">
-
-              <span>
-                Tenant
-              </span>
-
-              <strong>
-                {user.tenantId}
-              </strong>
-
-            </div>
-
-          </div>
-
-          {safeActiveSection === "Dashboard" ? (
-            <Dashboard />
-          ) : safeActiveSection === "Users" ? (
-            <UsersPage tenantId={user.tenantId} />
-          ) : (
-            <ModulePlaceholder
-              section={safeActiveSection}
-            />
-          )}
-
-        </main>
-
-      </section>
-
+      <main>
+        <Outlet />
+      </main>
     </div>
   );
 }
-
-function Dashboard() {
-
-  return (
-    <>
-
-      <section className="titan-welcome">
-
-        <div>
-
-          <span className="titan-eyebrow">
-            HUMAN PERFORMANCE
-          </span>
-
-          <h3>
-            Intelligence for every athlete.
-          </h3>
-
-          <p>
-            TITAN Health unifies training, performance,
-            nutrition, recovery and connected biometric
-            data into one enterprise human-performance
-            platform.
-          </p>
-
-        </div>
-
-      </section>
-
-      <section
-        className="titan-metrics"
-        aria-label="Performance overview"
-      >
-
-        <MetricCard
-          title="Athletes"
-          value="—"
-          detail="Connected athlete population"
-        />
-
-        <MetricCard
-          title="Teams"
-          value="—"
-          detail="Active performance groups"
-        />
-
-        <MetricCard
-          title="Training"
-          value="—"
-          detail="Current training programmes"
-        />
-
-        <MetricCard
-          title="Recovery"
-          value="—"
-          detail="Recovery monitoring"
-        />
-
-      </section>
-
-      <section className="titan-command-grid">
-
-        <section className="titan-panel">
-
-          <span className="titan-eyebrow">
-            COMMAND CENTRE
-          </span>
-
-          <h3>
-            Performance intelligence
-          </h3>
-
-          <p>
-            Centralised visibility across athlete
-            performance, training load, recovery,
-            nutrition and connected biometric data.
-          </p>
-
-        </section>
-
-        <section className="titan-panel">
-
-          <span className="titan-eyebrow">
-            PLATFORM STATUS
-          </span>
-
-          <h3>
-            Core systems operational
-          </h3>
-
-          <p>
-            Authentication and session security are
-            active. Additional performance modules are
-            progressively being brought online.
-          </p>
-
-          <span className="titan-status">
-            OPERATIONAL
-          </span>
-
-        </section>
-
-      </section>
-
-    </>
-  );
-}
-
-function MetricCard({
-  title,
-  value,
-  detail,
-}: {
-  title: string;
-  value: string;
-  detail: string;
-}) {
-
-  return (
-    <article className="titan-metric-card">
-
-      <span>
-        {title}
-      </span>
-
-      <strong>
-        {value}
-      </strong>
-
-      <small>
-        {detail}
-      </small>
-
-    </article>
-  );
-}
-
-function ModulePlaceholder({
-  section,
-}: {
-  section: NavigationItem;
-}) {
-
-  return (
-    <section className="titan-module-placeholder">
-
-      <span className="titan-eyebrow">
-        TITAN HEALTH MODULE
-      </span>
-
-      <h3>
-        {section}
-      </h3>
-
-      <p>
-        This module is provisioned in the TITAN Health
-        platform and will become operational as its
-        application services are implemented.
-      </p>
-
-      <span className="titan-status">
-        MODULE PROVISIONED
-      </span>
-
-    </section>
-  );
-}
-
