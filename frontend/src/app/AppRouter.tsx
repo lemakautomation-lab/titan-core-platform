@@ -1,4 +1,4 @@
-import {
+﻿import {
   Navigate,
   Route,
   Routes,
@@ -130,6 +130,15 @@ export default function AppRouter({
         />
       </Route>
 
+        <Route
+          path="/exercises"
+          element={
+            user ? (
+              <ExercisesPage />
+            ) : null
+          }
+        />
+
       <Route
         path="*"
         element={<NotFoundPage />}
@@ -137,3 +146,5 @@ export default function AppRouter({
     </Routes>
   );
 }
+import ExercisesPage from "../exercises/ExercisesPage";
+
