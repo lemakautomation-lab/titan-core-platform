@@ -1,6 +1,5 @@
 import {
   Navigate,
-  Outlet,
   Route,
   Routes,
 } from "react-router-dom";
@@ -8,6 +7,8 @@ import {
 import LoginPage from "../auth/LoginPage";
 import AuthApp from "../auth/AuthApp";
 import UsersPage from "../users/UsersPage";
+import SportsPage from "../sports/SportsPage";
+import PerformanceMetricsPage from "../performance-metrics/PerformanceMetricsPage";
 import { AuthUser } from "../auth/auth.types";
 
 type AppRouterProps = {
@@ -16,9 +17,7 @@ type AppRouterProps = {
     | "authenticated"
     | "unauthenticated";
   user: AuthUser | null;
-  onAuthenticated: (
-    user: AuthUser,
-  ) => void;
+  onAuthenticated: (user: AuthUser) => void;
   onLogout: () => Promise<void>;
   loggingOut: boolean;
 };
@@ -33,12 +32,7 @@ function ProtectedRoute({
   loggingOut: boolean;
 }) {
   if (!user) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-      />
-    );
+    return <Navigate to="/login" replace />;
   }
 
   return (
@@ -83,15 +77,10 @@ export default function AppRouter({
         path="/login"
         element={
           authState === "authenticated" ? (
-            <Navigate
-              to="/users"
-              replace
-            />
+            <Navigate to="/users" replace />
           ) : (
             <LoginPage
-              onAuthenticated={
-                onAuthenticated
-              }
+              onAuthenticated={onAuthenticated}
             />
           )
         }
@@ -108,19 +97,32 @@ export default function AppRouter({
       >
         <Route
           path="/"
-          element={
-            <Navigate
-              to="/users"
-              replace
-            />
-          }
+          element={<Navigate to="/users" replace />}
         />
 
         <Route
           path="/users"
           element={
             user ? (
-              <UsersPage
+              <UsersPage tenantId={user.tenantId} />
+            ) : null
+          }
+        />
+
+        <Route
+          path="/sports"
+          element={
+            user ? (
+              <SportsPage tenantId={user.tenantId} />
+            ) : null
+          }
+        />
+
+        <Route
+          path="/performance-metrics"
+          element={
+            user ? (
+              <PerformanceMetricsPage
                 tenantId={user.tenantId}
               />
             ) : null
