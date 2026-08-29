@@ -1,8 +1,25 @@
+import {
+    PaginationInput,
+    PAGINATION_DEFAULT_PAGE,
+    PAGINATION_DEFAULT_PAGE_SIZE,
+} from "../../common/pagination";
+
 export class ListExercisesQuery {
+
+    public readonly page: number;
+    public readonly pageSize: number;
 
     constructor(
         public readonly tenantId: string,
-        public readonly page: number = 1,
-        public readonly pageSize: number = 25,
-    ) {}
+        pagination: Partial<PaginationInput> = {},
+    ) {
+
+        this.page =
+            pagination.page ??
+            PAGINATION_DEFAULT_PAGE;
+
+        this.pageSize =
+            pagination.pageSize ??
+            PAGINATION_DEFAULT_PAGE_SIZE;
+    }
 }

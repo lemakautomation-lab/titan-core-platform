@@ -1,4 +1,5 @@
 import { Exercise } from "../entities/exercise.entity";
+import { PaginationInput } from "../../application/common/pagination";
 
 export interface ExerciseListResult {
     items: Exercise[];
@@ -19,10 +20,7 @@ export interface ExerciseRepository {
 
     findAll(
         tenantId: string,
-        pagination: {
-            page: number;
-            pageSize: number;
-        },
+        pagination: PaginationInput,
     ): Promise<ExerciseListResult>;
 
     create(

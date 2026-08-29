@@ -43,6 +43,7 @@ implements ExerciseRepository {
                 where: {
                     slug,
                     tenantId,
+                    status: "ACTIVE",
                 },
             });
 

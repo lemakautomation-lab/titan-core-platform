@@ -1,8 +1,11 @@
 import { ExerciseRepository } from "../../domain/repositories/exercise.repository";
-import { UpdateExerciseCommand } from "../commands/update-exercise.command";
+import { SportRepository } from "../../domain/repositories/sport.repository";
+
+import { UpdateExerciseCommand } from "../../application/commands/update-exercise.command";
 import { ExerciseDto } from "../dto/exercise/exercise.dto";
 import { Result } from "../common/result";
 import { UseCase } from "../common/use-case.interface";
+
 import { ExerciseApplicationMapper } from "../mappers/exercise.mapper";
 
 export class UpdateExerciseUseCase
@@ -10,6 +13,7 @@ implements UseCase<UpdateExerciseCommand, Result<ExerciseDto>> {
 
     constructor(
         private readonly exerciseRepository: ExerciseRepository,
+        private readonly sportRepository: SportRepository,
     ) {}
 
     async execute(
@@ -34,6 +38,19 @@ implements UseCase<UpdateExerciseCommand, Result<ExerciseDto>> {
 
         if (existing && existing.id !== exercise.id) {
             return Result.failure("Exercise already exists.");
+        }
+
+        if (command.sportId !== null) {
+
+            const sport =
+                await this.sportRepository.findById(
+                    command.sportId,
+                    command.tenantId,
+                );
+
+            if (!sport) {
+                return Result.failure("Sport not found.");
+            }
         }
 
         exercise.updateDetails(

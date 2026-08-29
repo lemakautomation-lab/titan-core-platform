@@ -26,6 +26,7 @@ model Tenant {
   performanceMetrics   PerformanceMetric[]
   exercises            Exercise[]
 
+  workoutProgrammes WorkoutProgramme[]
 }
 
 model Sport {
@@ -38,10 +39,11 @@ model Sport {
   updatedAt          DateTime            @updatedAt
   tenant             Tenant              @relation(fields: [tenantId], references: [id])
   performanceMetrics PerformanceMetric[]
-  @@unique([tenantId, slug])
-  @@index([tenantId])
+  workoutProgrammes  WorkoutProgramme[]
   exercises          Exercise[]
 
+  @@unique([tenantId, slug])
+  @@index([tenantId])
 }
 
 model Organisation {
@@ -97,6 +99,7 @@ model Athlete {
   relationships       AthleteRelationship[]
   athleteDigitalTwins AthleteDigitalTwin[]
   performanceMetrics  PerformanceMetric[]
+  workoutProgrammes   WorkoutProgramme[]
 
   @@index([tenantId])
   @@index([organisationId])
@@ -244,7 +247,6 @@ model AthleteDigitalTwin {
   @@index([athleteId])
 }
 
-
 model Exercise {
   id                String       @id @default(uuid())
   tenantId          String
@@ -262,14 +264,15 @@ model Exercise {
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 
-  tenant            Tenant       @relation(fields: [tenantId], references: [id])
-  sport             Sport?       @relation(fields: [sportId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  sport  Sport? @relation(fields: [sportId], references: [id])
 
   @@unique([tenantId, slug])
   @@index([tenantId])
   @@index([sportId])
   @@index([tenantId, sportId])
 }
+
 model PerformanceMetric {
   id          String       @id @default(uuid())
   tenantId    String
@@ -346,4 +349,27 @@ enum AuditLogStatus {
   FAILURE
 }
 
+model WorkoutProgramme {
+  id                     String       @id @default(uuid())
+  tenantId               String
+  athleteId              String
+  name                   String
+  description            String?
+  goal                   String
+  experience             String
+  trainingFrequency      Int
+  sessionDurationMinutes Int
+  sportId                String?
+  status                 RecordStatus @default(ACTIVE)
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
 
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  athlete Athlete @relation(fields: [athleteId], references: [id])
+  sport   Sport?  @relation(fields: [sportId], references: [id])
+
+  @@index([tenantId])
+  @@index([athleteId])
+  @@index([sportId])
+  @@index([tenantId, athleteId])
+}

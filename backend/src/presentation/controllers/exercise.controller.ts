@@ -14,6 +14,7 @@ import { UpdateExerciseUseCase } from "../../application/use-cases/update-exerci
 import { DeleteExerciseUseCase } from "../../application/use-cases/delete-exercise.use-case";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
+import { parsePagination } from "../../application/common/pagination";
 
 export class ExerciseController {
 
@@ -102,6 +103,7 @@ export class ExerciseController {
             await this.listExercisesUseCase.execute(
                 new ListExercisesQuery(
                     authUser.tenantId,
+                    parsePagination(req.query.page, req.query.pageSize),
                 ),
             );
 
@@ -179,3 +181,7 @@ export class ExerciseController {
         res.status(204).send();
     }
 }
+
+
+
+

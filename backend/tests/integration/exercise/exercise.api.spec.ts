@@ -392,3 +392,395 @@ describe("Exercise API Tenant Isolation and RBAC", () => {
     );
 
 });
+
+    it(
+        "rejects creating an exercise with a sport belonging to another tenant",
+        async () => {
+
+            const tenantAUser =
+                await createTestUser({
+                    permissions: ["exercises.create"],
+                });
+
+            const tenantBUser =
+                await createTestUser();
+
+            const sport =
+                await testPrisma.sport.create({
+                    data: {
+                        tenantId:
+                            tenantBUser.tenant.id,
+
+                        name:
+                            "Cross Tenant Sport",
+
+                        slug:
+                            "cross-tenant-sport",
+                    },
+                });
+
+            const loginResponse =
+                await request(app)
+                    .post("/api/v1/auth/login")
+                    .send({
+                        tenantId:
+                            tenantAUser.tenant.id,
+
+                        email:
+                            tenantAUser.user.email,
+
+                        password:
+                            tenantAUser.password,
+                    });
+
+            expect(
+                loginResponse.status,
+            ).toBe(200);
+
+            const accessToken =
+                loginResponse.body.data.accessToken;
+
+            const response =
+                await request(app)
+                    .post("/api/v1/exercises")
+                    .set(
+                        "Authorization",
+                        `Bearer ${accessToken}`,
+                    )
+                    .send({
+                        name:
+                            "Cross Tenant Exercise",
+
+                        slug:
+                            "cross-tenant-exercise",
+
+                        description:
+                            null,
+
+                        movement:
+                            "Squat",
+
+                        muscleGroups:
+                            ["quadriceps"],
+
+                        equipment:
+                            ["barbell"],
+
+                        trainingObjective:
+                            "Strength",
+
+                        difficulty:
+                            "Intermediate",
+
+                        trainingPhase:
+                            null,
+
+                        sportId:
+                            sport.id,
+                    });
+
+            expect(
+                response.status,
+            ).toBe(400);
+
+            expect(
+                response.body.message ??
+                response.body.error ??
+                response.body,
+            ).toBeTruthy();
+
+            const exercise =
+                await testPrisma.exercise.findFirst({
+                    where: {
+                        tenantId:
+                            tenantAUser.tenant.id,
+
+                        slug:
+                            "cross-tenant-exercise",
+                    },
+                });
+
+            expect(
+                exercise,
+            ).toBeNull();
+
+            await testPrisma.sport.delete({
+                where: {
+                    id:
+                        sport.id,
+                },
+            });
+        },
+    );
+
+
+    it(
+        "rejects updating an exercise with a sport belonging to another tenant",
+        async () => {
+
+            const tenantAUser =
+                await createTestUser({
+                    permissions: [
+                        "exercises.create",
+                        "exercises.update",
+                    ],
+                });
+
+            const tenantBUser =
+                await createTestUser();
+
+            const exercise =
+                await testPrisma.exercise.create({
+                    data: {
+                        tenantId:
+                            tenantAUser.tenant.id,
+
+                        name:
+                            "Tenant A Exercise",
+
+                        slug:
+                            "tenant-a-exercise",
+
+                        description:
+                            null,
+
+                        movement:
+                            "Squat",
+
+                        muscleGroups:
+                            ["quadriceps"],
+
+                        equipment:
+                            ["barbell"],
+
+                        trainingObjective:
+                            "Strength",
+
+                        difficulty:
+                            "Intermediate",
+
+                        trainingPhase:
+                            null,
+
+                        sportId:
+                            null,
+                    },
+                });
+
+            const sport =
+                await testPrisma.sport.create({
+                    data: {
+                        tenantId:
+                            tenantBUser.tenant.id,
+
+                        name:
+                            "Tenant B Sport",
+
+                        slug:
+                            "tenant-b-sport",
+                    },
+                });
+
+            const loginResponse =
+                await request(app)
+                    .post("/api/v1/auth/login")
+                    .send({
+                        tenantId:
+                            tenantAUser.tenant.id,
+
+                        email:
+                            tenantAUser.user.email,
+
+                        password:
+                            tenantAUser.password,
+                    });
+
+            expect(
+                loginResponse.status,
+            ).toBe(200);
+
+            const accessToken =
+                loginResponse.body.data.accessToken;
+
+            const response =
+                await request(app)
+                    .put(
+                        `/api/v1/exercises/${exercise.id}`,
+                    )
+                    .set(
+                        "Authorization",
+                        `Bearer ${accessToken}`,
+                    )
+                    .send({
+                        name:
+                            "Tenant A Exercise Updated",
+
+                        slug:
+                            "tenant-a-exercise-updated",
+
+                        description:
+                            null,
+
+                        movement:
+                            "Squat",
+
+                        muscleGroups:
+                            ["quadriceps"],
+
+                        equipment:
+                            ["barbell"],
+
+                        trainingObjective:
+                            "Strength",
+
+                        difficulty:
+                            "Intermediate",
+
+                        trainingPhase:
+                            null,
+
+                        sportId:
+                            sport.id,
+                    });
+
+            expect(
+                response.status,
+            ).toBe(404);
+
+            const persisted =
+                await testPrisma.exercise.findUnique({
+                    where: {
+                        id:
+                            exercise.id,
+                    },
+                });
+
+            expect(
+                persisted,
+            ).not.toBeNull();
+
+            expect(
+                persisted?.sportId,
+            ).toBeNull();
+
+            expect(
+                persisted?.slug,
+            ).toBe("tenant-a-exercise");
+
+            await testPrisma.exercise.delete({
+                where: {
+                    id:
+                        exercise.id,
+                },
+            });
+
+            await testPrisma.sport.delete({
+                where: {
+                    id:
+                        sport.id,
+                },
+            });
+        },
+    );
+
+
+
+
+it(
+    "paginates exercises correctly",
+    async () => {
+
+        const user =
+            await createTestUser({
+                permissions: ["exercises.create", "exercises.read"],
+            });
+
+        const loginResponse =
+            await request(app)
+                .post("/api/v1/auth/login")
+                .send({
+                    tenantId: user.tenant.id,
+                    email: user.user.email,
+                    password: user.password,
+                });
+
+        expect(loginResponse.status).toBe(200);
+
+        const accessToken =
+            loginResponse.body.data.accessToken;
+
+        const exercises = [
+            ["Pagination Exercise A", "pagination-exercise-a"],
+            ["Pagination Exercise B", "pagination-exercise-b"],
+            ["Pagination Exercise C", "pagination-exercise-c"],
+        ];
+
+        const createdIds: string[] = [];
+
+        for (const [name, slug] of exercises) {
+
+            const response =
+                await request(app)
+                    .post("/api/v1/exercises")
+                    .set(
+                        "Authorization",
+                        `Bearer ${accessToken}`,
+                    )
+                    .send({
+                        name,
+                        slug,
+                        description: null,
+                        movement: "Squat",
+                        muscleGroups: ["quadriceps"],
+                        equipment: [],
+                        trainingObjective: "Strength",
+                        difficulty: "Beginner",
+                        trainingPhase: null,
+                        sportId: null,
+                    });
+
+            expect(response.status).toBe(201);
+            createdIds.push(response.body.id);
+        }
+
+        const pageOne =
+            await request(app)
+                .get("/api/v1/exercises?page=1&pageSize=2")
+                .set(
+                    "Authorization",
+                    `Bearer ${accessToken}`
+                );
+
+        expect(pageOne.status).toBe(200);
+        expect(pageOne.body.data).toHaveLength(2);
+        expect(pageOne.body.pagination.page).toBe(1);
+        expect(pageOne.body.pagination.pageSize).toBe(2);
+        expect(pageOne.body.pagination.total).toBe(3);
+        expect(pageOne.body.pagination.totalPages).toBe(2);
+
+        const pageTwo =
+            await request(app)
+                .get("/api/v1/exercises?page=2&pageSize=2")
+                .set(
+                    "Authorization",
+                    `Bearer ${accessToken}`
+                );
+
+        expect(pageTwo.status).toBe(200);
+        expect(pageTwo.body.data).toHaveLength(1);
+        expect(pageTwo.body.pagination.page).toBe(2);
+        expect(pageTwo.body.pagination.pageSize).toBe(2);
+        expect(pageTwo.body.pagination.total).toBe(3);
+        expect(pageTwo.body.pagination.totalPages).toBe(2);
+
+        await testPrisma.exercise.deleteMany({
+            where: {
+                id: {
+                    in: createdIds,
+                },
+            },
+        });
+    },
+);
+
+

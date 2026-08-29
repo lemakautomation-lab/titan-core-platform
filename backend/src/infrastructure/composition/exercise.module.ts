@@ -1,5 +1,7 @@
 import { DatabaseService } from "../database/database.service";
+
 import { PrismaExerciseRepository } from "../repositories/exercise.repository";
+import { PrismaSportRepository } from "../repositories/sport.repository";
 
 import { CreateExerciseUseCase } from "../../application/use-cases/create-exercise.use-case";
 import { GetExerciseByIdUseCase } from "../../application/use-cases/get-exercise-by-id.use-case";
@@ -12,11 +14,15 @@ const databaseService = new DatabaseService();
 const exerciseRepository =
     new PrismaExerciseRepository(databaseService);
 
+const sportRepository =
+    new PrismaSportRepository(databaseService);
+
 export const exerciseModule = {
 
     createExerciseUseCase:
         new CreateExerciseUseCase(
             exerciseRepository,
+            sportRepository,
         ),
 
     getExerciseByIdUseCase:
@@ -32,6 +38,7 @@ export const exerciseModule = {
     updateExerciseUseCase:
         new UpdateExerciseUseCase(
             exerciseRepository,
+            sportRepository,
         ),
 
     deleteExerciseUseCase:

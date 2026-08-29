@@ -142,6 +142,7 @@ const performanceMetricController =
         performanceMetricModule.updatePerformanceMetricUseCase,
         performanceMetricModule.deletePerformanceMetricUseCase,
     );
+
 const exerciseController =
     new ExerciseController(
         exerciseModule.createExerciseUseCase,
@@ -239,14 +240,13 @@ router.use(
     createSecurityRoutes(securityController),
 );
 
-export default router;
-
 router.use(
     "/performance-metrics",
     createPerformanceMetricRoutes(
         performanceMetricController,
     ),
 );
+
 router.use(
     "/exercises",
     createExerciseRoutes(
@@ -254,5 +254,4 @@ router.use(
     ),
 );
 
-
-
+export default router;
