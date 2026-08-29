@@ -9,6 +9,8 @@ import AuthApp from "../auth/AuthApp";
 import UsersPage from "../users/UsersPage";
 import SportsPage from "../sports/SportsPage";
 import PerformanceMetricsPage from "../performance-metrics/PerformanceMetricsPage";
+import ExercisesPage from "../exercises/ExercisesPage";
+import AthleteDigitalTwinPage from "../athlete-digital-twin/AthleteDigitalTwinPage";
 import { AuthUser } from "../auth/auth.types";
 
 type AppRouterProps = {
@@ -128,16 +130,17 @@ export default function AppRouter({
             ) : null
           }
         />
-      </Route>
 
         <Route
           path="/exercises"
-          element={
-            user ? (
-              <ExercisesPage />
-            ) : null
-          }
+          element={<ExercisesPage />}
         />
+
+        <Route
+          path="/athlete-digital-twin/:athleteId"
+          element={<AthleteDigitalTwinRoute />}
+        />
+      </Route>
 
       <Route
         path="*"
@@ -146,5 +149,14 @@ export default function AppRouter({
     </Routes>
   );
 }
-import ExercisesPage from "../exercises/ExercisesPage";
 
+function AthleteDigitalTwinRoute() {
+  const athleteId =
+    window.location.pathname.split("/").pop() ?? "";
+
+  return (
+    <AthleteDigitalTwinPage
+      athleteId={athleteId}
+    />
+  );
+}
