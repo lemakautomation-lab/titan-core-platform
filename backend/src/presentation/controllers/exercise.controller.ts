@@ -29,6 +29,41 @@ export class ExerciseController {
         private readonly updateExerciseStatusUseCase: UpdateExerciseStatusUseCase,
     ) {}
 
+    private getFailureStatus(error: string | undefined): number {
+        switch (error) {
+            case "Exercise already exists.":
+                return 409;
+
+            case "Exercise not found.":
+            case "Sport not found.":
+                return 404;
+
+            default:
+                return 400;
+        }
+    }
+
+    private sendFailure(
+        res: Response,
+        error: string | undefined,
+    ): void {
+        res
+            .status(this.getFailureStatus(error))
+            .json({ error: error ?? "Request failed." });
+    }
+
+    private sendCreateFailure(
+        res: Response,
+        error: string | undefined,
+    ): void {
+        if (error === "Sport not found.") {
+            res.status(400).json({ error });
+            return;
+        }
+
+        this.sendFailure(res, error);
+    }
+
     async create(req: AuthRequest, res: Response): Promise<void> {
 
         const authUser = req.user;
@@ -57,7 +92,7 @@ export class ExerciseController {
             );
 
         if (!result.isSuccess) {
-            res.status(400).json({ error: result.error });
+            this.sendCreateFailure(res, result.error);
             return;
         }
 
@@ -82,7 +117,7 @@ export class ExerciseController {
             );
 
         if (!result.isSuccess) {
-            res.status(404).json({ error: result.error });
+            this.sendFailure(res, result.error);
             return;
         }
 
@@ -107,7 +142,7 @@ export class ExerciseController {
             );
 
         if (!result.isSuccess) {
-            res.status(400).json({ error: result.error });
+            this.sendFailure(res, result.error);
             return;
         }
 
@@ -143,13 +178,12 @@ export class ExerciseController {
             );
 
         if (!result.isSuccess) {
-            res.status(404).json({ error: result.error });
+            this.sendFailure(res, result.error);
             return;
         }
 
         res.status(200).json(result.value);
     }
-
 
     async updateStatus(req: AuthRequest, res: Response): Promise<void> {
 
@@ -171,12 +205,13 @@ export class ExerciseController {
             );
 
         if (!result.isSuccess) {
-            res.status(400).json({ error: result.error });
+            this.sendFailure(res, result.error);
             return;
         }
 
         res.status(204).send();
     }
+
     async delete(req: AuthRequest, res: Response): Promise<void> {
 
         const authUser = req.user;
@@ -196,12 +231,11 @@ export class ExerciseController {
             );
 
         if (!result.isSuccess) {
-            res.status(404).json({ error: result.error });
+            this.sendFailure(res, result.error);
             return;
         }
 
         res.status(204).send();
     }
 }
-
 

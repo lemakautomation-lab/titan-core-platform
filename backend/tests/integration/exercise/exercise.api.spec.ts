@@ -1,4 +1,4 @@
-﻿import request from "supertest";
+import request from "supertest";
 import { describe, expect, it } from "vitest";
 
 import app from "../../../src/app";
@@ -381,7 +381,7 @@ describe("Exercise API Tenant Isolation and RBAC", () => {
                         sportId: null,
                     });
 
-            expect(duplicateResponse.status).toBe(400);
+            expect(duplicateResponse.status).toBe(409);
 
             await testPrisma.exercise.delete({
                 where: {
@@ -782,6 +782,125 @@ it(
     },
 );
 
+  it(
+    "rejects updating an exercise with a duplicate slug using conflict status",
+    async () => {
+      const user = await createTestUser({
+        permissions: ["exercises.create", "exercises.update"],
+      });
+
+      const loginResponse = await request(app)
+        .post("/api/v1/auth/login")
+        .send({
+          tenantId: user.tenant.id,
+          email: user.user.email,
+          password: user.password,
+        });
+
+      expect(loginResponse.status).toBe(200);
+
+      const accessToken = loginResponse.body.data.accessToken;
+
+      const firstResponse = await request(app)
+        .post("/api/v1/exercises")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          name: "Primary Exercise",
+          slug: "primary-exercise",
+          description: null,
+          movement: "Squat",
+          muscleGroups: ["quadriceps"],
+          equipment: ["barbell"],
+          trainingObjective: "Strength",
+          difficulty: "Intermediate",
+          trainingPhase: null,
+          sportId: null,
+        });
+
+      expect(firstResponse.status).toBe(201);
+
+      const secondResponse = await request(app)
+        .post("/api/v1/exercises")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          name: "Secondary Exercise",
+          slug: "secondary-exercise",
+          description: null,
+          movement: "Lunge",
+          muscleGroups: ["quadriceps"],
+          equipment: [],
+          trainingObjective: "Strength",
+          difficulty: "Beginner",
+          trainingPhase: null,
+          sportId: null,
+        });
+
+      expect(secondResponse.status).toBe(201);
+
+      const updateResponse = await request(app)
+        .put(`/api/v1/exercises/${secondResponse.body.id}`)
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          name: "Secondary Exercise",
+          slug: "primary-exercise",
+          description: null,
+          movement: "Lunge",
+          muscleGroups: ["quadriceps"],
+          equipment: [],
+          trainingObjective: "Strength",
+          difficulty: "Beginner",
+          trainingPhase: null,
+          sportId: null,
+        });
+
+      expect(updateResponse.status).toBe(409);
+      expect(updateResponse.body.error).toBe("Exercise already exists.");
+
+      await testPrisma.exercise.deleteMany({
+        where: {
+          id: {
+            in: [
+              firstResponse.body.id,
+              secondResponse.body.id,
+            ],
+          },
+        },
+      });
+    },
+  );
+
+
+  it(
+    "returns not found when updating the status of a missing exercise",
+    async () => {
+      const user = await createTestUser({
+        permissions: ["exercises.update"],
+      });
+
+      const loginResponse = await request(app)
+        .post("/api/v1/auth/login")
+        .send({
+          tenantId: user.tenant.id,
+          email: user.user.email,
+          password: user.password,
+        });
+
+      expect(loginResponse.status).toBe(200);
+
+      const accessToken = loginResponse.body.data.accessToken;
+
+      const response = await request(app)
+        .patch("/api/v1/exercises/non-existent-exercise/status")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          status: "ACTIVE",
+        });
+
+      expect(response.status).toBe(404);
+      expect(response.body.error).toBe("Exercise not found.");
+    },
+  );
+
   it("rejects an exercise with missing required text fields", async () => {
     const user = await createTestUser({
       permissions: ["exercises.create"],
@@ -907,5 +1026,4 @@ it(
     }
   });
 });
-
 
