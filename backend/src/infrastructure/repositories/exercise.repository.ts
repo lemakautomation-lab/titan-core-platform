@@ -208,6 +208,13 @@ export class PrismaExerciseRepository implements ExerciseRepository {
             where: {
                 id,
                 tenantId,
+                status: {
+                    in: [
+                        "ACTIVE",
+                        "INACTIVE",
+                        "SUSPENDED",
+                    ],
+                },
             },
             data: {
                 status: "DELETED",
@@ -215,4 +222,3 @@ export class PrismaExerciseRepository implements ExerciseRepository {
         });
     }
 }
-
