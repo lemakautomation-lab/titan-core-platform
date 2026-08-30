@@ -8,6 +8,7 @@ import { GetExerciseByIdUseCase } from "../../application/use-cases/get-exercise
 import { ListExercisesUseCase } from "../../application/use-cases/list-exercises.use-case";
 import { UpdateExerciseUseCase } from "../../application/use-cases/update-exercise.use-case";
 import { DeleteExerciseUseCase } from "../../application/use-cases/delete-exercise.use-case";
+import { UpdateExerciseStatusUseCase } from "../../application/use-cases/update-exercise-status.use-case";
 
 const databaseService = new DatabaseService();
 
@@ -43,6 +44,10 @@ export const exerciseModule = {
 
     deleteExerciseUseCase:
         new DeleteExerciseUseCase(
+            exerciseRepository,
+        ),
+    updateExerciseStatusUseCase:
+        new UpdateExerciseStatusUseCase(
             exerciseRepository,
         ),
 };

@@ -31,6 +31,11 @@ export function createExerciseRoutes(
         controller.getById.bind(controller),
     );
 
+    router.patch(
+        "/:id/status",
+        requirePermission("exercises.update"),
+        controller.updateStatus.bind(controller),
+    );
     router.put(
         "/:id",
         requirePermission("exercises.update"),

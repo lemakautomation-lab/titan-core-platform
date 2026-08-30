@@ -52,6 +52,25 @@ export class Exercise {
         sportId: string | null,
     ): Exercise {
 
+        Exercise.validateRequiredText("name", name);
+        Exercise.validateRequiredText("slug", slug);
+        Exercise.validateRequiredText("movement", movement);
+        Exercise.validateRequiredText(
+            "trainingObjective",
+            trainingObjective,
+        );
+        Exercise.validateRequiredText("difficulty", difficulty);
+
+        Exercise.validateStringCollection(
+            "muscleGroups",
+            muscleGroups,
+        );
+
+        Exercise.validateStringCollection(
+            "equipment",
+            equipment,
+        );
+
         const now = new Date();
 
         return new Exercise(
@@ -85,6 +104,25 @@ export class Exercise {
         trainingPhase: string | null,
         sportId: string | null,
     ): void {
+
+        Exercise.validateRequiredText("name", name);
+        Exercise.validateRequiredText("slug", slug);
+        Exercise.validateRequiredText("movement", movement);
+        Exercise.validateRequiredText(
+            "trainingObjective",
+            trainingObjective,
+        );
+        Exercise.validateRequiredText("difficulty", difficulty);
+
+        Exercise.validateStringCollection(
+            "muscleGroups",
+            muscleGroups,
+        );
+
+        Exercise.validateStringCollection(
+            "equipment",
+            equipment,
+        );
 
         this.name = name;
         this.slug = slug;
@@ -127,6 +165,47 @@ export class Exercise {
 
         return this.status === RecordStatus.ACTIVE;
     }
+
+    private static validateRequiredText(
+        field: string,
+        value: string,
+    ): void {
+
+        if (
+            typeof value !== "string" ||
+            value.trim().length === 0 ||
+            value.trim().toLowerCase() === "undefined" ||
+            value.trim().toLowerCase() === "null"
+        ) {
+            throw new Error(
+                `${field} is required.`,
+            );
+        }
+    }
+
+    private static validateStringCollection(
+        field: string,
+        value: string[],
+    ): void {
+
+        if (!Array.isArray(value)) {
+            throw new Error(
+                `${field} must be an array.`,
+            );
+        }
+
+        for (const item of value) {
+
+            if (
+                typeof item !== "string" ||
+                item.trim().length === 0 ||
+                item.trim().toLowerCase() === "undefined" ||
+                item.trim().toLowerCase() === "null"
+            ) {
+                throw new Error(
+                    `${field} must contain only non-empty text values.`,
+                );
+            }
+        }
+    }
 }
-
-

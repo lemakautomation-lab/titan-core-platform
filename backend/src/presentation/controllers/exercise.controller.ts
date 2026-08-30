@@ -3,6 +3,7 @@ import { Response } from "express";
 import { CreateExerciseCommand } from "../../application/commands/create-exercise.command";
 import { UpdateExerciseCommand } from "../../application/commands/update-exercise.command";
 import { DeleteExerciseCommand } from "../../application/commands/delete-exercise.command";
+import { UpdateExerciseStatusCommand } from "../../application/commands/update-exercise-status.command";
 
 import { GetExerciseByIdQuery } from "../../application/queries/exercise/get-exercise-by-id.query";
 import { ListExercisesQuery } from "../../application/queries/exercise/list-exercises.query";
@@ -12,6 +13,7 @@ import { GetExerciseByIdUseCase } from "../../application/use-cases/get-exercise
 import { ListExercisesUseCase } from "../../application/use-cases/list-exercises.use-case";
 import { UpdateExerciseUseCase } from "../../application/use-cases/update-exercise.use-case";
 import { DeleteExerciseUseCase } from "../../application/use-cases/delete-exercise.use-case";
+import { UpdateExerciseStatusUseCase } from "../../application/use-cases/update-exercise-status.use-case";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { parsePagination } from "../../application/common/pagination";
@@ -24,6 +26,7 @@ export class ExerciseController {
         private readonly listExercisesUseCase: ListExercisesUseCase,
         private readonly updateExerciseUseCase: UpdateExerciseUseCase,
         private readonly deleteExerciseUseCase: DeleteExerciseUseCase,
+        private readonly updateExerciseStatusUseCase: UpdateExerciseStatusUseCase,
     ) {}
 
     async create(req: AuthRequest, res: Response): Promise<void> {
@@ -42,12 +45,8 @@ export class ExerciseController {
                     String(req.body.slug),
                     req.body.description ?? null,
                     String(req.body.movement),
-                    Array.isArray(req.body.muscleGroups)
-                        ? req.body.muscleGroups
-                        : [],
-                    Array.isArray(req.body.equipment)
-                        ? req.body.equipment
-                        : [],
+                    req.body.muscleGroups,
+                    req.body.equipment,
                     String(req.body.trainingObjective),
                     String(req.body.difficulty),
                     req.body.trainingPhase ?? null,
@@ -132,12 +131,8 @@ export class ExerciseController {
                     String(req.body.slug),
                     req.body.description ?? null,
                     String(req.body.movement),
-                    Array.isArray(req.body.muscleGroups)
-                        ? req.body.muscleGroups
-                        : [],
-                    Array.isArray(req.body.equipment)
-                        ? req.body.equipment
-                        : [],
+                    req.body.muscleGroups,
+                    req.body.equipment,
                     String(req.body.trainingObjective),
                     String(req.body.difficulty),
                     req.body.trainingPhase ?? null,
@@ -155,6 +150,33 @@ export class ExerciseController {
         res.status(200).json(result.value);
     }
 
+
+    async updateStatus(req: AuthRequest, res: Response): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const result =
+            await this.updateExerciseStatusUseCase.execute(
+                new UpdateExerciseStatusCommand(
+                    String(req.params.id),
+                    authUser.tenantId,
+                    authUser.userId,
+                    req.body.status,
+                ),
+            );
+
+        if (!result.isSuccess) {
+            res.status(400).json({ error: result.error });
+            return;
+        }
+
+        res.status(204).send();
+    }
     async delete(req: AuthRequest, res: Response): Promise<void> {
 
         const authUser = req.user;
@@ -181,7 +203,5 @@ export class ExerciseController {
         res.status(204).send();
     }
 }
-
-
 
 

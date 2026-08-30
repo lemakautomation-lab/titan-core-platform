@@ -1,4 +1,4 @@
-import request from "supertest";
+﻿import request from "supertest";
 import { describe, expect, it } from "vitest";
 
 import app from "../../../src/app";
@@ -391,7 +391,6 @@ describe("Exercise API Tenant Isolation and RBAC", () => {
         },
     );
 
-});
 
     it(
         "rejects creating an exercise with a sport belonging to another tenant",
@@ -782,5 +781,131 @@ it(
         });
     },
 );
+
+  it("rejects an exercise with missing required text fields", async () => {
+    const user = await createTestUser({
+      permissions: ["exercises.create"],
+    });
+
+    const loginResponse = await request(app)
+      .post("/api/v1/auth/login")
+      .send({
+        tenantId: user.tenant.id,
+        email: user.user.email,
+        password: user.password,
+      });
+
+    expect(loginResponse.status).toBe(200);
+
+    const accessToken = loginResponse.body.data.accessToken;
+
+    const invalidPayloads = [
+      {
+        name: "",
+        slug: "valid-slug",
+        movement: "Squat",
+        trainingObjective: "Strength",
+        difficulty: "Beginner",
+      },
+      {
+        name: "Valid Exercise",
+        slug: "",
+        movement: "Squat",
+        trainingObjective: "Strength",
+        difficulty: "Beginner",
+      },
+      {
+        name: "Valid Exercise",
+        slug: "valid-slug",
+        movement: "",
+        trainingObjective: "Strength",
+        difficulty: "Beginner",
+      },
+      {
+        name: "Valid Exercise",
+        slug: "valid-slug",
+        movement: "Squat",
+        trainingObjective: "",
+        difficulty: "Beginner",
+      },
+      {
+        name: "Valid Exercise",
+        slug: "valid-slug",
+        movement: "Squat",
+        trainingObjective: "Strength",
+        difficulty: "",
+      },
+    ];
+
+    for (const payload of invalidPayloads) {
+      const response = await request(app)
+        .post("/api/v1/exercises")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          ...payload,
+          description: null,
+          muscleGroups: ["legs"],
+          equipment: ["barbell"],
+          trainingPhase: null,
+          sportId: null,
+        });
+
+      expect(response.status).toBe(400);
+    }
+  });
+
+  it("rejects an exercise with invalid muscle groups or equipment collections", async () => {
+    const user = await createTestUser({
+      permissions: ["exercises.create"],
+    });
+
+    const loginResponse = await request(app)
+      .post("/api/v1/auth/login")
+      .send({
+        tenantId: user.tenant.id,
+        email: user.user.email,
+        password: user.password,
+      });
+
+    expect(loginResponse.status).toBe(200);
+
+    const accessToken = loginResponse.body.data.accessToken;
+
+    const invalidPayloads = [
+      {
+        name: "Invalid Muscle Groups",
+        slug: `invalid-muscle-groups-${Date.now()}`,
+        movement: "Squat",
+        trainingObjective: "Strength",
+        difficulty: "Beginner",
+        muscleGroups: "legs",
+        equipment: ["barbell"],
+      },
+      {
+        name: "Invalid Equipment",
+        slug: `invalid-equipment-${Date.now()}`,
+        movement: "Squat",
+        trainingObjective: "Strength",
+        difficulty: "Beginner",
+        muscleGroups: ["legs"],
+        equipment: "barbell",
+      },
+    ];
+
+    for (const payload of invalidPayloads) {
+      const response = await request(app)
+        .post("/api/v1/exercises")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          ...payload,
+          description: null,
+          trainingPhase: null,
+          sportId: null,
+        });
+
+      expect(response.status).toBe(400);
+    }
+  });
+});
 
 

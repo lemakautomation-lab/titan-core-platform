@@ -44,26 +44,37 @@ implements UseCase<CreateExerciseCommand, Result<ExerciseDto>> {
             }
         }
 
-        const exercise =
-            Exercise.create(
-                command.tenantId,
-                command.name,
-                command.slug,
-                command.description,
-                command.movement,
-                command.muscleGroups,
-                command.equipment,
-                command.trainingObjective,
-                command.difficulty,
-                command.trainingPhase,
-                command.sportId,
+        try {
+
+            const exercise =
+                Exercise.create(
+                    command.tenantId,
+                    command.name,
+                    command.slug,
+                    command.description,
+                    command.movement,
+                    command.muscleGroups,
+                    command.equipment,
+                    command.trainingObjective,
+                    command.difficulty,
+                    command.trainingPhase,
+                    command.sportId,
+                );
+
+            const created =
+                await this.exerciseRepository.create(exercise);
+
+            return Result.success(
+                ExerciseApplicationMapper.toDto(created),
             );
 
-        const created =
-            await this.exerciseRepository.create(exercise);
+        } catch (error) {
 
-        return Result.success(
-            ExerciseApplicationMapper.toDto(created),
-        );
+            if (error instanceof Error) {
+                return Result.failure(error.message);
+            }
+
+            return Result.failure("Invalid exercise data.");
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   ExerciseDto,
@@ -50,17 +50,7 @@ export default function ExercisesPage() {
 
   return (
     <section className="titan-users-page">
-      <div className="titan-page-heading">
-        <div>
-          <span className="titan-eyebrow">
-            EXERCISE ENGINE
-          </span>
-
-          <h2>Exercises</h2>
-        </div>
-      </div>
-
-      <section className="titan-panel titan-users-panel">
+<section className="titan-panel titan-users-panel">
         <div className="titan-users-header">
           <div>
             <span className="titan-eyebrow">
