@@ -118,39 +118,75 @@ implements WorkoutProgrammeRepository {
         tenantId: string,
     ): Promise<WorkoutProgramme> {
 
-        const updated =
-            await this.database.prisma.workoutProgramme.updateMany({
-                where: {
-                    id: programme.id,
-                    tenantId,
-                    status: "ACTIVE",
-                },
-                data:
-                    WorkoutProgrammeMapper.toPersistence(
-                        programme,
-                    ),
-            });
+        return this.database.transaction(
+            async (tx) => {
 
-        if (updated.count !== 1) {
-            throw new Error("Workout Programme update failed.");
-        }
+                const rows =
+                    await tx.$queryRaw<
+                        Array<{
+                            id: string;
+                        }>
+                    >`
+                        SELECT "id"
+                        FROM "WorkoutProgramme"
+                        WHERE "id" = ${programme.id}
+                          AND "tenantId" = ${tenantId}
+                          AND "status" IN (
+                              'ACTIVE',
+                              'INACTIVE',
+                              'SUSPENDED'
+                          )
+                        FOR UPDATE
+                    `;
 
-        const result =
-            await this.database.prisma.workoutProgramme.findFirst({
-                where: {
-                    id: programme.id,
-                    tenantId,
-                    status: "ACTIVE",
-                },
-            });
+                if (rows.length !== 1) {
+                    throw new Error(
+                        "Workout Programme not found.",
+                    );
+                }
 
-        if (!result) {
-            throw new Error(
-                "Workout Programme not found after update.",
-            );
-        }
+                const updated =
+                    await tx.workoutProgramme.updateMany({
+                        where: {
+                            id: programme.id,
+                            tenantId,
+                            status: {
+                                in: [
+                                    "ACTIVE",
+                                    "INACTIVE",
+                                    "SUSPENDED",
+                                ],
+                            },
+                        },
+                        data:
+                            WorkoutProgrammeMapper.toPersistence(
+                                programme,
+                            ),
+                    });
 
-        return WorkoutProgrammeMapper.toDomain(result);
+                if (updated.count !== 1) {
+                    throw new Error(
+                        "Workout Programme update failed.",
+                    );
+                }
+
+                const result =
+                    await tx.workoutProgramme.findFirst({
+                        where: {
+                            id: programme.id,
+                            tenantId,
+                        },
+                    });
+
+                if (!result) {
+                    throw new Error(
+                        "Workout Programme not found after update.",
+                    );
+                }
+
+                return WorkoutProgrammeMapper.toDomain(result);
+            },
+        );
     }
 
     async updateStatus(
@@ -159,29 +195,75 @@ implements WorkoutProgrammeRepository {
         status: RecordStatus,
     ): Promise<WorkoutProgramme> {
 
-        await this.database.prisma.workoutProgramme.updateMany({
-            where: {
-                id,
-                tenantId,
+        return this.database.transaction(
+            async (tx) => {
+
+                const rows =
+                    await tx.$queryRaw<
+                        Array<{
+                            id: string;
+                        }>
+                    >`
+                        SELECT "id"
+                        FROM "WorkoutProgramme"
+                        WHERE "id" = ${id}
+                          AND "tenantId" = ${tenantId}
+                          AND "status" IN (
+                              'ACTIVE',
+                              'INACTIVE',
+                              'SUSPENDED'
+                          )
+                        FOR UPDATE
+                    `;
+
+                if (rows.length !== 1) {
+                    throw new Error(
+                        "Workout Programme not found.",
+                    );
+                }
+
+                const updated =
+                    await tx.workoutProgramme.updateMany({
+                        where: {
+                            id,
+                            tenantId,
+                            status: {
+                                in: [
+                                    "ACTIVE",
+                                    "INACTIVE",
+                                    "SUSPENDED",
+                                ],
+                            },
+                        },
+                        data: {
+                            status,
+                            updatedAt: new Date(),
+                        },
+                    });
+
+                if (updated.count !== 1) {
+                    throw new Error(
+                        "Workout Programme status update failed.",
+                    );
+                }
+
+                const result =
+                    await tx.workoutProgramme.findFirst({
+                        where: {
+                            id,
+                            tenantId,
+                        },
+                    });
+
+                if (!result) {
+                    throw new Error(
+                        "Workout Programme not found after status update.",
+                    );
+                }
+
+                return WorkoutProgrammeMapper.toDomain(result);
             },
-            data: {
-                status,
-            },
-        });
-
-        const result =
-            await this.database.prisma.workoutProgramme.findFirst({
-                where: {
-                    id,
-                    tenantId,
-                },
-            });
-
-        if (!result) {
-            throw new Error("Workout Programme not found.");
-        }
-
-        return WorkoutProgrammeMapper.toDomain(result);
+        );
     }
 
     async delete(
@@ -189,22 +271,56 @@ implements WorkoutProgrammeRepository {
         tenantId: string,
     ): Promise<void> {
 
-        await this.database.prisma.workoutProgramme.updateMany({
-            where: {
-                id,
-                tenantId,
-                status: "ACTIVE",
+        await this.database.transaction(
+            async (tx) => {
+
+                const rows =
+                    await tx.$queryRaw<
+                        Array<{
+                            id: string;
+                        }>
+                    >`
+                        SELECT "id"
+                        FROM "WorkoutProgramme"
+                        WHERE "id" = ${id}
+                          AND "tenantId" = ${tenantId}
+                          AND "status" IN (
+                              'ACTIVE',
+                              'INACTIVE',
+                              'SUSPENDED'
+                          )
+                        FOR UPDATE
+                    `;
+
+                if (rows.length !== 1) {
+                    return;
+                }
+
+                const updated =
+                    await tx.workoutProgramme.updateMany({
+                        where: {
+                            id,
+                            tenantId,
+                            status: {
+                                in: [
+                                    "ACTIVE",
+                                    "INACTIVE",
+                                    "SUSPENDED",
+                                ],
+                            },
+                        },
+                        data: {
+                            status: "DELETED",
+                            updatedAt: new Date(),
+                        },
+                    });
+
+                if (updated.count !== 1) {
+                    throw new Error(
+                        "Workout Programme delete failed.",
+                    );
+                }
             },
-            data: {
-                status: "DELETED",
-            },
-        });
+        );
     }
 }
-
-
-
-
-
-
-

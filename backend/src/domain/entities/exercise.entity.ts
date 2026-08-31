@@ -76,15 +76,15 @@ export class Exercise {
         return new Exercise(
             randomUUID(),
             tenantId,
-            name,
-            slug,
-            description,
-            movement,
-            muscleGroups,
-            equipment,
-            trainingObjective,
-            difficulty,
-            trainingPhase,
+            name.trim(),
+            slug.trim(),
+            description?.trim() || null,
+            movement.trim(),
+            muscleGroups.map((value) => value.trim()),
+            equipment.map((value) => value.trim()),
+            trainingObjective.trim(),
+            difficulty.trim(),
+            trainingPhase?.trim() || null,
             sportId,
             RecordStatus.ACTIVE,
             now,
@@ -105,6 +105,8 @@ export class Exercise {
         sportId: string | null,
     ): void {
 
+        this.ensureMutable();
+
         Exercise.validateRequiredText("name", name);
         Exercise.validateRequiredText("slug", slug);
         Exercise.validateRequiredText("movement", movement);
@@ -124,20 +126,26 @@ export class Exercise {
             equipment,
         );
 
-        this.name = name;
-        this.slug = slug;
-        this.description = description;
-        this.movement = movement;
-        this.muscleGroups = muscleGroups;
-        this.equipment = equipment;
-        this.trainingObjective = trainingObjective;
-        this.difficulty = difficulty;
-        this.trainingPhase = trainingPhase;
+        this.name = name.trim();
+        this.slug = slug.trim();
+        this.description = description?.trim() || null;
+        this.movement = movement.trim();
+        this.muscleGroups = muscleGroups.map(
+            (value) => value.trim(),
+        );
+        this.equipment = equipment.map(
+            (value) => value.trim(),
+        );
+        this.trainingObjective = trainingObjective.trim();
+        this.difficulty = difficulty.trim();
+        this.trainingPhase = trainingPhase?.trim() || null;
         this.sportId = sportId;
         this.updatedAt = new Date();
     }
 
     activate(): void {
+
+        this.ensureLifecycleMutable();
 
         this.status = RecordStatus.ACTIVE;
         this.updatedAt = new Date();
@@ -145,17 +153,27 @@ export class Exercise {
 
     deactivate(): void {
 
+        this.ensureLifecycleMutable();
+
         this.status = RecordStatus.INACTIVE;
         this.updatedAt = new Date();
     }
 
     suspend(): void {
 
+        this.ensureLifecycleMutable();
+
         this.status = RecordStatus.SUSPENDED;
         this.updatedAt = new Date();
     }
 
     delete(): void {
+
+        if (this.status === RecordStatus.DELETED) {
+            throw new Error(
+                "Exercise is already deleted.",
+            );
+        }
 
         this.status = RecordStatus.DELETED;
         this.updatedAt = new Date();
@@ -164,6 +182,24 @@ export class Exercise {
     isActive(): boolean {
 
         return this.status === RecordStatus.ACTIVE;
+    }
+
+    private ensureMutable(): void {
+
+        if (this.status === RecordStatus.DELETED) {
+            throw new Error(
+                "Deleted exercises cannot be modified.",
+            );
+        }
+    }
+
+    private ensureLifecycleMutable(): void {
+
+        if (this.status === RecordStatus.DELETED) {
+            throw new Error(
+                "Deleted exercises cannot change lifecycle state.",
+            );
+        }
     }
 
     private static validateRequiredText(
@@ -203,7 +239,7 @@ export class Exercise {
                 item.trim().toLowerCase() === "null"
             ) {
                 throw new Error(
-                    `${field} must contain only non-empty text values.`,
+                    `${field} must contain only non-empty text values.`
                 );
             }
         }
