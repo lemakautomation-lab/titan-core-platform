@@ -27,6 +27,7 @@ model Tenant {
   exercises            Exercise[]
 
   workoutProgrammes WorkoutProgramme[]
+  products          Product[]
 }
 
 model Sport {
@@ -372,4 +373,55 @@ model WorkoutProgramme {
   @@index([athleteId])
   @@index([sportId])
   @@index([tenantId, athleteId])
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum BillingInterval {
+  ONE_TIME
+  MONTHLY
+  QUARTERLY
+  ANNUALLY
+}
+
+model Product {
+  id              String          @id @default(uuid())
+  tenantId        String
+  name            String
+  slug            String
+  description     String?
+  priceCents      Int
+  currency        String
+  billingInterval BillingInterval
+  status          ProductStatus   @default(ACTIVE)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  tenant Tenant         @relation(fields: [tenantId], references: [id])
+  prices ProductPrice[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([status])
+  @@index([billingInterval])
+}
+
+model ProductPrice {
+  id              String          @id @default(uuid())
+  productId       String
+  amountMinor     Int
+  currency        String
+  billingInterval BillingInterval
+  status          ProductStatus   @default(ACTIVE)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([productId])
+  @@index([status])
+  @@index([productId, status])
 }
