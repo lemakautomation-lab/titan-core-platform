@@ -1,4 +1,6 @@
 import { WorkoutProgramme } from "../entities/workout-programme.entity";
+import { RecordStatus } from "../enums/record-status.enum";
+import { PaginationInput } from "../../application/common/pagination";
 
 export interface WorkoutProgrammeListResult {
     items: WorkoutProgramme[];
@@ -14,10 +16,7 @@ export interface WorkoutProgrammeRepository {
 
     findAll(
         tenantId: string,
-        pagination: {
-            page: number;
-            pageSize: number;
-        },
+        pagination: PaginationInput,
     ): Promise<WorkoutProgrammeListResult>;
 
     findAllByAthleteId(
@@ -32,6 +31,12 @@ export interface WorkoutProgrammeRepository {
     update(
         programme: WorkoutProgramme,
         tenantId: string,
+    ): Promise<WorkoutProgramme>;
+
+    updateStatus(
+        id: string,
+        tenantId: string,
+        status: RecordStatus,
     ): Promise<WorkoutProgramme>;
 
     delete(

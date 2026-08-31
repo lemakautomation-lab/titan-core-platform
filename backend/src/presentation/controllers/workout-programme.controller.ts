@@ -3,6 +3,7 @@ import { Response } from "express";
 import { CreateWorkoutProgrammeCommand } from "../../application/commands/create-workout-programme.command";
 import { UpdateWorkoutProgrammeCommand } from "../../application/commands/update-workout-programme.command";
 import { DeleteWorkoutProgrammeCommand } from "../../application/commands/delete-workout-programme.command";
+import { UpdateWorkoutProgrammeStatusCommand } from "../../application/commands/update-workout-programme-status.command";
 
 import { GetWorkoutProgrammeByIdQuery } from "../../application/queries/workout-programme/get-workout-programme-by-id.query";
 import { ListWorkoutProgrammesQuery } from "../../application/queries/workout-programme/list-workout-programmes.query";
@@ -14,6 +15,7 @@ import { ListWorkoutProgrammesUseCase } from "../../application/use-cases/list-w
 import { ListWorkoutProgrammesByAthleteUseCase } from "../../application/use-cases/list-workout-programmes-by-athlete.use-case";
 import { UpdateWorkoutProgrammeUseCase } from "../../application/use-cases/update-workout-programme.use-case";
 import { DeleteWorkoutProgrammeUseCase } from "../../application/use-cases/delete-workout-programme.use-case";
+import { UpdateWorkoutProgrammeStatusUseCase } from "../../application/use-cases/update-workout-programme-status.use-case";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { parsePagination } from "../../application/common/pagination";
@@ -26,6 +28,7 @@ export class WorkoutProgrammeController {
         private readonly listWorkoutProgrammesByAthleteUseCase: ListWorkoutProgrammesByAthleteUseCase,
         private readonly updateWorkoutProgrammeUseCase: UpdateWorkoutProgrammeUseCase,
         private readonly deleteWorkoutProgrammeUseCase: DeleteWorkoutProgrammeUseCase,
+        private readonly updateWorkoutProgrammeStatusUseCase: UpdateWorkoutProgrammeStatusUseCase,
     ) {}
 
     async create(req: AuthRequest, res: Response): Promise<void> {
@@ -202,6 +205,44 @@ export class WorkoutProgrammeController {
         res.status(200).json(result.value);
     }
 
+
+    async updateStatus(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const result =
+            await this.updateWorkoutProgrammeStatusUseCase.execute(
+                new UpdateWorkoutProgrammeStatusCommand(
+                    String(req.params.id),
+                    authUser.tenantId,
+                    authUser.userId,
+                    req.body.status,
+                ),
+            );
+
+        if (!result.isSuccess) {
+            const status =
+                result.error === "Workout Programme not found."
+                    ? 404
+                    : 400;
+
+            res.status(status).json({
+                error: result.error,
+            });
+
+            return;
+        }
+
+        res.status(204).send();
+    }
     async delete(req: AuthRequest, res: Response): Promise<void> {
         const authUser = req.user;
 

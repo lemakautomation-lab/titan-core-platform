@@ -10,6 +10,7 @@ import { ListWorkoutProgrammesUseCase } from "../../application/use-cases/list-w
 import { ListWorkoutProgrammesByAthleteUseCase } from "../../application/use-cases/list-workout-programmes-by-athlete.use-case";
 import { UpdateWorkoutProgrammeUseCase } from "../../application/use-cases/update-workout-programme.use-case";
 import { DeleteWorkoutProgrammeUseCase } from "../../application/use-cases/delete-workout-programme.use-case";
+import { UpdateWorkoutProgrammeStatusUseCase } from "../../application/use-cases/update-workout-programme-status.use-case";
 
 const databaseService =
     new DatabaseService();
@@ -63,6 +64,11 @@ export const workoutProgrammeModule = {
 
     deleteWorkoutProgrammeUseCase:
         new DeleteWorkoutProgrammeUseCase(
+            workoutProgrammeRepository,
+        ),
+
+    updateWorkoutProgrammeStatusUseCase:
+        new UpdateWorkoutProgrammeStatusUseCase(
             workoutProgrammeRepository,
         ),
 

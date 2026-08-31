@@ -37,6 +37,12 @@ export function createWorkoutProgrammeRoutes(
         controller.getById.bind(controller),
     );
 
+    router.patch(
+        "/:id/status",
+        requirePermission("workout-programmes.update"),
+        controller.updateStatus.bind(controller),
+    );
+
     router.put(
         "/:id",
         requirePermission("workout-programmes.update"),

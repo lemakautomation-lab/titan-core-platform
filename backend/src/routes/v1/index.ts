@@ -14,6 +14,8 @@ import { createAthleteDigitalTwinRoutes } from "../../presentation/routes/athlet
 import { createSportRoutes } from "../../presentation/routes/sport.routes";
 import { createExerciseRoutes } from "../../presentation/routes/exercise.routes";
 import { createPerformanceMetricRoutes } from "../../presentation/routes/performance-metric.routes";
+import { createWorkoutProgrammeRoutes } from "../../presentation/routes/workout-programme.routes";
+import { createProductRoutes } from "../../presentation/routes/product.routes";
 
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
@@ -29,6 +31,8 @@ import { AthleteDigitalTwinController } from "../../presentation/controllers/ath
 import { SportController } from "../../presentation/controllers/sport.controller";
 import { ExerciseController } from "../../presentation/controllers/exercise.controller";
 import { PerformanceMetricController } from "../../presentation/controllers/performance-metric.controller";
+import { WorkoutProgrammeController } from "../../presentation/controllers/workout-programme.controller";
+import { ProductController } from "../../presentation/controllers/product.controller";
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
@@ -46,6 +50,8 @@ import { athleteDigitalTwinModule } from "../../infrastructure/composition/athle
 import { sportModule } from "../../infrastructure/composition/sport.module";
 import { exerciseModule } from "../../infrastructure/composition/exercise.module";
 import { performanceMetricModule } from "../../infrastructure/composition/performance-metric.module";
+import { workoutProgrammeModule } from "../../infrastructure/composition/workout-programme.module";
+import { productModule } from "../../infrastructure/composition/product.module";
 
 const router = Router();
 
@@ -150,8 +156,28 @@ const exerciseController =
         exerciseModule.listExercisesUseCase,
         exerciseModule.updateExerciseUseCase,
         exerciseModule.deleteExerciseUseCase,
+        exerciseModule.updateExerciseStatusUseCase,
     );
 
+const workoutProgrammeController =
+    new WorkoutProgrammeController(
+        workoutProgrammeModule.createWorkoutProgrammeUseCase,
+        workoutProgrammeModule.getWorkoutProgrammeByIdUseCase,
+        workoutProgrammeModule.listWorkoutProgrammesUseCase,
+        workoutProgrammeModule.listWorkoutProgrammesByAthleteUseCase,
+        workoutProgrammeModule.updateWorkoutProgrammeUseCase,
+        workoutProgrammeModule.deleteWorkoutProgrammeUseCase,
+        workoutProgrammeModule.updateWorkoutProgrammeStatusUseCase,
+    );
+
+const productController =
+    new ProductController(
+        productModule.createProductUseCase,
+        productModule.getProductByIdUseCase,
+        productModule.listProductsUseCase,
+        productModule.updateProductUseCase,
+        productModule.deleteProductUseCase,
+    );
 const permissionController =
     new PermissionController(
         permissionModule.createPermissionUseCase,
@@ -226,6 +252,12 @@ router.use(
 );
 
 router.use(
+    "/products",
+    createProductRoutes(
+        productController,
+    ),
+);
+router.use(
     "/permissions",
     createPermissionRoutes(permissionController),
 );
@@ -251,6 +283,13 @@ router.use(
     "/exercises",
     createExerciseRoutes(
         exerciseController,
+    ),
+);
+
+router.use(
+    "/workout-programmes",
+    createWorkoutProgrammeRoutes(
+        workoutProgrammeController,
     ),
 );
 
