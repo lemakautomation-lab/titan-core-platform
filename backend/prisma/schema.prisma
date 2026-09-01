@@ -8,23 +8,24 @@ datasource db {
 }
 
 model Tenant {
-  id                   String                @id @default(uuid())
-  name                 String
-  slug                 String                @unique
-  status               RecordStatus          @default(ACTIVE)
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  auditLogs            AuditLog[]
-  organisations        Organisation[]
-  sports               Sport[]
-  users                User[]
-  roles                Role[]
-  permissions          Permission[]
-  athletes             Athlete[]
-  athleteRelationships AthleteRelationship[]
-  athleteDigitalTwins  AthleteDigitalTwin[]
-  performanceMetrics   PerformanceMetric[]
-  exercises            Exercise[]
+  id                      String                   @id @default(uuid())
+  name                    String
+  slug                    String                   @unique
+  status                  RecordStatus             @default(ACTIVE)
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  auditLogs               AuditLog[]
+  organisations           Organisation[]
+  sports                  Sport[]
+  users                   User[]
+  roles                   Role[]
+  permissions             Permission[]
+  athletes                Athlete[]
+  athleteRelationships    AthleteRelationship[]
+  athleteDigitalTwins     AthleteDigitalTwin[]
+  performanceMetrics      PerformanceMetric[]
+  performanceMeasurements PerformanceMeasurement[]
+  exercises               Exercise[]
 
   workoutProgrammes WorkoutProgramme[]
   products          Product[]
@@ -84,23 +85,24 @@ model User {
 }
 
 model Athlete {
-  id                  String                @id @default(uuid())
-  tenantId            String
-  organisationId      String?
-  userId              String?
-  firstName           String
-  lastName            String
-  dateOfBirth         DateTime?
-  status              RecordStatus          @default(ACTIVE)
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  tenant              Tenant                @relation(fields: [tenantId], references: [id])
-  organisation        Organisation?         @relation(fields: [organisationId], references: [id])
-  user                User?                 @relation(fields: [userId], references: [id])
-  relationships       AthleteRelationship[]
-  athleteDigitalTwins AthleteDigitalTwin[]
-  performanceMetrics  PerformanceMetric[]
-  workoutProgrammes   WorkoutProgramme[]
+  id                      String                   @id @default(uuid())
+  tenantId                String
+  organisationId          String?
+  userId                  String?
+  firstName               String
+  lastName                String
+  dateOfBirth             DateTime?
+  status                  RecordStatus             @default(ACTIVE)
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  tenant                  Tenant                   @relation(fields: [tenantId], references: [id])
+  organisation            Organisation?            @relation(fields: [organisationId], references: [id])
+  user                    User?                    @relation(fields: [userId], references: [id])
+  relationships           AthleteRelationship[]
+  athleteDigitalTwins     AthleteDigitalTwin[]
+  performanceMetrics      PerformanceMetric[]
+  performanceMeasurements PerformanceMeasurement[]
+  workoutProgrammes       WorkoutProgramme[]
 
   @@index([tenantId])
   @@index([organisationId])
@@ -288,9 +290,10 @@ model PerformanceMetric {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
-  tenant  Tenant  @relation(fields: [tenantId], references: [id])
-  athlete Athlete @relation(fields: [athleteId], references: [id])
-  sport   Sport   @relation(fields: [sportId], references: [id])
+  tenant                  Tenant                   @relation(fields: [tenantId], references: [id])
+  athlete                 Athlete                  @relation(fields: [athleteId], references: [id])
+  sport                   Sport                    @relation(fields: [sportId], references: [id])
+  performanceMeasurements PerformanceMeasurement[]
 
   @@unique([tenantId, athleteId, sportId, slug])
   @@index([tenantId])
@@ -424,4 +427,21 @@ model ProductPrice {
   @@index([productId])
   @@index([status])
   @@index([productId, status])
+}
+
+model PerformanceMeasurement {
+  id         String   @id @default(uuid())
+  tenantId   String
+  athleteId  String
+  metricId   String
+  value      Decimal  @db.Decimal(20, 6)
+  recordedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  tenant  Tenant            @relation(fields: [tenantId], references: [id])
+  athlete Athlete           @relation(fields: [athleteId], references: [id])
+  metric  PerformanceMetric @relation(fields: [metricId], references: [id])
+
+  @@index([tenantId, athleteId, metricId, recordedAt])
+  @@index([tenantId, athleteId])
 }

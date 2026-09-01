@@ -123,6 +123,54 @@ export class WorkoutProgramme {
         this.updatedAt = new Date();
     }
 
+    adaptFromPerformance(
+        trainingFrequencyDelta: number,
+        sessionDurationMinutesDelta: number,
+    ): void {
+
+        this.ensureMutable();
+
+        if (
+            !Number.isInteger(trainingFrequencyDelta) ||
+            trainingFrequencyDelta < -1 ||
+            trainingFrequencyDelta > 1
+        ) {
+            throw new Error(
+                "Training frequency delta must be -1, 0 or 1.",
+            );
+        }
+
+        if (
+            !Number.isInteger(sessionDurationMinutesDelta) ||
+            sessionDurationMinutesDelta < -15 ||
+            sessionDurationMinutesDelta > 15
+        ) {
+            throw new Error(
+                "Session duration delta must be an integer between -15 and 15.",
+            );
+        }
+
+        const adaptedTrainingFrequency =
+            this.trainingFrequency + trainingFrequencyDelta;
+
+        const adaptedSessionDurationMinutes =
+            this.sessionDurationMinutes + sessionDurationMinutesDelta;
+
+        WorkoutProgramme.validatePositiveInteger(
+            adaptedTrainingFrequency,
+            "Training frequency",
+        );
+
+        WorkoutProgramme.validatePositiveInteger(
+            adaptedSessionDurationMinutes,
+            "Session duration",
+        );
+
+        this.trainingFrequency = adaptedTrainingFrequency;
+        this.sessionDurationMinutes = adaptedSessionDurationMinutes;
+        this.updatedAt = new Date();
+    }
+
     activate(): void {
 
         if (this.status === RecordStatus.DELETED) {

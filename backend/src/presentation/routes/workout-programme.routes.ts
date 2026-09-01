@@ -49,6 +49,12 @@ export function createWorkoutProgrammeRoutes(
         controller.update.bind(controller),
     );
 
+    router.post(
+        "/:id/performance-adaptation",
+        requirePermission("workout-programmes.update"),
+        controller.adaptFromPerformance.bind(controller),
+    );
+
     router.delete(
         "/:id",
         requirePermission("workout-programmes.delete"),

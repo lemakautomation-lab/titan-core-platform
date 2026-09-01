@@ -10,4 +10,6 @@ export enum AuditResource {
     PERMISSION = "PERMISSION",
 
     SESSION = "SESSION",
+
+    WORKOUT_PROGRAMME = "WORKOUT_PROGRAMME",
 }

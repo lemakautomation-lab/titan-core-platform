@@ -4,6 +4,7 @@ import { CreateWorkoutProgrammeCommand } from "../../application/commands/create
 import { UpdateWorkoutProgrammeCommand } from "../../application/commands/update-workout-programme.command";
 import { DeleteWorkoutProgrammeCommand } from "../../application/commands/delete-workout-programme.command";
 import { UpdateWorkoutProgrammeStatusCommand } from "../../application/commands/update-workout-programme-status.command";
+import { AdaptWorkoutProgrammeFromPerformanceCommand } from "../../application/commands/adapt-workout-programme-from-performance.command";
 
 import { GetWorkoutProgrammeByIdQuery } from "../../application/queries/workout-programme/get-workout-programme-by-id.query";
 import { ListWorkoutProgrammesQuery } from "../../application/queries/workout-programme/list-workout-programmes.query";
@@ -16,6 +17,7 @@ import { ListWorkoutProgrammesByAthleteUseCase } from "../../application/use-cas
 import { UpdateWorkoutProgrammeUseCase } from "../../application/use-cases/update-workout-programme.use-case";
 import { DeleteWorkoutProgrammeUseCase } from "../../application/use-cases/delete-workout-programme.use-case";
 import { UpdateWorkoutProgrammeStatusUseCase } from "../../application/use-cases/update-workout-programme-status.use-case";
+import { AdaptWorkoutProgrammeFromPerformanceUseCase } from "../../application/use-cases/adapt-workout-programme-from-performance.use-case";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { parsePagination } from "../../application/common/pagination";
@@ -29,7 +31,68 @@ export class WorkoutProgrammeController {
         private readonly updateWorkoutProgrammeUseCase: UpdateWorkoutProgrammeUseCase,
         private readonly deleteWorkoutProgrammeUseCase: DeleteWorkoutProgrammeUseCase,
         private readonly updateWorkoutProgrammeStatusUseCase: UpdateWorkoutProgrammeStatusUseCase,
+        private readonly adaptWorkoutProgrammeFromPerformanceUseCase: AdaptWorkoutProgrammeFromPerformanceUseCase,
     ) {}
+
+    async adaptFromPerformance(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const result =
+            await this.adaptWorkoutProgrammeFromPerformanceUseCase.execute(
+                new AdaptWorkoutProgrammeFromPerformanceCommand(
+                    String(req.params.id),
+                    authUser.tenantId,
+                    authUser.userId,
+                    typeof req.body.athleteId === "string"
+                        ? req.body.athleteId
+                        : "",
+                    typeof req.body.metricId === "string"
+                        ? req.body.metricId
+                        : "",
+                    Number(req.body.trainingFrequencyDelta),
+                    Number(req.body.sessionDurationMinutesDelta),
+                    typeof req.body.rationale === "string"
+                        ? req.body.rationale
+                        : "",
+                ),
+            );
+
+        if (!result.isSuccess) {
+            if (
+                result.error ===
+                "Unable to adapt Workout Programme from performance evidence."
+            ) {
+                res.status(500).json({
+                    error: "Unable to adapt Workout Programme.",
+                });
+                return;
+            }
+
+            const notFoundErrors = [
+                "Workout Programme not found.",
+                "Athlete not found.",
+                "Performance metric not found.",
+                "Recent performance measurement evidence is required.",
+            ];
+
+            res.status(
+                notFoundErrors.includes(result.error ?? "")
+                    ? 404
+                    : 400,
+            ).json({ error: result.error });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
 
     async create(req: AuthRequest, res: Response): Promise<void> {
         const authUser = req.user;
