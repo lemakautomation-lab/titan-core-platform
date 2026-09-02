@@ -5,15 +5,38 @@ import {
   PerformanceMetricValidationError,
 } from "../../domain/entities/performance-metric.entity";
 import { PerformanceMetricRepository } from "../../domain/repositories/performance-metric.repository";
+import { AthleteRepository } from "../../domain/repositories/athlete.repository";
+import { SportRepository } from "../../domain/repositories/sport.repository";
 import { CreatePerformanceMetricCommand } from "../commands/create-performance-metric.command";
 import { ValidationException } from "../../shared/exceptions/validation.exception";
+import { NotFoundException } from "../../shared/exceptions/not-found.exception";
 
 export class CreatePerformanceMetricUseCase {
   constructor(
-    private readonly repository: PerformanceMetricRepository
+    private readonly repository: PerformanceMetricRepository,
+    private readonly athleteRepository: AthleteRepository,
+    private readonly sportRepository: SportRepository,
   ) {}
 
   async execute(command: CreatePerformanceMetricCommand) {
+    const athlete = await this.athleteRepository.findById(
+      command.athleteId,
+      command.tenantId,
+    );
+
+    if (!athlete) {
+      throw new NotFoundException("Athlete not found.");
+    }
+
+    const sport = await this.sportRepository.findById(
+      command.sportId,
+      command.tenantId,
+    );
+
+    if (!sport) {
+      throw new NotFoundException("Sport not found.");
+    }
+
     let metric: PerformanceMetric;
 
     try {

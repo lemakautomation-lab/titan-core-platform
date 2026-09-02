@@ -5,10 +5,28 @@ import { UpdatePerformanceMetricUseCase } from "../../src/application/use-cases/
 import { PerformanceMetric } from "../../src/domain/entities/performance-metric.entity";
 import { RecordStatus } from "../../src/domain/enums/record-status.enum";
 import { PerformanceMetricRepository } from "../../src/domain/repositories/performance-metric.repository";
+import { AthleteRepository } from "../../src/domain/repositories/athlete.repository";
+import { SportRepository } from "../../src/domain/repositories/sport.repository";
 import { ValidationException } from "../../src/shared/exceptions/validation.exception";
 
 const tenantId = "tenant-1";
 const metricId = "metric-1";
+
+const athleteRepository = {
+    findById: async () => ({ id: "athlete-1", tenantId } as never),
+} as unknown as AthleteRepository;
+
+const sportRepository = {
+    findById: async () => ({ id: "sport-1", tenantId } as never),
+} as unknown as SportRepository;
+
+function createUseCase(repository: PerformanceMetricRepository) {
+    return new CreatePerformanceMetricUseCase(
+        repository,
+        athleteRepository,
+        sportRepository,
+    );
+}
 
 function createRepository(
     existing?: PerformanceMetric,
@@ -64,9 +82,7 @@ function createCommand(dataType: string) {
 describe("Performance Metric numeric semantics", () => {
     for (const dataType of ["NUMBER", "DECIMAL", "INTEGER"]) {
         it(`accepts ${dataType}`, async () => {
-            const useCase = new CreatePerformanceMetricUseCase(
-                createRepository(),
-            );
+            const useCase = createUseCase(createRepository());
 
             const metric = await useCase.execute(createCommand(dataType));
 
@@ -78,9 +94,7 @@ describe("Performance Metric numeric semantics", () => {
 
     for (const dataType of ["TEXT", "BOOLEAN", "   "]) {
         it(`rejects unsupported dataType ${JSON.stringify(dataType)}`, async () => {
-            const useCase = new CreatePerformanceMetricUseCase(
-                createRepository(),
-            );
+            const useCase = createUseCase(createRepository());
 
             await expect(
                 useCase.execute(createCommand(dataType)),

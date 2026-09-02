@@ -396,6 +396,118 @@ describe("Performance Metric API Tenant Isolation and RBAC", () => {
     );
 
     it(
+        "rejects foreign-tenant and nonexistent Metric relationships without persistence",
+        async () => {
+            const tenantAUser = await createTestUser({
+                permissions: [
+                    "performance-metrics.create",
+                ],
+            });
+            const tenantBUser = await createTestUser();
+
+            const tenantAAthlete = await createAthlete(
+                tenantAUser.tenant.id,
+            );
+            const tenantBAthlete = await createAthlete(
+                tenantBUser.tenant.id,
+            );
+            const tenantASport = await createSport(
+                tenantAUser.tenant.id,
+                "Tenant A Sport",
+                "tenant-a-sport",
+            );
+            const tenantBSport = await createSport(
+                tenantBUser.tenant.id,
+                "Tenant B Sport",
+                "tenant-b-sport",
+            );
+            const accessToken = await login(
+                tenantAUser.tenant.id,
+                tenantAUser.user.email,
+                tenantAUser.password,
+            );
+
+            const attempts = [
+                {
+                    athleteId: tenantBAthlete.id,
+                    sportId: tenantASport.id,
+                    slug: "foreign-athlete",
+                },
+                {
+                    athleteId: "00000000-0000-0000-0000-000000000001",
+                    sportId: tenantASport.id,
+                    slug: "missing-athlete",
+                },
+                {
+                    athleteId: tenantAAthlete.id,
+                    sportId: tenantBSport.id,
+                    slug: "foreign-sport",
+                },
+                {
+                    athleteId: tenantAAthlete.id,
+                    sportId: "00000000-0000-0000-0000-000000000002",
+                    slug: "missing-sport",
+                },
+            ];
+
+            const statuses: number[] = [];
+            const responseBodies: Array<{
+                success: boolean;
+                error: {
+                    code: string;
+                    message: string;
+                };
+            }> = [];
+
+            for (const attempt of attempts) {
+                const response = await request(app)
+                    .post("/api/v1/performance-metrics")
+                    .set(
+                        "Authorization",
+                        `Bearer ${accessToken}`,
+                    )
+                    .send({
+                        ...attempt,
+                        name: attempt.slug,
+                        unit: "score",
+                        dataType: "NUMBER",
+                    });
+
+                statuses.push(response.status);
+                responseBodies.push(response.body);
+            }
+
+            expect(statuses).toEqual([404, 404, 404, 404]);
+            expect(
+                responseBodies.map((body) => body.error.code),
+            ).toEqual([
+                "HTTP_ERROR",
+                "HTTP_ERROR",
+                "HTTP_ERROR",
+                "HTTP_ERROR",
+            ]);
+            expect(responseBodies[0].error.message).toBe(
+                responseBodies[1].error.message,
+            );
+            expect(responseBodies[2].error.message).toBe(
+                responseBodies[3].error.message,
+            );
+
+            const persistedCount =
+                await testPrisma.performanceMetric.count({
+                    where: {
+                        tenantId: tenantAUser.tenant.id,
+                        slug: {
+                            in: attempts.map((attempt) => attempt.slug),
+                        },
+                    },
+                });
+
+            expect(persistedCount).toBe(0);
+        },
+    );
+
+    it(
         "rejects an unsupported performance metric dataType",
         async () => {
             const user = await createTestUser({

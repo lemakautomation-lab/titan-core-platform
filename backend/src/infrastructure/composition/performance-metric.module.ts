@@ -1,6 +1,8 @@
 import { DatabaseService } from "../database/database.service";
 
 import { PrismaPerformanceMetricRepository } from "../repositories/performance-metric.repository";
+import { PrismaAthleteRepository } from "../repositories/athlete.repository";
+import { PrismaSportRepository } from "../repositories/sport.repository";
 
 import { CreatePerformanceMetricUseCase } from "../../application/use-cases/create-performance-metric.use-case";
 import { GetPerformanceMetricByIdUseCase } from "../../application/use-cases/get-performance-metric-by-id.use-case";
@@ -16,11 +18,23 @@ const performanceMetricRepository =
         databaseService,
     );
 
+const athleteRepository =
+    new PrismaAthleteRepository(
+        databaseService,
+    );
+
+const sportRepository =
+    new PrismaSportRepository(
+        databaseService,
+    );
+
 export const performanceMetricModule = {
 
     createPerformanceMetricUseCase:
         new CreatePerformanceMetricUseCase(
             performanceMetricRepository,
+            athleteRepository,
+            sportRepository,
         ),
 
     getPerformanceMetricByIdUseCase:
