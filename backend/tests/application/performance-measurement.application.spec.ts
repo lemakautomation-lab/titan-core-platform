@@ -50,6 +50,7 @@ function createAthleteRepository(
 
 function createMetricRepository(
     metricAthleteId: string = athleteId,
+    dataType: string = "NUMBER",
 ): PerformanceMetricRepository {
 
     return {
@@ -75,7 +76,7 @@ function createMetricRepository(
                     slug: "sprint-speed",
                     description: null,
                     unit: "m/s",
-                    dataType: "NUMBER",
+                    dataType,
                     status: "ACTIVE" as never,
                     createdAt: new Date("2026-01-01T00:00:00.000Z"),
                     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
@@ -313,6 +314,43 @@ describe(
                 expect(
                     measurementRepository.create,
                 ).not.toHaveBeenCalled();
+            },
+        );
+
+        it.each([
+            ["INTEGER", 12, true],
+            ["INTEGER", 12.5, false],
+            ["NUMBER", 12.5, true],
+            ["DECIMAL", 12.5, true],
+        ])(
+            "%s measurement value %s has expected success %s",
+            async (dataType, value, expectedSuccess) => {
+                const measurementRepository =
+                    createMeasurementRepository();
+
+                const useCase =
+                    new CreatePerformanceMeasurementUseCase(
+                        measurementRepository,
+                        createAthleteRepository(),
+                        createMetricRepository(athleteId, dataType),
+                    );
+
+                const result = await useCase.execute({
+                    tenantId,
+                    athleteId,
+                    metricId,
+                    value,
+                });
+
+                expect(result.isSuccess).toBe(expectedSuccess);
+
+                if (!expectedSuccess) {
+                    expect(result.error).toBe(
+                        "INTEGER performance measurements must be integral.",
+                    );
+                    expect(measurementRepository.create)
+                        .not.toHaveBeenCalled();
+                }
             },
         );
 

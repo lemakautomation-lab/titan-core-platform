@@ -141,19 +141,10 @@ export class PerformanceMetricController {
             dataType: req.body.dataType,
         };
 
-        try {
-            const result =
-                await this.updatePerformanceMetricUseCase.execute(command);
+        const result =
+            await this.updatePerformanceMetricUseCase.execute(command);
 
-            res.status(200).json(result);
-        } catch (error) {
-            res.status(404).json({
-                error:
-                    error instanceof Error
-                        ? error.message
-                        : "Performance metric not found",
-            });
-        }
+        res.status(200).json(result);
     }
 
     async delete(req: AuthRequest, res: Response): Promise<void> {

@@ -1,8 +1,12 @@
-import { PerformanceMetric } from "../../domain/entities/performance-metric.entity";
+import {
+  PerformanceMetricValidationError,
+} from "../../domain/entities/performance-metric.entity";
 import { PerformanceMetricRepository } from "../../domain/repositories/performance-metric.repository";
 import { UpdatePerformanceMetricCommand } from "../commands/update-performance-metric.command";
 import { PerformanceMetricDto } from "../dto/performance-metric/performance-metric.dto";
 import { PerformanceMetricMapper } from "../mappers/performance-metric.mapper";
+import { NotFoundException } from "../../shared/exceptions/not-found.exception";
+import { ValidationException } from "../../shared/exceptions/validation.exception";
 
 export class UpdatePerformanceMetricUseCase {
   constructor(
@@ -19,31 +23,30 @@ export class UpdatePerformanceMetricUseCase {
     );
 
     if (!metric) {
-      throw new Error("Performance metric not found");
+      throw new NotFoundException("Performance metric not found");
     }
 
-    const updated = PerformanceMetric.create({
-      id: metric.id,
-      tenantId: metric.tenantId,
-      athleteId: metric.athleteId,
-      sportId: metric.sportId,
-      name: command.name?.trim() ?? metric.name,
-      slug: command.slug?.trim().toLowerCase() ?? metric.slug,
-      description:
-        command.description === undefined
-          ? metric.description
-          : command.description,
-      unit:
-        command.unit === undefined
-          ? metric.unit
-          : command.unit,
-      dataType:
-        command.dataType?.trim().toUpperCase() ??
-        metric.dataType,
-      status: metric.status,
-      createdAt: metric.createdAt,
-      updatedAt: new Date(),
-    });
+    let updated;
+
+    try {
+      updated = metric.updateDetails({
+        name: command.name,
+        slug: command.slug,
+        description: command.description,
+        unit: command.unit,
+        dataType: command.dataType,
+        updatedAt: new Date(),
+      });
+    } catch (error) {
+      if (error instanceof PerformanceMetricValidationError) {
+        throw new ValidationException([{
+          field: error.field,
+          message: error.message,
+        }]);
+      }
+
+      throw error;
+    }
 
     const result = await this.repository.update(updated);
 

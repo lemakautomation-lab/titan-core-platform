@@ -76,6 +76,15 @@ implements UseCase<
                     command.recordedAt,
                 );
 
+            if (
+                metric.dataType === "INTEGER" &&
+                !Number.isInteger(measurement.value)
+            ) {
+                return Result.failure(
+                    "INTEGER performance measurements must be integral.",
+                );
+            }
+
             const created =
                 await this.measurementRepository.create(
                     measurement,

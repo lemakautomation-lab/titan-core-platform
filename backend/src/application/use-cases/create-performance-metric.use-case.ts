@@ -1,8 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { RecordStatus } from "../../domain/enums/record-status.enum";
-import { PerformanceMetric } from "../../domain/entities/performance-metric.entity";
+import {
+  PerformanceMetric,
+  PerformanceMetricValidationError,
+} from "../../domain/entities/performance-metric.entity";
 import { PerformanceMetricRepository } from "../../domain/repositories/performance-metric.repository";
 import { CreatePerformanceMetricCommand } from "../commands/create-performance-metric.command";
+import { ValidationException } from "../../shared/exceptions/validation.exception";
 
 export class CreatePerformanceMetricUseCase {
   constructor(
@@ -10,20 +14,33 @@ export class CreatePerformanceMetricUseCase {
   ) {}
 
   async execute(command: CreatePerformanceMetricCommand) {
-    const metric = PerformanceMetric.create({
-      id: randomUUID(),
-      tenantId: command.tenantId,
-      athleteId: command.athleteId,
-      sportId: command.sportId,
-      name: command.name.trim(),
-      slug: command.slug.trim().toLowerCase(),
-      description: command.description?.trim() || null,
-      unit: command.unit?.trim() || null,
-      dataType: command.dataType.trim().toUpperCase(),
-      status: RecordStatus.ACTIVE,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    let metric: PerformanceMetric;
+
+    try {
+      metric = PerformanceMetric.create({
+        id: randomUUID(),
+        tenantId: command.tenantId,
+        athleteId: command.athleteId,
+        sportId: command.sportId,
+        name: command.name.trim(),
+        slug: command.slug.trim().toLowerCase(),
+        description: command.description,
+        unit: command.unit,
+        dataType: command.dataType,
+        status: RecordStatus.ACTIVE,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    } catch (error) {
+      if (error instanceof PerformanceMetricValidationError) {
+        throw new ValidationException([{
+          field: error.field,
+          message: error.message,
+        }]);
+      }
+
+      throw error;
+    }
 
     return this.repository.create(metric);
   }

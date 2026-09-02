@@ -158,6 +158,53 @@ describe("Performance Metric API Tenant Isolation and RBAC", () => {
             expect(updateResponse.body.slug).toBe(
                 "top-speed",
             );
+            expect(updateResponse.body.description).toBe(
+                "Updated maximum speed",
+            );
+            expect(updateResponse.body.unit).toBe("km/h");
+            expect(updateResponse.body.dataType).toBe("DECIMAL");
+
+            const unsupportedUpdateResponse = await request(app)
+                .put(
+                    `/api/v1/performance-metrics/${metricId}`,
+                )
+                .set(
+                    "Authorization",
+                    `Bearer ${accessToken}`,
+                )
+                .send({
+                    dataType: "BOOLEAN",
+                });
+
+            expect(unsupportedUpdateResponse.status).toBe(400);
+
+            const dataTypeMutationResponse = await request(app)
+                .put(
+                    `/api/v1/performance-metrics/${metricId}`,
+                )
+                .set(
+                    "Authorization",
+                    `Bearer ${accessToken}`,
+                )
+                .send({
+                    dataType: "INTEGER",
+                });
+
+            expect(dataTypeMutationResponse.status).toBe(400);
+
+            const unitMutationResponse = await request(app)
+                .put(
+                    `/api/v1/performance-metrics/${metricId}`,
+                )
+                .set(
+                    "Authorization",
+                    `Bearer ${accessToken}`,
+                )
+                .send({
+                    unit: "m/s",
+                });
+
+            expect(unitMutationResponse.status).toBe(400);
 
             const deleteResponse = await request(app)
                 .delete(
@@ -180,6 +227,20 @@ describe("Performance Metric API Tenant Isolation and RBAC", () => {
                 );
 
             expect(deletedResponse.status).toBe(404);
+
+            const missingUpdateResponse = await request(app)
+                .put(
+                    `/api/v1/performance-metrics/${metricId}`,
+                )
+                .set(
+                    "Authorization",
+                    `Bearer ${accessToken}`,
+                )
+                .send({
+                    name: "Missing Metric",
+                });
+
+            expect(missingUpdateResponse.status).toBe(404);
         },
     );
 
@@ -331,6 +392,42 @@ describe("Performance Metric API Tenant Isolation and RBAC", () => {
                 });
 
             expect(response.status).toBe(403);
+        },
+    );
+
+    it(
+        "rejects an unsupported performance metric dataType",
+        async () => {
+            const user = await createTestUser({
+                permissions: [
+                    "performance-metrics.create",
+                ],
+            });
+
+            const athlete = await createAthlete(user.tenant.id);
+            const sport = await createSport(user.tenant.id);
+            const accessToken = await login(
+                user.tenant.id,
+                user.user.email,
+                user.password,
+            );
+
+            const response = await request(app)
+                .post("/api/v1/performance-metrics")
+                .set(
+                    "Authorization",
+                    `Bearer ${accessToken}`,
+                )
+                .send({
+                    athleteId: athlete.id,
+                    sportId: sport.id,
+                    name: "Unsupported Metric",
+                    slug: "unsupported-metric",
+                    unit: "score",
+                    dataType: "TEXT",
+                });
+
+            expect(response.status).toBe(400);
         },
     );
 
