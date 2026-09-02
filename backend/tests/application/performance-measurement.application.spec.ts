@@ -468,6 +468,7 @@ describe(
                         athleteId,
                         metricId,
                         limit: 0,
+                        view: "raw",
                     };
 
                 const result =
@@ -528,6 +529,7 @@ describe(
                         athleteId,
                         metricId,
                         limit: 2,
+                        view: "raw",
                     });
 
                 expect(result.isSuccess).toBe(true);
@@ -564,6 +566,7 @@ describe(
                         athleteId,
                         metricId,
                         limit: 10,
+                        view: "raw",
                     });
 
                 expect(result.isSuccess).toBe(false);

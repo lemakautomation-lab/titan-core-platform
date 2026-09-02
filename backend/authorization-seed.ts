@@ -55,6 +55,9 @@ async function main() {
         "performance-metrics.create",
         "performance-metrics.update",
         "performance-metrics.delete",
+        "performance-measurements.create",
+        "performance-measurements.read",
+        "performance-measurements.correct",
     ];
 
     const permissions = [];

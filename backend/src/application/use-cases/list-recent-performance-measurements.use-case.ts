@@ -11,6 +11,7 @@ export interface ListRecentPerformanceMeasurementsQuery {
     athleteId: string;
     metricId: string;
     limit: number;
+    view: "raw" | "effective";
 }
 
 export class ListRecentPerformanceMeasurementsUseCase
@@ -34,12 +35,15 @@ implements UseCase<
         query: ListRecentPerformanceMeasurementsQuery,
     ): Promise<Result<PerformanceMeasurement[]>> {
 
-        if (
-            !Number.isInteger(query.limit) ||
-            query.limit <= 0
-        ) {
+        if (!Number.isInteger(query.limit) || query.limit <= 0) {
             return Result.failure(
                 "Performance measurement limit must be positive.",
+            );
+        }
+
+        if (query.limit > 100) {
+            return Result.failure(
+                "Performance measurement limit must be an integer between 1 and 100.",
             );
         }
 
@@ -73,8 +77,12 @@ implements UseCase<
             );
         }
 
+        const list = query.view === "raw"
+            ? this.measurementRepository.listRecentForMetric.bind(this.measurementRepository)
+            : this.measurementRepository.listRecentEffectiveForMetric.bind(this.measurementRepository);
+
         const measurements =
-            await this.measurementRepository.listRecentForMetric(
+            await list(
                 query.tenantId,
                 query.athleteId,
                 query.metricId,

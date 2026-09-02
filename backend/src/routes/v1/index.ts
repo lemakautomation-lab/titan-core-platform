@@ -16,6 +16,7 @@ import { createExerciseRoutes } from "../../presentation/routes/exercise.routes"
 import { createPerformanceMetricRoutes } from "../../presentation/routes/performance-metric.routes";
 import { createWorkoutProgrammeRoutes } from "../../presentation/routes/workout-programme.routes";
 import { createProductRoutes } from "../../presentation/routes/product.routes";
+import { createPerformanceMeasurementRoutes } from "../../presentation/routes/performance-measurement.routes";
 
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
@@ -33,6 +34,7 @@ import { ExerciseController } from "../../presentation/controllers/exercise.cont
 import { PerformanceMetricController } from "../../presentation/controllers/performance-metric.controller";
 import { WorkoutProgrammeController } from "../../presentation/controllers/workout-programme.controller";
 import { ProductController } from "../../presentation/controllers/product.controller";
+import { PerformanceMeasurementController } from "../../presentation/controllers/performance-measurement.controller";
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
@@ -52,6 +54,7 @@ import { exerciseModule } from "../../infrastructure/composition/exercise.module
 import { performanceMetricModule } from "../../infrastructure/composition/performance-metric.module";
 import { workoutProgrammeModule } from "../../infrastructure/composition/workout-programme.module";
 import { productModule } from "../../infrastructure/composition/product.module";
+import { performanceMeasurementModule } from "../../infrastructure/composition/performance-measurement.module";
 
 const router = Router();
 
@@ -179,6 +182,12 @@ const productController =
         productModule.updateProductUseCase,
         productModule.deleteProductUseCase,
     );
+const performanceMeasurementController =
+    new PerformanceMeasurementController(
+        performanceMeasurementModule.createUseCase,
+        performanceMeasurementModule.createCorrectionUseCase,
+        performanceMeasurementModule.listUseCase,
+    );
 const permissionController =
     new PermissionController(
         permissionModule.createPermissionUseCase,
@@ -278,6 +287,11 @@ router.use(
     createPerformanceMetricRoutes(
         performanceMetricController,
     ),
+);
+
+router.use(
+    "/performance-measurements",
+    createPerformanceMeasurementRoutes(performanceMeasurementController),
 );
 
 router.use(

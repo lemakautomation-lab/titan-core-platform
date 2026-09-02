@@ -32,3 +32,7 @@ export interface PerformanceMeasurementRepository {
         limit: number,
     ): Promise<PerformanceMeasurement[]>;
 }
+
+export type PerformanceMeasurementCreateOutcome = Awaited<
+    ReturnType<PerformanceMeasurementRepository["createIdempotently"]>
+>;

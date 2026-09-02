@@ -15,7 +15,17 @@ implements PerformanceMeasurementRepository {
     constructor(private readonly database: DatabaseService) {}
 
     async createIdempotently(measurement: PerformanceMeasurement) {
-        const inserted = await this.database.prisma.$queryRaw<MeasurementRow[]>`
+        return this.createIdempotentlyWith(
+            this.database.prisma,
+            measurement,
+        );
+    }
+
+    async createIdempotentlyWith(
+        prisma: Pick<DatabaseService["prisma"], "$queryRaw">,
+        measurement: PerformanceMeasurement,
+    ) {
+        const inserted = await prisma.$queryRaw<MeasurementRow[]>`
             INSERT INTO "PerformanceMeasurement" (
                 "id", "tenantId", "athleteId", "metricId", "value",
                 "recordedAt", "createdAt", "sourceType", "sourceId",
@@ -31,7 +41,7 @@ implements PerformanceMeasurementRepository {
             return { kind: "created" as const, measurement: this.toDomain(inserted[0]) };
         }
 
-        const existing = await this.database.prisma.$queryRaw<MeasurementRow[]>`
+        const existing = await prisma.$queryRaw<MeasurementRow[]>`
             SELECT * FROM "PerformanceMeasurement"
             WHERE "tenantId" = ${measurement.tenantId}
               AND "sourceType" = ${measurement.sourceType}
