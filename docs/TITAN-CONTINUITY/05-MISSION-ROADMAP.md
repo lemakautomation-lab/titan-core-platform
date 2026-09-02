@@ -48,12 +48,11 @@ Product API:
 
 ## MISSION 052
 
-ACTIVE / INCOMPLETE — OPTION B NARROWED ARCHITECTURE APPROVED.
+COMPLETE / VERIFIED — R7 GOVERNANCE RELEASE PENDING.
 
-Performance Metric and Performance Measurement foundations have been partially
-implemented. Option B narrows Mission 052 to that operational foundation. This approval
-occurred after the historical implementation and does not rewrite history as prior approval.
-Bounded closure controls 052-R1 through 052-R7 and formal sign-off remain outstanding.
+Option B narrowed Mission 052 to the operational Performance Metric / Performance
+Measurement foundation. R0–R6 are complete, verified, committed and pushed. R7 acceptance
+is satisfied and its governance sign-off awaits Gate 3 commit/push.
 
 ## MISSION 055.1
 
@@ -74,8 +73,8 @@ and the current roadmap before changing code.
 
 ## CURRENT GOVERNANCE CHECKPOINT
 
-052-R0 — Narrowed Architecture Contract (documentation only).
+052-R7 — Acceptance Mapping and Mission Sign-off (prepared; release pending).
 
 Advanced capabilities are excluded from Mission 052 to a future separately specified
-successor mission. No successor mission number is assigned. No production implementation
-control is authorised; 052-R1 requires separate approval.
+successor mission. No successor mission number is assigned. Further work requires separate
+authoritative planning and approval.

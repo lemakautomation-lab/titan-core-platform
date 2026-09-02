@@ -6,18 +6,17 @@ Branch: main
 
 HEAD and origin/main:
 
-482487a661b4778412c176e34339eb1fa1bd8f06
+46203a7acec51f237b0c52fdcbcf1062ce3f0b0f
 
 Latest pushed commit:
 
-`482487a` — docs: reconcile mission governance after Mission 055.1
+`46203a7` — Mission 052-R6: Close measurement security regressions
 
 Local main and origin/main are synchronized.
 
 ## MISSION STATUS
 
-- Mission 052 — ACTIVE / INCOMPLETE. Option B narrowed architecture is approved; bounded
-  closure controls and formal sign-off remain outstanding.
+- Mission 052 — COMPLETE / VERIFIED technical acceptance; R7 governance commit/push pending.
 - Mission 053 — COMPLETE.
 - Mission 054 — COMPLETE.
 - Mission 055.1 — COMPLETE / VERIFIED / COMMITTED / PUSHED.
@@ -29,9 +28,8 @@ Mission 055.1 implementation commits:
 
 ## VERIFICATION
 
-- Performance Measurement application suite: 8/8 GREEN;
-- relevant serial regression: 6 files / 32 tests / 0 failures;
-- backend TypeScript build: GREEN.
+- R5 focused: 25/25; serial affected: 15 files / 100 tests; Prisma/build: GREEN.
+- R6 focused: 9/9; serial affected: 15 files / 102 tests; Prisma/build: GREEN.
 
 ## WORKTREE
 
@@ -44,12 +42,11 @@ in progress. Do not bulk-stage, clean, reset, revert, stash or discard unrelated
 
 ## CURRENT GOVERNANCE CHECKPOINT
 
-052-R0 — Narrowed Architecture Contract (documentation only).
+052-R7 — Acceptance Mapping and Mission Sign-off.
 
-Option B narrows Mission 052 to the Performance Metric / Performance Measurement
-operational foundation. Controls 052-R1 through 052-R7 are ordered but require separate
-approval one bounded control at a time.
+R0–R6 are complete, verified, committed and pushed. R7 acceptance is satisfied; the
+governance-only sign-off is prepared and awaits Gate 3 commit/push.
 
 Advanced capabilities are excluded to a future separately specified successor mission. No
-successor mission number is assigned. Do not begin R1 or production implementation under
-the R0 authorization.
+successor mission number is assigned. Do not begin successor implementation without
+separate authorization.

@@ -2,29 +2,26 @@
 
 ## CHECKPOINT
 
-052-R0 — Narrowed Architecture Contract (documentation only).
+052-R7 — Acceptance Mapping and Mission Sign-off.
 
 ## CONFIRMED STATE
 
 - Mission 055.1 is COMPLETE / VERIFIED / COMMITTED / PUSHED.
-- Mission 052 remains ACTIVE / INCOMPLETE under approved Option B.
+- Mission 052 technical acceptance is COMPLETE / VERIFIED under approved Option B.
 - Missions 053 and 054 remain COMPLETE.
 - No numbered successor implementation mission or control is currently authorised.
 
 ## ACTION SEQUENCE
 
-1. Record the approved Option B narrowed scope and canonical semantics.
-2. Record the ordered controls 052-R0 through 052-R7.
-3. Preserve the historical fact that partial implementation preceded this approval.
-4. Record excluded advanced scope without assigning a successor mission number.
-5. Verify and selectively commit/push R0 after approval.
-6. Stop. Control 052-R1 requires separate approval.
+1. Review the bounded R7 governance-only sign-off.
+2. Selectively commit and push it only after Gate 3 authorization.
+3. Stop. Any next mission/control requires separate authoritative planning and approval.
 
 ## DO NOT
 
 - assign a successor mission number;
-- begin R1 or any production implementation;
-- mark Mission 052 complete without acceptance evidence and sign-off;
+- begin successor production implementation;
+- claim the R7 sign-off is committed/pushed before Gate 3;
 - convert deferred freshness or composite-constraint risks into completed controls;
 - add the TITAN Technical Library to the numbered roadmap before formal planning;
 - bulk-stage or alter unrelated dirty-tree work.

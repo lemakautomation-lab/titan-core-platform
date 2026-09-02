@@ -28,9 +28,8 @@ Serial execution has previously produced deterministic results.
 
 ## 4. MISSION 052 GOVERNANCE
 
-Mission 052 remains ACTIVE / INCOMPLETE. Option B narrowed architecture is approved after
-the partial historical implementation. Bounded closure controls 052-R1 through 052-R7,
-verification and formal sign-off remain outstanding.
+Mission 052 narrowed technical acceptance is satisfied. R0–R6 are complete, verified,
+committed and pushed. R7 sign-off content is prepared; its commit/push remains pending.
 
 ## 5. MISSION NOTES
 
@@ -41,10 +40,10 @@ MISSION-055.1-IMPLEMENTATION-NOTES.md is the closure record for the completed Mi
 Mission 055.1 did not invent a Performance Measurement freshness limit. Freshness remains
 a consuming decision/adaptation-policy concern, not a universal persistence constraint.
 
-Composite tenant/athlete/metric integrity for PerformanceMetric and
-PerformanceMeasurement is now a mandatory Mission 052 closure invariant assigned to
-Control 052-R3. The exact safe database design is not prescribed by R0. Broader composite
-integrity outside the narrowed Performance Engine remains separately governed.
+Composite tenant/Athlete integrity is closed by R3; provenance/idempotency/correction by
+R4/R5; the minimum API by R5; Measurement RBAC and correction audit by R5/R6; bounded list
+exposure by R5; and direct persistence/API coverage by R3–R6. High-volume storage,
+retention and advanced projections remain successor scope.
 
 ## 6. DO NOT ASSUME
 

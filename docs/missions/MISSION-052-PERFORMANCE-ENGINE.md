@@ -2,7 +2,7 @@
 
 ## Status
 
-ACTIVE / INCOMPLETE — OPTION B NARROWED ARCHITECTURE APPROVED; CLOSURE CONTROLS OUTSTANDING
+COMPLETE / VERIFIED — TECHNICAL ACCEPTANCE SATISFIED; R7 SIGN-OFF COMMIT/PUSH PENDING
 
 ## Important
 
@@ -27,8 +27,9 @@ implementation occurred.
 Mission 052 is narrowed to the proven Performance Metric / Performance Measurement
 operational foundation.
 
-Mission 052 remains ACTIVE / INCOMPLETE until its bounded closure controls are implemented,
-verified and formally signed off.
+Controls 052-R0 through 052-R6 are complete, verified, committed and pushed. Control
+052-R7 found the narrowed acceptance contract satisfied; this governance sign-off is
+prepared and awaits its Gate 3 commit and push.
 
 Advanced capabilities originally contemplated by this document are excluded from Mission
 052 closure and require a future separately specified successor mission. No successor
@@ -229,26 +230,24 @@ To be formally completed, Mission 052 must have:
 - documented verification
 - mission sign-off
 
-These criteria remain governing requirements. The existing partial implementation does
-not, by itself, satisfy or waive any criterion that has not been explicitly verified and
-approved.
+These criteria remain governing requirements. Controls R1–R6 supplied the implementation
+and verification evidence, and R7 acceptance found every narrowed criterion satisfied.
 
 ## Implemented Foundation
 
-Repository evidence currently includes:
+Final repository evidence includes:
 
 - Performance Metric domain, persistence, application and API foundations;
 - tenant-isolation and permission integration coverage for Performance Metrics;
-- Performance Measurement domain entity, persistence repository and create/list-recent
-  application boundaries;
-- Performance Measurement application-boundary verification at 8/8 GREEN;
-- use of scoped Performance Measurement evidence by the completed Mission 055.1 athlete
-  adaptation control.
+- Performance Measurement domain, persistence, create/correct/read application and API
+  boundaries;
+- tenant-safe idempotency, correction, audit and bounded retrieval controls;
+- committed R1–R6 integrity/security regression protection;
+- effective Measurement consumption by the athlete adaptation control.
 
-The implemented foundation does not establish completion of the broader Performance
-Engine. In particular, the architecture/data strategy, complete API scope,
-scalability-sensitive storage direction, remaining performance-data categories and formal
-Mission 052 sign-off remain incomplete or unapproved.
+This completes the approved narrowed foundation only. Broader Performance Engine
+capabilities remain deferred to an unnumbered successor and are not implied by this
+acceptance.
 
 ## Approved Ordered Closure Controls
 
@@ -264,10 +263,31 @@ Mission 052 sign-off remain incomplete or unapproved.
 R1 and R2 are conceptually separable. Implementation must nevertheless continue one
 bounded control at a time using the TITAN engineering method.
 
-## Current Control
+## Final Acceptance
 
-052-R0 — Narrowed Architecture Contract.
+The narrowed foundation delivers athlete-scoped numeric Metric configuration; immutable
+unit/data-type semantics; tenant-safe ownership and composite database integrity;
+athlete-owned Measurements with UUID identity, provenance, database-authoritative
+idempotency and append-only corrections; raw/effective bounded retrieval; effective
+adaptation consumption; authenticated create/read/correct APIs; exact RBAC separation;
+principal-derived authority; non-disclosure; and atomic correction auditing.
 
-After R0 is documented, reviewed, selectively committed and pushed, implementation may
-proceed only with separately approved Control 052-R1. No later control is authorised by
-the R0 approval.
+No blocking security or data-integrity gap remains. R1–R4 were individually verified.
+R5 passed 25/25 focused tests and 15 files / 100 serial tests; R6 passed 9/9 focused tests
+and 15 files / 102 serial tests. Prisma validation and the backend build passed for both.
+
+R0–R6 release chain:
+
+- R0 `0bd8607320749836be3d5c417604f989f905d688` — narrowed architecture contract;
+- R1 `95bd064727363f2ccfdb520210a1b6fcad8b29c0` — numeric metric semantics;
+- R2 `e007a3635967bc5bd27f6e68025b4ca590679490` — relationship ownership;
+- R3 `1d70068a828de17a8711e9c72590f9c4b85a54e4` — composite database integrity;
+- R4 `fe242e38695ba95c0c5d0827dda0d94361db92d9` — observation identity/correction;
+- R5 `f40341fc6ab968dbffb4b620d217a30ca891e701` — Measurement API/audit boundary;
+- R6 `46203a7acec51f237b0c52fdcbcf1062ce3f0b0f` — security regression closure.
+
+The R7 sign-off commit is pending Gate 3.
+
+Advanced scope remains deferred to an unnumbered successor. TITAN Enterprise remains the
+top-level platform, TITAN Health remains one product, and Mission 052 did not create a
+universal cross-product Measurement service.

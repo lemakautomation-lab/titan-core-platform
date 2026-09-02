@@ -18,11 +18,11 @@ If this package conflicts with the repository, inspect the repository and resolv
 
 ## CURRENT LIVE CHECKPOINT
 
-Mission 052 Control 052-R0 — Narrowed Architecture Contract.
+Mission 052 Control 052-R7 — Acceptance Mapping and Mission Sign-off.
 
-Mission 052 remains ACTIVE / INCOMPLETE. Option B is approved: the mission is narrowed to
-the Performance Metric / Performance Measurement operational foundation. The ordered
-bounded closure controls remain incomplete.
+Mission 052 technical acceptance is satisfied for the narrowed Performance Metric /
+Performance Measurement foundation. R0–R6 are complete, verified, committed and pushed;
+the R7 governance sign-off is prepared and awaits Gate 3 commit/push.
 
 Missions 053, 054 and 055.1 are COMPLETE.
 
@@ -36,21 +36,21 @@ Branch:
 main
 
 HEAD:
-482487a661b4778412c176e34339eb1fa1bd8f06
+46203a7acec51f237b0c52fdcbcf1062ce3f0b0f
 
 origin/main:
-482487a661b4778412c176e34339eb1fa1bd8f06
+46203a7acec51f237b0c52fdcbcf1062ce3f0b0f
 
 Latest pushed commit:
-`482487a` — docs: reconcile mission governance after Mission 055.1
+`46203a7` — Mission 052-R6: Close measurement security regressions
 
 The working tree remains intentionally dirty with unrelated modified frontend/product/Prisma
 files and the untracked continuity package. Mission 055.1 implementation is committed.
 
 ## EXACT NEXT ACTION
 
-Complete documentation-only Control 052-R0, verify it, and selectively commit/push it after
-approval. Do not begin production implementation. Control 052-R1 requires separate approval.
+Review and selectively release the prepared R7 governance-only sign-off after explicit
+Gate 3 approval. Do not begin successor implementation.
 
 Advanced scope is excluded to a future separately specified successor mission. No successor
 mission number is assigned.

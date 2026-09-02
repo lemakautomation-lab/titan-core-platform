@@ -75,7 +75,7 @@ Never:
 
 ## CURRENT CHECKPOINT
 
-Mission 052 Control 052-R0 — Narrowed Architecture Contract.
+Mission 052 Control 052-R7 — Acceptance Mapping and Mission Sign-off.
 
 Mission 055.1 is COMPLETE / VERIFIED / COMMITTED / PUSHED.
 
@@ -84,11 +84,11 @@ Mission 055.1 is COMPLETE / VERIFIED / COMMITTED / PUSHED.
 
 Branch `main`, HEAD and origin/main are synchronized at:
 
-482487a661b4778412c176e34339eb1fa1bd8f06
+46203a7acec51f237b0c52fdcbcf1062ce3f0b0f
 
-Mission 052 remains ACTIVE / INCOMPLETE under approved Option B. It is narrowed to the
-Performance Metric / Performance Measurement operational foundation. Controls R1–R7 and
-formal sign-off remain outstanding.
+Mission 052 technical acceptance is COMPLETE / VERIFIED under approved Option B. R0–R6
+are committed and pushed; the R7 governance sign-off is prepared but not yet committed or
+pushed.
 
 Missions 053 and 054 are COMPLETE.
 
@@ -100,9 +100,8 @@ The current worktree remains dirty with unrelated frontend/product/Prisma and co
 
 Read the Mission 052 specification, Mission Index and current continuity checkpoint.
 
-Complete documentation-only Control 052-R0. Do not begin R1 or production implementation.
-Advanced scope belongs to a future separately specified successor mission with no assigned
-number.
+Review and release the R7 governance-only sign-off only with explicit Gate 3 authorization.
+Do not begin successor implementation or assign a successor mission number.
 
 ## PRODUCT REQUIREMENTS
 

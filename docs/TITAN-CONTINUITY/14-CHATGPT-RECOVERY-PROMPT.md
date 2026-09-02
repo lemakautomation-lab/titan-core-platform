@@ -9,7 +9,7 @@ Branch: main
 
 HEAD and origin/main:
 
-482487a661b4778412c176e34339eb1fa1bd8f06
+46203a7acec51f237b0c52fdcbcf1062ce3f0b0f
 
 Mission 055.1 is COMPLETE / VERIFIED / COMMITTED / PUSHED.
 
@@ -22,8 +22,8 @@ Closure evidence:
 - relevant serial regression: 32/32 GREEN;
 - backend build: GREEN.
 
-Mission 052 remains ACTIVE / INCOMPLETE. Option B narrowed architecture was approved after
-the partial historical implementation; bounded controls R1–R7 and sign-off remain open.
+Mission 052 technical acceptance is COMPLETE / VERIFIED. R0–R6 are committed and pushed;
+R7 sign-off is prepared but its governance commit/push remains pending.
 
 Missions 053 and 054 remain COMPLETE.
 
@@ -31,8 +31,9 @@ No numbered successor implementation mission or control is currently authorised.
 
 ## NEXT
 
-Complete documentation-only Control 052-R0, then stop for approval. Do not begin R1 or
-production implementation. Advanced scope is excluded to an unnumbered future successor.
+Review and selectively release the R7 governance-only sign-off after explicit Gate 3
+authorization. Do not begin successor implementation. Advanced scope remains deferred to
+an unnumbered future successor.
 
 Do not infer a mission number, begin implementation, bulk-stage, weaken security, or alter
 unrelated dirty-tree work.
