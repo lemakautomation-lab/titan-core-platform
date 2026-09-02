@@ -40,11 +40,12 @@ model Sport {
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   tenant             Tenant              @relation(fields: [tenantId], references: [id])
-  performanceMetrics PerformanceMetric[]
+  performanceMetrics PerformanceMetric[] @relation("PerformanceMetricSportTenant")
   workoutProgrammes  WorkoutProgramme[]
   exercises          Exercise[]
 
   @@unique([tenantId, slug])
+  @@unique([id, tenantId], map: "Sport_id_tenantId_key")
   @@index([tenantId])
 }
 
@@ -100,10 +101,11 @@ model Athlete {
   user                    User?                    @relation(fields: [userId], references: [id])
   relationships           AthleteRelationship[]
   athleteDigitalTwins     AthleteDigitalTwin[]
-  performanceMetrics      PerformanceMetric[]
-  performanceMeasurements PerformanceMeasurement[]
+  performanceMetrics      PerformanceMetric[]      @relation("PerformanceMetricAthleteTenant")
+  performanceMeasurements PerformanceMeasurement[] @relation("PerformanceMeasurementAthleteTenant")
   workoutProgrammes       WorkoutProgramme[]
 
+  @@unique([id, tenantId], map: "Athlete_id_tenantId_key")
   @@index([tenantId])
   @@index([organisationId])
   @@index([userId])
@@ -291,11 +293,12 @@ model PerformanceMetric {
   updatedAt   DateTime     @updatedAt
 
   tenant                  Tenant                   @relation(fields: [tenantId], references: [id])
-  athlete                 Athlete                  @relation(fields: [athleteId], references: [id])
-  sport                   Sport                    @relation(fields: [sportId], references: [id])
-  performanceMeasurements PerformanceMeasurement[]
+  athlete                 Athlete                  @relation("PerformanceMetricAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  sport                   Sport                    @relation("PerformanceMetricSportTenant", fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  performanceMeasurements PerformanceMeasurement[] @relation("PerformanceMeasurementMetricTenantAthlete")
 
   @@unique([tenantId, athleteId, sportId, slug])
+  @@unique([id, tenantId, athleteId], map: "PerformanceMetric_id_tenantId_athleteId_key")
   @@index([tenantId])
   @@index([athleteId])
   @@index([sportId])
@@ -439,8 +442,8 @@ model PerformanceMeasurement {
   createdAt  DateTime @default(now())
 
   tenant  Tenant            @relation(fields: [tenantId], references: [id])
-  athlete Athlete           @relation(fields: [athleteId], references: [id])
-  metric  PerformanceMetric @relation(fields: [metricId], references: [id])
+  athlete Athlete           @relation("PerformanceMeasurementAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  metric  PerformanceMetric @relation("PerformanceMeasurementMetricTenantAthlete", fields: [metricId, tenantId, athleteId], references: [id, tenantId, athleteId], onDelete: Restrict, onUpdate: Cascade)
 
   @@index([tenantId, athleteId, metricId, recordedAt])
   @@index([tenantId, athleteId])
