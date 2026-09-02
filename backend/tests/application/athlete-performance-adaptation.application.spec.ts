@@ -82,7 +82,7 @@ function createFixture(overrides?: {
     } as unknown as PerformanceMetricRepository;
 
     const measurementRepository = {
-        listRecentForMetric: vi.fn(
+        listRecentEffectiveForMetric: vi.fn(
             async () => measurement ? [measurement] : [],
         ),
     } as unknown as PerformanceMeasurementRepository;
@@ -148,7 +148,7 @@ describe("Athlete performance adaptation application boundary", () => {
                 sessionDurationMinutesDelta: 15,
             }),
         );
-        expect(fixture.measurementRepository.listRecentForMetric)
+        expect(fixture.measurementRepository.listRecentEffectiveForMetric)
             .toHaveBeenCalledWith(tenantId, athleteId, metricId, 1);
     });
 

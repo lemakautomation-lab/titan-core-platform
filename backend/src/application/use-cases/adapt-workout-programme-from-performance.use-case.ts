@@ -79,7 +79,7 @@ implements UseCase<
             }
 
             const measurements =
-                await this.measurementRepository.listRecentForMetric(
+                await this.measurementRepository.listRecentEffectiveForMetric(
                     command.tenantId,
                     command.athleteId,
                     command.metricId,

@@ -440,11 +440,21 @@ model PerformanceMeasurement {
   value      Decimal  @db.Decimal(20, 6)
   recordedAt DateTime @default(now())
   createdAt  DateTime @default(now())
+  sourceType String?
+  sourceId String?
+  sourceObservationId String?
+  correctsMeasurementId String?
 
   tenant  Tenant            @relation(fields: [tenantId], references: [id])
   athlete Athlete           @relation("PerformanceMeasurementAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
   metric  PerformanceMetric @relation("PerformanceMeasurementMetricTenantAthlete", fields: [metricId, tenantId, athleteId], references: [id, tenantId, athleteId], onDelete: Restrict, onUpdate: Cascade)
+  corrects PerformanceMeasurement? @relation("PerformanceMeasurementCorrections", fields: [correctsMeasurementId, tenantId, athleteId, metricId], references: [id, tenantId, athleteId, metricId], onDelete: Restrict, onUpdate: Cascade)
+  correctedBy PerformanceMeasurement[] @relation("PerformanceMeasurementCorrections")
 
+  @@unique([id, tenantId, athleteId, metricId], map: "PerformanceMeasurement_id_tenantId_athleteId_metricId_key")
+  @@unique([tenantId, sourceType, sourceId, sourceObservationId], map: "PerformanceMeasurement_source_identity_key")
+  @@unique([correctsMeasurementId], map: "PerformanceMeasurement_correctsMeasurementId_key")
   @@index([tenantId, athleteId, metricId, recordedAt])
   @@index([tenantId, athleteId])
+  @@index([tenantId, athleteId, metricId, correctsMeasurementId], map: "PerformanceMeasurement_effective_lookup_idx")
 }

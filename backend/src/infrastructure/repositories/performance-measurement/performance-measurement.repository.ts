@@ -2,86 +2,108 @@ import { PerformanceMeasurement } from "../../../domain/entities/performance-mea
 import { PerformanceMeasurementRepository } from "../../../domain/repositories/performance-measurement/performance-measurement.repository";
 import { DatabaseService } from "../../database/database.service";
 
+type MeasurementRow = {
+    id: string; tenantId: string; athleteId: string; metricId: string;
+    value: unknown; recordedAt: Date; createdAt: Date;
+    sourceType: string | null; sourceId: string | null;
+    sourceObservationId: string | null;
+    correctsMeasurementId: string | null;
+};
+
 export class PrismaPerformanceMeasurementRepository
 implements PerformanceMeasurementRepository {
+    constructor(private readonly database: DatabaseService) {}
 
-    constructor(
-        private readonly database: DatabaseService,
-    ) {}
+    async createIdempotently(measurement: PerformanceMeasurement) {
+        const inserted = await this.database.prisma.$queryRaw<MeasurementRow[]>`
+            INSERT INTO "PerformanceMeasurement" (
+                "id", "tenantId", "athleteId", "metricId", "value",
+                "recordedAt", "createdAt", "sourceType", "sourceId",
+                "sourceObservationId", "correctsMeasurementId"
+            ) VALUES (
+                ${measurement.id}, ${measurement.tenantId}, ${measurement.athleteId},
+                ${measurement.metricId}, ${measurement.value}, ${measurement.recordedAt},
+                ${measurement.createdAt}, ${measurement.sourceType}, ${measurement.sourceId},
+                ${measurement.sourceObservationId}, ${measurement.correctsMeasurementId}
+            ) ON CONFLICT DO NOTHING RETURNING *
+        `;
+        if (inserted[0]) {
+            return { kind: "created" as const, measurement: this.toDomain(inserted[0]) };
+        }
 
-    async create(
-        measurement: PerformanceMeasurement,
-    ): Promise<PerformanceMeasurement> {
+        const existing = await this.database.prisma.$queryRaw<MeasurementRow[]>`
+            SELECT * FROM "PerformanceMeasurement"
+            WHERE "tenantId" = ${measurement.tenantId}
+              AND "sourceType" = ${measurement.sourceType}
+              AND "sourceId" = ${measurement.sourceId}
+              AND "sourceObservationId" = ${measurement.sourceObservationId}
+            LIMIT 1
+        `;
+        if (!existing[0]) return { kind: "correction-conflict" as const };
+        const persisted = this.toDomain(existing[0]);
+        if (!this.samePayload(persisted, measurement)) {
+            return { kind: "idempotency-conflict" as const };
+        }
+        return { kind: "replayed" as const, measurement: persisted };
+    }
 
-        const created =
-            await this.database.prisma.performanceMeasurement.create({
-                data: {
-                    id: measurement.id,
-                    tenantId: measurement.tenantId,
-                    athleteId: measurement.athleteId,
-                    metricId: measurement.metricId,
-                    value: measurement.value,
-                    recordedAt: measurement.recordedAt,
-                    createdAt: measurement.createdAt,
-                },
-            });
+    async findCorrectionTarget(id: string, tenantId: string, athleteId: string, metricId: string) {
+        const rows = await this.database.prisma.$queryRaw<MeasurementRow[]>`
+            SELECT * FROM "PerformanceMeasurement"
+            WHERE "id" = ${id} AND "tenantId" = ${tenantId}
+              AND "athleteId" = ${athleteId} AND "metricId" = ${metricId}
+            LIMIT 1
+        `;
+        return rows[0] ? this.toDomain(rows[0]) : null;
+    }
 
+    async listRecentForMetric(tenantId: string, athleteId: string, metricId: string, limit: number) {
+        this.validateLimit(limit);
+        const rows = await this.database.prisma.$queryRaw<MeasurementRow[]>`
+            SELECT * FROM "PerformanceMeasurement"
+            WHERE "tenantId" = ${tenantId} AND "athleteId" = ${athleteId}
+              AND "metricId" = ${metricId}
+            ORDER BY "recordedAt" DESC, "id" DESC LIMIT ${limit}
+        `;
+        return rows.map(row => this.toDomain(row));
+    }
+
+    async listRecentEffectiveForMetric(tenantId: string, athleteId: string, metricId: string, limit: number) {
+        this.validateLimit(limit);
+        const rows = await this.database.prisma.$queryRaw<MeasurementRow[]>`
+            SELECT measurement.* FROM "PerformanceMeasurement" measurement
+            WHERE measurement."tenantId" = ${tenantId}
+              AND measurement."athleteId" = ${athleteId}
+              AND measurement."metricId" = ${metricId}
+              AND NOT EXISTS (
+                  SELECT 1 FROM "PerformanceMeasurement" correction
+                  WHERE correction."correctsMeasurementId" = measurement."id"
+              )
+            ORDER BY measurement."recordedAt" DESC, measurement."id" DESC LIMIT ${limit}
+        `;
+        return rows.map(row => this.toDomain(row));
+    }
+
+    private validateLimit(limit: number) {
+        if (!Number.isInteger(limit) || limit <= 0) {
+            throw new Error("Performance measurement limit must be positive.");
+        }
+    }
+
+    private toDomain(row: MeasurementRow) {
         return new PerformanceMeasurement(
-            created.id,
-            created.tenantId,
-            created.athleteId,
-            created.metricId,
-            Number(created.value),
-            created.recordedAt,
-            created.createdAt,
+            row.id, row.tenantId, row.athleteId, row.metricId,
+            Number(row.value), row.recordedAt, row.createdAt,
+            row.sourceType, row.sourceId, row.sourceObservationId,
+            row.correctsMeasurementId,
         );
     }
 
-    async listRecentForMetric(
-        tenantId: string,
-        athleteId: string,
-        metricId: string,
-        limit: number,
-    ): Promise<PerformanceMeasurement[]> {
-
-        if (
-            !Number.isInteger(limit) ||
-            limit <= 0
-        ) {
-            throw new Error(
-                "Performance measurement limit must be positive.",
-            );
-        }
-
-        const rows =
-            await this.database.prisma.performanceMeasurement.findMany({
-                where: {
-                    tenantId,
-                    athleteId,
-                    metricId,
-                },
-                orderBy: [
-                    {
-                        recordedAt: "desc",
-                    },
-                    {
-                        id: "desc",
-                    },
-                ],
-                take: limit,
-            });
-
-        return rows.map(
-            (row) =>
-                new PerformanceMeasurement(
-                    row.id,
-                    row.tenantId,
-                    row.athleteId,
-                    row.metricId,
-                    Number(row.value),
-                    row.recordedAt,
-                    row.createdAt,
-                ),
-        );
+    private samePayload(left: PerformanceMeasurement, right: PerformanceMeasurement) {
+        return left.tenantId === right.tenantId &&
+            left.athleteId === right.athleteId && left.metricId === right.metricId &&
+            left.value === Number(right.value.toFixed(6)) &&
+            left.recordedAt.getTime() === right.recordedAt.getTime() &&
+            left.correctsMeasurementId === right.correctsMeasurementId;
     }
 }

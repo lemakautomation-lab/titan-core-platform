@@ -12,12 +12,21 @@ export interface CreatePerformanceMeasurementCommand {
     metricId: string;
     value: number;
     recordedAt?: Date;
+    sourceType: string;
+    sourceId: string;
+    sourceObservationId: string;
+    correctsMeasurementId?: string | null;
+}
+
+export interface CreatePerformanceMeasurementResult {
+    measurement: PerformanceMeasurement;
+    replayed: boolean;
 }
 
 export class CreatePerformanceMeasurementUseCase
 implements UseCase<
     CreatePerformanceMeasurementCommand,
-    Result<PerformanceMeasurement>
+    Result<CreatePerformanceMeasurementResult>
 > {
 
     constructor(
@@ -33,7 +42,7 @@ implements UseCase<
 
     async execute(
         command: CreatePerformanceMeasurementCommand,
-    ): Promise<Result<PerformanceMeasurement>> {
+    ): Promise<Result<CreatePerformanceMeasurementResult>> {
 
         const athlete =
             await this.athleteRepository.findById(
@@ -65,6 +74,18 @@ implements UseCase<
             );
         }
 
+        if (command.correctsMeasurementId) {
+            const target = await this.measurementRepository.findCorrectionTarget(
+                command.correctsMeasurementId,
+                command.tenantId,
+                command.athleteId,
+                command.metricId,
+            );
+            if (!target) {
+                return Result.failure("Correction target not found.");
+            }
+        }
+
         try {
 
             const measurement =
@@ -74,6 +95,10 @@ implements UseCase<
                     command.metricId,
                     command.value,
                     command.recordedAt,
+                    command.sourceType,
+                    command.sourceId,
+                    command.sourceObservationId,
+                    command.correctsMeasurementId,
                 );
 
             if (
@@ -85,12 +110,20 @@ implements UseCase<
                 );
             }
 
-            const created =
-                await this.measurementRepository.create(
+            const outcome =
+                await this.measurementRepository.createIdempotently(
                     measurement,
                 );
-
-            return Result.success(created);
+            if (outcome.kind === "idempotency-conflict") {
+                return Result.failure("Performance observation identity already exists with different data.");
+            }
+            if (outcome.kind === "correction-conflict") {
+                return Result.failure("Performance measurement has already been corrected.");
+            }
+            return Result.success({
+                measurement: outcome.measurement,
+                replayed: outcome.kind === "replayed",
+            });
 
         } catch (error) {
 

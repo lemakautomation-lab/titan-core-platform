@@ -10,6 +10,10 @@ export class PerformanceMeasurement {
         public readonly value: number,
         public readonly recordedAt: Date,
         public readonly createdAt: Date,
+        public readonly sourceType: string | null = null,
+        public readonly sourceId: string | null = null,
+        public readonly sourceObservationId: string | null = null,
+        public readonly correctsMeasurementId: string | null = null,
     ) {}
 
     static create(
@@ -18,6 +22,10 @@ export class PerformanceMeasurement {
         metricId: string,
         value: number,
         recordedAt?: Date,
+        sourceType?: string,
+        sourceId?: string,
+        sourceObservationId?: string,
+        correctsMeasurementId?: string | null,
     ): PerformanceMeasurement {
 
         if (!tenantId?.trim()) {
@@ -50,6 +58,11 @@ export class PerformanceMeasurement {
             );
         }
 
+        const provenance = [sourceType, sourceId, sourceObservationId];
+        if (provenance.some(value => !value?.trim())) {
+            throw new Error("Complete performance measurement provenance is required.");
+        }
+
         return new PerformanceMeasurement(
             randomUUID(),
             tenantId,
@@ -58,6 +71,10 @@ export class PerformanceMeasurement {
             value,
             effectiveRecordedAt,
             new Date(),
+            sourceType!.trim(),
+            sourceId!.trim(),
+            sourceObservationId!.trim(),
+            correctsMeasurementId?.trim() || null,
         );
     }
 }

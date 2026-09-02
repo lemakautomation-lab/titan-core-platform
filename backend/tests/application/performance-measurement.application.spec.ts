@@ -91,15 +91,22 @@ function createMeasurementRepository(
 ): PerformanceMeasurementRepository {
 
     return {
-        create: vi.fn(
+        createIdempotently: vi.fn(
             async (
                 measurement: PerformanceMeasurement,
             ) => {
 
                 measurements.push(measurement);
 
-                return measurement;
+                return { kind: "created", measurement } as const;
             },
+        ),
+
+        findCorrectionTarget: vi.fn(async (id: string, requestedTenantId: string, requestedAthleteId: string, requestedMetricId: string) =>
+            measurements.find(measurement =>
+                measurement.id === id && measurement.tenantId === requestedTenantId &&
+                measurement.athleteId === requestedAthleteId && measurement.metricId === requestedMetricId,
+            ) ?? null,
         ),
 
         listRecentForMetric: vi.fn(
@@ -120,6 +127,18 @@ function createMeasurementRepository(
                     .slice(0, limit);
             },
         ),
+
+        listRecentEffectiveForMetric: vi.fn(async (
+            requestedTenantId: string,
+            requestedAthleteId: string,
+            requestedMetricId: string,
+            limit: number,
+        ) => measurements.filter(measurement =>
+            measurement.tenantId === requestedTenantId &&
+            measurement.athleteId === requestedAthleteId &&
+            measurement.metricId === requestedMetricId &&
+            !measurements.some(candidate => candidate.correctsMeasurementId === measurement.id),
+        ).slice(0, limit)),
     } as unknown as PerformanceMeasurementRepository;
 }
 
@@ -151,6 +170,9 @@ describe(
                         metricId,
                         value: 12.3456,
                         recordedAt,
+                        sourceType: "SYSTEM",
+                        sourceId: "application-test",
+                        sourceObservationId: "observation-1",
                     };
 
                 const result =
@@ -158,14 +180,15 @@ describe(
 
                 expect(result.isSuccess).toBe(true);
                 expect(result.value).toBeDefined();
-                expect(result.value?.tenantId).toBe(tenantId);
-                expect(result.value?.athleteId).toBe(athleteId);
-                expect(result.value?.metricId).toBe(metricId);
-                expect(result.value?.value).toBe(12.3456);
-                expect(result.value?.recordedAt).toEqual(recordedAt);
+                expect(result.value?.measurement.tenantId).toBe(tenantId);
+                expect(result.value?.measurement.athleteId).toBe(athleteId);
+                expect(result.value?.measurement.metricId).toBe(metricId);
+                expect(result.value?.measurement.value).toBe(12.3456);
+                expect(result.value?.measurement.recordedAt).toEqual(recordedAt);
+                expect(result.value?.replayed).toBe(false);
 
                 expect(
-                    measurementRepository.create,
+                    measurementRepository.createIdempotently,
                 ).toHaveBeenCalledTimes(1);
             },
         );
@@ -202,7 +225,7 @@ describe(
                 expect(result.error).toBe("Athlete not found.");
 
                 expect(
-                    measurementRepository.create,
+                    measurementRepository.createIdempotently,
                 ).not.toHaveBeenCalled();
 
                 expect(
@@ -244,7 +267,7 @@ describe(
                     .toBe("Performance metric not found.");
 
                 expect(
-                    measurementRepository.create,
+                    measurementRepository.createIdempotently,
                 ).not.toHaveBeenCalled();
             },
         );
@@ -278,7 +301,7 @@ describe(
                     );
 
                 expect(
-                    measurementRepository.create,
+                    measurementRepository.createIdempotently,
                 ).not.toHaveBeenCalled();
             },
         );
@@ -312,7 +335,7 @@ describe(
                     );
 
                 expect(
-                    measurementRepository.create,
+                    measurementRepository.createIdempotently,
                 ).not.toHaveBeenCalled();
             },
         );
@@ -340,6 +363,9 @@ describe(
                     athleteId,
                     metricId,
                     value,
+                    sourceType: "SYSTEM",
+                    sourceId: "application-test",
+                    sourceObservationId: `numeric-${dataType}-${value}`,
                 });
 
                 expect(result.isSuccess).toBe(expectedSuccess);
@@ -348,11 +374,79 @@ describe(
                     expect(result.error).toBe(
                         "INTEGER performance measurements must be integral.",
                     );
-                    expect(measurementRepository.create)
+                    expect(measurementRepository.createIdempotently)
                         .not.toHaveBeenCalled();
                 }
             },
         );
+
+        it("requires complete provenance for a new observation", async () => {
+            const repository = createMeasurementRepository();
+            const useCase = new CreatePerformanceMeasurementUseCase(
+                repository, createAthleteRepository(), createMetricRepository(),
+            );
+            const result = await useCase.execute({
+                tenantId, athleteId, metricId, value: 10,
+                sourceType: "SYSTEM", sourceId: "", sourceObservationId: "observation",
+            });
+            expect(result.isSuccess).toBe(false);
+            expect(result.error).toBe("Complete performance measurement provenance is required.");
+            expect(repository.createIdempotently).not.toHaveBeenCalled();
+        });
+
+        it("returns the original observation and replayed true for an identical retry", async () => {
+            const original = new PerformanceMeasurement(
+                "original-id", tenantId, athleteId, metricId, 10,
+                new Date("2026-09-02T10:00:00.000Z"), new Date(),
+                "SYSTEM", "source", "observation",
+            );
+            const repository = createMeasurementRepository();
+            vi.mocked(repository.createIdempotently).mockResolvedValue({ kind: "replayed", measurement: original });
+            const useCase = new CreatePerformanceMeasurementUseCase(
+                repository, createAthleteRepository(), createMetricRepository(),
+            );
+            const result = await useCase.execute({
+                tenantId, athleteId, metricId, value: 10,
+                recordedAt: original.recordedAt,
+                sourceType: "SYSTEM", sourceId: "source", sourceObservationId: "observation",
+            });
+            expect(result.value).toEqual({ measurement: original, replayed: true });
+        });
+
+        it("returns deterministic failures for identity conflict and an invalid correction target", async () => {
+            const repository = createMeasurementRepository();
+            vi.mocked(repository.createIdempotently).mockResolvedValue({ kind: "idempotency-conflict" });
+            const useCase = new CreatePerformanceMeasurementUseCase(
+                repository, createAthleteRepository(), createMetricRepository(),
+            );
+            const base = {
+                tenantId, athleteId, metricId, value: 10,
+                sourceType: "SYSTEM", sourceId: "source", sourceObservationId: "observation",
+            };
+            expect((await useCase.execute(base)).error)
+                .toBe("Performance observation identity already exists with different data.");
+            expect((await useCase.execute({ ...base, correctsMeasurementId: "foreign-or-missing" })).error)
+                .toBe("Correction target not found.");
+        });
+
+        it("creates a correction as a new linked observation", async () => {
+            const target = new PerformanceMeasurement(
+                "target-id", tenantId, athleteId, metricId, 10,
+                new Date("2026-09-02T09:00:00.000Z"), new Date(),
+            );
+            const repository = createMeasurementRepository([target]);
+            const useCase = new CreatePerformanceMeasurementUseCase(
+                repository, createAthleteRepository(), createMetricRepository(),
+            );
+            const result = await useCase.execute({
+                tenantId, athleteId, metricId, value: 11,
+                sourceType: "MANUAL", sourceId: "reviewer", sourceObservationId: "correction-1",
+                correctsMeasurementId: target.id,
+            });
+            expect(result.isSuccess).toBe(true);
+            expect(result.value?.measurement.id).not.toBe(target.id);
+            expect(result.value?.measurement.correctsMeasurementId).toBe(target.id);
+        });
 
         it(
             "rejects a non-positive recent-measurement limit",
