@@ -28,9 +28,9 @@ Serial execution has previously produced deterministic results.
 
 ## 4. MISSION 052 GOVERNANCE
 
-Mission 052 remains ACTIVE / INCOMPLETE. Partial Performance Metric and Performance
-Measurement foundations exist, but architecture/data-strategy approval, remaining
-acceptance criteria and formal sign-off are outstanding.
+Mission 052 remains ACTIVE / INCOMPLETE. Option B narrowed architecture is approved after
+the partial historical implementation. Bounded closure controls 052-R1 through 052-R7,
+verification and formal sign-off remain outstanding.
 
 ## 5. MISSION NOTES
 
@@ -38,10 +38,13 @@ MISSION-055.1-IMPLEMENTATION-NOTES.md is the closure record for the completed Mi
 
 ## 7. FORMALLY DEFERRED RISKS
 
-Mission 055.1 did not invent a Performance Measurement freshness limit. A governed
-freshness policy remains deferred. Composite tenant/athlete database constraints across
-Athlete, PerformanceMetric, PerformanceMeasurement and WorkoutProgramme also remain
-deferred to a dedicated data-integrity control.
+Mission 055.1 did not invent a Performance Measurement freshness limit. Freshness remains
+a consuming decision/adaptation-policy concern, not a universal persistence constraint.
+
+Composite tenant/athlete/metric integrity for PerformanceMetric and
+PerformanceMeasurement is now a mandatory Mission 052 closure invariant assigned to
+Control 052-R3. The exact safe database design is not prescribed by R0. Broader composite
+integrity outside the narrowed Performance Engine remains separately governed.
 
 ## 6. DO NOT ASSUME
 

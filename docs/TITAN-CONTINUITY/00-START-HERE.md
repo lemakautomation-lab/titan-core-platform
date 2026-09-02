@@ -18,11 +18,11 @@ If this package conflicts with the repository, inspect the repository and resolv
 
 ## CURRENT LIVE CHECKPOINT
 
-Governance/planning reconciliation after completion of Mission 055.1.
+Mission 052 Control 052-R0 — Narrowed Architecture Contract.
 
-Mission 052 remains ACTIVE / INCOMPLETE. Partial Performance Metric and Performance
-Measurement foundations have been implemented, but its architecture/data strategy,
-remaining acceptance criteria and formal sign-off are not complete.
+Mission 052 remains ACTIVE / INCOMPLETE. Option B is approved: the mission is narrowed to
+the Performance Metric / Performance Measurement operational foundation. The ordered
+bounded closure controls remain incomplete.
 
 Missions 053, 054 and 055.1 are COMPLETE.
 
@@ -36,25 +36,24 @@ Branch:
 main
 
 HEAD:
-4563d4943a2909e59d940881e929ae1a679416c9
+482487a661b4778412c176e34339eb1fa1bd8f06
 
 origin/main:
-4563d4943a2909e59d940881e929ae1a679416c9
+482487a661b4778412c176e34339eb1fa1bd8f06
 
 Latest pushed commit:
-`4563d49` — Mission 055.1-L: Add Performance Measurement application boundary
+`482487a` — docs: reconcile mission governance after Mission 055.1
 
 The working tree remains intentionally dirty with unrelated modified frontend/product/Prisma
 files and the untracked continuity package. Mission 055.1 implementation is committed.
 
 ## EXACT NEXT ACTION
 
-Do not begin another implementation mission or control.
+Complete documentation-only Control 052-R0, verify it, and selectively commit/push it after
+approval. Do not begin production implementation. Control 052-R1 requires separate approval.
 
-Formally reconcile and approve the Mission 052 Performance Engine architecture and data
-strategy against the partial implementation and unsatisfied acceptance criteria. Then
-explicitly decide whether to complete a bounded Mission 052 gap or define a new successor
-mission with an approved specification.
+Advanced scope is excluded to a future separately specified successor mission. No successor
+mission number is assigned.
 
 ## OPERATING COMMAND
 

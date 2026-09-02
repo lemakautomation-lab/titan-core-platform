@@ -48,11 +48,12 @@ Product API:
 
 ## MISSION 052
 
-ACTIVE / INCOMPLETE.
+ACTIVE / INCOMPLETE — OPTION B NARROWED ARCHITECTURE APPROVED.
 
 Performance Metric and Performance Measurement foundations have been partially
-implemented. This historical implementation does not establish formal architecture/data
-strategy approval or satisfy the remaining Mission 052 acceptance criteria and sign-off.
+implemented. Option B narrows Mission 052 to that operational foundation. This approval
+occurred after the historical implementation and does not rewrite history as prior approval.
+Bounded closure controls 052-R1 through 052-R7 and formal sign-off remain outstanding.
 
 ## MISSION 055.1
 
@@ -73,8 +74,8 @@ and the current roadmap before changing code.
 
 ## CURRENT GOVERNANCE CHECKPOINT
 
-No numbered successor implementation mission or control is currently authorised.
+052-R0 — Narrowed Architecture Contract (documentation only).
 
-The next decision is to reconcile and approve the Mission 052 architecture and data
-strategy, then explicitly choose whether to complete a bounded Mission 052 gap or define a
-new successor mission.
+Advanced capabilities are excluded from Mission 052 to a future separately specified
+successor mission. No successor mission number is assigned. No production implementation
+control is authorised; 052-R1 requires separate approval.

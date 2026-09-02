@@ -12,7 +12,7 @@ SECURITY: Tenant isolation, RBAC, anti-escalation, HttpOnly refresh cookie, atom
 JTI sessions, refresh reuse detection, server-generated Request-ID, rate limiting, security
 events and concurrency safety.
 
-REPOSITORY: main / HEAD / origin/main at `4563d4943a2909e59d940881e929ae1a679416c9`.
+REPOSITORY: main / HEAD / origin/main at `482487a661b4778412c176e34339eb1fa1bd8f06`.
 
 COMPLETED: Missions 041, 043, 044, 045, 047, 053, 054 and 055.1.
 
@@ -24,15 +24,14 @@ MISSION 055.1: COMPLETE / VERIFIED / COMMITTED / PUSHED.
 - relevant serial regression: 32/32 GREEN;
 - backend build: GREEN.
 
-MISSION 052: ACTIVE / INCOMPLETE. Performance Metric and Performance Measurement
-foundations are partially implemented, but formal architecture/data-strategy approval,
-remaining acceptance criteria and sign-off are outstanding.
+MISSION 052: ACTIVE / INCOMPLETE under approved Option B. It is narrowed to the Performance
+Metric / Performance Measurement operational foundation. Controls R1–R7 and sign-off remain
+outstanding.
 
-CURRENT CHECKPOINT: Governance/planning. No numbered successor implementation mission or
-control is authorised.
+CURRENT CHECKPOINT: 052-R0 — Narrowed Architecture Contract (documentation only).
 
-NEXT: Reconcile and approve Mission 052 architecture/data strategy, then explicitly decide
-whether to complete a bounded Mission 052 gap or define a new successor mission.
+NEXT: Verify and selectively commit/push R0 after approval, then stop. R1 requires separate
+approval. Advanced scope belongs to an unnumbered future successor.
 
 WORKTREE: Dirty with unrelated modified frontend/product/Prisma work and untracked
 continuity and dashboard files. Do not bulk-stage or alter unrelated work.

@@ -6,19 +6,18 @@ Branch: main
 
 HEAD and origin/main:
 
-4563d4943a2909e59d940881e929ae1a679416c9
+482487a661b4778412c176e34339eb1fa1bd8f06
 
 Latest pushed commit:
 
-`4563d49` — Mission 055.1-L: Add Performance Measurement application boundary
+`482487a` — docs: reconcile mission governance after Mission 055.1
 
 Local main and origin/main are synchronized.
 
 ## MISSION STATUS
 
-- Mission 052 — ACTIVE / INCOMPLETE. Partial foundations are implemented; formal
-  architecture/data-strategy approval, remaining acceptance criteria and sign-off are
-  outstanding.
+- Mission 052 — ACTIVE / INCOMPLETE. Option B narrowed architecture is approved; bounded
+  closure controls and formal sign-off remain outstanding.
 - Mission 053 — COMPLETE.
 - Mission 054 — COMPLETE.
 - Mission 055.1 — COMPLETE / VERIFIED / COMMITTED / PUSHED.
@@ -45,14 +44,12 @@ in progress. Do not bulk-stage, clean, reset, revert, stash or discard unrelated
 
 ## CURRENT GOVERNANCE CHECKPOINT
 
-There is no authorised numbered successor implementation mission or control.
+052-R0 — Narrowed Architecture Contract (documentation only).
 
-The next action is governance/planning only:
+Option B narrows Mission 052 to the Performance Metric / Performance Measurement
+operational foundation. Controls 052-R1 through 052-R7 are ordered but require separate
+approval one bounded control at a time.
 
-1. Formally reconcile and approve the Mission 052 Performance Engine architecture and
-   data strategy against the implemented foundation.
-2. Identify which Mission 052 acceptance criteria remain unsatisfied.
-3. Explicitly decide whether to complete one bounded Mission 052 gap or define a new
-   successor mission with an approved specification.
-
-Do not infer a successor mission number or begin implementation before that decision.
+Advanced capabilities are excluded to a future separately specified successor mission. No
+successor mission number is assigned. Do not begin R1 or production implementation under
+the R0 authorization.

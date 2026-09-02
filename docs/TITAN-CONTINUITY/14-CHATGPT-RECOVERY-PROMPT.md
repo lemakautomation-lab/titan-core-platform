@@ -9,7 +9,7 @@ Branch: main
 
 HEAD and origin/main:
 
-4563d4943a2909e59d940881e929ae1a679416c9
+482487a661b4778412c176e34339eb1fa1bd8f06
 
 Mission 055.1 is COMPLETE / VERIFIED / COMMITTED / PUSHED.
 
@@ -22,8 +22,8 @@ Closure evidence:
 - relevant serial regression: 32/32 GREEN;
 - backend build: GREEN.
 
-Mission 052 remains ACTIVE / INCOMPLETE. Partial foundations were implemented without
-recorded formal architecture/data-strategy approval or mission sign-off.
+Mission 052 remains ACTIVE / INCOMPLETE. Option B narrowed architecture was approved after
+the partial historical implementation; bounded controls R1–R7 and sign-off remain open.
 
 Missions 053 and 054 remain COMPLETE.
 
@@ -31,9 +31,8 @@ No numbered successor implementation mission or control is currently authorised.
 
 ## NEXT
 
-Perform governance/planning only: reconcile and approve Mission 052 architecture and data
-strategy, then explicitly decide whether to complete a bounded Mission 052 gap or define a
-new successor mission.
+Complete documentation-only Control 052-R0, then stop for approval. Do not begin R1 or
+production implementation. Advanced scope is excluded to an unnumbered future successor.
 
 Do not infer a mission number, begin implementation, bulk-stage, weaken security, or alter
 unrelated dirty-tree work.

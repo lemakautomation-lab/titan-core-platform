@@ -24,7 +24,7 @@ Mission Definition
 | 049 | Athlete Relationships | COMPLETE | Existing implementation and verified checkpoint |
 | 050 | Athlete Digital Twin | COMPLETE | Prisma migration, implementation and verified checkpoint |
 | 051 | Sport Engine Foundation | COMPLETE | Sport API integration 5/5 GREEN |
-| 052 | Performance Engine | ACTIVE / INCOMPLETE | Partial Metric and Measurement foundations implemented; architecture/data-strategy approval and remaining acceptance criteria outstanding |
+| 052 | Performance Engine | ACTIVE / INCOMPLETE | Option B narrowed architecture approved; Control 052-R0 current; bounded closure controls R1–R7 outstanding |
 | 053 | Exercise Library and lifecycle hardening | COMPLETE | Foundation and lifecycle controls committed and verified |
 | 054 | Workout Programme Engine | COMPLETE | Status control completed, verified, committed and pushed at `f3cb3b2` |
 | 055.1 | Athlete performance adaptation | COMPLETE | Adaptation at `dbf443b`; Performance Measurement application boundary at `4563d49` |
@@ -45,10 +45,11 @@ Missing historical mission definitions must not be invented.
 
 ## Future Missions
 
-No numbered successor implementation mission or control is currently authorised.
+Option B is approved: Mission 052 is narrowed to the Performance Metric / Performance
+Measurement operational foundation. Advanced scope is excluded to a future separately
+specified successor mission for which no number has been assigned.
 
-The next governance decision is to reconcile and approve the Mission 052 Performance
-Engine architecture and data strategy, then explicitly decide whether to complete a
-bounded Mission 052 gap or define a new successor mission.
+The current control is documentation-only Control 052-R0 — Narrowed Architecture Contract.
+R1–R7 are ordered closure controls and require separate approval one control at a time.
 
 Additional mission definitions will be added here only after their scope is formally established.
