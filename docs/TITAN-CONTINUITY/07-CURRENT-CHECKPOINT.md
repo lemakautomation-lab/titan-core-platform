@@ -6,19 +6,20 @@ Branch: main
 
 HEAD and origin/main:
 
-46203a7acec51f237b0c52fdcbcf1062ce3f0b0f
+812542426e8c5d67ce06f180f44b787c76acdde3
 
 Latest pushed commit:
 
-`46203a7` — Mission 052-R6: Close measurement security regressions
+`8125424` — Mission 052-R7: Sign off performance foundation
 
 Local main and origin/main are synchronized.
 
 ## MISSION STATUS
 
-- Mission 052 — COMPLETE / VERIFIED technical acceptance; R7 governance commit/push pending.
+- Mission 052 — COMPLETE / VERIFIED / COMMITTED / PUSHED.
 - Mission 053 — COMPLETE.
 - Mission 054 — COMPLETE.
+- Mission 055 — ACTIVE; R0 COMPLETE / VERIFIED / UNCOMMITTED.
 - Mission 055.1 — COMPLETE / VERIFIED / COMMITTED / PUSHED.
 
 Mission 055.1 implementation commits:
@@ -42,11 +43,14 @@ in progress. Do not bulk-stage, clean, reset, revert, stash or discard unrelated
 
 ## CURRENT GOVERNANCE CHECKPOINT
 
-052-R7 — Acceptance Mapping and Mission Sign-off.
+055-R0 — Architecture, Identity, and Acceptance Contract.
 
-R0–R6 are complete, verified, committed and pushed. R7 acceptance is satisfied; the
-governance-only sign-off is prepared and awaits Gate 3 commit/push.
+Mission 055 is prospectively established for deterministic initial Exercise Programme
+Generation. Mission 055.1 remains unchanged historical prior work: it supplied adaptation,
+transaction, concurrency, audit, tenant-isolation and security foundations but did not
+implement initial generation or satisfy Mission 055 acceptance. No Mission 055.2 is implied.
 
 Advanced capabilities are excluded to a future separately specified successor mission. No
-successor mission number is assigned. Do not begin successor implementation without
-separate authorization.
+Performance Measurement successor number is assigned. R1–R7 are NOT STARTED / NOT
+AUTHORIZED. After R0 release, 055-R1 requires separate Gate 1 inspection and authorization.
+Mission 056 progression and the Technical Library / Knowledge Hub are not active work.

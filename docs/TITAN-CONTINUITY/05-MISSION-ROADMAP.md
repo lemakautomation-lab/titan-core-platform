@@ -48,11 +48,19 @@ Product API:
 
 ## MISSION 052
 
-COMPLETE / VERIFIED — R7 GOVERNANCE RELEASE PENDING.
+COMPLETE / VERIFIED / COMMITTED / PUSHED.
 
 Option B narrowed Mission 052 to the operational Performance Metric / Performance
-Measurement foundation. R0–R6 are complete, verified, committed and pushed. R7 acceptance
-is satisfied and its governance sign-off awaits Gate 3 commit/push.
+Measurement foundation. R0–R7 are complete, verified, committed and pushed through
+`8125424`.
+
+## MISSION 055
+
+ACTIVE — Exercise Programme Generation Engine.
+
+Mission 055 is prospectively established from approved TITAN Health product direction and
+current repository inspection. It owns deterministic initial generation. 055-R0 is COMPLETE /
+VERIFIED / UNCOMMITTED; R1–R7 are NOT STARTED / NOT AUTHORIZED.
 
 ## MISSION 055.1
 
@@ -71,10 +79,22 @@ MISSION-055.1-IMPLEMENTATION-NOTES.md
 
 and the current roadmap before changing code.
 
+Mission 055.1 predates the formal Mission 055 definition. It remains unchanged historical
+prior work, does not implement initial generation, does not complete Mission 055 and does not
+imply Mission 055.2.
+
+## MISSION 056 DIRECTION
+
+Programme Progression follows initial generation in approved product direction, but is not
+authorized by Mission 055-R0. Ongoing volume, intensity, frequency, recovery, performance
+feedback, deload and periodic revision policy remain outside Mission 055.
+
 ## CURRENT GOVERNANCE CHECKPOINT
 
-052-R7 — Acceptance Mapping and Mission Sign-off (prepared; release pending).
+055-R0 — Architecture, Identity, and Acceptance Contract (complete and verified; release
+pending).
 
 Advanced capabilities are excluded from Mission 052 to a future separately specified
-successor mission. No successor mission number is assigned. Further work requires separate
-authoritative planning and approval.
+successor mission. No successor mission number is assigned. After R0 release, 055-R1 is the
+next planned control but requires separate Gate 1 inspection and authorization. The Technical
+Library / Knowledge Hub remains future planning only.
