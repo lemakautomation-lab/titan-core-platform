@@ -2,7 +2,7 @@
 
 ## Status
 
-ACTIVE — ARCHITECTURE DEFINITION
+ACTIVE / INCOMPLETE — PARTIAL FOUNDATION IMPLEMENTED; FORMAL APPROVAL OUTSTANDING
 
 ## Important
 
@@ -11,6 +11,12 @@ The original Mission 052 specification is not present in the repository.
 ROADMAP.md is currently zero bytes.
 
 Therefore this document is an architectural definition, not a claim that this was the original historical specification.
+
+Implementation subsequently advanced beyond the original architecture-review gate. The
+repository now contains tenant-scoped Performance Metric foundations and Performance
+Measurement domain, persistence and application foundations. This records what was
+actually implemented; it does not imply that the Mission 052 architecture, data strategy
+or completion criteria were formally approved.
 
 ## Strategic Objective
 
@@ -149,6 +155,32 @@ To be formally completed, Mission 052 must have:
 - documented verification
 - mission sign-off
 
+These criteria remain governing requirements. The existing partial implementation does
+not, by itself, satisfy or waive any criterion that has not been explicitly verified and
+approved.
+
+## Implemented Foundation
+
+Repository evidence currently includes:
+
+- Performance Metric domain, persistence, application and API foundations;
+- tenant-isolation and permission integration coverage for Performance Metrics;
+- Performance Measurement domain entity, persistence repository and create/list-recent
+  application boundaries;
+- Performance Measurement application-boundary verification at 8/8 GREEN;
+- use of scoped Performance Measurement evidence by the completed Mission 055.1 athlete
+  adaptation control.
+
+The implemented foundation does not establish completion of the broader Performance
+Engine. In particular, the architecture/data strategy, complete API scope,
+scalability-sensitive storage direction, remaining performance-data categories and formal
+Mission 052 sign-off remain incomplete or unapproved.
+
 ## Next Step
 
-Before implementation proceeds, the Performance Engine domain model and data strategy must be formally reviewed and approved.
+Before further Performance Engine expansion, formally reconcile and approve the domain
+model and data strategy against the implemented foundation and the unsatisfied acceptance
+criteria. Then explicitly decide whether the next implementation should complete a bounded
+Mission 052 gap or proceed under a newly defined successor mission.
+
+No numbered successor mission or implementation control is currently authorised.
