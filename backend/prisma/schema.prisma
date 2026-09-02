@@ -103,7 +103,7 @@ model Athlete {
   athleteDigitalTwins     AthleteDigitalTwin[]
   performanceMetrics      PerformanceMetric[]      @relation("PerformanceMetricAthleteTenant")
   performanceMeasurements PerformanceMeasurement[] @relation("PerformanceMeasurementAthleteTenant")
-  workoutProgrammes       WorkoutProgramme[]
+  workoutProgrammes       WorkoutProgramme[]       @relation("WorkoutProgrammeAthleteTenant")
 
   @@unique([id, tenantId], map: "Athlete_id_tenantId_key")
   @@index([tenantId])
@@ -270,9 +270,11 @@ model Exercise {
   updatedAt         DateTime     @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id])
-  sport  Sport? @relation(fields: [sportId], references: [id])
+  sport                  Sport?                                  @relation(fields: [sportId], references: [id])
+  programmePrescriptions WorkoutProgrammeExercisePrescription[] @relation("WorkoutProgrammePrescriptionExerciseTenant")
 
   @@unique([tenantId, slug])
+  @@unique([id, tenantId], map: "Exercise_id_tenantId_key")
   @@index([tenantId])
   @@index([sportId])
   @@index([tenantId, sportId])
@@ -371,14 +373,54 @@ model WorkoutProgramme {
   createdAt              DateTime     @default(now())
   updatedAt              DateTime     @updatedAt
 
-  tenant  Tenant  @relation(fields: [tenantId], references: [id])
-  athlete Athlete @relation(fields: [athleteId], references: [id])
-  sport   Sport?  @relation(fields: [sportId], references: [id])
+  tenant   Tenant                    @relation(fields: [tenantId], references: [id])
+  athlete  Athlete                   @relation("WorkoutProgrammeAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  sport    Sport?                    @relation(fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  sessions WorkoutProgrammeSession[]
 
+  @@unique([id, tenantId], map: "WorkoutProgramme_id_tenantId_key")
   @@index([tenantId])
   @@index([athleteId])
   @@index([sportId])
   @@index([tenantId, athleteId])
+}
+
+model WorkoutProgrammeSession {
+  id          String   @id @default(uuid())
+  tenantId    String
+  programmeId String
+  ordinal     Int
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  programme    WorkoutProgramme                     @relation(fields: [programmeId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: Cascade)
+  prescriptions WorkoutProgrammeExercisePrescription[]
+
+  @@unique([id, tenantId], map: "WorkoutProgrammeSession_id_tenantId_key")
+  @@unique([programmeId, ordinal], map: "WorkoutProgrammeSession_programmeId_ordinal_key")
+  @@index([tenantId, programmeId])
+}
+
+model WorkoutProgrammeExercisePrescription {
+  id              String   @id @default(uuid())
+  tenantId        String
+  sessionId       String
+  exerciseId      String
+  ordinal         Int
+  sets            Int
+  repetitions     Int?
+  durationSeconds Int?
+  restSeconds     Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  session  WorkoutProgrammeSession @relation(fields: [sessionId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: Cascade)
+  exercise Exercise                @relation("WorkoutProgrammePrescriptionExerciseTenant", fields: [exerciseId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([sessionId, ordinal], map: "WorkoutProgrammeExercisePrescription_sessionId_ordinal_key")
+  @@index([tenantId, sessionId])
+  @@index([tenantId, exerciseId])
 }
 
 enum ProductStatus {
