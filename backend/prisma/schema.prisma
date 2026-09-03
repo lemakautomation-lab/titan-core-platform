@@ -272,12 +272,38 @@ model Exercise {
   tenant Tenant @relation(fields: [tenantId], references: [id])
   sport                  Sport?                                  @relation("ExerciseSportTenant", fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
   programmePrescriptions WorkoutProgrammeExercisePrescription[] @relation("WorkoutProgrammePrescriptionExerciseTenant")
+  prescriptionProfiles   ExercisePrescriptionProfile[]           @relation("ExercisePrescriptionProfileExerciseTenant")
 
   @@unique([tenantId, slug])
   @@unique([id, tenantId], map: "Exercise_id_tenantId_key")
   @@index([tenantId])
   @@index([sportId])
   @@index([tenantId, sportId])
+}
+
+model ExercisePrescriptionProfile {
+  id                          String       @id @default(uuid())
+  tenantId                    String
+  exerciseId                  String
+  goalClassification          String
+  trainingExperience          String
+  version                     Int
+  prescriptionMode            String
+  defaultSets                 Int
+  defaultRepetitions          Int?
+  defaultDurationSeconds      Int?
+  defaultRestSeconds          Int
+  estimatedSetDurationSeconds Int?
+  status                      RecordStatus @default(INACTIVE)
+  createdAt                   DateTime     @default(now())
+  updatedAt                   DateTime     @updatedAt
+
+  exercise Exercise @relation("ExercisePrescriptionProfileExerciseTenant", fields: [exerciseId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([id, tenantId], map: "ExercisePrescriptionProfile_id_tenantId_key")
+  @@unique([tenantId, exerciseId, goalClassification, trainingExperience, version], map: "ExercisePrescriptionProfile_historical_version_key")
+  @@index([tenantId, exerciseId, goalClassification, trainingExperience, status], map: "ExercisePrescriptionProfile_active_lookup_idx")
+  @@index([tenantId])
 }
 
 model PerformanceMetric {
