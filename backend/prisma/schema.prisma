@@ -42,7 +42,7 @@ model Sport {
   tenant             Tenant              @relation(fields: [tenantId], references: [id])
   performanceMetrics PerformanceMetric[] @relation("PerformanceMetricSportTenant")
   workoutProgrammes  WorkoutProgramme[]
-  exercises          Exercise[]
+  exercises          Exercise[]          @relation("ExerciseSportTenant")
 
   @@unique([tenantId, slug])
   @@unique([id, tenantId], map: "Sport_id_tenantId_key")
@@ -270,7 +270,7 @@ model Exercise {
   updatedAt         DateTime     @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id])
-  sport                  Sport?                                  @relation(fields: [sportId], references: [id])
+  sport                  Sport?                                  @relation("ExerciseSportTenant", fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
   programmePrescriptions WorkoutProgrammeExercisePrescription[] @relation("WorkoutProgrammePrescriptionExerciseTenant")
 
   @@unique([tenantId, slug])

@@ -4,12 +4,52 @@ import { PaginationInput } from "../../application/common/pagination";
 import { RecordStatus } from "../../domain/enums/record-status.enum";
 import { DatabaseService } from "../database/database.service";
 import { ExerciseMapper } from "../mappers/exercise.mapper";
+import { ProgrammeExerciseEligibilityService } from "../../domain/services/programme-exercise-eligibility.service";
+import { ProgrammeExerciseEligibilityCriteria } from "../../domain/value-objects/programme-exercise-eligibility-criteria.value-object";
 
 export class PrismaExerciseRepository implements ExerciseRepository {
 
     constructor(
         private readonly database: DatabaseService,
     ) {}
+
+    async findEligibleForProgramme(
+        criteria: ProgrammeExerciseEligibilityCriteria,
+    ): Promise<Exercise[]> {
+        if (criteria.sportId !== null) {
+            const sport = await this.database.prisma.sport.findFirst({
+                where: {
+                    id: criteria.sportId,
+                    tenantId: criteria.tenantId,
+                    status: "ACTIVE",
+                },
+                select: { id: true },
+            });
+
+            if (!sport) {
+                throw new Error("Programme Sport is unavailable.");
+            }
+        }
+
+        const exercises = await this.database.prisma.exercise.findMany({
+            where: {
+                tenantId: criteria.tenantId,
+                status: "ACTIVE",
+                OR: criteria.sportId === null
+                    ? [{ sportId: null }]
+                    : [
+                        { sportId: criteria.sportId },
+                        { sportId: null },
+                    ],
+            },
+            orderBy: { id: "asc" },
+        });
+
+        return ProgrammeExerciseEligibilityService.filter(
+            criteria,
+            exercises.map(ExerciseMapper.toDomain),
+        );
+    }
 
     async findById(
         id: string,

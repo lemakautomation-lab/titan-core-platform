@@ -1,6 +1,7 @@
 import { Exercise } from "../entities/exercise.entity";
 import { PaginationInput } from "../../application/common/pagination";
 import { RecordStatus } from "../enums/record-status.enum";
+import { ProgrammeExerciseEligibilityCriteria } from "../value-objects/programme-exercise-eligibility-criteria.value-object";
 
 export interface ExerciseListResult {
     items: Exercise[];
@@ -8,6 +9,10 @@ export interface ExerciseListResult {
 }
 
 export interface ExerciseRepository {
+
+    findEligibleForProgramme(
+        criteria: ProgrammeExerciseEligibilityCriteria,
+    ): Promise<Exercise[]>;
 
     findById(id: string, tenantId: string): Promise<Exercise | null>;
 
