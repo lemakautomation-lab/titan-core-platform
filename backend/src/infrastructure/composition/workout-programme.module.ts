@@ -15,6 +15,10 @@ import { DeleteWorkoutProgrammeUseCase } from "../../application/use-cases/delet
 import { UpdateWorkoutProgrammeStatusUseCase } from "../../application/use-cases/update-workout-programme-status.use-case";
 import { AdaptWorkoutProgrammeFromPerformanceUseCase } from "../../application/use-cases/adapt-workout-programme-from-performance.use-case";
 import { PrismaWorkoutProgrammePerformanceAdaptationTransaction } from "../transactions/workout-programme-performance-adaptation.transaction";
+import { PrismaExerciseRepository } from "../repositories/exercise.repository";
+import { PrismaProgrammeExercisePrescriptionCandidateRepository } from "../repositories/programme-exercise-prescription-candidate.repository";
+import { PrismaWorkoutProgrammeGenerationTransaction } from "../transactions/workout-programme-generation.transaction";
+import { GenerateWorkoutProgrammeUseCase } from "../../application/use-cases/generate-workout-programme.use-case";
 
 const databaseService =
     new DatabaseService();
@@ -48,6 +52,15 @@ const performanceAdaptationTransaction =
     new PrismaWorkoutProgrammePerformanceAdaptationTransaction(
         databaseService,
     );
+
+const exerciseRepository = new PrismaExerciseRepository(databaseService);
+const generationCandidateRepository =
+    new PrismaProgrammeExercisePrescriptionCandidateRepository(
+        exerciseRepository,
+        databaseService,
+    );
+const generationTransaction =
+    new PrismaWorkoutProgrammeGenerationTransaction(databaseService);
 
 export const workoutProgrammeModule = {
 
@@ -98,6 +111,14 @@ export const workoutProgrammeModule = {
             performanceMetricRepository,
             performanceMeasurementRepository,
             performanceAdaptationTransaction,
+        ),
+
+    generateWorkoutProgrammeUseCase:
+        new GenerateWorkoutProgrammeUseCase(
+            athleteRepository,
+            sportRepository,
+            generationCandidateRepository,
+            generationTransaction,
         ),
 
 };

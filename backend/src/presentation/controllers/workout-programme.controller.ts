@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 
 import { CreateWorkoutProgrammeCommand } from "../../application/commands/create-workout-programme.command";
 import { UpdateWorkoutProgrammeCommand } from "../../application/commands/update-workout-programme.command";
@@ -18,9 +18,13 @@ import { UpdateWorkoutProgrammeUseCase } from "../../application/use-cases/updat
 import { DeleteWorkoutProgrammeUseCase } from "../../application/use-cases/delete-workout-programme.use-case";
 import { UpdateWorkoutProgrammeStatusUseCase } from "../../application/use-cases/update-workout-programme-status.use-case";
 import { AdaptWorkoutProgrammeFromPerformanceUseCase } from "../../application/use-cases/adapt-workout-programme-from-performance.use-case";
+import { GenerateWorkoutProgrammeUseCase } from "../../application/use-cases/generate-workout-programme.use-case";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { parsePagination } from "../../application/common/pagination";
+import { GenerateWorkoutProgrammeRequestDto } from "../dto/generate-workout-programme-request.dto";
+import { ProgrammeGenerationHttpErrorMapper } from "../errors/programme-generation-http-error.mapper";
+import { GeneratedWorkoutProgrammeResponseMapper } from "../mappers/generated-workout-programme-response.mapper";
 
 export class WorkoutProgrammeController {
     constructor(
@@ -32,7 +36,35 @@ export class WorkoutProgrammeController {
         private readonly deleteWorkoutProgrammeUseCase: DeleteWorkoutProgrammeUseCase,
         private readonly updateWorkoutProgrammeStatusUseCase: UpdateWorkoutProgrammeStatusUseCase,
         private readonly adaptWorkoutProgrammeFromPerformanceUseCase: AdaptWorkoutProgrammeFromPerformanceUseCase,
+        private readonly generateWorkoutProgrammeUseCase: GenerateWorkoutProgrammeUseCase,
     ) {}
+
+    async generate(
+        req: AuthRequest,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        const authUser = req.user;
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        try {
+            const request = GenerateWorkoutProgrammeRequestDto.toApplicationRequest(
+                req.body,
+                req.headers["idempotency-key"],
+                authUser.tenantId,
+                authUser.userId,
+            );
+            const outcome = await this.generateWorkoutProgrammeUseCase.execute(request);
+            res.status(outcome.status === "created" ? 201 : 200).json(
+                GeneratedWorkoutProgrammeResponseMapper.toResponse(outcome),
+            );
+        } catch (error) {
+            next(ProgrammeGenerationHttpErrorMapper.map(error) ?? error);
+        }
+    }
 
     async adaptFromPerformance(
         req: AuthRequest,

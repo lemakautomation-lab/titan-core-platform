@@ -172,6 +172,7 @@ const workoutProgrammeController =
         workoutProgrammeModule.deleteWorkoutProgrammeUseCase,
         workoutProgrammeModule.updateWorkoutProgrammeStatusUseCase,
         workoutProgrammeModule.adaptWorkoutProgrammeFromPerformanceUseCase,
+        workoutProgrammeModule.generateWorkoutProgrammeUseCase,
     );
 
 const productController =

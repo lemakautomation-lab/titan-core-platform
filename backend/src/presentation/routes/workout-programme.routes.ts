@@ -19,6 +19,12 @@ export function createWorkoutProgrammeRoutes(
         controller.create.bind(controller),
     );
 
+    router.post(
+        "/generations",
+        requirePermission("workout-programmes.generate"),
+        controller.generate.bind(controller),
+    );
+
     router.get(
         "/",
         requirePermission("workout-programmes.read"),
