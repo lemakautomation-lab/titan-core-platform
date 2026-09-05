@@ -403,12 +403,37 @@ model WorkoutProgramme {
   athlete  Athlete                   @relation("WorkoutProgrammeAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
   sport    Sport?                    @relation(fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
   sessions WorkoutProgrammeSession[]
+  generation WorkoutProgrammeGeneration?
 
   @@unique([id, tenantId], map: "WorkoutProgramme_id_tenantId_key")
   @@index([tenantId])
   @@index([athleteId])
   @@index([sportId])
   @@index([tenantId, athleteId])
+}
+
+model WorkoutProgrammeGeneration {
+  id                        String   @id @default(uuid())
+  tenantId                  String
+  programmeId               String
+  actorUserId               String
+  idempotencyKey            String
+  requestFingerprint        String
+  requestFingerprintVersion String
+  planFingerprint           String
+  rulesetId                 String
+  rulesetVersion            String
+  inputSnapshot             Json
+  planSnapshot              Json
+  createdAt                 DateTime @default(now())
+
+  programme WorkoutProgramme @relation(fields: [programmeId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([id, tenantId], map: "WorkoutProgrammeGeneration_id_tenantId_key")
+  @@unique([tenantId, idempotencyKey], map: "WorkoutProgrammeGeneration_tenantId_idempotencyKey_key")
+  @@unique([programmeId, tenantId], map: "WorkoutProgrammeGeneration_programmeId_tenantId_key")
+  @@index([tenantId])
+  @@index([tenantId, programmeId])
 }
 
 model WorkoutProgrammeSession {
