@@ -26,6 +26,12 @@ export function createWorkoutProgrammeRoutes(
     );
 
     router.get(
+        "/generations/:generationId",
+        requirePermission("workout-programmes.read"),
+        controller.getGeneratedById.bind(controller),
+    );
+
+    router.get(
         "/",
         requirePermission("workout-programmes.read"),
         controller.list.bind(controller),

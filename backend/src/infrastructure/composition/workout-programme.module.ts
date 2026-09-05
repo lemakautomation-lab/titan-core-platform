@@ -19,6 +19,8 @@ import { PrismaExerciseRepository } from "../repositories/exercise.repository";
 import { PrismaProgrammeExercisePrescriptionCandidateRepository } from "../repositories/programme-exercise-prescription-candidate.repository";
 import { PrismaWorkoutProgrammeGenerationTransaction } from "../transactions/workout-programme-generation.transaction";
 import { GenerateWorkoutProgrammeUseCase } from "../../application/use-cases/generate-workout-programme.use-case";
+import { GetGeneratedWorkoutProgrammeUseCase } from "../../application/use-cases/get-generated-workout-programme.use-case";
+import { PrismaGeneratedWorkoutProgrammeReadRepository } from "../repositories/generated-workout-programme-read.repository";
 
 const databaseService =
     new DatabaseService();
@@ -61,6 +63,8 @@ const generationCandidateRepository =
     );
 const generationTransaction =
     new PrismaWorkoutProgrammeGenerationTransaction(databaseService);
+const generatedWorkoutProgrammeReadRepository =
+    new PrismaGeneratedWorkoutProgrammeReadRepository(databaseService);
 
 export const workoutProgrammeModule = {
 
@@ -119,6 +123,11 @@ export const workoutProgrammeModule = {
             sportRepository,
             generationCandidateRepository,
             generationTransaction,
+        ),
+
+    getGeneratedWorkoutProgrammeUseCase:
+        new GetGeneratedWorkoutProgrammeUseCase(
+            generatedWorkoutProgrammeReadRepository,
         ),
 
 };

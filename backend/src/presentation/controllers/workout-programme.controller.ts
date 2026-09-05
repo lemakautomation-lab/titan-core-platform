@@ -19,12 +19,15 @@ import { DeleteWorkoutProgrammeUseCase } from "../../application/use-cases/delet
 import { UpdateWorkoutProgrammeStatusUseCase } from "../../application/use-cases/update-workout-programme-status.use-case";
 import { AdaptWorkoutProgrammeFromPerformanceUseCase } from "../../application/use-cases/adapt-workout-programme-from-performance.use-case";
 import { GenerateWorkoutProgrammeUseCase } from "../../application/use-cases/generate-workout-programme.use-case";
+import { GetGeneratedWorkoutProgrammeUseCase } from "../../application/use-cases/get-generated-workout-programme.use-case";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { parsePagination } from "../../application/common/pagination";
 import { GenerateWorkoutProgrammeRequestDto } from "../dto/generate-workout-programme-request.dto";
 import { ProgrammeGenerationHttpErrorMapper } from "../errors/programme-generation-http-error.mapper";
 import { GeneratedWorkoutProgrammeResponseMapper } from "../mappers/generated-workout-programme-response.mapper";
+import { GetGeneratedWorkoutProgrammeRequestDto } from "../dto/get-generated-workout-programme-request.dto";
+import { HttpException } from "../../shared/exceptions/http.exception";
 
 export class WorkoutProgrammeController {
     constructor(
@@ -37,6 +40,7 @@ export class WorkoutProgrammeController {
         private readonly updateWorkoutProgrammeStatusUseCase: UpdateWorkoutProgrammeStatusUseCase,
         private readonly adaptWorkoutProgrammeFromPerformanceUseCase: AdaptWorkoutProgrammeFromPerformanceUseCase,
         private readonly generateWorkoutProgrammeUseCase: GenerateWorkoutProgrammeUseCase,
+        private readonly getGeneratedWorkoutProgrammeUseCase: GetGeneratedWorkoutProgrammeUseCase,
     ) {}
 
     async generate(
@@ -63,6 +67,41 @@ export class WorkoutProgrammeController {
             );
         } catch (error) {
             next(ProgrammeGenerationHttpErrorMapper.map(error) ?? error);
+        }
+    }
+
+    async getGeneratedById(
+        req: AuthRequest,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
+        const authUser = req.user;
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        try {
+            const query = GetGeneratedWorkoutProgrammeRequestDto.toQuery(
+                req.params.generationId,
+                authUser.tenantId,
+            );
+            const result =
+                await this.getGeneratedWorkoutProgrammeUseCase.execute(query);
+            if (!result.isSuccess || !result.value) {
+                throw new HttpException(
+                    "Generated Workout Programme not found.",
+                    404,
+                    "GENERATED_PROGRAMME_NOT_FOUND",
+                );
+            }
+            res.status(200).json(
+                GeneratedWorkoutProgrammeResponseMapper.toRetrievalResponse(
+                    result.value,
+                ),
+            );
+        } catch (error) {
+            next(error);
         }
     }
 

@@ -1,24 +1,42 @@
 import { WorkoutProgrammeGenerationTransactionOutcome } from "../../application/ports/workout-programme-generation.transaction";
+import { GeneratedWorkoutProgrammeReadModel } from "../../application/ports/generated-workout-programme-read.repository";
+import { WorkoutProgramme } from "../../domain/entities/workout-programme.entity";
+import { WorkoutProgrammeStructure } from "../../domain/entities/workout-programme-structure.entity";
 
 export class GeneratedWorkoutProgrammeResponseMapper {
     static toResponse(outcome: WorkoutProgrammeGenerationTransactionOutcome) {
         return {
             replayed: outcome.status === "replayed",
             generationId: outcome.generation.id,
-            programme: {
-                id: outcome.programme.id,
-                athleteId: outcome.programme.athleteId,
-                name: outcome.programme.name,
-                description: outcome.programme.description,
-                goal: outcome.programme.goal,
-                experience: outcome.programme.experience,
-                trainingFrequency: outcome.programme.trainingFrequency,
-                sessionDurationMinutes: outcome.programme.sessionDurationMinutes,
-                sportId: outcome.programme.sportId,
-                status: outcome.programme.status,
-                createdAt: outcome.programme.createdAt,
-                updatedAt: outcome.programme.updatedAt,
-                sessions: outcome.structure.sessions.map(session => ({
+            programme: this.toProgramme(outcome.programme, outcome.structure),
+        };
+    }
+
+    static toRetrievalResponse(result: GeneratedWorkoutProgrammeReadModel) {
+        return {
+            generationId: result.generationId,
+            programme: this.toProgramme(result.programme, result.structure),
+        };
+    }
+
+    private static toProgramme(
+        programme: WorkoutProgramme,
+        structure: WorkoutProgrammeStructure,
+    ) {
+        return {
+            id: programme.id,
+            athleteId: programme.athleteId,
+            name: programme.name,
+            description: programme.description,
+            goal: programme.goal,
+            experience: programme.experience,
+            trainingFrequency: programme.trainingFrequency,
+            sessionDurationMinutes: programme.sessionDurationMinutes,
+            sportId: programme.sportId,
+            status: programme.status,
+            createdAt: programme.createdAt,
+            updatedAt: programme.updatedAt,
+            sessions: structure.sessions.map(session => ({
                     id: session.id,
                     ordinal: session.ordinal,
                     name: session.name,
@@ -31,8 +49,7 @@ export class GeneratedWorkoutProgrammeResponseMapper {
                         durationSeconds: prescription.durationSeconds,
                         restSeconds: prescription.restSeconds,
                     })),
-                })),
-            },
+            })),
         };
     }
 }
