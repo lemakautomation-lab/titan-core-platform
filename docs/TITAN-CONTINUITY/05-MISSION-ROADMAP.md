@@ -1,4 +1,4 @@
-﻿# Mission Roadmap
+# Mission Roadmap
 
 ## MISSION 041
 
@@ -58,9 +58,9 @@ Measurement foundation. R0–R7 are complete, verified, committed and pushed thr
 
 ACTIVE — Exercise Programme Generation Engine.
 
-Mission 055 is prospectively established from approved TITAN Health product direction and
-current repository inspection. It owns deterministic initial generation. 055-R0 is COMPLETE /
-VERIFIED / UNCOMMITTED; R1–R7 are NOT STARTED / NOT AUTHORIZED.
+Mission 055 is COMPLETE / VERIFIED / COMMITTED / PUSHED / TECHNICALLY CLOSED. Final implementation checkpoint: `562cac854cabab2b0a136448c738e9fb8cdf88c8`.
+Mission 055 R0 through R6R are RELEASED / VERIFIED / COMMITTED / PUSHED / TECHNICALLY CLOSED.
+R7 records governance closure.
 
 ## MISSION 055.1
 
@@ -95,6 +95,6 @@ feedback, deload and periodic revision policy remain outside Mission 055.
 pending).
 
 Advanced capabilities are excluded from Mission 052 to a future separately specified
-successor mission. No successor mission number is assigned. After R0 release, 055-R1 is the
+Mission 056 owns Programme Progression. Production enablement remains separately gated. The
 next planned control but requires separate Gate 1 inspection and authorization. The Technical
 Library / Knowledge Hub remains future planning only.

@@ -1,12 +1,12 @@
-# MISSION 055 — EXERCISE PROGRAMME GENERATION ENGINE
+# MISSION 055 â€” EXERCISE PROGRAMME GENERATION ENGINE
 
 ## Status
 
 ACTIVE
 
-Current control: 055-R0 — Architecture, Identity, and Acceptance Contract.
+Current control: R7 - Final governance, documentation, and mission sign-off.
 
-055-R0 is COMPLETE / VERIFIED / UNCOMMITTED. Controls 055-R1 through 055-R7 are
+Mission 055 R0 through R6R are RELEASED / VERIFIED / COMMITTED / PUSHED. R7 records final governance and documentation closure.
 NOT STARTED / NOT AUTHORIZED.
 
 ## Prospective Establishment and Historical Identity
@@ -75,7 +75,7 @@ not part of this mission.
 
 Generated output requires this minimum hierarchy:
 
-Programme → ordered Sessions → ordered Exercise Prescriptions.
+Programme â†’ ordered Sessions â†’ ordered Exercise Prescriptions.
 
 A prescription must contain enough governed information to execute the generated
 programme, including ordering, Exercise identity and an appropriate bounded prescription
@@ -119,7 +119,7 @@ Goal semantics, Exercise metadata or generation rules do not silently reinterpre
 
 Regeneration remains within Mission 055 only as explicit lineage:
 
-old generated version → regeneration decision → new generated version.
+old generated version â†’ regeneration decision â†’ new generated version.
 
 Regeneration must not silently overwrite history or become general Programme Progression.
 Its exact mechanics and API belong to later controls.
@@ -240,14 +240,23 @@ prior work. It does not collapse Mission 056 scope into Mission 055 and is not r
 
 ## Control Plan
 
-- 055-R0 — Architecture, identity, and acceptance contract — COMPLETE / VERIFIED / UNCOMMITTED.
-- 055-R1 — Structured generation inputs and minimum goal semantics — NOT STARTED / NOT AUTHORIZED.
-- 055-R2 — Programme structure and ownership model — NOT STARTED / NOT AUTHORIZED.
-- 055-R3 — Exercise eligibility contract — NOT STARTED / NOT AUTHORIZED.
-- 055-R4 — Deterministic initial generation — NOT STARTED / NOT AUTHORIZED.
-- 055-R5 — Atomic persistence, idempotency, concurrency, and generation audit — NOT STARTED / NOT AUTHORIZED.
-- 055-R6 — API, dedicated RBAC, non-disclosure, and governed regeneration/override boundary — NOT STARTED / NOT AUTHORIZED.
-- 055-R7 — Regression closure and mission sign-off — NOT STARTED / NOT AUTHORIZED.
+Mission 055 release ledger:
 
-No production implementation is authorized by 055-R0. After R0 is verified and released,
-055-R1 still requires a separate Gate 1 inspection and explicit authorization.
+- 055-R0 — Architecture, Identity, and Acceptance Contract — RELEASED / VERIFIED / COMMITTED / PUSHED
+- 055-R1 — Domain and Policy Foundation — RELEASED / VERIFIED / COMMITTED / PUSHED
+- 055-R2 — Deterministic Generation Engine — RELEASED / VERIFIED / COMMITTED / PUSHED
+- 055-R3 — Prescription Profile Integration — RELEASED / VERIFIED / COMMITTED / PUSHED
+- 055-R4P-1 — Persistence and Retrieval Foundation — RELEASED / VERIFIED / COMMITTED / PUSHED
+- 055-R4P-2 — Persistence and Retrieval Hardening — RELEASED / VERIFIED / COMMITTED / PUSHED
+- 055-R4 — Persistence and Retrieval Release — RELEASED / VERIFIED / COMMITTED / PUSHED
+- 055-R5-B1 — Generation Boundary Hardening — RELEASED / VERIFIED / COMMITTED / PUSHED
+- 055-R5-B2 — Generation Security Hardening — RELEASED / VERIFIED / COMMITTED / PUSHED
+- 055-R6 — Generated Programme Retrieval — RELEASED / VERIFIED / COMMITTED / PUSHED
+- 055-R6R — Bounded Generated-Programme Retrieval — RELEASED / VERIFIED / COMMITTED / PUSHED
+- 055-R7 — Regression Closure and Mission Sign-off — GOVERNANCE CLOSURE
+
+Final implementation checkpoint: 562cac854cabab2b0a136448c738e9fb8cdf88c8.
+
+Technical completion is separate from production enablement. Generation remains default-denied until the required workout-programmes.generate permission is provisioned and assigned through an approved tenant rollout, governed ExercisePrescriptionProfiles are authored, reviewed and activated, and production rollout and monitoring are approved.
+
+Deferred capabilities: frontend generation UI, regeneration, coach override, prescription-profile administration API/UI, active profile population, and progression. Mission 056 owns Programme Progression.

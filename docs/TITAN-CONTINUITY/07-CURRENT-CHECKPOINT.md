@@ -1,4 +1,4 @@
-# Current Checkpoint — 2026-09-02
+# Current Checkpoint â€” 2026-09-02
 
 ## REPOSITORY
 
@@ -10,22 +10,22 @@ HEAD and origin/main:
 
 Latest pushed commit:
 
-`8125424` — Mission 052-R7: Sign off performance foundation
+`8125424` â€” Mission 052-R7: Sign off performance foundation
 
 Local main and origin/main are synchronized.
 
 ## MISSION STATUS
 
-- Mission 052 — COMPLETE / VERIFIED / COMMITTED / PUSHED.
-- Mission 053 — COMPLETE.
-- Mission 054 — COMPLETE.
-- Mission 055 — ACTIVE; R0 COMPLETE / VERIFIED / UNCOMMITTED.
-- Mission 055.1 — COMPLETE / VERIFIED / COMMITTED / PUSHED.
+- Mission 052 â€” COMPLETE / VERIFIED / COMMITTED / PUSHED.
+- Mission 053 â€” COMPLETE.
+- Mission 054 â€” COMPLETE.
+- Mission 055 â€” ACTIVE; R0 COMPLETE / VERIFIED / UNCOMMITTED.
+- Mission 055.1 â€” COMPLETE / VERIFIED / COMMITTED / PUSHED.
 
 Mission 055.1 implementation commits:
 
-- `dbf443b` — athlete performance adaptation;
-- `4563d49` — Performance Measurement application boundary.
+- `dbf443b` â€” athlete performance adaptation;
+- `4563d49` â€” Performance Measurement application boundary.
 
 ## VERIFICATION
 
@@ -43,14 +43,16 @@ in progress. Do not bulk-stage, clean, reset, revert, stash or discard unrelated
 
 ## CURRENT GOVERNANCE CHECKPOINT
 
-055-R0 — Architecture, Identity, and Acceptance Contract.
+055-R0 â€” Architecture, Identity, and Acceptance Contract.
 
-Mission 055 is prospectively established for deterministic initial Exercise Programme
-Generation. Mission 055.1 remains unchanged historical prior work: it supplied adaptation,
+Mission 055 is technically closed after R0 through R6R release and R7 governance closure.
+Final implementation checkpoint: 562cac854cabab2b0a136448c738e9fb8cdf88c8. Mission 055.1 remains unchanged historical prior work: it supplied adaptation,
 transaction, concurrency, audit, tenant-isolation and security foundations but did not
 implement initial generation or satisfy Mission 055 acceptance. No Mission 055.2 is implied.
+Technical completion is separate from production enablement. Generation remains default-denied
+until permission provisioning, governed ACTIVE ExercisePrescriptionProfiles, and approved
+production rollout and monitoring are complete.
 
 Advanced capabilities are excluded to a future separately specified successor mission. No
-Performance Measurement successor number is assigned. R1–R7 are NOT STARTED / NOT
-AUTHORIZED. After R0 release, 055-R1 requires separate Gate 1 inspection and authorization.
+Performance Measurement remains historical prior work. Mission 055 R0 through R6R are RELEASED / VERIFIED / COMMITTED / PUSHED, R7 records governance closure, and Mission 056 owns Programme Progression.
 Mission 056 progression and the Technical Library / Knowledge Hub are not active work.
