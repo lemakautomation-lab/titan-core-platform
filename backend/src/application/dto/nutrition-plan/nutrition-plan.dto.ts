@@ -10,6 +10,12 @@ export interface NutritionPlanDto {
     inputSnapshot: Record<string, unknown>;
     planSnapshot: {
         planType: "AUTOMATED_NUTRITION_PLAN";
+        macroTargets: {
+            caloriesKcal: number;
+            proteinGrams: number;
+            carbohydrateGrams: number;
+            fatGrams: number;
+        };
         guidance: readonly string[];
     };
     createdAt: Date;
@@ -30,4 +36,3 @@ export class NutritionPlanMapper {
         };
     }
 }
-

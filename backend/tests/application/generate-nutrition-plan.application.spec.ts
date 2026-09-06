@@ -17,6 +17,13 @@ const tenantId = "tenant-1";
 const actorUserId = "actor-1";
 const athleteId = "athlete-1";
 
+const macroTargets = {
+    caloriesKcal: 2400,
+    proteinGrams: 180,
+    carbohydrateGrams: 240,
+    fatGrams: 80,
+};
+
 function command(
     idempotencyKey = "nutrition-key-1",
     actor = actorUserId,
@@ -27,6 +34,7 @@ function command(
         idempotencyKey,
         {
             athleteId,
+            macroTargets,
             goal: "general fitness",
             dietaryPreferences: ["vegetarian"],
             dietaryRestrictions: ["peanuts"],
@@ -41,6 +49,7 @@ function generatedResult(): NutritionPlanGenerationResult {
         generatorVersion: "1.0.0",
         planSnapshot: {
             planType: "AUTOMATED_NUTRITION_PLAN",
+            macroTargets,
             guidance: [
                 "Automated nutrition plan generated from the supplied athlete context.",
             ],
@@ -66,6 +75,7 @@ function harness(
                 tenantId,
                 actorUserId,
                 athleteId,
+                macroTargets,
                 goal: "general fitness",
                 dietaryPreferences: ["vegetarian"],
                 dietaryRestrictions: ["peanuts"],
@@ -82,6 +92,7 @@ function harness(
             ): Promise<NutritionPlanGenerationResult> => {
                 expect(input).toEqual({
                     athleteId,
+                    macroTargets,
                     goal: "general fitness",
                     dietaryPreferences: ["vegetarian"],
                     dietaryRestrictions: ["peanuts"],
@@ -147,6 +158,8 @@ describe("Generate Nutrition Plan application boundary", () => {
             "TITAN_DETERMINISTIC_NUTRITION",
         );
         expect(result.plan.generatorVersion).toBe("1.0.0");
+        expect(result.plan.planSnapshot.macroTargets)
+            .toEqual(macroTargets);
 
         expect(generator.generate).toHaveBeenCalledOnce();
         expect(transaction.execute).toHaveBeenCalledOnce();
@@ -210,6 +223,7 @@ describe("Generate Nutrition Plan application boundary", () => {
                 tenantId,
                 actorUserId,
                 athleteId,
+                macroTargets,
             },
             generatedResult().planSnapshot,
         );

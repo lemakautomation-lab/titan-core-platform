@@ -1,9 +1,5 @@
+import { NutritionPlanSnapshot } from "../../../application/ports/nutrition-plan-generator.port";
 import { randomUUID } from "crypto";
-
-export interface NutritionPlanSnapshot {
-    readonly planType: "AUTOMATED_NUTRITION_PLAN";
-    readonly guidance: readonly string[];
-}
 
 export class NutritionPlan {
     constructor(
@@ -78,6 +74,13 @@ export class NutritionPlan {
             Object.freeze({ ...inputSnapshot }),
             Object.freeze({
                 planType: planSnapshot.planType,
+                macroTargets: Object.freeze({
+                    caloriesKcal: planSnapshot.macroTargets.caloriesKcal,
+                    proteinGrams: planSnapshot.macroTargets.proteinGrams,
+                    carbohydrateGrams:
+                        planSnapshot.macroTargets.carbohydrateGrams,
+                    fatGrams: planSnapshot.macroTargets.fatGrams,
+                }),
                 guidance: Object.freeze([...planSnapshot.guidance]),
             }),
             new Date(),

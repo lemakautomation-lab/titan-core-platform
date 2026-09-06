@@ -35,6 +35,12 @@ export class NutritionPlanMapper {
     }): NutritionPlan {
         const snapshot = row.planSnapshot as {
             planType: "AUTOMATED_NUTRITION_PLAN";
+            macroTargets: {
+                caloriesKcal: number;
+                proteinGrams: number;
+                carbohydrateGrams: number;
+                fatGrams: number;
+            };
             guidance: string[];
         };
 
@@ -50,6 +56,13 @@ export class NutritionPlanMapper {
             row.inputSnapshot as Record<string, unknown>,
             {
                 planType: snapshot.planType,
+                macroTargets: Object.freeze({
+                    caloriesKcal: snapshot.macroTargets.caloriesKcal,
+                    proteinGrams: snapshot.macroTargets.proteinGrams,
+                    carbohydrateGrams:
+                        snapshot.macroTargets.carbohydrateGrams,
+                    fatGrams: snapshot.macroTargets.fatGrams,
+                }),
                 guidance: Object.freeze([
                     ...(snapshot.guidance ?? []),
                 ]),

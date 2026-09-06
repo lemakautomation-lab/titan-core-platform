@@ -1,6 +1,7 @@
 import { NutritionPlanGenerationInput } from "../../application/ports/nutrition-plan-generator.port";
 import { GenerateNutritionPlanCommand } from "../../application/commands/generate-nutrition-plan.command";
 import { HttpException } from "../../shared/exceptions/http.exception";
+import { createMacroTargets } from "../../domain/entities/nutrition-plan/macro-targets";
 
 const ALLOWED_FIELDS = new Set([
     "athleteId",
@@ -8,6 +9,7 @@ const ALLOWED_FIELDS = new Set([
     "dietaryPreferences",
     "dietaryRestrictions",
     "notes",
+    "macroTargets",
 ]);
 
 export class GenerateNutritionPlanRequestDto {
@@ -49,6 +51,11 @@ export class GenerateNutritionPlanRequestDto {
                 throw new Error("Athlete ID is required.");
             }
 
+            const macroTargets =
+                GenerateNutritionPlanRequestDto.parseMacroTargets(
+                    values.macroTargets,
+                );
+
             if (
                 values.goal !== undefined &&
                 values.goal !== null &&
@@ -79,6 +86,7 @@ export class GenerateNutritionPlanRequestDto {
 
             const input: NutritionPlanGenerationInput = {
                 athleteId: values.athleteId.trim(),
+                macroTargets,
                 goal:
                     typeof values.goal === "string"
                         ? values.goal.trim()
@@ -110,6 +118,57 @@ export class GenerateNutritionPlanRequestDto {
                 "VALIDATION_ERROR",
             );
         }
+    }
+
+    private static parseMacroTargets(
+        value: unknown,
+    ) {
+        if (
+            value === null ||
+            typeof value !== "object" ||
+            Array.isArray(value) ||
+            Object.getPrototypeOf(value) !== Object.prototype
+        ) {
+            throw new Error("Macro targets are required.");
+        }
+
+        const values = value as Record<string, unknown>;
+
+        const allowed = new Set([
+            "caloriesKcal",
+            "proteinGrams",
+            "carbohydrateGrams",
+            "fatGrams",
+        ]);
+
+        if (
+            Object.keys(values).some(field => !allowed.has(field))
+        ) {
+            throw new Error(
+                "Macro targets contain unsupported fields.",
+            );
+        }
+
+        for (const field of allowed) {
+            const target = values[field];
+
+            if (
+                typeof target !== "number" ||
+                !Number.isFinite(target) ||
+                target <= 0
+            ) {
+                throw new Error(
+                    `Macro target ${field} must be a finite positive number.`,
+                );
+            }
+        }
+
+        return createMacroTargets(
+            values.caloriesKcal as number,
+            values.proteinGrams as number,
+            values.carbohydrateGrams as number,
+            values.fatGrams as number,
+        );
     }
 
     private static parseStringArray(

@@ -6,6 +6,13 @@ import app from "../../src/app";
 import { createTestUser } from "../factories/user.factory";
 import { testPrisma } from "../helpers/prisma-test.client";
 
+const macroTargets = {
+    caloriesKcal: 2400,
+    proteinGrams: 180,
+    carbohydrateGrams: 240,
+    fatGrams: 80,
+};
+
 async function login(
     user: Awaited<ReturnType<typeof createTestUser>>,
 ) {
@@ -66,6 +73,7 @@ describe("Nutrition Plan generation API", () => {
             `r57-denied-${crypto.randomUUID()}`,
             {
                 athleteId: crypto.randomUUID(),
+                macroTargets,
             },
         );
 
@@ -85,6 +93,7 @@ describe("Nutrition Plan generation API", () => {
             key,
             {
                 athleteId: athlete.id,
+                macroTargets,
                 goal: "GENERAL_FITNESS",
                 dietaryPreferences: ["HIGH_PROTEIN"],
                 dietaryRestrictions: ["PEANUTS"],
@@ -92,7 +101,7 @@ describe("Nutrition Plan generation API", () => {
             },
         );
 
-        console.log("NUTRITION DEBUG RESPONSE:", JSON.stringify(response.body, null, 2)); expect(response.status).toBe(201);
+        expect(response.status).toBe(201);
         expect(response.body.id).toEqual(expect.any(String));
         expect(response.body.tenantId).toBe(user.tenant.id);
         expect(response.body.athleteId).toBe(athlete.id);
@@ -103,6 +112,7 @@ describe("Nutrition Plan generation API", () => {
         expect(response.body.generatorVersion).toBe("1.0.0");
         expect(response.body.planSnapshot).toEqual({
             planType: "AUTOMATED_NUTRITION_PLAN",
+            macroTargets,
             guidance: expect.arrayContaining([
                 "Automated nutrition plan generated from the supplied athlete context.",
             ]),
@@ -131,6 +141,7 @@ describe("Nutrition Plan generation API", () => {
         const key = `r57-replay-${crypto.randomUUID()}`;
         const payload = {
             athleteId: athlete.id,
+            macroTargets,
             goal: "GENERAL_FITNESS",
             dietaryPreferences: ["HIGH_PROTEIN"],
         };
@@ -162,11 +173,13 @@ describe("Nutrition Plan generation API", () => {
 
         const first = await generation(token, key, {
             athleteId: athlete.id,
+            macroTargets,
             goal: "GENERAL_FITNESS",
         });
 
         const second = await generation(token, key, {
             athleteId: athlete.id,
+            macroTargets,
             goal: "SPORT_PERFORMANCE",
         });
 
@@ -187,8 +200,32 @@ describe("Nutrition Plan generation API", () => {
             `r57-authority-${crypto.randomUUID()}`,
             {
                 athleteId: athlete.id,
+                macroTargets,
                 tenantId: crypto.randomUUID(),
                 actorUserId: crypto.randomUUID(),
+            },
+        );
+
+        expect(response.status).toBe(400);
+        expect(response.body.error.code).toBe("VALIDATION_ERROR");
+    });
+
+    it("rejects invalid macro targets at the API boundary", async () => {
+        const user = await createTestUser({
+            permissions: ["nutrition-plans.generate"],
+        });
+        const token = await login(user);
+        const athlete = await createActiveAthlete(user.tenant.id);
+
+        const response = await generation(
+            token,
+            `r57-invalid-macros-${crypto.randomUUID()}`,
+            {
+                athleteId: athlete.id,
+                macroTargets: {
+                    ...macroTargets,
+                    proteinGrams: 0,
+                },
             },
         );
 
@@ -215,6 +252,7 @@ describe("Nutrition Plan generation API", () => {
             `r57-inactive-${crypto.randomUUID()}`,
             {
                 athleteId: athlete.id,
+                macroTargets,
             },
         );
 
@@ -233,6 +271,3 @@ describe("Nutrition Plan generation API", () => {
         ).toBe(0);
     });
 });
-
-
-

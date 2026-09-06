@@ -2,7 +2,9 @@ import {
     NutritionPlanGenerationInput,
     NutritionPlanGenerationResult,
     NutritionPlanGenerator,
+    NutritionPlanSnapshot,
 } from "../ports/nutrition-plan-generator.port";
+import { createMacroTargets } from "../../domain/entities/nutrition-plan/macro-targets";
 
 export class DeterministicNutritionPlanGenerator
 implements NutritionPlanGenerator {
@@ -15,6 +17,13 @@ implements NutritionPlanGenerator {
         if (!input || !input.athleteId?.trim()) {
             throw new Error("Nutrition generation input is required.");
         }
+
+        const macroTargets = createMacroTargets(
+            input.macroTargets?.caloriesKcal,
+            input.macroTargets?.proteinGrams,
+            input.macroTargets?.carbohydrateGrams,
+            input.macroTargets?.fatGrams,
+        );
 
         const guidance: string[] = [
             "Automated nutrition plan generated from the supplied athlete context.",
@@ -38,15 +47,18 @@ implements NutritionPlanGenerator {
             );
         }
 
+        const planSnapshot: NutritionPlanSnapshot = Object.freeze({
+            planType: "AUTOMATED_NUTRITION_PLAN",
+            macroTargets,
+            guidance: Object.freeze(guidance),
+        });
+
         return {
             generatorId:
                 DeterministicNutritionPlanGenerator.GENERATOR_ID,
             generatorVersion:
                 DeterministicNutritionPlanGenerator.GENERATOR_VERSION,
-            planSnapshot: Object.freeze({
-                planType: "AUTOMATED_NUTRITION_PLAN",
-                guidance: Object.freeze(guidance),
-            }),
+            planSnapshot,
         };
     }
 }
