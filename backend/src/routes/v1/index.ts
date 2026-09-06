@@ -17,6 +17,7 @@ import { createPerformanceMetricRoutes } from "../../presentation/routes/perform
 import { createWorkoutProgrammeRoutes } from "../../presentation/routes/workout-programme.routes";
 import { createProductRoutes } from "../../presentation/routes/product.routes";
 import { createPerformanceMeasurementRoutes } from "../../presentation/routes/performance-measurement.routes";
+import { createNutritionPlanRoutes } from "../../presentation/routes/nutrition-plan.routes";
 
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
@@ -35,6 +36,7 @@ import { PerformanceMetricController } from "../../presentation/controllers/perf
 import { WorkoutProgrammeController } from "../../presentation/controllers/workout-programme.controller";
 import { ProductController } from "../../presentation/controllers/product.controller";
 import { PerformanceMeasurementController } from "../../presentation/controllers/performance-measurement.controller";
+import { NutritionPlanController } from "../../presentation/controllers/nutrition-plan.controller";
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
@@ -55,6 +57,7 @@ import { performanceMetricModule } from "../../infrastructure/composition/perfor
 import { workoutProgrammeModule } from "../../infrastructure/composition/workout-programme.module";
 import { productModule } from "../../infrastructure/composition/product.module";
 import { performanceMeasurementModule } from "../../infrastructure/composition/performance-measurement.module";
+import { nutritionPlanModule } from "../../infrastructure/composition/nutrition-plan.module";
 
 const router = Router();
 
@@ -190,6 +193,11 @@ const performanceMeasurementController =
         performanceMeasurementModule.createCorrectionUseCase,
         performanceMeasurementModule.listUseCase,
     );
+const nutritionPlanController =
+    new NutritionPlanController(
+        nutritionPlanModule.generateNutritionPlanUseCase,
+    );
+
 const permissionController =
     new PermissionController(
         permissionModule.createPermissionUseCase,
@@ -297,6 +305,13 @@ router.use(
 );
 
 router.use(
+    "/nutrition-plans",
+    createNutritionPlanRoutes(
+        nutritionPlanController,
+    ),
+);
+
+router.use(
     "/exercises",
     createExerciseRoutes(
         exerciseController,
@@ -311,3 +326,4 @@ router.use(
 );
 
 export default router;
+

@@ -29,6 +29,7 @@ model Tenant {
 
   workoutProgrammes WorkoutProgramme[]
   products          Product[]
+  nutritionPlans     NutritionPlan[]
 }
 
 model Sport {
@@ -104,6 +105,7 @@ model Athlete {
   performanceMetrics      PerformanceMetric[]      @relation("PerformanceMetricAthleteTenant")
   performanceMeasurements PerformanceMeasurement[] @relation("PerformanceMeasurementAthleteTenant")
   workoutProgrammes       WorkoutProgramme[]       @relation("WorkoutProgrammeAthleteTenant")
+  nutritionPlans          NutritionPlan[]
 
   @@unique([id, tenantId], map: "Athlete_id_tenantId_key")
   @@index([tenantId])
@@ -551,3 +553,26 @@ model PerformanceMeasurement {
   @@index([tenantId, athleteId])
   @@index([tenantId, athleteId, metricId, correctsMeasurementId], map: "PerformanceMeasurement_effective_lookup_idx")
 }
+model NutritionPlan {
+  id               String   @id @default(uuid())
+  tenantId         String
+  athleteId        String
+  idempotencyKey   String
+  requestFingerprint String
+  requestFingerprintVersion String
+  generatorId      String
+  generatorVersion String
+  inputSnapshot    Json
+  planSnapshot     Json
+  createdAt        DateTime @default(now())
+
+  tenant           Tenant   @relation(fields: [tenantId], references: [id])
+  athlete          Athlete  @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([id, tenantId])
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, athleteId])
+  @@index([tenantId, createdAt])
+}
+
+
