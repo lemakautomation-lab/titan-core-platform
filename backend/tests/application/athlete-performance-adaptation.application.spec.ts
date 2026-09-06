@@ -11,6 +11,7 @@ import { AthleteRepository } from "../../src/domain/repositories/athlete.reposit
 import { PerformanceMetricRepository } from "../../src/domain/repositories/performance-metric.repository";
 import { PerformanceMeasurementRepository } from "../../src/domain/repositories/performance-measurement/performance-measurement.repository";
 import { WorkoutProgrammePerformanceAdaptationTransaction } from "../../src/application/ports/workout-programme-performance-adaptation.transaction";
+import { PerformanceEvidenceEvaluator } from "../../src/domain/services/performance-evidence-evaluator.service";
 
 const tenantId = "tenant-1";
 const actorUserId = "user-1";
@@ -65,6 +66,18 @@ function createFixture(overrides?: {
         )
         : overrides.measurement;
 
+    const previousMeasurement = measurement
+        ? new PerformanceMeasurement(
+            "measurement-previous",
+            tenantId,
+            athleteId,
+            metricId,
+            12,
+            new Date("2026-08-30T10:00:00.000Z"),
+            new Date("2026-08-30T10:00:01.000Z"),
+        )
+        : null;
+
     const workoutRepository = {
         findById: vi.fn(async () => programme),
     } as unknown as WorkoutProgrammeRepository;
@@ -83,7 +96,9 @@ function createFixture(overrides?: {
 
     const measurementRepository = {
         listRecentEffectiveForMetric: vi.fn(
-            async () => measurement ? [measurement] : [],
+            async () => measurement
+                ? [measurement, previousMeasurement!]
+                : [],
         ),
     } as unknown as PerformanceMeasurementRepository;
 
@@ -104,6 +119,7 @@ function createFixture(overrides?: {
             metricRepository,
             measurementRepository,
             adaptationTransaction,
+            new PerformanceEvidenceEvaluator(),
         ),
         workoutRepository,
         measurementRepository,
@@ -121,6 +137,7 @@ function command(overrides: Partial<{
         actorUserId,
         athleteId,
         metricId,
+        "HIGHER_IS_BETTER",
         overrides.trainingFrequencyDelta ?? 1,
         overrides.sessionDurationMinutesDelta ?? 15,
         "Authorised adjustment after reviewed sprint measurement.",
@@ -149,7 +166,7 @@ describe("Athlete performance adaptation application boundary", () => {
             }),
         );
         expect(fixture.measurementRepository.listRecentEffectiveForMetric)
-            .toHaveBeenCalledWith(tenantId, athleteId, metricId, 1);
+            .toHaveBeenCalledWith(tenantId, athleteId, metricId, 2);
     });
 
     it("rejects an out-of-bounds adjustment before repository access", async () => {

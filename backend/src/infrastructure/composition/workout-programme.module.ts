@@ -14,6 +14,7 @@ import { UpdateWorkoutProgrammeUseCase } from "../../application/use-cases/updat
 import { DeleteWorkoutProgrammeUseCase } from "../../application/use-cases/delete-workout-programme.use-case";
 import { UpdateWorkoutProgrammeStatusUseCase } from "../../application/use-cases/update-workout-programme-status.use-case";
 import { AdaptWorkoutProgrammeFromPerformanceUseCase } from "../../application/use-cases/adapt-workout-programme-from-performance.use-case";
+import { PerformanceEvidenceEvaluator } from "../../domain/services/performance-evidence-evaluator.service";
 import { PrismaWorkoutProgrammePerformanceAdaptationTransaction } from "../transactions/workout-programme-performance-adaptation.transaction";
 import { PrismaExerciseRepository } from "../repositories/exercise.repository";
 import { PrismaProgrammeExercisePrescriptionCandidateRepository } from "../repositories/programme-exercise-prescription-candidate.repository";
@@ -115,6 +116,7 @@ export const workoutProgrammeModule = {
             performanceMetricRepository,
             performanceMeasurementRepository,
             performanceAdaptationTransaction,
+            new PerformanceEvidenceEvaluator(),
         ),
 
     generateWorkoutProgrammeUseCase:

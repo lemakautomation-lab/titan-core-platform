@@ -128,6 +128,9 @@ export class WorkoutProgrammeController {
                     typeof req.body.metricId === "string"
                         ? req.body.metricId
                         : "",
+                    typeof req.body.improvementDirection === "string"
+                        ? req.body.improvementDirection
+                        : "",
                     Number(req.body.trainingFrequencyDelta),
                     Number(req.body.sessionDurationMinutesDelta),
                     typeof req.body.rationale === "string"

@@ -2,6 +2,10 @@ import { AthleteRepository } from "../../domain/repositories/athlete.repository"
 import { PerformanceMetricRepository } from "../../domain/repositories/performance-metric.repository";
 import { PerformanceMeasurementRepository } from "../../domain/repositories/performance-measurement/performance-measurement.repository";
 import { WorkoutProgrammeRepository } from "../../domain/repositories/workout-programme.repository";
+import {
+    PerformanceEvidenceEvaluator,
+    PerformanceImprovementDirection,
+} from "../../domain/services/performance-evidence-evaluator.service";
 
 import { AdaptWorkoutProgrammeFromPerformanceCommand } from "../commands/adapt-workout-programme-from-performance.command";
 import { WorkoutProgrammeDto } from "../dto/workout-programme/workout-programme.dto";
@@ -25,6 +29,8 @@ implements UseCase<
             PerformanceMeasurementRepository,
         private readonly adaptationTransaction:
             WorkoutProgrammePerformanceAdaptationTransaction,
+        private readonly performanceEvidenceEvaluator:
+            PerformanceEvidenceEvaluator,
     ) {}
 
     async execute(
@@ -83,7 +89,7 @@ implements UseCase<
                     command.tenantId,
                     command.athleteId,
                     command.metricId,
-                    1,
+                    2,
                 );
 
             const measurement = measurements[0];
@@ -101,6 +107,25 @@ implements UseCase<
             ) {
                 return Result.failure(
                     "Performance measurement evidence is invalid.",
+                );
+            }
+
+            const evaluation =
+                this.performanceEvidenceEvaluator.evaluate({
+                    measurements,
+                    improvementDirection:
+                        command.improvementDirection,
+                });
+
+            if (!evaluation.evidenceSufficient) {
+                return Result.failure(
+                    "Sufficient performance measurement evidence is required.",
+                );
+            }
+
+            if (!evaluation.performanceImproved) {
+                return Result.failure(
+                    "Performance improvement is required for progression.",
                 );
             }
 
@@ -153,6 +178,13 @@ implements UseCase<
             )
         ) {
             return "Programme, tenant, actor, athlete and metric IDs are required.";
+        }
+
+        if (
+            command.improvementDirection !== "HIGHER_IS_BETTER" &&
+            command.improvementDirection !== "LOWER_IS_BETTER"
+        ) {
+            return "Performance improvement direction is required.";
         }
 
         if (

@@ -47,6 +47,16 @@ async function createPerformanceContext(tenantId: string) {
         },
     });
 
+    await testPrisma.performanceMeasurement.create({
+        data: {
+            tenantId,
+            athleteId: athlete.id,
+            metricId: metric.id,
+            value: 12,
+            recordedAt: new Date("2026-08-30T10:00:00.000Z"),
+        },
+    });
+
     const measurement = await testPrisma.performanceMeasurement.create({
         data: {
             tenantId,
@@ -94,6 +104,7 @@ describe("Workout Programme performance adaptation API", () => {
             .send({
                 athleteId: context.athlete.id,
                 metricId: context.metric.id,
+                improvementDirection: "HIGHER_IS_BETTER",
                 trainingFrequencyDelta: 1,
                 sessionDurationMinutesDelta: -15,
                 rationale: "Reviewed by an authorised coach.",
@@ -180,6 +191,7 @@ describe("Workout Programme performance adaptation API", () => {
             .send({
                 athleteId: otherContext.athlete.id,
                 metricId: otherContext.metric.id,
+                improvementDirection: "HIGHER_IS_BETTER",
                 trainingFrequencyDelta: 1,
                 sessionDurationMinutesDelta: 15,
                 rationale: "Cross-tenant request must fail.",
@@ -213,6 +225,7 @@ describe("Workout Programme performance adaptation API", () => {
             .send({
                 athleteId: context.athlete.id,
                 metricId: context.metric.id,
+                improvementDirection: "HIGHER_IS_BETTER",
                 trainingFrequencyDelta: 2,
                 sessionDurationMinutesDelta: 16,
                 rationale: "Invalid adjustment.",
@@ -242,6 +255,7 @@ describe("Workout Programme performance adaptation API", () => {
         const payload = {
             athleteId: context.athlete.id,
             metricId: context.metric.id,
+            improvementDirection: "HIGHER_IS_BETTER",
             trainingFrequencyDelta: 1,
             sessionDurationMinutesDelta: 0,
             rationale: "Concurrent authorised adaptation.",
