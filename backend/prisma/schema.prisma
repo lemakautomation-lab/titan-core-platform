@@ -21,6 +21,7 @@ model Tenant {
   roles                   Role[]
   permissions             Permission[]
   athletes                Athlete[]
+  mealPlans               MealPlan[]
   athleteRelationships    AthleteRelationship[]
   athleteDigitalTwins     AthleteDigitalTwin[]
   performanceMetrics      PerformanceMetric[]
@@ -106,6 +107,7 @@ model Athlete {
   performanceMeasurements PerformanceMeasurement[] @relation("PerformanceMeasurementAthleteTenant")
   workoutProgrammes       WorkoutProgramme[]       @relation("WorkoutProgrammeAthleteTenant")
   nutritionPlans          NutritionPlan[]
+  mealPlans               MealPlan[]
 
   @@unique([id, tenantId], map: "Athlete_id_tenantId_key")
   @@index([tenantId])
@@ -574,5 +576,36 @@ model NutritionPlan {
   @@index([tenantId, athleteId])
   @@index([tenantId, createdAt])
 }
+
+
+model MealPlan {
+  id          String   @id @default(uuid())
+  tenantId    String
+  athleteId   String
+  name        String
+  description String?
+  version     Int      @default(1)
+  status      MealPlanStatus @default(DRAFT)
+  planSnapshot Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  athlete Athlete @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([id, tenantId])
+  @@index([tenantId, athleteId])
+  @@index([tenantId, status])
+}
+
+enum MealPlanStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+
+
+
 
 
