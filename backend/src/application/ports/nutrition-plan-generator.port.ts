@@ -19,6 +19,7 @@ export interface NutritionPlanGenerationResult {
 
 export interface NutritionPlanSnapshot {
     readonly planType: "AUTOMATED_NUTRITION_PLAN";
+    readonly goalClassification?: "GENERAL_FITNESS" | "SPORT_PERFORMANCE";
     readonly macroTargets: MacroTargets;
     readonly hydrationGuidance: HydrationGuidance;
     readonly guidance: readonly string[];

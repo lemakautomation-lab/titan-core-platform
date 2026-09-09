@@ -33,6 +33,9 @@ describe("DeterministicNutritionPlanGenerator", () => {
         expect(result.planSnapshot.planType).toBe(
             "AUTOMATED_NUTRITION_PLAN",
         );
+        expect(result.planSnapshot.goalClassification).toBe(
+            "GENERAL_FITNESS",
+        );
         expect(result.planSnapshot.macroTargets).toEqual(macroTargets);
         expect(result.planSnapshot.hydrationGuidance)
             .toEqual(hydrationGuidance);
@@ -58,6 +61,9 @@ describe("DeterministicNutritionPlanGenerator", () => {
             goal: "SPORT_PERFORMANCE",
         });
 
+        expect(result.planSnapshot.goalClassification).toBe(
+            "SPORT_PERFORMANCE",
+        );
         expect(result.planSnapshot.guidance).toContain(
             "Plan context includes the stated goal: SPORT_PERFORMANCE.",
         );
@@ -80,6 +86,7 @@ describe("DeterministicNutritionPlanGenerator", () => {
             goal: "weight management",
         });
 
+        expect(result.planSnapshot.goalClassification).toBeUndefined();
         expect(result.planSnapshot.guidance).toContain(
             "Plan context includes the stated goal: weight management.",
         );
@@ -101,6 +108,7 @@ describe("DeterministicNutritionPlanGenerator", () => {
         expect(result.planSnapshot.planType).toBe(
             "AUTOMATED_NUTRITION_PLAN",
         );
+        expect(result.planSnapshot.goalClassification).toBeUndefined();
         expect(result.planSnapshot.macroTargets).toEqual(macroTargets);
         expect(result.planSnapshot.hydrationGuidance)
             .toEqual(hydrationGuidance);

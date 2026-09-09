@@ -55,6 +55,7 @@ function generatedResult(): NutritionPlanGenerationResult {
         generatorVersion: "1.0.0",
         planSnapshot: {
             planType: "AUTOMATED_NUTRITION_PLAN",
+            goalClassification: "GENERAL_FITNESS",
             macroTargets,
             hydrationGuidance,
             guidance: [
@@ -174,6 +175,8 @@ describe("Generate Nutrition Plan application boundary", () => {
             "TITAN_DETERMINISTIC_NUTRITION",
         );
         expect(result.plan.generatorVersion).toBe("1.0.0");
+        expect(result.plan.planSnapshot.goalClassification)
+            .toBe("GENERAL_FITNESS");
         expect(result.plan.planSnapshot.macroTargets)
             .toEqual(macroTargets);
         expect(result.plan.planSnapshot.hydrationGuidance)

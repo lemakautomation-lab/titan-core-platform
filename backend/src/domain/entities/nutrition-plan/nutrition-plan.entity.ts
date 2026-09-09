@@ -67,6 +67,9 @@ export class NutritionPlan {
             Object.freeze({ ...inputSnapshot }),
             Object.freeze({
                 planType: planSnapshot.planType,
+                ...(planSnapshot.goalClassification
+                    ? { goalClassification: planSnapshot.goalClassification }
+                    : {}),
                 macroTargets: Object.freeze({
                     caloriesKcal: planSnapshot.macroTargets.caloriesKcal,
                     proteinGrams: planSnapshot.macroTargets.proteinGrams,

@@ -10,6 +10,7 @@ export interface NutritionPlanDto {
     inputSnapshot: Record<string, unknown>;
     planSnapshot: {
         planType: "AUTOMATED_NUTRITION_PLAN";
+        goalClassification?: "GENERAL_FITNESS" | "SPORT_PERFORMANCE";
         macroTargets: {
             caloriesKcal: number;
             proteinGrams: number;

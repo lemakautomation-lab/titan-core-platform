@@ -118,6 +118,7 @@ describe("Nutrition Plan generation API", () => {
         expect(response.body.generatorVersion).toBe("1.0.0");
         expect(response.body.planSnapshot).toEqual({
             planType: "AUTOMATED_NUTRITION_PLAN",
+            goalClassification: "GENERAL_FITNESS",
             macroTargets,
             hydrationGuidance: {
                 dailyWaterLitres: 2.5,

@@ -6,7 +6,7 @@ import {
 } from "../ports/nutrition-plan-generator.port";
 import { createMacroTargets } from "../../domain/entities/nutrition-plan/macro-targets";
 import { createHydrationGuidance } from "../../domain/entities/nutrition-plan/hydration-guidance";
-import { goalSpecificNutritionGuidance } from "./nutrition-goal-policy.service";
+import { classifyNutritionGoal, goalSpecificNutritionGuidance } from "./nutrition-goal-policy.service";
 
 export class DeterministicNutritionPlanGenerator
 implements NutritionPlanGenerator {
@@ -60,8 +60,13 @@ implements NutritionPlanGenerator {
             );
         }
 
+        const goalClassification = classifyNutritionGoal(input.goal);
+
         const planSnapshot: NutritionPlanSnapshot = Object.freeze({
             planType: "AUTOMATED_NUTRITION_PLAN",
+            ...(goalClassification
+                ? { goalClassification }
+                : {}),
             macroTargets,
             hydrationGuidance,
             guidance: Object.freeze(guidance),
