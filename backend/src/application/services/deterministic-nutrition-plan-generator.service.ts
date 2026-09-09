@@ -5,6 +5,7 @@ import {
     NutritionPlanSnapshot,
 } from "../ports/nutrition-plan-generator.port";
 import { createMacroTargets } from "../../domain/entities/nutrition-plan/macro-targets";
+import { createHydrationGuidance } from "../../domain/entities/nutrition-plan/hydration-guidance";
 
 export class DeterministicNutritionPlanGenerator
 implements NutritionPlanGenerator {
@@ -25,8 +26,13 @@ implements NutritionPlanGenerator {
             input.macroTargets?.fatGrams,
         );
 
+        const hydrationGuidance = createHydrationGuidance(
+            input.hydrationGuidance?.dailyWaterLitres,
+        );
+
         const guidance: string[] = [
             "Automated nutrition plan generated from the supplied athlete context.",
+            `Daily hydration guidance is ${hydrationGuidance.dailyWaterLitres} litres per day.`,
         ];
 
         if (input.goal?.trim()) {
@@ -50,6 +56,7 @@ implements NutritionPlanGenerator {
         const planSnapshot: NutritionPlanSnapshot = Object.freeze({
             planType: "AUTOMATED_NUTRITION_PLAN",
             macroTargets,
+            hydrationGuidance,
             guidance: Object.freeze(guidance),
         });
 

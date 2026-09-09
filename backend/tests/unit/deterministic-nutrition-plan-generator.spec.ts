@@ -8,6 +8,11 @@ const macroTargets = {
     fatGrams: 80,
 };
 
+const hydrationGuidance = {
+    dailyWaterLitres: 2.5,
+    unit: "LITRES_PER_DAY" as const,
+};
+
 describe("DeterministicNutritionPlanGenerator", () => {
     const generator = new DeterministicNutritionPlanGenerator();
 
@@ -15,6 +20,7 @@ describe("DeterministicNutritionPlanGenerator", () => {
         const result = await generator.generate({
             athleteId: "athlete-1",
             macroTargets,
+            hydrationGuidance,
             goal: "general fitness",
             dietaryPreferences: ["vegetarian"],
             dietaryRestrictions: ["peanuts"],
@@ -28,8 +34,13 @@ describe("DeterministicNutritionPlanGenerator", () => {
             "AUTOMATED_NUTRITION_PLAN",
         );
         expect(result.planSnapshot.macroTargets).toEqual(macroTargets);
+        expect(result.planSnapshot.hydrationGuidance)
+            .toEqual(hydrationGuidance);
         expect(result.planSnapshot.guidance).toContain(
             "Automated nutrition plan generated from the supplied athlete context.",
+        );
+        expect(result.planSnapshot.guidance).toContain(
+            "Daily hydration guidance is 2.5 litres per day.",
         );
         expect(result.planSnapshot.guidance).toContain(
             "Plan context includes the stated goal: general fitness.",
@@ -40,13 +51,16 @@ describe("DeterministicNutritionPlanGenerator", () => {
         const result = await generator.generate({
             athleteId: "athlete-1",
             macroTargets,
+            hydrationGuidance,
         });
 
         expect(result.planSnapshot.planType).toBe(
             "AUTOMATED_NUTRITION_PLAN",
         );
         expect(result.planSnapshot.macroTargets).toEqual(macroTargets);
-        expect(result.planSnapshot.guidance).toHaveLength(1);
+        expect(result.planSnapshot.hydrationGuidance)
+            .toEqual(hydrationGuidance);
+        expect(result.planSnapshot.guidance).toHaveLength(2);
     });
 
     it("rejects missing athlete identity", async () => {
@@ -54,6 +68,7 @@ describe("DeterministicNutritionPlanGenerator", () => {
             generator.generate({
                 athleteId: "",
                 macroTargets,
+                hydrationGuidance,
             }),
         ).rejects.toThrow(
             "Nutrition generation input is required.",
@@ -68,9 +83,25 @@ describe("DeterministicNutritionPlanGenerator", () => {
                     ...macroTargets,
                     caloriesKcal: 0,
                 },
+                hydrationGuidance,
             }),
         ).rejects.toThrow(
             "Macro target caloriesKcal must be a finite positive number.",
+        );
+    });
+
+    it("rejects invalid hydration guidance", async () => {
+        await expect(
+            generator.generate({
+                athleteId: "athlete-1",
+                macroTargets,
+                hydrationGuidance: {
+                    dailyWaterLitres: 0,
+                    unit: "LITRES_PER_DAY",
+                },
+            }),
+        ).rejects.toThrow(
+            "Hydration dailyWaterLitres must be a finite positive number.",
         );
     });
 });

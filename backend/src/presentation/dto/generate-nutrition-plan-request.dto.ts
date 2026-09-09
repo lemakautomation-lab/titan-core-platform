@@ -2,6 +2,7 @@ import { NutritionPlanGenerationInput } from "../../application/ports/nutrition-
 import { GenerateNutritionPlanCommand } from "../../application/commands/generate-nutrition-plan.command";
 import { HttpException } from "../../shared/exceptions/http.exception";
 import { createMacroTargets } from "../../domain/entities/nutrition-plan/macro-targets";
+import { createHydrationGuidance } from "../../domain/entities/nutrition-plan/hydration-guidance";
 
 const ALLOWED_FIELDS = new Set([
     "athleteId",
@@ -10,6 +11,7 @@ const ALLOWED_FIELDS = new Set([
     "dietaryRestrictions",
     "notes",
     "macroTargets",
+    "hydrationGuidance",
 ]);
 
 export class GenerateNutritionPlanRequestDto {
@@ -56,6 +58,11 @@ export class GenerateNutritionPlanRequestDto {
                     values.macroTargets,
                 );
 
+            const hydrationGuidance =
+                GenerateNutritionPlanRequestDto.parseHydrationGuidance(
+                    values.hydrationGuidance,
+                );
+
             if (
                 values.goal !== undefined &&
                 values.goal !== null &&
@@ -87,6 +94,7 @@ export class GenerateNutritionPlanRequestDto {
             const input: NutritionPlanGenerationInput = {
                 athleteId: values.athleteId.trim(),
                 macroTargets,
+                hydrationGuidance,
                 goal:
                     typeof values.goal === "string"
                         ? values.goal.trim()
@@ -169,6 +177,45 @@ export class GenerateNutritionPlanRequestDto {
             values.carbohydrateGrams as number,
             values.fatGrams as number,
         );
+    }
+
+    private static parseHydrationGuidance(
+        value: unknown,
+    ) {
+        if (
+            value === null ||
+            typeof value !== "object" ||
+            Array.isArray(value) ||
+            Object.getPrototypeOf(value) !== Object.prototype
+        ) {
+            throw new Error("Hydration guidance is required.");
+        }
+
+        const values = value as Record<string, unknown>;
+
+        if (
+            Object.keys(values).some(
+                field => field !== "dailyWaterLitres",
+            )
+        ) {
+            throw new Error(
+                "Hydration guidance contains unsupported fields.",
+            );
+        }
+
+        const dailyWaterLitres = values.dailyWaterLitres;
+
+        if (
+            typeof dailyWaterLitres !== "number" ||
+            !Number.isFinite(dailyWaterLitres) ||
+            dailyWaterLitres <= 0
+        ) {
+            throw new Error(
+                "Hydration dailyWaterLitres must be a finite positive number.",
+            );
+        }
+
+        return createHydrationGuidance(dailyWaterLitres);
     }
 
     private static parseStringArray(

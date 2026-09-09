@@ -24,6 +24,11 @@ const macroTargets = {
     fatGrams: 80,
 };
 
+const hydrationGuidance = {
+    dailyWaterLitres: 2.5,
+    unit: "LITRES_PER_DAY" as const,
+};
+
 function command(
     idempotencyKey = "nutrition-key-1",
     actor = actorUserId,
@@ -35,6 +40,7 @@ function command(
         {
             athleteId,
             macroTargets,
+            hydrationGuidance,
             goal: "general fitness",
             dietaryPreferences: ["vegetarian"],
             dietaryRestrictions: ["peanuts"],
@@ -50,8 +56,10 @@ function generatedResult(): NutritionPlanGenerationResult {
         planSnapshot: {
             planType: "AUTOMATED_NUTRITION_PLAN",
             macroTargets,
+            hydrationGuidance,
             guidance: [
                 "Automated nutrition plan generated from the supplied athlete context.",
+                "Daily hydration guidance is 2.5 litres per day.",
             ],
         },
     };
@@ -76,6 +84,7 @@ function harness(
                 actorUserId,
                 athleteId,
                 macroTargets,
+                hydrationGuidance,
                 goal: "general fitness",
                 dietaryPreferences: ["vegetarian"],
                 dietaryRestrictions: ["peanuts"],
@@ -93,6 +102,7 @@ function harness(
                 expect(input).toEqual({
                     athleteId,
                     macroTargets,
+                    hydrationGuidance,
                     goal: "general fitness",
                     dietaryPreferences: ["vegetarian"],
                     dietaryRestrictions: ["peanuts"],
@@ -136,13 +146,19 @@ describe("Generate Nutrition Plan application boundary", () => {
             tenantId,
             actorUserId,
             " nutrition-key-1 ",
-            { athleteId },
+            {
+                athleteId,
+                macroTargets,
+                hydrationGuidance,
+            },
         );
 
         expect(result.idempotencyKey).toBe("nutrition-key-1");
         expect(result.tenantId).toBe(tenantId);
         expect(result.actorUserId).toBe(actorUserId);
         expect(result.input.athleteId).toBe(athleteId);
+        expect(result.input.hydrationGuidance)
+            .toEqual(hydrationGuidance);
     });
 
     it("generates a plan and passes tenant, actor and idempotency authority to one transaction", async () => {
@@ -160,6 +176,8 @@ describe("Generate Nutrition Plan application boundary", () => {
         expect(result.plan.generatorVersion).toBe("1.0.0");
         expect(result.plan.planSnapshot.macroTargets)
             .toEqual(macroTargets);
+        expect(result.plan.planSnapshot.hydrationGuidance)
+            .toEqual(hydrationGuidance);
 
         expect(generator.generate).toHaveBeenCalledOnce();
         expect(transaction.execute).toHaveBeenCalledOnce();
@@ -224,6 +242,7 @@ describe("Generate Nutrition Plan application boundary", () => {
                 actorUserId,
                 athleteId,
                 macroTargets,
+                hydrationGuidance,
             },
             generatedResult().planSnapshot,
         );

@@ -30,31 +30,24 @@ export class NutritionPlan {
         if (!tenantId?.trim()) {
             throw new Error("Tenant ID is required.");
         }
-
         if (!athleteId?.trim()) {
             throw new Error("Athlete ID is required.");
         }
-
         if (!idempotencyKey?.trim()) {
             throw new Error("Idempotency key is required.");
         }
-
         if (!requestFingerprint?.trim()) {
             throw new Error("Request fingerprint is required.");
         }
-
         if (requestFingerprintVersion !== "1") {
             throw new Error("Request fingerprint version is invalid.");
         }
-
         if (!generatorId?.trim()) {
             throw new Error("Nutrition generator ID is required.");
         }
-
         if (!generatorVersion?.trim()) {
             throw new Error("Nutrition generator version is required.");
         }
-
         if (
             !planSnapshot ||
             planSnapshot.planType !== "AUTOMATED_NUTRITION_PLAN"
@@ -80,6 +73,11 @@ export class NutritionPlan {
                     carbohydrateGrams:
                         planSnapshot.macroTargets.carbohydrateGrams,
                     fatGrams: planSnapshot.macroTargets.fatGrams,
+                }),
+                hydrationGuidance: Object.freeze({
+                    dailyWaterLitres:
+                        planSnapshot.hydrationGuidance.dailyWaterLitres,
+                    unit: planSnapshot.hydrationGuidance.unit,
                 }),
                 guidance: Object.freeze([...planSnapshot.guidance]),
             }),

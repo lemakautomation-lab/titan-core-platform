@@ -41,6 +41,10 @@ export class NutritionPlanMapper {
                 carbohydrateGrams: number;
                 fatGrams: number;
             };
+            hydrationGuidance: {
+                dailyWaterLitres: number;
+                unit: "LITRES_PER_DAY";
+            };
             guidance: string[];
         };
 
@@ -62,6 +66,11 @@ export class NutritionPlanMapper {
                     carbohydrateGrams:
                         snapshot.macroTargets.carbohydrateGrams,
                     fatGrams: snapshot.macroTargets.fatGrams,
+                }),
+                hydrationGuidance: Object.freeze({
+                    dailyWaterLitres:
+                        snapshot.hydrationGuidance.dailyWaterLitres,
+                    unit: snapshot.hydrationGuidance.unit,
                 }),
                 guidance: Object.freeze([
                     ...(snapshot.guidance ?? []),

@@ -13,6 +13,10 @@ const macroTargets = {
     fatGrams: 80,
 };
 
+const hydrationGuidance = {
+    dailyWaterLitres: 2.5,
+};
+
 async function login(
     user: Awaited<ReturnType<typeof createTestUser>>,
 ) {
@@ -74,6 +78,7 @@ describe("Nutrition Plan generation API", () => {
             {
                 athleteId: crypto.randomUUID(),
                 macroTargets,
+                hydrationGuidance,
             },
         );
 
@@ -94,6 +99,7 @@ describe("Nutrition Plan generation API", () => {
             {
                 athleteId: athlete.id,
                 macroTargets,
+                hydrationGuidance,
                 goal: "GENERAL_FITNESS",
                 dietaryPreferences: ["HIGH_PROTEIN"],
                 dietaryRestrictions: ["PEANUTS"],
@@ -113,6 +119,10 @@ describe("Nutrition Plan generation API", () => {
         expect(response.body.planSnapshot).toEqual({
             planType: "AUTOMATED_NUTRITION_PLAN",
             macroTargets,
+            hydrationGuidance: {
+                dailyWaterLitres: 2.5,
+                unit: "LITRES_PER_DAY",
+            },
             guidance: expect.arrayContaining([
                 "Automated nutrition plan generated from the supplied athlete context.",
             ]),
@@ -142,6 +152,7 @@ describe("Nutrition Plan generation API", () => {
         const payload = {
             athleteId: athlete.id,
             macroTargets,
+            hydrationGuidance,
             goal: "GENERAL_FITNESS",
             dietaryPreferences: ["HIGH_PROTEIN"],
         };
@@ -174,12 +185,14 @@ describe("Nutrition Plan generation API", () => {
         const first = await generation(token, key, {
             athleteId: athlete.id,
             macroTargets,
+            hydrationGuidance,
             goal: "GENERAL_FITNESS",
         });
 
         const second = await generation(token, key, {
             athleteId: athlete.id,
             macroTargets,
+            hydrationGuidance,
             goal: "SPORT_PERFORMANCE",
         });
 
@@ -201,6 +214,7 @@ describe("Nutrition Plan generation API", () => {
             {
                 athleteId: athlete.id,
                 macroTargets,
+                hydrationGuidance,
                 tenantId: crypto.randomUUID(),
                 actorUserId: crypto.randomUUID(),
             },
@@ -233,6 +247,28 @@ describe("Nutrition Plan generation API", () => {
         expect(response.body.error.code).toBe("VALIDATION_ERROR");
     });
 
+    it("rejects invalid hydration guidance at the API boundary", async () => {
+        const user = await createTestUser({
+            permissions: ["nutrition-plans.generate"],
+        });
+        const token = await login(user);
+        const athlete = await createActiveAthlete(user.tenant.id);
+
+        const response = await generation(
+            token,
+            `r57-invalid-hydration-${crypto.randomUUID()}`,
+            {
+                athleteId: athlete.id,
+                macroTargets,
+                hydrationGuidance: {
+                    dailyWaterLitres: 0,
+                },
+            },
+        );
+
+        expect(response.status).toBe(400);
+        expect(response.body.error.code).toBe("VALIDATION_ERROR");
+    });
     it("does not expose an inactive athlete through nutrition generation", async () => {
         const user = await createTestUser({
             permissions: ["nutrition-plans.generate"],
@@ -253,6 +289,7 @@ describe("Nutrition Plan generation API", () => {
             {
                 athleteId: athlete.id,
                 macroTargets,
+                hydrationGuidance,
             },
         );
 
@@ -271,3 +308,4 @@ describe("Nutrition Plan generation API", () => {
         ).toBe(0);
     });
 });
+

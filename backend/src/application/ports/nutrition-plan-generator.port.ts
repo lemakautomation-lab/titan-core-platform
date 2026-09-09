@@ -1,8 +1,10 @@
 import { MacroTargets } from "../../domain/entities/nutrition-plan/macro-targets";
+import { HydrationGuidance } from "../../domain/entities/nutrition-plan/hydration-guidance";
 
 export interface NutritionPlanGenerationInput {
     readonly athleteId: string;
     readonly macroTargets: MacroTargets;
+    readonly hydrationGuidance: HydrationGuidance;
     readonly goal?: string;
     readonly dietaryPreferences?: readonly string[];
     readonly dietaryRestrictions?: readonly string[];
@@ -18,6 +20,7 @@ export interface NutritionPlanGenerationResult {
 export interface NutritionPlanSnapshot {
     readonly planType: "AUTOMATED_NUTRITION_PLAN";
     readonly macroTargets: MacroTargets;
+    readonly hydrationGuidance: HydrationGuidance;
     readonly guidance: readonly string[];
 }
 
