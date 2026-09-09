@@ -31,6 +31,7 @@ model Tenant {
   workoutProgrammes WorkoutProgramme[]
   products          Product[]
   nutritionPlans     NutritionPlan[]
+  shoppingLists     ShoppingList[]
 }
 
 model Sport {
@@ -108,6 +109,7 @@ model Athlete {
   workoutProgrammes       WorkoutProgramme[]       @relation("WorkoutProgrammeAthleteTenant")
   nutritionPlans          NutritionPlan[]
   mealPlans               MealPlan[]
+  shoppingLists           ShoppingList[]
 
   @@unique([id, tenantId], map: "Athlete_id_tenantId_key")
   @@index([tenantId])
@@ -273,10 +275,10 @@ model Exercise {
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-  sport                  Sport?                                  @relation("ExerciseSportTenant", fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  tenant                 Tenant                                 @relation(fields: [tenantId], references: [id])
+  sport                  Sport?                                 @relation("ExerciseSportTenant", fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
   programmePrescriptions WorkoutProgrammeExercisePrescription[] @relation("WorkoutProgrammePrescriptionExerciseTenant")
-  prescriptionProfiles   ExercisePrescriptionProfile[]           @relation("ExercisePrescriptionProfileExerciseTenant")
+  prescriptionProfiles   ExercisePrescriptionProfile[]          @relation("ExercisePrescriptionProfileExerciseTenant")
 
   @@unique([tenantId, slug])
   @@unique([id, tenantId], map: "Exercise_id_tenantId_key")
@@ -403,10 +405,10 @@ model WorkoutProgramme {
   createdAt              DateTime     @default(now())
   updatedAt              DateTime     @updatedAt
 
-  tenant   Tenant                    @relation(fields: [tenantId], references: [id])
-  athlete  Athlete                   @relation("WorkoutProgrammeAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  sport    Sport?                    @relation(fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  sessions WorkoutProgrammeSession[]
+  tenant     Tenant                      @relation(fields: [tenantId], references: [id])
+  athlete    Athlete                     @relation("WorkoutProgrammeAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  sport      Sport?                      @relation(fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  sessions   WorkoutProgrammeSession[]
   generation WorkoutProgrammeGeneration?
 
   @@unique([id, tenantId], map: "WorkoutProgramme_id_tenantId_key")
@@ -449,7 +451,7 @@ model WorkoutProgrammeSession {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  programme    WorkoutProgramme                     @relation(fields: [programmeId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: Cascade)
+  programme     WorkoutProgramme                       @relation(fields: [programmeId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: Cascade)
   prescriptions WorkoutProgrammeExercisePrescription[]
 
   @@unique([id, tenantId], map: "WorkoutProgrammeSession_id_tenantId_key")
@@ -530,22 +532,22 @@ model ProductPrice {
 }
 
 model PerformanceMeasurement {
-  id         String   @id @default(uuid())
-  tenantId   String
-  athleteId  String
-  metricId   String
-  value      Decimal  @db.Decimal(20, 6)
-  recordedAt DateTime @default(now())
-  createdAt  DateTime @default(now())
-  sourceType String?
-  sourceId String?
-  sourceObservationId String?
+  id                    String   @id @default(uuid())
+  tenantId              String
+  athleteId             String
+  metricId              String
+  value                 Decimal  @db.Decimal(20, 6)
+  recordedAt            DateTime @default(now())
+  createdAt             DateTime @default(now())
+  sourceType            String?
+  sourceId              String?
+  sourceObservationId   String?
   correctsMeasurementId String?
 
-  tenant  Tenant            @relation(fields: [tenantId], references: [id])
-  athlete Athlete           @relation("PerformanceMeasurementAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  metric  PerformanceMetric @relation("PerformanceMeasurementMetricTenantAthlete", fields: [metricId, tenantId, athleteId], references: [id, tenantId, athleteId], onDelete: Restrict, onUpdate: Cascade)
-  corrects PerformanceMeasurement? @relation("PerformanceMeasurementCorrections", fields: [correctsMeasurementId, tenantId, athleteId, metricId], references: [id, tenantId, athleteId, metricId], onDelete: Restrict, onUpdate: Cascade)
+  tenant      Tenant                   @relation(fields: [tenantId], references: [id])
+  athlete     Athlete                  @relation("PerformanceMeasurementAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  metric      PerformanceMetric        @relation("PerformanceMeasurementMetricTenantAthlete", fields: [metricId, tenantId, athleteId], references: [id, tenantId, athleteId], onDelete: Restrict, onUpdate: Cascade)
+  corrects    PerformanceMeasurement?  @relation("PerformanceMeasurementCorrections", fields: [correctsMeasurementId, tenantId, athleteId, metricId], references: [id, tenantId, athleteId, metricId], onDelete: Restrict, onUpdate: Cascade)
   correctedBy PerformanceMeasurement[] @relation("PerformanceMeasurementCorrections")
 
   @@unique([id, tenantId, athleteId, metricId], map: "PerformanceMeasurement_id_tenantId_athleteId_metricId_key")
@@ -555,28 +557,28 @@ model PerformanceMeasurement {
   @@index([tenantId, athleteId])
   @@index([tenantId, athleteId, metricId, correctsMeasurementId], map: "PerformanceMeasurement_effective_lookup_idx")
 }
-model NutritionPlan {
-  id               String   @id @default(uuid())
-  tenantId         String
-  athleteId        String
-  idempotencyKey   String
-  requestFingerprint String
-  requestFingerprintVersion String
-  generatorId      String
-  generatorVersion String
-  inputSnapshot    Json
-  planSnapshot     Json
-  createdAt        DateTime @default(now())
 
-  tenant           Tenant   @relation(fields: [tenantId], references: [id])
-  athlete          Athlete  @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+model NutritionPlan {
+  id                        String   @id @default(uuid())
+  tenantId                  String
+  athleteId                 String
+  idempotencyKey            String
+  requestFingerprint        String
+  requestFingerprintVersion String
+  generatorId               String
+  generatorVersion          String
+  inputSnapshot             Json
+  planSnapshot              Json
+  createdAt                 DateTime @default(now())
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  athlete Athlete @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
 
   @@unique([id, tenantId])
   @@unique([tenantId, idempotencyKey])
   @@index([tenantId, athleteId])
   @@index([tenantId, createdAt])
 }
-
 
 model MealPlan {
   id          String   @id @default(uuid())
@@ -587,11 +589,12 @@ model MealPlan {
   version     Int      @default(1)
   status      MealPlanStatus @default(DRAFT)
   planSnapshot Json
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
   tenant  Tenant  @relation(fields: [tenantId], references: [id])
   athlete Athlete @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  shoppingLists ShoppingList[]
 
   @@unique([id, tenantId])
   @@index([tenantId, athleteId])
@@ -604,8 +607,20 @@ enum MealPlanStatus {
   ARCHIVED
 }
 
+model ShoppingList {
+  id         String   @id @default(uuid())
+  tenantId   String
+  athleteId  String
+  mealPlanId String
+  name       String
+  items      Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
+  tenant   Tenant   @relation(fields: [tenantId], references: [id])
+  athlete  Athlete  @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  mealPlan MealPlan @relation(fields: [mealPlanId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
 
-
-
-
+  @@index([tenantId, athleteId])
+  @@index([tenantId, mealPlanId])
+}
