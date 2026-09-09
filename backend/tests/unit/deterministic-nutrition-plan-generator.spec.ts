@@ -45,6 +45,50 @@ describe("DeterministicNutritionPlanGenerator", () => {
         expect(result.planSnapshot.guidance).toContain(
             "Plan context includes the stated goal: general fitness.",
         );
+        expect(result.planSnapshot.guidance).toContain(
+            "Nutrition guidance is aligned to general fitness and balanced daily energy needs.",
+        );
+    });
+
+    it("generates distinct goal-specific guidance for sport performance", async () => {
+        const result = await generator.generate({
+            athleteId: "athlete-1",
+            macroTargets,
+            hydrationGuidance,
+            goal: "SPORT_PERFORMANCE",
+        });
+
+        expect(result.planSnapshot.guidance).toContain(
+            "Plan context includes the stated goal: SPORT_PERFORMANCE.",
+        );
+        expect(result.planSnapshot.guidance).toContain(
+            "Nutrition guidance is aligned to sport performance and supporting training demands.",
+        );
+        expect(result.planSnapshot.guidance).not.toContain(
+            "Nutrition guidance is aligned to general fitness and balanced daily energy needs.",
+        );
+        expect(result.planSnapshot.macroTargets).toEqual(macroTargets);
+        expect(result.planSnapshot.hydrationGuidance)
+            .toEqual(hydrationGuidance);
+    });
+
+    it("preserves generic goal context for an unclassified goal", async () => {
+        const result = await generator.generate({
+            athleteId: "athlete-1",
+            macroTargets,
+            hydrationGuidance,
+            goal: "weight management",
+        });
+
+        expect(result.planSnapshot.guidance).toContain(
+            "Plan context includes the stated goal: weight management.",
+        );
+        expect(result.planSnapshot.guidance).not.toContain(
+            "Nutrition guidance is aligned to general fitness and balanced daily energy needs.",
+        );
+        expect(result.planSnapshot.guidance).not.toContain(
+            "Nutrition guidance is aligned to sport performance and supporting training demands.",
+        );
     });
 
     it("generates the baseline plan without requiring later nutrition-engine controls", async () => {

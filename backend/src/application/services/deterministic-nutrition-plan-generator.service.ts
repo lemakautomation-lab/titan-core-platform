@@ -6,6 +6,7 @@ import {
 } from "../ports/nutrition-plan-generator.port";
 import { createMacroTargets } from "../../domain/entities/nutrition-plan/macro-targets";
 import { createHydrationGuidance } from "../../domain/entities/nutrition-plan/hydration-guidance";
+import { goalSpecificNutritionGuidance } from "./nutrition-goal-policy.service";
 
 export class DeterministicNutritionPlanGenerator
 implements NutritionPlanGenerator {
@@ -39,6 +40,12 @@ implements NutritionPlanGenerator {
             guidance.push(
                 `Plan context includes the stated goal: ${input.goal.trim()}.`,
             );
+
+            const goalGuidance = goalSpecificNutritionGuidance(input.goal);
+
+            if (goalGuidance) {
+                guidance.push(goalGuidance);
+            }
         }
 
         if (input.dietaryPreferences?.length) {
