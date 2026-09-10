@@ -1,6 +1,7 @@
 import { createHash } from "crypto";
 
 import { GenerateNutritionPlanCommand } from "../commands/generate-nutrition-plan.command";
+import { classifyNutritionGoal } from "./nutrition-goal-policy.service";
 
 export interface NutritionPlanGenerationFingerprint {
     readonly fingerprint: string;
@@ -19,12 +20,18 @@ export class NutritionPlanGenerationFingerprintService {
             throw new Error("Nutrition plan generation command is required.");
         }
 
+        const goalClassification = classifyNutritionGoal(
+            command.input.goal,
+        );
+
         const snapshot = {
             fingerprintVersion: this.FINGERPRINT_VERSION,
             tenantId: command.tenantId,
             actorUserId: command.actorUserId,
             athleteId: command.input.athleteId,
-            goal: command.input.goal ?? null,
+            ...(goalClassification
+                ? { goalClassification }
+                : { goal: command.input.goal ?? null }),
             dietaryPreferences: [...(command.input.dietaryPreferences ?? [])],
             dietaryRestrictions: [...(command.input.dietaryRestrictions ?? [])],
             notes: command.input.notes ?? null,
