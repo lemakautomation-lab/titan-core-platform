@@ -2,7 +2,7 @@
 CREATE TYPE "MealPlanStatus" AS ENUM ('DRAFT', 'ACTIVE', 'ARCHIVED');
 
 -- DropIndex
-DROP INDEX "Product_slug_key";
+DROP INDEX IF EXISTS "Product_slug_key";
 
 -- CreateTable
 CREATE TABLE "MealPlan" (

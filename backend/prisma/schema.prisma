@@ -32,6 +32,7 @@ model Tenant {
   products          Product[]
   nutritionPlans     NutritionPlan[]
   shoppingLists     ShoppingList[]
+  recoveryTrackings RecoveryTracking[]
 }
 
 model Sport {
@@ -110,6 +111,7 @@ model Athlete {
   nutritionPlans          NutritionPlan[]
   mealPlans               MealPlan[]
   shoppingLists           ShoppingList[]
+  recoveryTrackings       RecoveryTracking[]
 
   @@unique([id, tenantId], map: "Athlete_id_tenantId_key")
   @@index([tenantId])
@@ -558,6 +560,26 @@ model PerformanceMeasurement {
   @@index([tenantId, athleteId, metricId, correctsMeasurementId], map: "PerformanceMeasurement_effective_lookup_idx")
 }
 
+model RecoveryTracking {
+  id                  String   @id @default(uuid())
+  tenantId            String
+  athleteId           String
+  value               Decimal  @db.Decimal(20, 6)
+  recordedAt          DateTime @default(now())
+  createdAt           DateTime @default(now())
+  sourceType          String
+  sourceId            String
+  sourceObservationId String
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  athlete Athlete @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([id, tenantId, athleteId], map: "RecoveryTracking_id_tenantId_athleteId_key")
+  @@unique([tenantId, sourceType, sourceId, sourceObservationId], map: "RecoveryTracking_source_identity_key")
+  @@index([tenantId])
+  @@index([tenantId, athleteId])
+  @@index([tenantId, athleteId, recordedAt])
+}
 model NutritionPlan {
   id                        String   @id @default(uuid())
   tenantId                  String
