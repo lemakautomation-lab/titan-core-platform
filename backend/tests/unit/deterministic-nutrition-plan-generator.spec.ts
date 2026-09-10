@@ -43,6 +43,9 @@ describe("DeterministicNutritionPlanGenerator", () => {
             "Automated nutrition plan generated from the supplied athlete context.",
         );
         expect(result.planSnapshot.guidance).toContain(
+            "This automated nutrition guidance is general, non-clinical information and does not diagnose, treat, or prescribe for medical conditions. Seek qualified professional advice for medical or condition-specific needs.",
+        );
+        expect(result.planSnapshot.guidance).toContain(
             "Daily hydration guidance is 2.5 litres per day.",
         );
         expect(result.planSnapshot.guidance).toContain(
@@ -112,7 +115,7 @@ describe("DeterministicNutritionPlanGenerator", () => {
         expect(result.planSnapshot.macroTargets).toEqual(macroTargets);
         expect(result.planSnapshot.hydrationGuidance)
             .toEqual(hydrationGuidance);
-        expect(result.planSnapshot.guidance).toHaveLength(2);
+        expect(result.planSnapshot.guidance).toHaveLength(3);
     });
 
     it("rejects missing athlete identity", async () => {

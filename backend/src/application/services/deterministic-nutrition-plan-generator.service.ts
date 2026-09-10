@@ -7,6 +7,7 @@ import {
 import { createMacroTargets } from "../../domain/entities/nutrition-plan/macro-targets";
 import { createHydrationGuidance } from "../../domain/entities/nutrition-plan/hydration-guidance";
 import { classifyNutritionGoal, goalSpecificNutritionGuidance } from "./nutrition-goal-policy.service";
+import { nonClinicalNutritionGuidance } from "./nutrition-guidance-policy.service";
 
 export class DeterministicNutritionPlanGenerator
 implements NutritionPlanGenerator {
@@ -33,6 +34,7 @@ implements NutritionPlanGenerator {
 
         const guidance: string[] = [
             "Automated nutrition plan generated from the supplied athlete context.",
+            nonClinicalNutritionGuidance(),
             `Daily hydration guidance is ${hydrationGuidance.dailyWaterLitres} litres per day.`,
         ];
 
