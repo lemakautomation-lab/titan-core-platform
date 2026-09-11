@@ -1,4 +1,4 @@
-﻿# MISSION 058 — RECOVERY ENGINE
+# MISSION 058 — RECOVERY ENGINE
 
 ## Status
 
@@ -89,11 +89,39 @@ Unrelated working-tree changes remain outside the Mission 058.5 implementation s
 
 ---
 
+
+---
+
+## Control 058.6 — Contextual Recovery Interpretation
+
+Implemented:
+
+- dedicated `RecoveryContextualInterpretationService` domain service;
+- consumes the existing recovery trend direction;
+- accepts explicitly supplied sleep, rest, and training-stress observations as contextual signals;
+- verifies supplied contextual observations belong to the same tenant and athlete;
+- reports which contextual signal sources are available;
+- preserves observational `RISING`, `FALLING`, and `STABLE` trend semantics;
+- deterministic contextual summary without clinical, better/worse, risk, or causal interpretation.
+
+Verification:
+
+- targeted tests: **6/6 GREEN**;
+- backend build: **GREEN**;
+- full serial regression: **83/83 test files, 733/733 tests GREEN**.
+
+Control 058.6 introduces no new persistence boundary, API surface, authentication or authorization path, wearable/device abstraction, or frontend/UI behaviour.
+
+No clinical assessment, recovery score, threshold model, AI interpretation, cross-metric scoring, or wearable integration was invented.
+
+Tenant and athlete ownership validation is enforced for all contextual observations supplied to the domain service. Existing application-layer authorization and tenant-scoped retrieval remain the access boundary.
+
+---
 ## Deferred Scope
 
 The following remain outside Control 058.5:
 
-- contextual recovery interpretation;
+- clinical recovery assessment;
 - clinical recovery assessment;
 - AI recovery interpretation;
 - cross-metric recovery scoring;
@@ -110,11 +138,11 @@ These capabilities remain subject to their separately defined controls or succes
 
 Control 058.4 is COMPLETE / VERIFIED / COMMITTED / PUSHED.
 
-Control 058.5 is technically implemented and verified.
+Control 058.5 is COMPLETE / VERIFIED / COMMITTED / PUSHED.
 
 Control 058.5 targeted tests are GREEN, backend build is GREEN, and full serial regression is GREEN.
 
-Repository staging, commit, and push for Control 058.5 remain outstanding.
+Control 058.5 was selectively staged, committed, and pushed.
 
 ---
 
