@@ -114,3 +114,59 @@ The procedural proportions are visual implementation values. They are not repres
 ### Deferred Scope
 
 User-facing rendering, measurements, muscle mapping, progress visualisation, interactive controls, athlete integration and backend persistence remain outside Control 061.2.
+## Control 061.3-R1 — Deterministic Body Visualisation Component
+
+**Status:** COMPLETE / VERIFIED
+
+### Implementation
+
+Control 061.3-R1 establishes an isolated Three.js visualisation component for the verified male and female performance-body models.
+
+The component:
+
+- Requires an explicit `MALE` or `FEMALE` model type
+- Creates the corresponding verified body model
+- Uses deterministic scene, camera and lighting configuration
+- Renders a single static frame
+- Limits device pixel ratio
+- Releases renderer, geometry and material resources during cleanup
+- Provides an accessible safe-failure state when WebGL is unavailable
+- Makes no network requests
+- Introduces no additional dependency
+
+### Authorized Files
+
+- `frontend/src/performance-body/PerformanceBodyViewer.tsx`
+- `frontend/src/performance-body/PerformanceBodyViewer.css`
+- `frontend/src/performance-body/PerformanceBodyViewer.test.tsx`
+- `docs/missions/MISSION-061-3D-PERFORMANCE-BODY.md`
+
+### Verification Evidence
+
+- Frontend TypeScript and production build: **GREEN**
+- Targeted regression: **1/1 test file GREEN; 4/4 tests GREEN**
+- Full serial frontend regression: **17/17 test files GREEN; 101/101 tests GREEN**
+- Dependency changes: **NONE**
+
+### Security and Non-Regression
+
+- No model type is inferred or defaulted.
+- No backend, database, migration or API change was introduced.
+- No authentication, authorization, RBAC, tenant or session behaviour was changed.
+- No external asset, request or credential was introduced.
+- Existing unrelated dirty-tree changes remained protected.
+- No router, athlete page or dashboard file was modified by this control.
+
+### Control 061.3 Integration Status
+
+The reusable visualisation component is complete and verified.
+
+Mounting it into an athlete workflow remains blocked because the current Athlete and Athlete Digital Twin contracts contain no explicit body-model selection.
+
+The authoritative product requirement is:
+
+- A person must explicitly select `MALE` or `FEMALE` during Athlete registration or profile setup.
+- TITAN must not infer or default the selection.
+- The selected value must determine the rendered performance-body model.
+
+Persistence and onboarding capture remain deferred to the authoritative Athlete onboarding/profile mission. No premature signup, persistence or migration architecture is introduced here.

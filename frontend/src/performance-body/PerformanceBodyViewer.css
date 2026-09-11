@@ -1,0 +1,33 @@
+.performance-body-viewer {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 32rem;
+  overflow: hidden;
+  border: 1px solid rgba(66, 245, 197, 0.24);
+  border-radius: 1rem;
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(66, 245, 197, 0.12),
+      transparent 48%
+    ),
+    #070a0d;
+}
+
+.performance-body-viewer__canvas {
+  width: min(100%, 30rem);
+  aspect-ratio: 3 / 4;
+}
+
+.performance-body-viewer__canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.performance-body-viewer__fallback {
+  margin: 1.5rem;
+  color: #f4f7f8;
+  text-align: center;
+}
