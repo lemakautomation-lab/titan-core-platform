@@ -1,4 +1,4 @@
-﻿import { randomUUID } from "crypto";
+import { randomUUID } from "crypto";
 
 export class Device {
     constructor(
@@ -6,6 +6,7 @@ export class Device {
         public readonly tenantId: string,
         public readonly deviceId: string,
         public readonly deviceType: string,
+        public athleteId: string | null,
         public readonly createdAt: Date,
     ) {}
 
@@ -13,6 +14,7 @@ export class Device {
         tenantId: string,
         deviceId: string,
         deviceType: string,
+        athleteId: string | null = null,
     ): Device {
         if (!tenantId?.trim()) {
             throw new Error("Tenant ID is required.");
@@ -31,7 +33,16 @@ export class Device {
             tenantId.trim(),
             deviceId.trim(),
             deviceType.trim(),
+            athleteId?.trim() || null,
             new Date(),
         );
+    }
+
+    associateWithAthlete(athleteId: string): void {
+        if (!athleteId?.trim()) {
+            throw new Error("Athlete ID is required.");
+        }
+
+        this.athleteId = athleteId.trim();
     }
 }

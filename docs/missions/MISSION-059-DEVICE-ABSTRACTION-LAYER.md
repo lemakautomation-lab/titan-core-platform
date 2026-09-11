@@ -130,3 +130,36 @@ Scope deliberately excludes provider-specific mappings, provider implementations
 ### Deferred Scope
 
 059.5 authorised athlete association and 059.6 integration failure handling remain separate controls. Provider-specific connector implementations remain outside Mission 059 and belong to the subsequent wearable connector work.
+
+## Control 059.5 — Authorised Athlete Association
+
+**Status:** COMPLETE / VERIFIED
+
+Implemented tenant-scoped athlete association for the provider-independent `Device` entity.
+
+- `backend/src/domain/entities/device/device.entity.ts`
+- `backend/src/domain/services/device-athlete-association.service.ts`
+- `backend/tests/unit/device.entity.spec.ts`
+- `backend/tests/unit/device-athlete-association.service.spec.ts`
+
+The association service resolves the athlete through the existing tenant-scoped `AthleteRepository.findById(athleteId, device.tenantId)`, rejects missing/out-of-tenant athletes, rejects inactive athletes, and associates only an authorised active athlete.
+
+No device repository, provider connector, persistence expansion, API, or frontend functionality was introduced.
+
+### Verification Evidence
+
+- Targeted 059.5 regression: **6/6 GREEN**
+- TypeScript build: **GREEN**
+- Full serial regression: **88/88 test files GREEN; 742/742 tests GREEN**
+
+### Security / Non-Regression
+
+- Athlete lookup is explicitly tenant-scoped using the device tenant.
+- Inactive athletes cannot be associated.
+- No authentication or authorization controls were weakened.
+- No provider-specific trust assumptions introduced.
+- Existing unrelated dirty-tree changes remain protected.
+
+### Deferred Scope
+
+Control 059.6 integration failure handling remains separate. Provider-specific wearable connector implementations remain outside Mission 059 and belong to Mission 060.
