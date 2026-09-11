@@ -63,4 +63,40 @@ The following remain outside 059.2:
 - `docs/missions/MISSION-059-DEVICE-ABSTRACTION-LAYER.md`
 
 ## Acceptance State
-059.2 is COMPLETE / VERIFIED pending selective staging, final index audit, commit, and push.
+059.1 and 059.2 are COMPLETE / VERIFIED / COMMITTED / PUSHED.
+059.3 is COMPLETE / VERIFIED pending selective staging, final index audit, commit, and push.
+## Control 059.3 — Device Ingestion Boundary
+
+**Status:** COMPLETE / VERIFIED
+
+Implemented a provider-neutral device ingestion boundary:
+
+- `backend/src/domain/ports/device/device-ingestion.port.ts`
+- `backend/tests/unit/device-ingestion.port.spec.ts`
+
+The `DeviceIngestionPort<TPayload, TResult>` contract accepts a device identifier and opaque provider-neutral payload and returns an asynchronous provider-neutral result.
+
+Scope deliberately excludes provider implementations, payload normalization, athlete association, persistence, API exposure, frontend changes, and integration-specific behavior. Those concerns remain outside 059.3 and are handled only by their defined mission controls.
+
+### Verification Evidence
+
+- Targeted 059.3 regression: GREEN
+- Build: GREEN
+- First full serial regression: 737/738 GREEN, with one unrelated authentication lock test failure
+- Isolated authentication regression: 5/5 GREEN
+- Second full serial regression: **86/86 test files GREEN; 738/738 tests GREEN**
+- No authentication, RBAC, account-lock, or unrelated production changes made
+
+The first serial authentication failure was classified as unrelated serial/inter-test interference after the isolated authentication suite and second unchanged full serial regression both passed.
+
+### Security / Non-Regression
+
+- No provider-specific trust assumptions introduced.
+- No tenant or athlete association bypass introduced.
+- No authentication or authorization controls modified.
+- No account-lock production code modified.
+- Existing unrelated dirty-tree changes remain protected.
+
+### Deferred Scope
+
+059.4 normalization boundary, 059.5 authorised athlete association, and 059.6 integration failure handling remain separate controls. Provider connectors remain outside Mission 059 and belong to the subsequent wearable connector work.
