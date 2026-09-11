@@ -69,3 +69,48 @@ The model provides:
 ### Deferred Scope
 
 Female modelling, user-facing rendering, measurements, muscle mapping, progress visualisation, interactive controls, athlete integration and backend persistence remain outside Control 061.1.
+## Control 061.2 — Female Model
+
+**Status:** COMPLETE / VERIFIED
+
+### Implementation
+
+Control 061.2 establishes an isolated, asset-free procedural female performance-body model using the existing Three.js foundation.
+
+The model provides:
+
+- A deterministic female-model identity and version
+- An explicit `FEMALE` model discriminator
+- Sixteen consistently named body segments
+- Independent model instances
+- Renderable geometry and material definitions
+- Shadow-enabled mesh configuration
+- No external binary model or licensing dependency
+- An explicit non-medical and non-diagnostic model boundary
+
+The procedural proportions are visual implementation values. They are not represented as medically, diagnostically or anatomically authoritative.
+
+### Authorized Files
+
+- `frontend/src/performance-body/models/female-body.model.ts`
+- `frontend/src/performance-body/models/female-body.model.test.ts`
+- `docs/missions/MISSION-061-3D-PERFORMANCE-BODY.md`
+
+### Verification Evidence
+
+- Frontend TypeScript and production build: **GREEN**
+- Targeted regression: **1/1 test file GREEN; 3/3 tests GREEN**
+- Full serial frontend regression: **16/16 test files GREEN; 97/97 tests GREEN**
+- Dependency changes: **NONE**
+
+### Security and Non-Regression
+
+- No backend, database, migration or API changes were introduced.
+- No authentication, authorization, RBAC, tenant or session behaviour was changed.
+- No external asset, network request or runtime credential was introduced.
+- Existing unrelated dirty-tree changes remained protected.
+- No protected router, athlete page or dashboard file was changed.
+
+### Deferred Scope
+
+User-facing rendering, measurements, muscle mapping, progress visualisation, interactive controls, athlete integration and backend persistence remain outside Control 061.2.
