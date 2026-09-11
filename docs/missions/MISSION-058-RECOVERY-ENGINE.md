@@ -6,9 +6,9 @@ IN PROGRESS
 
 ## Scope
 
-Mission 058 establishes bounded recovery tracking capabilities.
+Mission 058 establishes bounded recovery tracking and recovery intelligence capabilities.
 
-The mission is implemented through separately verified controls. Control 058.4 establishes Training Stress tracking without introducing stress calculation algorithms, trends, contextual interpretation, wearable abstraction, UI, or unrelated API expansion.
+The mission is implemented through separately verified controls. Each control remains independently bounded and verified.
 
 ---
 
@@ -40,13 +40,37 @@ Verification:
 - Prisma migration deployment: GREEN on development and test databases;
 - Prisma validation/generation: GREEN;
 - backend build: GREEN;
-- full serial regression: 81/81 test files, 720/720 tests GREEN.
+- full serial regression: 81/81 test files, 720/720 tests GREEN;
+- repository staging, commit, and push completed.
+
+---
+
+## Control 058.5 — Recovery Trends
+
+Implemented:
+
+- dedicated `RecoveryTrendService` domain service;
+- chronological ordering of recovery observations;
+- non-mutating evaluation of supplied observations;
+- per-observation `RISING`, `FALLING`, or `STABLE` direction;
+- first observation represented as `STABLE`;
+- empty observation set handled safely;
+- trend evaluation bounded to existing `RestTracking` observations;
+- no better/worse or clinical semantics assigned to trend direction.
+
+Verification:
+
+- targeted recovery trend tests: 7/7 GREEN;
+- backend build: GREEN;
+- full serial regression: 82/82 test files, 727/727 tests GREEN.
+
+The full regression initially exposed an account-lock integration test failure, but the same test passed in isolation and on the subsequent full serial run. No account-lock production behavior was changed.
 
 ---
 
 ## Security and Non-Regression Boundary
 
-Mission 058.4 preserves:
+Mission 058 preserves:
 
 - tenant isolation;
 - athlete ownership boundaries;
@@ -55,24 +79,24 @@ Mission 058.4 preserves:
 - deterministic observation identity and idempotency;
 - existing recovery and programme-generation behaviour.
 
-No wearable/device abstraction was introduced.
+Control 058.5 introduces no new persistence boundary, API surface, authentication or authorization path, wearable/device abstraction, or frontend/UI behaviour.
 
-No training-stress calculation or interpretation algorithm was invented.
+Trend direction is observational only. The implementation does not assert that rising or falling recovery values are inherently better or worse.
 
-No trends, contextual recovery intelligence, UI, or unrelated API expansion was introduced.
+No training-stress calculation, clinical interpretation, AI interpretation, or cross-metric recovery score was invented.
 
-Unrelated working-tree changes were not included in the 058.4 implementation scope.
+Unrelated working-tree changes remain outside the Mission 058.5 implementation scope.
 
 ---
 
 ## Deferred Scope
 
-The following are not part of Control 058.4:
+The following remain outside Control 058.5:
 
-- training-stress calculation algorithms;
-- training-load intelligence;
-- recovery trends;
 - contextual recovery interpretation;
+- clinical recovery assessment;
+- AI recovery interpretation;
+- cross-metric recovery scoring;
 - wearable/device integration;
 - device abstraction;
 - frontend/UI expansion;
@@ -84,13 +108,19 @@ These capabilities remain subject to their separately defined controls or succes
 
 ## Current Acceptance State
 
-Control 058.4 is technically implemented and verified.
+Control 058.4 is COMPLETE / VERIFIED / COMMITTED / PUSHED.
 
-It is not yet marked COMPLETE / VERIFIED / COMMITTED / PUSHED because repository staging, commit, and push remain outstanding.
+Control 058.5 is technically implemented and verified.
+
+Control 058.5 targeted tests are GREEN, backend build is GREEN, and full serial regression is GREEN.
+
+Repository staging, commit, and push for Control 058.5 remain outstanding.
 
 ---
 
 ## Implementation Files
+
+### Control 058.4
 
 - `backend/prisma/schema.prisma`
 - `backend/prisma/migrations/20260911140000_add_training_stress/migration.sql`
@@ -101,5 +131,10 @@ It is not yet marked COMPLETE / VERIFIED / COMMITTED / PUSHED because repository
 - `backend/src/infrastructure/repositories/training-stress/training-stress.repository.ts`
 - `backend/tests/application/training-stress.application.spec.ts`
 - `backend/tests/integration/training-stress.repository.spec.ts`
+
+### Control 058.5
+
+- `backend/src/domain/services/recovery-trend.service.ts`
+- `backend/tests/unit/recovery-trend.service.spec.ts`
 
 Further Mission 058 work requires the separately defined controls to be implemented and verified within their authorized scope.
