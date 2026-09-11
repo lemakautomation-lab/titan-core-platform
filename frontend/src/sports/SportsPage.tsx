@@ -51,21 +51,6 @@ export default function SportsPage({
 
   return (
     <section className="titan-users-page">
-      <div className="titan-page-heading">
-        <div>
-          <span className="titan-eyebrow">
-            SPORT ENGINE
-          </span>
-
-          <h2>Sports</h2>
-        </div>
-
-        <div className="titan-tenant">
-          <span>Tenant</span>
-          <strong>{tenantId}</strong>
-        </div>
-      </div>
-
       <section className="titan-panel titan-users-panel">
         <div className="titan-users-header">
           <div>

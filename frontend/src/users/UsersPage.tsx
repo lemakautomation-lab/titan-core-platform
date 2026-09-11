@@ -67,34 +67,6 @@ export default function UsersPage({
   return (
     <section className="titan-users-page">
 
-      <div className="titan-page-heading">
-
-        <div>
-
-          <span className="titan-eyebrow">
-            ADMINISTRATION
-          </span>
-
-          <h2>
-            Users
-          </h2>
-
-        </div>
-
-        <div className="titan-tenant">
-
-          <span>
-            Tenant
-          </span>
-
-          <strong>
-            {tenantId}
-          </strong>
-
-        </div>
-
-      </div>
-
       <section className="titan-panel titan-users-panel">
 
         <div className="titan-users-header">

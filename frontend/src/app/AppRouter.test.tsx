@@ -16,19 +16,27 @@ import {
 
 import AppRouter from "./AppRouter";
 
-const user = {
+const baseUser = {
   id: "user-1",
   tenantId: "tenant-1",
   email: "admin@titan.test",
   roles: ["ADMIN"],
-  permissions: [
-    "users.read",
-  ],
+  permissions: [] as string[],
 };
+
+function createUser(
+  permissions: string[] = [],
+) {
+  return {
+    ...baseUser,
+    permissions,
+  };
+}
 
 function renderRouter(
   initialEntry: string,
   authenticated = true,
+  permissions: string[] = [],
 ) {
   return render(
     <MemoryRouter
@@ -44,7 +52,7 @@ function renderRouter(
         }
         user={
           authenticated
-            ? user
+            ? createUser(permissions)
             : null
         }
         onAuthenticated={vi.fn()}
@@ -57,7 +65,11 @@ function renderRouter(
 
 describe("AppRouter", () => {
   it("renders the authenticated users route", () => {
-    renderRouter("/users");
+    renderRouter(
+      "/users",
+      true,
+      ["users.read"],
+    );
 
     expect(
       screen.getByRole("heading", {
@@ -71,13 +83,32 @@ describe("AppRouter", () => {
     ).toBeInTheDocument();
   });
 
-  it("redirects the authenticated root to users", () => {
-    renderRouter("/");
+  it("redirects the authenticated root to dashboard", () => {
+    renderRouter(
+      "/",
+      true,
+      ["users.read"],
+    );
 
     expect(
       screen.getByRole("heading", {
-        level: 2,
-        name: "Users",
+        level: 3,
+        name: "Dashboard",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the canonical dashboard route", () => {
+    renderRouter(
+      "/dashboard",
+      true,
+      [],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 3,
+        name: "Dashboard",
       }),
     ).toBeInTheDocument();
   });
@@ -101,7 +132,11 @@ describe("AppRouter", () => {
   });
 
   it("redirects authenticated users away from login", () => {
-    renderRouter("/login");
+    renderRouter(
+      "/login",
+      true,
+      ["users.read"],
+    );
 
     expect(
       screen.getByRole("heading", {
@@ -114,11 +149,142 @@ describe("AppRouter", () => {
   it("renders a not-found page", () => {
     renderRouter(
       "/does-not-exist",
+      true,
+      ["users.read"],
     );
 
     expect(
       screen.getByRole("heading", {
         name: "Page not found",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the sports route with sports.read", () => {
+    renderRouter(
+      "/sports",
+      true,
+      ["sports.read"],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Performance",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the performance metrics route with performance-metrics.read", () => {
+    renderRouter(
+      "/performance-metrics",
+      true,
+      ["performance-metrics.read"],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Performance",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the exercises route with exercises.read", () => {
+    renderRouter(
+      "/exercises",
+      true,
+      ["exercises.read"],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Training",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the athlete digital twin route with athlete_digital_twins.read", () => {
+    renderRouter(
+      "/athlete-digital-twin/athlete-1",
+      true,
+      ["athlete_digital_twins.read"],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("denies direct users route access without users.read", () => {
+    renderRouter(
+      "/users",
+      true,
+      [],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Access denied",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("denies direct sports route access without sports.read", () => {
+    renderRouter(
+      "/sports",
+      true,
+      [],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Access denied",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("denies direct performance metrics access without performance-metrics.read", () => {
+    renderRouter(
+      "/performance-metrics",
+      true,
+      [],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Access denied",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("denies direct exercises route access without exercises.read", () => {
+    renderRouter(
+      "/exercises",
+      true,
+      [],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Access denied",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("denies direct athlete digital twin access without athlete_digital_twins.read", () => {
+    renderRouter(
+      "/athlete-digital-twin/athlete-1",
+      true,
+      [],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Access denied",
       }),
     ).toBeInTheDocument();
   });

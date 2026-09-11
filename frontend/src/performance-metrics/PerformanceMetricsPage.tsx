@@ -57,31 +57,6 @@ export default function PerformanceMetricsPage({
 
   return (
     <section className="titan-users-page">
-
-      <div className="titan-page-heading">
-
-        <div>
-          <span className="titan-eyebrow">
-            PERFORMANCE ENGINE
-          </span>
-
-          <h2>
-            Performance Metrics
-          </h2>
-        </div>
-
-        <div className="titan-tenant">
-          <span>
-            Tenant
-          </span>
-
-          <strong>
-            {tenantId}
-          </strong>
-        </div>
-
-      </div>
-
       <section className="titan-panel titan-users-panel">
 
         <div className="titan-users-header">

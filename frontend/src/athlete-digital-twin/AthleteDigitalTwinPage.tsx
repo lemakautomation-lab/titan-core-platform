@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   AthleteDigitalTwinDto,
@@ -91,16 +91,6 @@ export default function AthleteDigitalTwinPage({
 
   return (
     <section className="titan-users-page">
-      <div className="titan-page-heading">
-        <div>
-          <span className="titan-eyebrow">
-            ATHLETE DIGITAL TWIN
-          </span>
-
-          <h2>Digital Twin</h2>
-        </div>
-      </div>
-
       <section className="titan-panel titan-users-panel">
         <div className="titan-users-header">
           <div>

@@ -1,10 +1,11 @@
-﻿import {
+import {
   Navigate,
   Route,
   Routes,
 } from "react-router-dom";
 
 import LoginPage from "../auth/LoginPage";
+import DashboardPage from "../dashboard/DashboardPage";
 import AuthApp from "../auth/AuthApp";
 import UsersPage from "../users/UsersPage";
 import SportsPage from "../sports/SportsPage";
@@ -44,6 +45,29 @@ function ProtectedRoute({
       loggingOut={loggingOut}
     />
   );
+}
+
+function RequirePermission({
+  user,
+  permission,
+  children,
+}: {
+  user: AuthUser | null;
+  permission: string;
+  children: React.ReactNode;
+}) {
+  if (!user || !user.permissions.includes(permission)) {
+    return (
+      <main>
+        <h1>Access denied</h1>
+        <p>
+          You do not have permission to access this TITAN page.
+        </p>
+      </main>
+    );
+  }
+
+  return <>{children}</>;
 }
 
 function NotFoundPage() {
@@ -99,46 +123,82 @@ export default function AppRouter({
       >
         <Route
           path="/"
-          element={<Navigate to="/users" replace />}
+          element={<Navigate to="/dashboard" replace />}
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <DashboardPage />
+          }
         />
 
         <Route
           path="/users"
           element={
-            user ? (
-              <UsersPage tenantId={user.tenantId} />
-            ) : null
+            <RequirePermission
+              user={user}
+              permission="users.read"
+            >
+              {user ? (
+                <UsersPage tenantId={user.tenantId} />
+              ) : null}
+            </RequirePermission>
           }
         />
 
         <Route
           path="/sports"
           element={
-            user ? (
-              <SportsPage tenantId={user.tenantId} />
-            ) : null
+            <RequirePermission
+              user={user}
+              permission="sports.read"
+            >
+              {user ? (
+                <SportsPage tenantId={user.tenantId} />
+              ) : null}
+            </RequirePermission>
           }
         />
 
         <Route
           path="/performance-metrics"
           element={
-            user ? (
-              <PerformanceMetricsPage
-                tenantId={user.tenantId}
-              />
-            ) : null
+            <RequirePermission
+              user={user}
+              permission="performance-metrics.read"
+            >
+              {user ? (
+                <PerformanceMetricsPage
+                  tenantId={user.tenantId}
+                />
+              ) : null}
+            </RequirePermission>
           }
         />
 
         <Route
           path="/exercises"
-          element={<ExercisesPage />}
+          element={
+            <RequirePermission
+              user={user}
+              permission="exercises.read"
+            >
+              <ExercisesPage />
+            </RequirePermission>
+          }
         />
 
         <Route
           path="/athlete-digital-twin/:athleteId"
-          element={<AthleteDigitalTwinRoute />}
+          element={
+            <RequirePermission
+              user={user}
+              permission="athlete_digital_twins.read"
+            >
+              <AthleteDigitalTwinRoute />
+            </RequirePermission>
+          }
         />
       </Route>
 
