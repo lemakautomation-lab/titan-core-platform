@@ -49,7 +49,7 @@ const config: Config = {
     footer: {
       style: 'dark',
       links: [],
-      copyright: 'TITAN Technologies â€” Controlled Knowledge Base',
+      copyright: 'TITAN Technologies - Controlled Knowledge Base',
     },
     prism: {
       theme: require('prism-react-renderer').themes.github,
