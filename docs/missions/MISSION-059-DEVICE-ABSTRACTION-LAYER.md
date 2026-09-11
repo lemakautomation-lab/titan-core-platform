@@ -163,3 +163,32 @@ No device repository, provider connector, persistence expansion, API, or fronten
 ### Deferred Scope
 
 Control 059.6 integration failure handling remains separate. Provider-specific wearable connector implementations remain outside Mission 059 and belong to Mission 060.
+
+## Control 059.6 — Integration Failure Handling
+
+**Status:** COMPLETE / VERIFIED
+
+Implemented a provider-independent integration failure handling boundary:
+
+- `backend/src/domain/ports/device/device-integration-failure.port.ts`
+- `backend/tests/unit/device-integration-failure.port.spec.ts`
+
+The `DeviceIntegrationFailurePort` contract provides an asynchronous boundary for safely handling normalized device integration failures without coupling the domain to a specific wearable provider, retry strategy, persistence mechanism, API, or frontend.
+
+### Verification Evidence
+
+- Targeted 059.6 regression: **1/1 GREEN**
+- TypeScript build: **GREEN**
+- Full serial regression: **89/89 test files GREEN; 743/743 tests GREEN**
+
+### Security / Non-Regression
+
+- No provider-specific trust assumptions introduced.
+- No tenant or athlete association bypass introduced.
+- No authentication or authorization controls modified.
+- No persistence or API surface changed.
+- Existing unrelated dirty-tree changes remain protected.
+
+### Deferred Scope
+
+Provider-specific connector implementations remain outside Mission 059 and belong to Mission 060. Retry/backoff, provider error mapping, persistence, API exposure, and frontend behaviour are not introduced by this abstraction control.
