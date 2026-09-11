@@ -35,6 +35,7 @@ model Tenant {
   recoveryTrackings RecoveryTracking[]
   sleepTrackings    SleepTracking[]
   restTrackings     RestTracking[]
+  trainingStresses  TrainingStress[]
 }
 
 model Sport {
@@ -116,6 +117,7 @@ model Athlete {
   recoveryTrackings       RecoveryTracking[]
   sleepTrackings          SleepTracking[]
   restTrackings           RestTracking[]
+  trainingStresses        TrainingStress[]
 
   @@unique([id, tenantId], map: "Athlete_id_tenantId_key")
   @@index([tenantId])
@@ -689,6 +691,27 @@ model RestTracking {
 
   @@unique([id, tenantId, athleteId], map: "RestTracking_id_tenantId_athleteId_key")
   @@unique([tenantId, sourceType, sourceId, sourceObservationId], map: "RestTracking_source_identity_key")
+  @@index([tenantId])
+  @@index([tenantId, athleteId])
+  @@index([tenantId, athleteId, recordedAt])
+}
+
+model TrainingStress {
+  id                  String   @id @default(uuid())
+  tenantId            String
+  athleteId           String
+  value               Decimal  @db.Decimal(20, 6)
+  recordedAt          DateTime @default(now())
+  createdAt           DateTime @default(now())
+  sourceType          String
+  sourceId            String
+  sourceObservationId String
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  athlete Athlete @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([id, tenantId, athleteId], map: "TrainingStress_id_tenantId_athleteId_key")
+  @@unique([tenantId, sourceType, sourceId, sourceObservationId], map: "TrainingStress_source_identity_key")
   @@index([tenantId])
   @@index([tenantId, athleteId])
   @@index([tenantId, athleteId, recordedAt])
