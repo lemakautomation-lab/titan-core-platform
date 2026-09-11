@@ -100,3 +100,33 @@ The first serial authentication failure was classified as unrelated serial/inter
 ### Deferred Scope
 
 059.4 normalization boundary, 059.5 authorised athlete association, and 059.6 integration failure handling remain separate controls. Provider connectors remain outside Mission 059 and belong to the subsequent wearable connector work.
+## Control 059.4 — Normalisation Boundary
+
+**Status:** COMPLETE / VERIFIED
+
+Implemented a provider-independent normalisation boundary:
+
+- `backend/src/domain/ports/device/device-normalization.port.ts`
+- `backend/tests/unit/device-normalization.port.spec.ts`
+
+The `DeviceNormalizationPort<TInput, TOutput>` contract accepts provider-neutral input and returns provider-independent normalised output asynchronously.
+
+Scope deliberately excludes provider-specific mappings, provider implementations, athlete association, persistence, API exposure, frontend changes, and interpretation/calculation logic.
+
+### Verification Evidence
+
+- Targeted 059.4 regression: **1/1 GREEN**
+- TypeScript build: **GREEN**
+- Full serial regression: **87/87 test files GREEN; 739/739 tests GREEN**
+
+### Security / Non-Regression
+
+- No provider-specific trust assumptions introduced.
+- No tenant or athlete association bypass introduced.
+- No authentication or authorization controls modified.
+- No persistence or API surface changed.
+- Existing unrelated dirty-tree changes remain protected.
+
+### Deferred Scope
+
+059.5 authorised athlete association and 059.6 integration failure handling remain separate controls. Provider-specific connector implementations remain outside Mission 059 and belong to the subsequent wearable connector work.
