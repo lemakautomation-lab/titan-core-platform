@@ -1,86 +1,66 @@
-﻿# MISSION 059 — DEVICE ABSTRACTION LAYER
+﻿# Mission 059 — Device Abstraction Layer
 
 ## Status
-
 IN PROGRESS
 
 ## Scope
-
-Mission 059 establishes a device abstraction layer that remains independent of specific wearable providers.
-
-The mission is implemented through separately verified controls. Each control remains independently bounded and verified.
-
----
+Mission 059 establishes the backend device abstraction layer independently of specific wearable providers.
 
 ## Control 059.1 — Device-Agnostic Interface
+COMPLETE / VERIFIED / COMMITTED / PUSHED.
 
-Implemented:
+Implemented a provider-neutral `WearableDevicePort<TDevice>` domain port supporting asynchronous device lookup without provider-specific implementation, persistence, API, ingestion, normalization, or frontend changes.
 
-- dedicated domain-level `WearableDevicePort` interface;
-- provider-neutral generic device contract;
-- asynchronous device lookup boundary;
-- absence represented safely as `null`;
-- no provider-specific implementation;
-- no persistence, API, frontend, ingestion, or normalization behaviour introduced.
+## Control 059.2 — Provider-Independent Data Model
+COMPLETE / VERIFIED.
 
-Verification:
+Implemented a dedicated provider-independent `Device` domain entity.
 
-- targeted contract regression: 1/1 GREEN;
-- backend build: GREEN;
-- full serial regression: 84/84 test files, 734/734 tests GREEN.
+The model contains only:
+- internal `id`
+- tenant-scoped `tenantId`
+- provider-neutral external `deviceId`
+- provider-neutral `deviceType`
+- `createdAt`
 
-The interface establishes the domain abstraction boundary without selecting or depending on a specific wearable provider.
+The entity:
+- generates its internal identifier;
+- enforces tenant identity;
+- enforces device identity;
+- enforces device type;
+- trims canonical identity fields;
+- contains no provider-specific fields or logic;
+- contains no athlete association;
+- contains no ingestion or normalization behavior.
 
----
+### Verification Evidence
+- Targeted entity regression: 3/3 GREEN.
+- Build: GREEN.
+- Full serial regression: 85/85 test files, 737/737 tests GREEN.
 
-## Security and Non-Regression Boundary
+## Security / Non-Regression Boundary
+The control remains backend-only.
 
-Control 059.1 introduces no new authentication or authorization path, persistence boundary, API endpoint, frontend/UI behaviour, provider SDK, ingestion implementation, or normalization implementation.
+No new API, frontend, provider connector, ingestion boundary, normalization pipeline, or athlete-association path was introduced.
 
-Provider-specific integration remains outside this control and belongs to the separately defined wearable connector scope.
+Tenant identity is part of the domain model. Existing authentication, authorization, RBAC, tenant isolation, audit, and security-event controls remain unchanged.
 
-Existing tenant isolation, RBAC, authentication, audit, and application security boundaries remain unchanged.
-
-Unrelated working-tree changes remain outside the Mission 059.1 implementation scope.
-
----
+Unrelated dirty-tree changes are excluded from this control.
 
 ## Deferred Scope
-
-The following remain outside Control 059.1:
-
-- provider-independent persistence model;
-- ingestion boundary implementation;
-- normalization boundary implementation;
-- authorised athlete association;
+The following remain outside 059.2:
+- provider-specific connectors;
+- provider-independent ingestion;
+- normalization;
+- authorized athlete association;
 - integration failure handling;
-- provider-specific wearable connectors;
-- frontend/UI expansion;
-- unrelated API expansion.
-
-These capabilities remain subject to their separately defined controls or successor missions.
-
----
-
-## Current Acceptance State
-
-Control 059.1 is COMPLETE / VERIFIED.
-
-Targeted contract regression is GREEN, backend build is GREEN, and full serial regression is GREEN.
-
-Selective staging is pending final index audit and commit/push through the approved GitHub Desktop workflow.
-
----
+- persistence/API expansion unless explicitly required by a later control;
+- frontend/UI.
 
 ## Implementation Files
-
-### Control 059.1
-
-- `backend/src/domain/ports/device/wearable-device.port.ts`
-- `backend/tests/unit/wearable-device.port.spec.ts`
-
-### Mission Documentation
-
+- `backend/src/domain/entities/device/device.entity.ts`
+- `backend/tests/unit/device.entity.spec.ts`
 - `docs/missions/MISSION-059-DEVICE-ABSTRACTION-LAYER.md`
 
-Further Mission 059 work requires the separately defined controls to be implemented and verified within their authorized scope.
+## Acceptance State
+059.2 is COMPLETE / VERIFIED pending selective staging, final index audit, commit, and push.
