@@ -10,7 +10,7 @@ sidebar_position: 9
 
 ## Status
 
-**COMPLETE / VERIFIED / RELEASE PENDING**
+**COMPLETE / VERIFIED / RELEASED**
 
 ## Objective
 
@@ -115,6 +115,7 @@ A self-referencing parent-child Organisation model was added with:
 | Backend TypeScript build | GREEN |
 | Tenant hierarchy database constraints | GREEN |
 | Working-tree integrity | GREEN |
+| Cloudflare Knowledge Base publication | VERIFIED |
 
 ## Mission Exit Gate
 
@@ -128,6 +129,7 @@ A self-referencing parent-child Organisation model was added with:
 - Migration and relationship contracts verified: **YES**
 - Documentation and evidence captured: **YES**
 - Knowledge Base typecheck and production build: **PENDING**
-- Cloudflare Knowledge Base publication: **PENDING RELEASE**
+- Cloudflare Knowledge Base publication: **VERIFIED**
+- Protected production route: /docs/missions/009/`n- Cloudflare Access protection: **VERIFIED**
 
 **Mission 009 engineering conclusion:** COMPLETE / VERIFIED.
