@@ -10,7 +10,7 @@ sidebar_position: 5
 
 ## Status
 
-**COMPLETE / VERIFIED / RELEASE PENDING**
+**COMPLETE / VERIFIED / RELEASED**
 
 ## Objective
 
@@ -106,6 +106,7 @@ integration tests.
 | Backend TypeScript build | GREEN |
 | Full backend regression baseline | GREEN - 92 files, 765/765 tests |
 | Working-tree integrity | GREEN |
+| Cloudflare Knowledge Base publication | VERIFIED |
 
 The full backend regression baseline was executed against the same released
 application code immediately before this mission verification. Mission 005
@@ -121,6 +122,8 @@ introduced no engineering-code changes.
 - API contract verified: **YES**
 - Documentation and evidence captured: **YES**
 - Knowledge Base typecheck and production build: **PENDING**
-- Cloudflare Knowledge Base publication: **PENDING RELEASE**
+- Cloudflare Knowledge Base publication: **VERIFIED**
+- Protected production route: `/docs/missions/005/`
+- Cloudflare Access protection: **VERIFIED**
 
 **Mission 005 engineering conclusion:** COMPLETE / VERIFIED.
