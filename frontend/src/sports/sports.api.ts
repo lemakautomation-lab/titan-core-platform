@@ -21,7 +21,7 @@ export interface SportsListResponse {
 }
 
 export async function listSports(
-  tenantId: string,
+  _tenantId: string,
 ): Promise<SportDto[]> {
   const result = await apiRequest<SportsListResponse>(
     "/sports",

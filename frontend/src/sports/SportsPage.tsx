@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import {
   listSports,
-  SportDto,
+  type SportDto,
 } from "./sports.api";
 
 interface SportsPageProps {

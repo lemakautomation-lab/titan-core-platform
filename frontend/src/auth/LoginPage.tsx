@@ -1,7 +1,7 @@
-import { FormEvent, useState } from "react";
+import { type FormEvent, useState } from "react";
 
 import { login } from "./auth.service";
-import { AuthUser } from "./auth.types";
+import type { AuthUser } from "./auth.types";
 
 interface LoginPageProps {
   onAuthenticated: (user: AuthUser) => void;

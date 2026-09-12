@@ -26,7 +26,7 @@ export interface PerformanceMetricsListResponse {
 }
 
 export async function listPerformanceMetrics(
-  tenantId: string,
+  _tenantId: string,
 ): Promise<PerformanceMetricDto[]> {
   const result =
     await apiRequest<PerformanceMetricsListResponse>(

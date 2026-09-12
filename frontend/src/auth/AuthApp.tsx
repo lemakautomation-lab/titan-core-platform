@@ -4,7 +4,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-import { AuthUser } from "./auth.types";
+import type { AuthUser } from "./auth.types";
 
 interface AuthAppProps {
   user: AuthUser;

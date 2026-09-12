@@ -13,7 +13,7 @@ import {
   clearAuthSession,
 } from "./auth.storage";
 
-import {
+import type {
   AuthUser,
   LoginRequest,
 } from "./auth.types";

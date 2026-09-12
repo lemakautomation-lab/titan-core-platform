@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import {
-  ExerciseDto,
+  type ExerciseDto,
   listExercises,
 } from "./exercises.api";
 

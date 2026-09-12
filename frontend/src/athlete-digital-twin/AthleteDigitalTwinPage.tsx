@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 import {
-  AthleteDigitalTwinDto,
+  type AthleteDigitalTwinDto,
   getAthleteDigitalTwinByAthleteId,
   updateAthleteDigitalTwinLifecycle,
-  AthleteDigitalTwinLifecycleAction,
+  type AthleteDigitalTwinLifecycleAction,
 } from "./athlete-digital-twin.api";
 
 type Props = {

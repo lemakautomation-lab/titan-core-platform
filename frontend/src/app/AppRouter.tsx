@@ -12,7 +12,7 @@ import SportsPage from "../sports/SportsPage";
 import PerformanceMetricsPage from "../performance-metrics/PerformanceMetricsPage";
 import ExercisesPage from "../exercises/ExercisesPage";
 import AthleteDigitalTwinPage from "../athlete-digital-twin/AthleteDigitalTwinPage";
-import { AuthUser } from "../auth/auth.types";
+import type { AuthUser } from "../auth/auth.types";
 
 type AppRouterProps = {
   authState:
@@ -56,7 +56,7 @@ function RequirePermission({
   permission: string;
   children: React.ReactNode;
 }) {
-  if (!user || !user.permissions.includes(permission)) {
+  if (!user?.permissions.includes(permission)) {
     return (
       <main>
         <h1>Access denied</h1>

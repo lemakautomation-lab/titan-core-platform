@@ -16,7 +16,7 @@ import {
   restoreSession,
 } from "./auth/auth.service";
 
-import { AuthUser } from "./auth/auth.types";
+import type { AuthUser } from "./auth/auth.types";
 
 import AppRouter from "./app/AppRouter";
 

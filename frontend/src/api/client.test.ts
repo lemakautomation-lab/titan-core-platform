@@ -520,7 +520,14 @@ describe("apiRequest", () => {
       refreshHeaders.Authorization,
     ).toBeUndefined();
 
-    resolveRefresh!(
+    const completeRefresh =
+      resolveRefresh as ((response: Response) => void) | null;
+
+    if (!completeRefresh) {
+      throw new Error("Refresh resolver was not initialized.");
+    }
+
+    completeRefresh(
       new Response(
         JSON.stringify({
           success: true,

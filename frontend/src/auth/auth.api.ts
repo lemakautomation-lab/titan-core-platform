@@ -1,6 +1,6 @@
 import { apiRequest } from "../api/client";
 
-import {
+import type {
   LoginRequest,
   LoginResponse,
   RefreshResponse,

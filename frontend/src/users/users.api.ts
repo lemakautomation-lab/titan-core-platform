@@ -1,5 +1,5 @@
 ﻿import { apiRequest } from "../api/client";
-import { UserDto } from "./users.types";
+import type { UserDto } from "./users.types";
 
 export async function listUsers(
   tenantId: string,

@@ -6,8 +6,8 @@ import {
 import {
   AmbientLight,
   DirectionalLight,
-  Group,
-  Material,
+  type Group,
+  type Material,
   Mesh,
   PerspectiveCamera,
   Scene,

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { listUsers } from "./users.api";
-import { UserDto } from "./users.types";
+import type { UserDto } from "./users.types";
 
 interface UsersPageProps {
   tenantId: string;

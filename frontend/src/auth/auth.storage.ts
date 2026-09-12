@@ -1,4 +1,4 @@
-import { AuthUser } from "./auth.types";
+import type { AuthUser } from "./auth.types";
 
 let accessToken: string | null = null;
 let authUser: AuthUser | null = null;

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import {
   listPerformanceMetrics,
-  PerformanceMetricDto,
+  type PerformanceMetricDto,
 } from "./performance-metrics.api";
 
 interface PerformanceMetricsPageProps {
