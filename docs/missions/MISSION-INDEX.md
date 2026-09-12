@@ -9,12 +9,12 @@ The mission specification is the source of truth for implementation scope.
 ## Development Workflow
 
 Mission Definition
-ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Architecture
-ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Implementation
-ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Tests
-ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Verification
-ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Mission Sign-off
-ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Git Commit
+→ Architecture
+→ Implementation
+→ Tests
+→ Verification
+→ Mission Sign-off
+→ Git Commit
 
 ## Mission Status
 
@@ -24,10 +24,10 @@ Mission Definition
 | 049 | Athlete Relationships | COMPLETE | Existing implementation and verified checkpoint |
 | 050 | Athlete Digital Twin | COMPLETE | Prisma migration, implementation and verified checkpoint |
 | 051 | Sport Engine Foundation | COMPLETE | Sport API integration 5/5 GREEN |
-| 052 | Performance Engine | COMPLETE / VERIFIED / COMMITTED / PUSHED | Narrowed R0ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“R7 acceptance released at `8125424` |
+| 052 | Performance Engine | COMPLETE / VERIFIED / COMMITTED / PUSHED | Narrowed R0-R7 acceptance released at `8125424` |
 | 053 | Exercise Library and lifecycle hardening | COMPLETE | Foundation and lifecycle controls committed and verified |
 | 054 | Workout Programme Engine | COMPLETE | Status control completed, verified, committed and pushed at `f3cb3b2` |
-| 055 | Exercise Programme Generation Engine | COMPLETE â€” R0 through R6R RELEASED / R7 GOVERNANCE CLOSED | Technically closed at `562cac854cabab2b0a136448c738e9fb8cdf88c8`; production enablement separately gated |
+| 055 | Exercise Programme Generation Engine | COMPLETE — R0 through R6R RELEASED / R7 GOVERNANCE CLOSED | Technically closed at `562cac854cabab2b0a136448c738e9fb8cdf88c8`; production enablement separately gated |
 | 055.1 | Athlete performance adaptation | COMPLETE | Adaptation at `dbf443b`; Performance Measurement application boundary at `4563d49` |
 | 056 | Workout Programme Progression | COMPLETE / VERIFIED / COMMITTED / PUSHED | Evidence evaluation and performance evidence gate released at `e02cd0b` |
 
@@ -35,7 +35,7 @@ Mission Definition
 
 The original ROADMAP.md currently contains zero bytes and therefore cannot serve as the historical mission specification.
 
-Missions 048ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“051 are documented from confirmed implementation history.
+Missions 048–051 are documented from confirmed implementation history.
 
 Mission 052 is complete under its narrowed Performance Metric / Performance Measurement
 acceptance contract. Advanced scope remains excluded to an unnumbered future successor.

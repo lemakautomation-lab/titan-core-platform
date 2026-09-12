@@ -112,3 +112,14 @@ Cloudflare Access protects the current `pages.dev` deployment. Custom-domain con
 - Frontend lint completed with zero findings.
 - Production build passed.
 - Full frontend regression passed: 17/17 files and 101/101 tests.
+
+## Control 001.6 - Documentation Standards
+
+**Status:** COMPLETE / VERIFIED
+
+- Replaced seven empty documentation placeholders with controlled scope definitions.
+- Corrected encoding corruption in six tracked governance and mission documents.
+- Preserved historical meaning without reconstructing unsupported history.
+- Confirmed no tracked Markdown files remain empty or encoding-corrupt.
+- Knowledge Base production build passed.
+- No application, database, migration, API or runtime behaviour changed.

@@ -2,7 +2,7 @@
 
 ## CHECKPOINT
 
-055-R0 â€” Architecture, Identity, and Acceptance Contract.
+055-R0 — Architecture, Identity, and Acceptance Contract.
 
 ## CONFIRMED STATE
 

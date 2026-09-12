@@ -1,4 +1,4 @@
-# Current Checkpoint â€” 2026-09-02
+# Current Checkpoint — 2026-09-02
 
 ## REPOSITORY
 
@@ -10,22 +10,22 @@ HEAD and origin/main:
 
 Latest pushed commit:
 
-`8125424` â€” Mission 052-R7: Sign off performance foundation
+`8125424` — Mission 052-R7: Sign off performance foundation
 
 Local main and origin/main are synchronized.
 
 ## MISSION STATUS
 
-- Mission 052 â€” COMPLETE / VERIFIED / COMMITTED / PUSHED.
-- Mission 053 â€” COMPLETE.
-- Mission 054 â€” COMPLETE.
-- Mission 055 â€” ACTIVE; R0 COMPLETE / VERIFIED / UNCOMMITTED.
-- Mission 055.1 â€” COMPLETE / VERIFIED / COMMITTED / PUSHED.
+- Mission 052 — COMPLETE / VERIFIED / COMMITTED / PUSHED.
+- Mission 053 — COMPLETE.
+- Mission 054 — COMPLETE.
+- Mission 055 — ACTIVE; R0 COMPLETE / VERIFIED / UNCOMMITTED.
+- Mission 055.1 — COMPLETE / VERIFIED / COMMITTED / PUSHED.
 
 Mission 055.1 implementation commits:
 
-- `dbf443b` â€” athlete performance adaptation;
-- `4563d49` â€” Performance Measurement application boundary.
+- `dbf443b` — athlete performance adaptation;
+- `4563d49` — Performance Measurement application boundary.
 
 ## VERIFICATION
 
@@ -43,7 +43,7 @@ in progress. Do not bulk-stage, clean, reset, revert, stash or discard unrelated
 
 ## CURRENT GOVERNANCE CHECKPOINT
 
-055-R0 â€” Architecture, Identity, and Acceptance Contract.
+055-R0 — Architecture, Identity, and Acceptance Contract.
 
 Mission 055 is technically closed after R0 through R6R release and R7 governance closure.
 Final implementation checkpoint: 562cac854cabab2b0a136448c738e9fb8cdf88c8. Mission 055.1 remains unchanged historical prior work: it supplied adaptation,

@@ -1,4 +1,4 @@
-# MISSION 055 â€” EXERCISE PROGRAMME GENERATION ENGINE
+# MISSION 055 — EXERCISE PROGRAMME GENERATION ENGINE
 
 ## Status
 
@@ -75,7 +75,7 @@ not part of this mission.
 
 Generated output requires this minimum hierarchy:
 
-Programme â†’ ordered Sessions â†’ ordered Exercise Prescriptions.
+Programme → ordered Sessions → ordered Exercise Prescriptions.
 
 A prescription must contain enough governed information to execute the generated
 programme, including ordering, Exercise identity and an appropriate bounded prescription
@@ -119,7 +119,7 @@ Goal semantics, Exercise metadata or generation rules do not silently reinterpre
 
 Regeneration remains within Mission 055 only as explicit lineage:
 
-old generated version â†’ regeneration decision â†’ new generated version.
+old generated version → regeneration decision → new generated version.
 
 Regeneration must not silently overwrite history or become general Programme Progression.
 Its exact mechanics and API belong to later controls.

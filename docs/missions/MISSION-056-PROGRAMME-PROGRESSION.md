@@ -1,4 +1,4 @@
-# MISSION 056 — WORKOUT PROGRAMME PROGRESSION
+# MISSION 056 â€” WORKOUT PROGRAMME PROGRESSION
 
 ## Status
 
@@ -10,14 +10,14 @@ Mission 056 establishes bounded evidence-based Workout Programme progression con
 
 The mission was implemented through two verified controls:
 
-1. 056.1 — Performance Evidence Evaluation Contract.
-2. 056.2 — Performance Evidence Gate.
+1. 056.1 â€” Performance Evidence Evaluation Contract.
+2. 056.2 â€” Performance Evidence Gate.
 
 No 056.3 control is defined or claimed.
 
 ---
 
-## Control 056.1 — Performance Evidence Evaluation Contract
+## Control 056.1 â€” Performance Evidence Evaluation Contract
 
 Implemented:
 
@@ -36,13 +36,13 @@ Verification:
 
 Commit:
 
-`6cc199c` — Mission 056.1 — Implement Workout Programme Progression
+`6cc199c` â€” Mission 056.1 â€” Implement Workout Programme Progression
 
-`ca4b4d9` — Mission 056.1 — Performance Evidence Evaluation Contract
+`ca4b4d9` â€” Mission 056.1 â€” Performance Evidence Evaluation Contract
 
 ---
 
-## Control 056.2 — Performance Evidence Gate
+## Control 056.2 â€” Performance Evidence Gate
 
 Implemented:
 
@@ -67,7 +67,7 @@ Verification:
 
 Commit:
 
-`e02cd0b` — Mission 056.2 — Performance Evidence Gate
+`e02cd0b` â€” Mission 056.2 â€” Performance Evidence Gate
 
 ---
 
@@ -123,9 +123,9 @@ Mission 056 is considered technically complete because:
 
 ## Release Chain
 
-- `6cc199c` — Mission 056.1 — Implement Workout Programme Progression
-- `ca4b4d9` — Mission 056.1 — Performance Evidence Evaluation Contract
-- `e02cd0b` — Mission 056.2 — Performance Evidence Gate
+- `6cc199c` â€” Mission 056.1 â€” Implement Workout Programme Progression
+- `ca4b4d9` â€” Mission 056.1 â€” Performance Evidence Evaluation Contract
+- `e02cd0b` â€” Mission 056.2 â€” Performance Evidence Gate
 
 Mission 056 is closed at `e02cd0b`.
 
