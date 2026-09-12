@@ -10,7 +10,7 @@ sidebar_position: 2
 
 ## Mission Status
 
-**COMPLETE / VERIFIED / RELEASE PENDING**
+**COMPLETE / VERIFIED / RELEASED**
 
 Mission 002 was reconciled against the implemented TITAN Core Platform on
 2026-09-12. Existing capabilities were retained where objective evidence showed
@@ -229,6 +229,9 @@ must not be represented as failures of the verified Mission 002 controls.
 - Security, tenant-isolation and RBAC implications assessed: **YES**
 - Migration and API contracts preserved: **YES**
 - Documentation and evidence captured: **YES**
-- Cloudflare Knowledge Base publication: **PENDING RELEASE**
+- Cloudflare Knowledge Base publication: **VERIFIED**
+- Published source commit: `306f76a0b4eb9df91c34170a9770a1626efea5b3`
+- Protected production route: `/missions/002/`
+- Cloudflare Access protection: **VERIFIED**
 
 **Mission 002 engineering conclusion:** COMPLETE / VERIFIED.
