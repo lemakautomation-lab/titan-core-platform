@@ -74,3 +74,15 @@ Cloudflare Access protects the current `pages.dev` deployment. Custom-domain con
 - Backend regression: 89/89 files and 743/743 tests passed.
 - Frontend regression: 17/17 files and 101/101 tests passed.
 - No database, migration, API or runtime behaviour changed.
+
+## Control 001.1 - Repository Structure
+
+**Status:** COMPLETE / VERIFIED
+
+- Backend, frontend and Knowledge Base are isolated package boundaries.
+- Architecture, documentation, infrastructure and supporting areas have defined ownership.
+- Dependencies and generated build outputs are excluded from version control.
+- The accidental root patch artifact was removed under Control 001.1-R1.
+- Backend and frontend builds passed.
+- Full regression passed: backend 743/743 tests; frontend 101/101 tests.
+- Working tree and staged index were clean after release verification.
