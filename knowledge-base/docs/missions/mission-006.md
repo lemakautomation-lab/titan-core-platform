@@ -10,7 +10,7 @@ sidebar_position: 6
 
 ## Status
 
-**COMPLETE / VERIFIED / RELEASE PENDING**
+**COMPLETE / VERIFIED / RELEASED**
 
 ## Objective
 
@@ -116,6 +116,7 @@ database contracts remain explicitly separated.
 | Backend TypeScript build | GREEN |
 | Full backend regression baseline | GREEN - 92 files, 765/765 tests |
 | Working-tree integrity | GREEN |
+| Cloudflare Knowledge Base publication | VERIFIED |
 
 The full backend regression baseline applies to the same released engineering
 state. Mission 006 introduces documentation changes only.
@@ -132,6 +133,8 @@ state. Mission 006 introduces documentation changes only.
 - Secrets-handling controls verified: **YES**
 - Documentation and evidence captured: **YES**
 - Knowledge Base typecheck and production build: **PENDING**
-- Cloudflare Knowledge Base publication: **PENDING RELEASE**
+- Cloudflare Knowledge Base publication: **VERIFIED**
+- Protected production route: `/docs/missions/006/`
+- Cloudflare Access protection: **VERIFIED**
 
 **Mission 006 engineering conclusion:** COMPLETE / VERIFIED.
