@@ -123,3 +123,14 @@ Cloudflare Access protects the current `pages.dev` deployment. Custom-domain con
 - Confirmed no tracked Markdown files remain empty or encoding-corrupt.
 - Knowledge Base production build passed.
 - No application, database, migration, API or runtime behaviour changed.
+
+## Control 001.6-R1 - Mission Catalogue Publication
+
+**Status:** COMPLETE / VERIFIED
+
+- Published individual Knowledge Base records for Missions 001 through 145.
+- Imported objectives, delivery classifications, controls, acceptance requirements and exit gates from the authoritative Master Mission Control Register.
+- Preserved the richer verified evidence already recorded for Mission 001.
+- Added a complete mission catalogue and automatically generated mission navigation.
+- Verified 145 mission pages and 144 newly generated records.
+- Knowledge Base production build passed with broken-link validation enabled.
