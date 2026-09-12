@@ -86,3 +86,17 @@ Cloudflare Access protects the current `pages.dev` deployment. Custom-domain con
 - Backend and frontend builds passed.
 - Full regression passed: backend 743/743 tests; frontend 101/101 tests.
 - Working tree and staged index were clean after release verification.
+
+## Control 001.2-R1 - Backend Lint Foundation
+
+**Status:** COMPLETE / VERIFIED
+
+- Added ESLint flat configuration for backend TypeScript source and tests.
+- Added a repeatable `npm run lint` quality gate.
+- Removed unused imports, parameters, assignments and unnecessary escaping.
+- Corrected uninitialized request-ID use in the rate-limit regression.
+- Lint passed with zero errors; 29 warnings remain recorded for separate type-safety hardening.
+- Backend build passed.
+- Targeted regression passed after correction.
+- Full backend regression passed: 89/89 files and 743/743 tests.
+- Production dependency audit findings remain a separate security control; no forced upgrade was applied.

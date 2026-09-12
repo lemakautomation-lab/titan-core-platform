@@ -170,7 +170,7 @@ describe("Generated Workout Programme retrieval API", () => {
             "rulesetId",
             "rulesetVersion",
         ]) {
-            expect(serialized).not.toContain(`\"${field}\"`);
+            expect(serialized).not.toContain(`"${field}"`);
         }
         expect(response.body).not.toHaveProperty("replayed");
     });

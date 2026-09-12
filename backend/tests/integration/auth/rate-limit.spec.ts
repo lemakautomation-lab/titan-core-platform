@@ -87,7 +87,7 @@ describe("Authentication Rate Limiting", () => {
             await createTestUser();
 
 
-        let requestId: string;
+        const attemptRequestId = crypto.randomUUID();
 
 
         const userAgent =
@@ -100,7 +100,7 @@ describe("Authentication Rate Limiting", () => {
                 .post("/api/v1/auth/login")
                 .set(
                     "X-Request-Id",
-                    `${requestId}-${attempt}`,
+                    `${attemptRequestId}-${attempt}`,
                 )
                 .set(
                     "User-Agent",
@@ -145,7 +145,7 @@ describe("Authentication Rate Limiting", () => {
             .toBe(429);
 
 
-        requestId =
+        const requestId =
             limitedResponse.headers["x-request-id"];
 
 

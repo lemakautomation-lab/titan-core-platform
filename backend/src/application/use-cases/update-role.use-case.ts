@@ -1,4 +1,3 @@
-import { Role } from "../../domain/entities/role.entity";
 import { RoleDto } from "../dto/role/role.dto";
 import { UseCase } from "../common/use-case.interface";
 import { Result } from "../common/result";

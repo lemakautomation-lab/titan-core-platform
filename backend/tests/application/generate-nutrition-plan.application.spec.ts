@@ -118,7 +118,7 @@ function harness(
     const transaction: NutritionPlanGenerationTransaction = {
         execute: vi.fn(
             async (
-                input: NutritionPlanGenerationTransactionInput,
+                _input: NutritionPlanGenerationTransactionInput,
             ) => transactionOutcome,
         ),
     };

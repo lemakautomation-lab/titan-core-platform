@@ -239,10 +239,6 @@ describe("Refresh Token", () => {
         expect(originalRefreshCookie)
             .toBeDefined();
 
-        const originalRefresh =
-            originalRefreshCookie!
-                .split(";")[0];
-
         const rotationRequestId =
             crypto.randomUUID();
 

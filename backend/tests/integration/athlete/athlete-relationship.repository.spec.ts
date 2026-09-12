@@ -3,7 +3,7 @@ import { describe, expect, it, afterAll } from "vitest";
 import { PrismaAthleteRelationshipRepository } from "../../../src/infrastructure/repositories/athlete-relationship.repository";
 import { AthleteRelationship } from "../../../src/domain/entities/athlete-relationship.entity";
 import { AthleteRelationshipType } from "../../../src/domain/enums/athlete-relationship-type.enum";
-import { RecordStatus } from "../../../src/domain/enums/record-status.enum";
+
 import { testPrisma } from "../../helpers/prisma-test.client";
 import { DatabaseService } from "../../../src/infrastructure/database/database.service";
 

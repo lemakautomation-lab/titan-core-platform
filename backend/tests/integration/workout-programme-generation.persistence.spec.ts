@@ -2,7 +2,6 @@ import { randomUUID } from "crypto";
 
 import { describe, expect, it } from "vitest";
 
-import { WorkoutProgrammeGeneration } from "../../src/domain/entities/workout-programme-generation.entity";
 import { WorkoutProgrammeGenerationMapper } from "../../src/infrastructure/mappers/workout-programme-generation.mapper";
 import { createTestUser } from "../factories/user.factory";
 import { testPrisma } from "../helpers/prisma-test.client";

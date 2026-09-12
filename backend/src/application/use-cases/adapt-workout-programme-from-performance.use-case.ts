@@ -4,7 +4,6 @@ import { PerformanceMeasurementRepository } from "../../domain/repositories/perf
 import { WorkoutProgrammeRepository } from "../../domain/repositories/workout-programme.repository";
 import {
     PerformanceEvidenceEvaluator,
-    PerformanceImprovementDirection,
 } from "../../domain/services/performance-evidence-evaluator.service";
 
 import { AdaptWorkoutProgrammeFromPerformanceCommand } from "../commands/adapt-workout-programme-from-performance.command";
