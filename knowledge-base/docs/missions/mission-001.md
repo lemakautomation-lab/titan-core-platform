@@ -63,3 +63,14 @@ Cloudflare Access protects the current `pages.dev` deployment. Custom-domain con
 - `HEAD` matched `origin/main`; index and working tree were clean.
 - Anonymous access returned the expected Cloudflare Access redirect.
 - Custom-domain acquisition remains a separate future control.
+
+## Control 001.1-R1 - Repository Artifact Cleanup
+
+**Status:** COMPLETE / VERIFIED
+
+- Removed the tracked root file `ntent .srcroutesindex.ts`.
+- The file was an unreferenced Git patch artifact, not application source code.
+- Backend and frontend production builds passed.
+- Backend regression: 89/89 files and 743/743 tests passed.
+- Frontend regression: 17/17 files and 101/101 tests passed.
+- No database, migration, API or runtime behaviour changed.
