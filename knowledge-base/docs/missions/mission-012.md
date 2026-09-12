@@ -10,7 +10,7 @@ sidebar_position: 12
 
 ## Status
 
-**COMPLETE / VERIFIED / RELEASE PENDING**
+**COMPLETE / VERIFIED / RELEASED**
 
 ## Objective
 
@@ -117,6 +117,7 @@ behavior.
 | Backend TypeScript build | GREEN |
 | Backend lint | GREEN - 0 errors, 29 existing warnings |
 | Working-tree integrity | GREEN |
+| Cloudflare Knowledge Base publication | VERIFIED |
 
 ## Mission Exit Gate
 
@@ -130,6 +131,8 @@ behavior.
 - Migration and authorization contracts verified: **YES**
 - Documentation and evidence captured: **YES**
 - Knowledge Base typecheck and production build: **PENDING**
-- Cloudflare Knowledge Base publication: **PENDING RELEASE**
+- Cloudflare Knowledge Base publication: **VERIFIED**
+- Protected production route: /docs/missions/012/`r
+- Cloudflare Access protection: **VERIFIED**
 
 **Mission 012 engineering conclusion:** COMPLETE / VERIFIED.
