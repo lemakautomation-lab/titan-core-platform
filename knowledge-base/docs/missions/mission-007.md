@@ -10,7 +10,7 @@ sidebar_position: 7
 
 ## Status
 
-**COMPLETE / VERIFIED / RELEASE PENDING**
+**COMPLETE / VERIFIED / RELEASED**
 
 ## Objective
 
@@ -124,6 +124,7 @@ green.
 | Backend TypeScript build | GREEN |
 | Full backend regression baseline | GREEN - 92 files, 765/765 tests |
 | Working-tree integrity | GREEN |
+| Cloudflare Knowledge Base publication | VERIFIED |
 
 The full backend regression baseline applies to the same released engineering
 state. Mission 007 introduces documentation changes only.
@@ -140,6 +141,7 @@ state. Mission 007 introduces documentation changes only.
 - Database relationship contracts verified: **YES**
 - Documentation and evidence captured: **YES**
 - Knowledge Base typecheck and production build: **PENDING**
-- Cloudflare Knowledge Base publication: **PENDING RELEASE**
+- Cloudflare Knowledge Base publication: **VERIFIED**
+- Protected production route: /docs/missions/007/`n- Cloudflare Access protection: **VERIFIED**
 
 **Mission 007 engineering conclusion:** COMPLETE / VERIFIED.
