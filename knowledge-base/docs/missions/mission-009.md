@@ -8,9 +8,31 @@ sidebar_position: 9
 
 > Authoritative scope imported from the TITAN Master Mission Control Register.
 
+## Status
+
+**COMPLETE / VERIFIED / RELEASE PENDING**
+
 ## Objective
 
-Build the organisation foundation.
+Build and verify the Organisation foundation for the TITAN Core Platform.
+
+Organisations provide a tenant-owned structure for grouping Users, Athletes and
+future operational business units. The Organisation domain therefore requires
+explicit tenant ownership, controlled persistence relationships, membership
+support and a safe foundation for parent-and-child organisational structures.
+
+Initial inspection confirmed that Organisation identity, tenant ownership and
+User membership already existed, but no explicit organisational hierarchy was
+implemented. Mission closure was blocked until that gap was remediated.
+
+The remediation introduced an optional self-referencing parent Organisation
+relationship. The parent and child must share the same tenant through a
+composite database foreign key. A database check and domain invariant prevent
+an Organisation from being its own parent. Parent deletion is restricted while
+children still reference it, protecting hierarchy integrity.
+
+**Outcome:** TITAN now has a tenant-safe Organisation foundation supporting
+identity, relationships, membership and controlled hierarchical expansion.
 
 ## Delivery Classification
 
@@ -21,20 +43,91 @@ Build the organisation foundation.
 
 ### Control 9.1 - Organisation entity
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** VERIFIED
+
+The Organisation entity provides tenant identity, name, slug, lifecycle status,
+timestamps and hierarchy behavior. Direct core-domain regression coverage
+remains green.
 
 ### Control 9.2 - Organisation relationships
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** VERIFIED / HARDENED
+
+Organisation-to-Tenant and User-to-Organisation relationships are implemented.
+Composite foreign keys prevent cross-tenant User ownership and cross-tenant
+parent-child hierarchy relationships.
 
 ### Control 9.3 - Organisation membership
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** VERIFIED
+
+Users may be associated with an Organisation inside their tenant. Existing
+authorization and tenant-isolation tests verify that membership cannot cross
+the tenant boundary.
 
 ### Control 9.4 - Organisational hierarchy foundation
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** IMPLEMENTED / VERIFIED
+
+A self-referencing parent-child Organisation model was added with:
+
+- Optional parent Organisation identity
+- Same-tenant composite foreign-key enforcement
+- Self-parent prevention
+- Restricted deletion while referenced by children
+- Hierarchy lookup index
+- Persistence mapper support
+- Automated database regression coverage
+
+## Security and Tenant-Isolation Assessment
+
+- Every Organisation remains owned by one Tenant.
+- Parent and child Organisations must belong to the same Tenant.
+- Cross-tenant hierarchy creation is rejected by PostgreSQL.
+- An Organisation cannot reference itself as its parent.
+- User Organisation ownership remains protected by its composite foreign key.
+- Existing tenant authorization behavior remains intact.
+- No frontend behavior was changed.
+
+## Remediation Evidence
+
+### Control 9.4-R1 - Tenant-Safe Organisation Hierarchy
+
+- Initial hierarchy signals: none
+- Initial classification: control gap confirmed
+- Prisma hierarchy relationship: implemented
+- Forward migration: applied successfully to the protected local test database
+- Same-tenant parent-child relationship: verified
+- Cross-tenant parent-child relationship: rejected
+- Self-parent relationship: rejected
+- Release commit: `4d31dcf9ea11d438d970e4dda6d911c04f6db2a5`
+
+## Verification Evidence
+
+| Gate | Result |
+|---|---|
+| Controls 9.1 through 9.3 | GREEN |
+| Control 9.4 initial inspection | GAP CONFIRMED |
+| Control 9.4 remediation | GREEN |
+| Targeted Organisation regression | GREEN |
+| Full backend regression | GREEN - 93 files, 768/768 tests |
+| Prisma schema validation | GREEN |
+| Backend TypeScript build | GREEN |
+| Tenant hierarchy database constraints | GREEN |
+| Working-tree integrity | GREEN |
 
 ## Mission Exit Gate
 
-all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
+- All four controls implemented or explicitly verified: **YES**
+- Organisational hierarchy gap remediated: **YES**
+- Targeted tests green: **YES**
+- Full backend regression green: **YES - 93 files, 768/768 tests**
+- Prisma schema validation green: **YES**
+- Backend build green: **YES**
+- Security and tenant implications verified: **YES**
+- Migration and relationship contracts verified: **YES**
+- Documentation and evidence captured: **YES**
+- Knowledge Base typecheck and production build: **PENDING**
+- Cloudflare Knowledge Base publication: **PENDING RELEASE**
+
+**Mission 009 engineering conclusion:** COMPLETE / VERIFIED.
