@@ -67,6 +67,8 @@ model Organisation {
   tenant    Tenant       @relation(fields: [tenantId], references: [id])
   users     User[]
   athletes  Athlete[]
+
+  @@unique([id, tenantId], map: "Organisation_id_tenantId_key")
 }
 
 model User {
@@ -82,7 +84,7 @@ model User {
   updatedAt      DateTime      @updatedAt
   auditLogs      AuditLog[]
   sessions       Session[]
-  organisation   Organisation? @relation(fields: [organisationId], references: [id])
+  organisation   Organisation? @relation(fields: [organisationId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
   tenant         Tenant        @relation(fields: [tenantId], references: [id])
   userRoles      UserRole[]
   athletes       Athlete[]
@@ -90,6 +92,7 @@ model User {
   @@unique([tenantId, email])
   @@index([tenantId])
   @@index([organisationId])
+  @@index([tenantId, organisationId])
 }
 
 model Athlete {
