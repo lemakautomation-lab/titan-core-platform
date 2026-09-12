@@ -10,7 +10,7 @@ sidebar_position: 11
 
 ## Status
 
-**COMPLETE / VERIFIED / RELEASE PENDING**
+**COMPLETE / VERIFIED / RELEASED**
 
 ## Objective
 
@@ -98,6 +98,7 @@ implemented through separated application and persistence boundaries.
 | Backend TypeScript build | GREEN |
 | Full backend regression baseline | GREEN - 93 files, 768/768 tests |
 | Working-tree integrity | GREEN |
+| Cloudflare Knowledge Base publication | VERIFIED |
 
 The full backend regression baseline applies to the same released engineering
 state. Mission 011 introduces documentation changes only.
@@ -114,6 +115,7 @@ state. Mission 011 introduces documentation changes only.
 - Repository and database contracts verified: **YES**
 - Documentation and evidence captured: **YES**
 - Knowledge Base typecheck and production build: **PENDING**
-- Cloudflare Knowledge Base publication: **PENDING RELEASE**
+- Cloudflare Knowledge Base publication: **VERIFIED**
+- Protected production route: /docs/missions/011/`n- Cloudflare Access protection: **VERIFIED**
 
 **Mission 011 engineering conclusion:** COMPLETE / VERIFIED.
