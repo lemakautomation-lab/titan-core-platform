@@ -1,6 +1,5 @@
-import dotenv from "dotenv";
+import {
+    setupTestDatabase,
+} from "./database.setup";
 
-dotenv.config({
-    path: ".env.test",
-    override: true,
-});
+setupTestDatabase();

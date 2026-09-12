@@ -1,16 +1,14 @@
 import { PrismaClient } from "../../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
+import {
+    assertSafeTestDatabaseConfiguration,
+} from "../setup/database.setup";
+
 const connectionString =
-    process.env.DATABASE_URL;
-
-if (!connectionString) {
-
-    throw new Error(
-        "TEST DATABASE_URL is not defined"
+    assertSafeTestDatabaseConfiguration(
+        process.env.DATABASE_URL,
     );
-
-}
 
 const adapter =
     new PrismaPg({
