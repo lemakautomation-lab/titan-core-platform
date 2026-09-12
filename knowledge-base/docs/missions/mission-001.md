@@ -52,3 +52,14 @@ sidebar_position: 1
 ### Security Boundary
 
 Cloudflare Access protects the current `pages.dev` deployment. Custom-domain configuration and verification require a separate controlled change.
+
+## Control 001.8F - Production Hostname Integrity
+
+**Status:** COMPLETE / VERIFIED
+
+- Replaced the unowned custom-domain URL with `https://titan-core-platform.pages.dev`.
+- Typecheck and production build passed.
+- Commit `5a3163ca4bc3ff266f2ad34d1cddb90600b77520` was pushed to `main`.
+- `HEAD` matched `origin/main`; index and working tree were clean.
+- Anonymous access returned the expected Cloudflare Access redirect.
+- Custom-domain acquisition remains a separate future control.
