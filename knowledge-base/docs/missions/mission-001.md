@@ -134,3 +134,15 @@ Cloudflare Access protects the current `pages.dev` deployment. Custom-domain con
 - Added a complete mission catalogue and automatically generated mission navigation.
 - Verified 145 mission pages and 144 newly generated records.
 - Knowledge Base production build passed with broken-link validation enabled.
+
+## Control 001.6-R2 - Knowledge Base Category Publication
+
+**Status:** COMPLETE / VERIFIED
+
+- Published 32 authoritative repository documents in the Knowledge Base.
+- Populated Platform, Products, Architecture, Governance, Security and Compliance, Quality Management and Operations.
+- Added source provenance to every published document.
+- Replaced foundation-only category pages with detailed document catalogues.
+- Added automatic document navigation for all seven categories.
+- Preserved the authoritative repository source files unchanged.
+- Knowledge Base production build and broken-link validation passed.

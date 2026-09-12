@@ -1,11 +1,14 @@
 ---
-title: Quality
+title: "Quality Management"
 slug: /quality/
-sidebar_position: 8
+sidebar_position: 0
 ---
 
-# Quality
+# Quality Management
 
-ISO 9001:2015-aligned verification and quality records.
+Published, version-controlled TITAN documentation.
 
-**Status:** FOUNDATION
+## Documents
+
+- [BD-010 - Specification Before Implementation](/docs/quality/docs-bd-010-specification-before-implementation/) — source: `docs/BD-010 Specification Before Implementation.md`
+- [TITAN Engineering Doctrine](/docs/quality/docs-titan-engineering-doctrine/) — source: `docs/TITAN-ENGINEERING-DOCTRINE.md`
