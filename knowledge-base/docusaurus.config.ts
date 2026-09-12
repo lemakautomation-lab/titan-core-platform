@@ -5,7 +5,7 @@ const config: Config = {
   title: 'TITAN Knowledge Base',
   tagline: 'Controlled knowledge for the TITAN Enterprise Platform',
 
-  url: 'https://knowledge.titan-technologies.co.za',
+  url: 'https://titan-core-platform.pages.dev',
   baseUrl: '/',
 
   organizationName: 'TITAN Technologies',
