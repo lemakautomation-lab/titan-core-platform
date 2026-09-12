@@ -10,7 +10,7 @@ sidebar_position: 4
 
 ## Status
 
-**COMPLETE / VERIFIED / RELEASE PENDING**
+**COMPLETE / VERIFIED / RELEASED**
 
 ## Objective
 
@@ -115,6 +115,7 @@ remain green.
 | Backend TypeScript build | GREEN |
 | Backend lint | GREEN - 0 errors, 29 existing warnings |
 | Working-tree integrity before closure | GREEN |
+| Cloudflare Knowledge Base publication | VERIFIED |
 
 ## Security and Tenant-Isolation Assessment
 
@@ -140,6 +141,8 @@ remain green.
 - Database relationship contract verified: **YES**
 - Documentation and evidence captured: **YES**
 - Knowledge Base typecheck and production build: **PENDING**
-- Cloudflare Knowledge Base publication: **PENDING RELEASE**
+- Cloudflare Knowledge Base publication: **VERIFIED**
+- Protected production route: `/docs/missions/004/`
+- Cloudflare Access protection: **VERIFIED**
 
 **Mission 004 engineering conclusion:** COMPLETE / VERIFIED.
