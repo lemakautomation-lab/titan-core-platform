@@ -61,14 +61,18 @@ model Organisation {
   name      String
   slug      String       @unique
   status    RecordStatus @default(ACTIVE)
-  tenantId  String
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  tenant    Tenant       @relation(fields: [tenantId], references: [id])
-  users     User[]
-  athletes  Athlete[]
+  tenantId             String
+  parentOrganisationId String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  tenant               Tenant         @relation(fields: [tenantId], references: [id])
+  parentOrganisation   Organisation?  @relation("OrganisationHierarchy", fields: [parentOrganisationId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  childOrganisations   Organisation[] @relation("OrganisationHierarchy")
+  users                User[]
+  athletes             Athlete[]
 
   @@unique([id, tenantId], map: "Organisation_id_tenantId_key")
+  @@index([tenantId, parentOrganisationId])
 }
 
 model User {

@@ -18,7 +18,20 @@ export class Organisation {
 
         public updatedAt: Date,
 
-    ) {}
+        public parentOrganisationId: string | null = null,
+
+    ) {
+
+        if (
+            parentOrganisationId !== null &&
+            parentOrganisationId === id
+        ) {
+            throw new Error(
+                "An Organisation cannot be its own parent.",
+            );
+        }
+
+    }
 
 
     updateDetails(
@@ -58,6 +71,40 @@ export class Organisation {
 
         this.status = RecordStatus.DELETED;
 
+        this.updatedAt = new Date();
+
+    }
+
+
+    assignParent(
+        parentOrganisationId: string,
+    ): void {
+
+        const normalizedParentId =
+            parentOrganisationId.trim();
+
+        if (!normalizedParentId) {
+            throw new Error(
+                "Parent Organisation ID is required.",
+            );
+        }
+
+        if (normalizedParentId === this.id) {
+            throw new Error(
+                "An Organisation cannot be its own parent.",
+            );
+        }
+
+        this.parentOrganisationId =
+            normalizedParentId;
+
+        this.updatedAt = new Date();
+
+    }
+
+    removeParent(): void {
+
+        this.parentOrganisationId = null;
         this.updatedAt = new Date();
 
     }

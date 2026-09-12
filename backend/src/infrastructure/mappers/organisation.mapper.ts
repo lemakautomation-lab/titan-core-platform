@@ -14,6 +14,7 @@ export class OrganisationMapper {
             prisma.status as RecordStatus,
             prisma.createdAt,
             prisma.updatedAt,
+            prisma.parentOrganisationId,
         );
 
     }
@@ -27,6 +28,9 @@ export class OrganisationMapper {
             id: organisation.id,
 
             tenantId: organisation.tenantId,
+
+            parentOrganisationId:
+                organisation.parentOrganisationId,
 
             name: organisation.name,
 
