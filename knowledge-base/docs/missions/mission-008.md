@@ -8,9 +8,33 @@ sidebar_position: 8
 
 > Authoritative scope imported from the TITAN Master Mission Control Register.
 
+## Status
+
+**COMPLETE / VERIFIED / RELEASE PENDING**
+
 ## Objective
 
-Build the tenant foundation.
+Build and verify the tenant foundation for the TITAN Core Platform.
+
+The Tenant domain provides the root ownership boundary for tenant-controlled
+platform data. Tenant identity, lifecycle state, creation, retrieval,
+relationships and request context must remain explicit throughout the domain,
+application, persistence and API layers.
+
+This mission reconciles the existing Tenant entity, repository abstraction,
+Prisma implementation, application use cases, database relationships and
+security context. It confirms that tenant ownership is not inferred from
+client-controlled resource identifiers and that tenant-owned relationships
+remain protected across persistence operations.
+
+The existing User-to-Organisation composite relationship provides an additional
+database-level guarantee that records cannot be associated across tenant
+boundaries. Tenant, RBAC and authorization regressions verify the surrounding
+application controls.
+
+**Outcome:** TITAN has a tested tenant foundation supporting explicit ownership,
+controlled lifecycle behavior, tenant-aware persistence and secure request
+context propagation.
 
 ## Delivery Classification
 
@@ -21,24 +45,82 @@ Build the tenant foundation.
 
 ### Control 8.1 - Tenant entity
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** VERIFIED
+
+The Tenant entity provides generated identity, normalized slug creation,
+lifecycle status transitions, timestamps and active-state behavior. Direct unit
+coverage verifies its core behavior.
 
 ### Control 8.2 - Tenant creation
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** VERIFIED
+
+Tenant creation is implemented through the application boundary and domain
+factory, with persistence delegated through the Tenant repository contract.
 
 ### Control 8.3 - Tenant retrieval
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** VERIFIED
+
+Tenant retrieval is implemented through application queries and repository
+abstractions without coupling the domain layer to Prisma.
 
 ### Control 8.4 - Tenant relationships
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** VERIFIED / HARDENED
+
+Prisma models explicitly represent tenant ownership. Composite database
+constraints prevent known cross-tenant relationship violations, including the
+User-to-Organisation boundary.
 
 ### Control 8.5 - Tenant context
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** VERIFIED
+
+Authenticated and authorized operations carry tenant identity through security
+context, middleware, application commands and repository operations. Tenant
+isolation regressions passed.
+
+## Security and Tenant-Isolation Assessment
+
+- Tenant identity is explicit across domain, application and persistence layers.
+- Tenant-owned database models contain tenant relationship signals.
+- Cross-tenant User-to-Organisation relationships are rejected by PostgreSQL.
+- Tenant and RBAC authorization regressions remain green.
+- Tenant identity is derived from trusted request security context where
+  authorization is required.
+- Domain repository contracts remain separated from Prisma infrastructure.
+- No frontend behavior was changed.
+
+## Verification Evidence
+
+| Gate | Result |
+|---|---|
+| Required Tenant foundation files | GREEN |
+| Tenant context implementation signals | GREEN |
+| Prisma Tenant relationships | GREEN |
+| Targeted Tenant regression | GREEN - 4 files, 30/30 tests |
+| Direct Tenant entity coverage | GREEN |
+| User Organisation tenant integrity | GREEN |
+| Prisma schema validation | GREEN |
+| Backend TypeScript build | GREEN |
+| Full backend regression baseline | GREEN - 92 files, 765/765 tests |
+| Working-tree integrity | GREEN |
+
+The full backend regression baseline applies to the same released engineering
+state. Mission 008 introduces documentation changes only.
 
 ## Mission Exit Gate
 
-all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
+- All five controls implemented or explicitly verified: **YES**
+- Targeted Tenant regression green: **YES - 30/30 tests**
+- Full backend regression baseline green: **YES - 92 files, 765/765 tests**
+- Prisma schema validation green: **YES**
+- Backend build green: **YES**
+- Tenant relationships verified: **YES**
+- Security, tenant and RBAC implications verified: **YES**
+- Documentation and evidence captured: **YES**
+- Knowledge Base typecheck and production build: **PENDING**
+- Cloudflare Knowledge Base publication: **PENDING RELEASE**
+
+**Mission 008 engineering conclusion:** COMPLETE / VERIFIED.
