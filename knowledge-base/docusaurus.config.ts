@@ -4,7 +4,6 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'TITAN Knowledge Base',
   tagline: 'Controlled knowledge for the TITAN Enterprise Platform',
-  favicon: 'img/favicon.ico',
 
   url: 'https://knowledge.titan-technologies.co.za',
   baseUrl: '/',
