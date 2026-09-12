@@ -1,8 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { errorHandler } from "../../../src/middleware/error-handler.middleware";
 
 describe("Error Handler Security", () => {
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
 
     it("returns a sanitized 500 response for unexpected exceptions", () => {
 
@@ -29,6 +33,10 @@ describe("Error Handler Security", () => {
         error.stack =
             `Error: ${secretMessage}\n` +
             "at secretInternalFunction (internal.js:42:7)";
+
+        const errorLogSpy =
+            vi.spyOn(console, "error")
+                .mockImplementation(() => undefined);
 
         errorHandler(
             error,
@@ -71,6 +79,25 @@ describe("Error Handler Security", () => {
 
         expect(next)
             .not.toHaveBeenCalled();
+
+        const serializedLogs =
+            JSON.stringify(errorLogSpy.mock.calls);
+
+        expect(serializedLogs)
+            .not.toContain(secretMessage);
+
+        expect(serializedLogs)
+            .not.toContain("secretInternalFunction");
+
+        expect(serializedLogs)
+            .not.toContain("DATABASE_PASSWORD");
+
+        expect(errorLogSpy)
+            .toHaveBeenCalledWith(
+                expect.stringContaining(
+                    '"errorCategory":"UNEXPECTED"',
+                ),
+            );
 
     });
 

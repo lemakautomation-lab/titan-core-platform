@@ -11,15 +11,19 @@ export function errorHandler(
     _next: NextFunction,
 ) {
 
+    const errorCategory =
+        error instanceof ValidationException
+            ? "VALIDATION"
+            : error instanceof HttpException
+                ? "HTTP"
+                : "UNEXPECTED";
+
     logger.error(
-        "Unhandled application error",
+        "Application request failed",
         {
             path: req.originalUrl,
             method: req.method,
-            error:
-                error instanceof Error
-                    ? error.message
-                    : String(error),
+            errorCategory,
         },
     );
 
@@ -62,16 +66,6 @@ export function errorHandler(
 
     }
 
-    if (error instanceof Error) {
-
-        logger.error(
-            "Unhandled exception stack",
-            {
-                stack: error.stack,
-            },
-        );
-
-    }
 
     return res.status(500).json({
 
