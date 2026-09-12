@@ -16,7 +16,7 @@ export class PermissionMapper {
 
             prisma.tenantId,
 
-            prisma.name,
+            prisma.code,
 
             prisma.name,
 
@@ -42,6 +42,8 @@ export class PermissionMapper {
             id: permission.id,
 
             tenantId: permission.tenantId,
+
+            code: permission.getCode(),
 
             name: permission.name,
 

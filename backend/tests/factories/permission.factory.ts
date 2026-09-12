@@ -26,6 +26,7 @@ export async function createPermission(
     return testPrisma.permission.create({
         data: {
             tenantId,
+            code: name,
             name,
             description,
         },
