@@ -10,7 +10,7 @@ sidebar_position: 10
 
 ## Status
 
-**COMPLETE / VERIFIED / RELEASE PENDING**
+**COMPLETE / VERIFIED / RELEASED**
 
 ## Objective
 
@@ -109,6 +109,7 @@ the database boundary.
 | Full backend regression baseline | GREEN - 93 files, 768/768 tests |
 | Documentation encoding integrity | GREEN - repaired |
 | Working-tree integrity | GREEN |
+| Cloudflare Knowledge Base publication | VERIFIED |
 
 The full backend regression baseline applies to the same released engineering
 state. Mission 010 introduces documentation changes only.
@@ -131,6 +132,7 @@ mission evidence and the unrelated content was removed.
 - Database relationship contracts verified: **YES**
 - Documentation defects remediated: **YES**
 - Knowledge Base typecheck and production build: **PENDING**
-- Cloudflare Knowledge Base publication: **PENDING RELEASE**
+- Cloudflare Knowledge Base publication: **VERIFIED**
+- Protected production route: /docs/missions/010/`n- Cloudflare Access protection: **VERIFIED**
 
 **Mission 010 engineering conclusion:** COMPLETE / VERIFIED.
