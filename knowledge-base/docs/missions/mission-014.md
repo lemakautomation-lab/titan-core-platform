@@ -18,7 +18,7 @@ Implement secure, tenant-isolated role-permission assignment, permission inherit
 - **Frontend classification:** BACKEND-ONLY
 - **Local frontend:** No visible change required
 - **Current control:** 014.2
-- **Current control state:** TECHNICALLY COMPLETE / VERIFIED
+- **Current control state:** RELEASED
 - **Mission release state:** NOT RELEASED
 
 ## Controls
@@ -26,7 +26,7 @@ Implement secure, tenant-isolated role-permission assignment, permission inherit
 | Control | Description | Status |
 |---|---|---|
 | 14.1 | RolePermission model | RELEASED |
-| 14.2 | Permission inheritance through roles | TECHNICALLY COMPLETE / VERIFIED |
+| 14.2 | Permission inheritance through roles | RELEASED |
 | 14.3 | Permission evaluation | NOT STARTED |
 
 ## Control 014.1 - RolePermission Model
@@ -351,16 +351,16 @@ It does not claim formal certification.
 | Broader RBAC regression | PASSED |
 | Full backend regression | PASSED |
 | Backend build | PASSED |
-| Governance documentation | UPDATED LOCALLY |
-| GitHub commit | PENDING |
-| GitHub push | PENDING |
-| Docusaurus build | PENDING |
-| Cloudflare publication | PENDING |
-| Public-page verification | PENDING |
+| Governance documentation | COMPLETE |
+| GitHub commit | VERIFIED - `35045a2741ddef8a4475725b73228dbd4ff26ecd` |
+| GitHub push | VERIFIED - `main` equals `origin/main` |
+| Docusaurus build | PASSED |
+| Cloudflare publication | VERIFIED |
+| Public-page verification | VERIFIED |
 
-**Current classification: TECHNICALLY COMPLETE / VERIFIED.**
+**Current classification: RELEASED (Control 014.2).**
 
-Control 014.2 is not yet committed, pushed, published, or released.
+Control 014.2 is committed, pushed, published, and publicly verified.
 ## Control 014.3 - Permission Evaluation
 
 **Status:** NOT STARTED
