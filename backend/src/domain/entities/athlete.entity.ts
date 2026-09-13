@@ -45,7 +45,7 @@ export class Athlete {
             organisationId,
             userId,
             Athlete.normalizeFirstName(firstName),
-            lastName,
+            Athlete.normalizeLastName(lastName),
             dateOfBirth,
             RecordStatus.ACTIVE,
             now,
@@ -65,10 +65,13 @@ export class Athlete {
         const normalizedFirstName =
             Athlete.normalizeFirstName(firstName);
 
+        const normalizedLastName =
+            Athlete.normalizeLastName(lastName);
+
         this.organisationId = organisationId;
         this.userId = userId;
         this.firstName = normalizedFirstName;
-        this.lastName = lastName;
+        this.lastName = normalizedLastName;
         this.dateOfBirth = dateOfBirth;
         this.updatedAt = new Date();
 
@@ -114,6 +117,34 @@ export class Athlete {
 
     }
 
+    private static normalizeLastName(
+        lastName: string,
+    ): string {
+
+        if (
+            typeof lastName !== "string" ||
+            !lastName.trim()
+        ) {
+
+            throw new Error(
+                "Athlete surname is required.",
+            );
+
+        }
+
+        const normalized = lastName.trim();
+
+        if (normalized.length > 100) {
+
+            throw new Error(
+                "Athlete surname must not exceed 100 characters.",
+            );
+
+        }
+
+        return normalized;
+
+    }
     private static normalizeFirstName(
         firstName: string,
     ): string {

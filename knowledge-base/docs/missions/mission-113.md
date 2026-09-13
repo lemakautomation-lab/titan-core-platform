@@ -56,6 +56,31 @@ The visible onboarding workflow remains pending later Mission 113 controls.
 ### Control 113.2 - Surname
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+**Objective:** Establish the validated athlete surname contract used by onboarding and profile workflows.
+
+The existing required surname persistence, mapping and tenant-scoped repository foundation was verified. No migration is required.
+
+Implemented guarantees:
+
+- surname is required;
+- surrounding whitespace is removed;
+- the normalized surname is limited to 100 characters;
+- creation and update use the same validation;
+- invalid updates do not partially mutate athlete state.
+
+Verification evidence:
+
+- Backend build: **GREEN**
+- Name and surname targeted regression: **10 tests GREEN**
+- Broader Athlete regression: **GREEN**
+- Full backend regression: **GREEN**
+- Objective evidence timestamp: **2026-09-13T21:55:31+02:00**
+
+The visible onboarding workflow remains pending later Mission 113 controls.
+
+**Current classification:** TECHNICALLY COMPLETE / VERIFIED
 
 ### Control 113.3 - Country
 

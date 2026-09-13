@@ -77,3 +77,60 @@ The Athlete domain now:
 Control 113.1 completes the validated athlete-name foundation.
 
 The visible onboarding workflow remains pending later Mission 113 controls. This control alone does not claim that athlete onboarding is released or available in the product frontend.
+## Control 113.2 — Surname
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+### Control Objective
+
+Establish the athlete surname contract used by onboarding and profile workflows.
+
+The control requires a supplied, normalized and bounded surname whenever an athlete is created or the athlete profile is updated.
+
+### Existing Foundation Verified
+
+The existing platform already provides:
+
+- a required `Athlete.lastName` persistence field;
+- Athlete domain and persistence mapping;
+- tenant-scoped Athlete repository operations.
+
+No database migration is required for Control 113.2.
+
+### Implementation
+
+The Athlete domain now:
+
+- rejects empty and whitespace-only surnames;
+- trims surrounding whitespace;
+- limits surnames to 100 characters;
+- applies identical validation during creation and update;
+- validates the complete name pair before mutating profile state;
+- preserves existing state when surname validation fails.
+
+### Verification
+
+- Backend lint: **GREEN** with pre-existing non-blocking warnings only
+- Backend TypeScript build: **GREEN**
+- Name and surname targeted regression: **10 tests GREEN**
+- Broader Athlete regression: **GREEN**
+- Full backend regression: **GREEN**
+- Whitespace audit: **GREEN**
+- Objective evidence timestamp: **2026-09-13T21:55:31+02:00**
+
+### Security and Data Integrity
+
+- Existing tenant-scoped repository behavior remains unchanged.
+- No tenant or athlete identity is inferred.
+- No database or API contract is weakened.
+- Invalid profile updates cannot partially mutate the athlete.
+- Country and later onboarding fields remain outside Control 113.2.
+
+### Files
+
+- `backend/src/domain/entities/athlete.entity.ts`
+- `backend/tests/unit/athlete-surname.spec.ts`
+
+### Delivery Boundary
+
+Control 113.2 completes the validated athlete-surname foundation. The visible onboarding workflow remains pending later Mission 113 controls.
