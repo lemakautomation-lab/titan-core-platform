@@ -1,4 +1,4 @@
-﻿import { randomUUID } from "crypto";
+import { randomUUID } from "crypto";
 
 import { RecordStatus } from "../enums/record-status.enum";
 
@@ -44,7 +44,7 @@ export class Athlete {
             tenantId,
             organisationId,
             userId,
-            firstName,
+            Athlete.normalizeFirstName(firstName),
             lastName,
             dateOfBirth,
             RecordStatus.ACTIVE,
@@ -62,9 +62,12 @@ export class Athlete {
         dateOfBirth: Date | null,
     ): void {
 
+        const normalizedFirstName =
+            Athlete.normalizeFirstName(firstName);
+
         this.organisationId = organisationId;
         this.userId = userId;
-        this.firstName = firstName;
+        this.firstName = normalizedFirstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.updatedAt = new Date();
@@ -108,6 +111,35 @@ export class Athlete {
     getFullName(): string {
 
         return `${this.firstName} ${this.lastName}`.trim();
+
+    }
+
+    private static normalizeFirstName(
+        firstName: string,
+    ): string {
+
+        if (
+            typeof firstName !== "string" ||
+            !firstName.trim()
+        ) {
+
+            throw new Error(
+                "Athlete first name is required.",
+            );
+
+        }
+
+        const normalized = firstName.trim();
+
+        if (normalized.length > 100) {
+
+            throw new Error(
+                "Athlete first name must not exceed 100 characters.",
+            );
+
+        }
+
+        return normalized;
 
     }
 

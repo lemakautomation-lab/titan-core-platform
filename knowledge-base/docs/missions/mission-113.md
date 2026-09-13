@@ -22,6 +22,31 @@ Local frontend expectation: visible change is expected only where the listed mis
 ### Control 113.1 - Name
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+**Objective:** Establish the validated athlete given-name contract used by onboarding and profile workflows.
+
+The existing Athlete persistence, mapping and tenant-scoped repository foundation was verified. No database migration is required.
+
+Implemented domain guarantees:
+
+- first name is required;
+- surrounding whitespace is removed;
+- the normalized value is limited to 100 characters;
+- create and update operations apply the same rule;
+- invalid updates do not partially mutate athlete state.
+
+Verification evidence:
+
+- Backend build: **GREEN**
+- Targeted athlete-name regression: **GREEN**
+- Broader Athlete regression: **GREEN**
+- Full backend regression: **98 test files / 783 tests GREEN**
+- Objective evidence timestamp: **2026-09-13T21:47:31+02:00**
+
+The visible onboarding workflow remains pending later Mission 113 controls.
+
+**Current classification:** TECHNICALLY COMPLETE / VERIFIED
 
 ### Control 113.2 - Surname
 
