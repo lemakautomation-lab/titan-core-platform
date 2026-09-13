@@ -17,8 +17,8 @@ Implement secure, tenant-isolated role-permission assignment, permission inherit
 - **Mission status:** ACTIVE
 - **Frontend classification:** BACKEND-ONLY
 - **Local frontend:** No visible change required
-- **Current control:** 014.2
-- **Current control state:** RELEASED
+- **Current control:** 014.3
+- **Current control state:** TECHNICALLY COMPLETE / VERIFIED
 - **Mission release state:** NOT RELEASED
 
 ## Controls
@@ -27,7 +27,7 @@ Implement secure, tenant-isolated role-permission assignment, permission inherit
 |---|---|---|
 | 14.1 | RolePermission model | RELEASED |
 | 14.2 | Permission inheritance through roles | RELEASED |
-| 14.3 | Permission evaluation | NOT STARTED |
+| 14.3 | Permission evaluation | TECHNICALLY COMPLETE / VERIFIED |
 
 ## Control 014.1 - RolePermission Model
 
@@ -363,12 +363,147 @@ It does not claim formal certification.
 Control 014.2 is committed, pushed, published, and publicly verified.
 ## Control 014.3 - Permission Evaluation
 
-**Status:** NOT STARTED
+### Objective
 
-The actual authorization service, permission-resolution service, commands, queries, middleware, tenant boundaries, role inheritance behaviour, and existing authorization tests must be inspected before identifying the implementation gap.
+Provide a deterministic, tenant-aware, safely failing permission-evaluation boundary for protected HTTP routes.
 
-No implementation claim is made.
+### Identified Gap
 
+The authorization service and `requirePermission` middleware already evaluated permissions, rejected unauthenticated and unauthorized requests, recorded denied security events, and forwarded failures to centralized error handling.
+
+However, this critical enforcement boundary had no direct automated tests. Its authentication, denial, audit, request-context, and resolver-failure behaviour was therefore not independently verified.
+
+The middleware parameter was also generically named `permission`, while Mission 012 and Control 014.2 established permission code as the authoritative authorization identity.
+
+### Design Decision
+
+Control 014.3:
+
+- Makes the middleware contract explicitly code-based through `permissionCode`.
+- Preserves authenticated principal and tenant identity as authoritative inputs.
+- Denies requests without an authenticated principal.
+- Evaluates the required permission code through `AuthorizationService`.
+- Records denied permission security events with request metadata.
+- Returns a forbidden error when evaluation denies access.
+- Records granted permission codes in request security context.
+- Forwards resolver failures to centralized error handling without granting access.
+- Adds direct unit regression coverage for every evaluation branch.
+
+### Implementation
+
+Changed:
+
+- Renamed the middleware evaluation identifier from `permission` to `permissionCode`.
+- Added direct unit tests for the `requirePermission` middleware.
+- Preserved all route permission-code contracts.
+- Preserved centralized exception handling and security-event recording.
+
+### Files Changed
+
+- `backend/src/middleware/authorization.middleware.ts`
+- `backend/tests/unit/middleware/authorization.middleware.spec.ts`
+
+### Migration and API Impact
+
+- Database migration: **NONE**
+- Route change: **NONE**
+- Request/response contract change: **NONE**
+- Existing permission codes: **PRESERVED**
+- Frontend impact: **NONE**
+
+### Targeted Test Evidence
+
+Test:
+
+`tests/unit/middleware/authorization.middleware.spec.ts`
+
+Verified:
+
+- Missing authenticated principal produces `UnauthorizedException`.
+- Permission resolution is not called without a principal.
+- Denied permission produces `ForbiddenException`.
+- Denied permission records a security event.
+- Audit evidence includes tenant, user, permission code, method, path, IP address, user agent, and Request-ID.
+- Allowed permission invokes downstream middleware.
+- Allowed permission code is recorded in request security context.
+- Resolver failure is forwarded and never converted into an allow result.
+
+Result:
+
+- **1 test file passed**
+- **4 tests passed**
+
+### Broader Authorization Regression
+
+Suites:
+
+- Authorization middleware unit tests
+- Permission-resolution unit tests
+- RBAC tenant-isolation integration tests
+- Role-delegation integration tests
+
+Result:
+
+- **4 test files passed**
+- **23 tests passed**
+
+### Full Backend Regression
+
+Result:
+
+- **97 of 97 test files passed**
+- **778 of 778 tests passed**
+- **Duration: 316.90 seconds**
+
+### Build and Quality Evidence
+
+- Backend TypeScript build: **PASSED**
+- Targeted permission-evaluation tests: **PASSED**
+- Broader authorization regression: **PASSED**
+- Full backend regression: **PASSED**
+- Whitespace audit: **PASSED**
+- Unrelated changes: **NONE**
+
+### Security and Safe-Failure Evidence
+
+The evaluation boundary is explicitly verified to:
+
+- Deny unauthenticated access.
+- Deny missing permissions.
+- Preserve tenant-scoped evaluation.
+- Use stable permission codes.
+- Record denial security evidence.
+- Preserve Request-ID correlation.
+- Avoid permission duplication in context.
+- Forward evaluation failures without granting access.
+
+Existing authentication, session, refresh-token, tenant-isolation, RBAC, and anti-escalation controls were not weakened.
+
+### ISO-Aligned Engineering Evidence
+
+This control provides engineering evidence aligned with ISO/IEC 27001:2022 access-control, logging, traceability, and secure-failure principles, together with ISO 9001:2015 verification and documented-information principles.
+
+It does not claim formal certification.
+
+### Control 014.3 Release State
+
+| Release gate | State |
+|---|---|
+| Implementation | COMPLETE |
+| Targeted verification | PASSED |
+| Broader authorization regression | PASSED |
+| Full backend regression | PASSED |
+| Backend build | PASSED |
+| Governance documentation | UPDATED LOCALLY |
+| GitHub commit | PENDING |
+| GitHub push | PENDING |
+| Docusaurus build | PENDING |
+| Cloudflare publication | PENDING |
+| Public-page verification | PENDING |
+
+**Current classification: TECHNICALLY COMPLETE / VERIFIED.**
+
+Control 014.3 and Mission 014 are not yet committed, pushed, published, or released.
 ## Mission 013 Publication Closure
 
 Mission 013 repository work was completed, verified, committed, and pushed at commit:

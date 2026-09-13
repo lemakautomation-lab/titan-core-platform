@@ -25,7 +25,7 @@ type AuthorizationRequest =
     AuthRequest & RequestWithId;
 
 export function requirePermission(
-    permission: string,
+    permissionCode: string,
 ) {
 
     return async (
@@ -61,7 +61,7 @@ export function requirePermission(
 
                         authUser.tenantId,
 
-                        permission,
+                        permissionCode,
 
                     );
 
@@ -73,7 +73,7 @@ export function requirePermission(
 
                     authUser.userId,
 
-                    permission,
+                    permissionCode,
 
                     {
                         method: req.method,
@@ -102,12 +102,12 @@ export function requirePermission(
 
                 if (
                     !context.security.permissions.includes(
-                        permission,
+                        permissionCode,
                     )
                 ) {
 
                     context.security.permissions.push(
-                        permission,
+                        permissionCode,
                     );
                 }
             }
