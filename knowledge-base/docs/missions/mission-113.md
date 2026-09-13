@@ -90,7 +90,7 @@ The visible onboarding workflow remains pending later Mission 113 controls.
 ### Control 113.3 - Country
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED
 
 **Objective:** Establish normalized athlete country data for onboarding and profile workflows.
 
@@ -113,7 +113,12 @@ Verification evidence:
 
 The visible onboarding workflow remains pending later Mission 113 controls.
 
-**Current classification:** TECHNICALLY COMPLETE / VERIFIED
+- Implementation commit: `f854ba0ca39def2ee803f32c91e8fbe4547ef798`
+- Push synchronization: `main` equals `origin/main`
+- Knowledge Base publication: **VERIFIED**
+- Published-page verification timestamp: **2026-09-13T22:24:46+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED
 
 ### Control 113.4 - Email address
 

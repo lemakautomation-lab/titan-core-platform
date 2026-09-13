@@ -144,7 +144,7 @@ The Athlete domain now:
 Control 113.2 completes the validated athlete-surname foundation. The visible onboarding workflow remains pending later Mission 113 controls.
 ## Control 113.3 — Country
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED
 
 ### Control Objective
 
@@ -191,6 +191,14 @@ Existing athletes are not assigned an inferred country. The onboarding submissio
 - `backend/tests/integration/athlete/athlete-country.repository.spec.ts`
 - `backend/tests/unit/athlete-country.spec.ts`
 
+### Publication Evidence
+
+- Implementation commit: `f854ba0ca39def2ee803f32c91e8fbe4547ef798`
+- Push synchronization: `main` equals `origin/main`
+- Knowledge Base publication: **VERIFIED**
+- Published-page verification timestamp: **2026-09-13T22:24:46+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED
 ### Delivery Boundary
 
 Control 113.3 completes the country persistence and validation foundation. The visible onboarding workflow remains pending later Mission 113 controls.
