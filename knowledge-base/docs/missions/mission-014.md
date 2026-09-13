@@ -14,12 +14,12 @@ Implement secure, tenant-isolated role-permission assignment, permission inherit
 
 ## Delivery Classification
 
-- **Mission status:** ACTIVE
+- **Mission status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 - **Frontend classification:** BACKEND-ONLY
 - **Local frontend:** No visible change required
 - **Current control:** 014.3
-- **Current control state:** TECHNICALLY COMPLETE / VERIFIED
-- **Mission release state:** NOT RELEASED
+- **Current control state:** RELEASED
+- **Mission release state:** RELEASED
 
 ## Controls
 
@@ -27,7 +27,7 @@ Implement secure, tenant-isolated role-permission assignment, permission inherit
 |---|---|---|
 | 14.1 | RolePermission model | RELEASED |
 | 14.2 | Permission inheritance through roles | RELEASED |
-| 14.3 | Permission evaluation | TECHNICALLY COMPLETE / VERIFIED |
+| 14.3 | Permission evaluation | RELEASED |
 
 ## Control 014.1 - RolePermission Model
 
@@ -494,16 +494,16 @@ It does not claim formal certification.
 | Broader authorization regression | PASSED |
 | Full backend regression | PASSED |
 | Backend build | PASSED |
-| Governance documentation | UPDATED LOCALLY |
-| GitHub commit | PENDING |
-| GitHub push | PENDING |
-| Docusaurus build | PENDING |
-| Cloudflare publication | PENDING |
-| Public-page verification | PENDING |
+| Governance documentation | COMPLETE |
+| GitHub commit | VERIFIED - `d311595efac182bcf6008ba5e61d92a5c68d61c1` |
+| GitHub push | VERIFIED - `main` equals `origin/main` |
+| Docusaurus build | PASSED |
+| Cloudflare publication | VERIFIED |
+| Public-page verification | VERIFIED |
 
-**Current classification: TECHNICALLY COMPLETE / VERIFIED.**
+**Current classification: RELEASED (Control 014.3).**
 
-Control 014.3 and Mission 014 are not yet committed, pushed, published, or released.
+Control 014.3 is committed, pushed, published, and publicly verified.
 ## Mission 013 Publication Closure
 
 Mission 013 repository work was completed, verified, committed, and pushed at commit:
@@ -528,4 +528,35 @@ Mission 014 may be classified as RELEASED only when:
 - Cloudflare deployment succeeds.
 - The public Mission 014 page is verified.
 
-Until all gates are complete, Mission 014 remains **ACTIVE / NOT RELEASED**.
+## Final Mission 014 Release Evidence
+
+### Control Commits
+
+- Control 014.1 implementation and governance: `e40f578612b06e166d3a9adb09aa1628d9590213`
+- Mission 013 and Control 014.1 publication reconciliation: `2614ff632bc5cb16b60aeb96588fa6fca1e9e154`
+- Control 014.2 implementation and governance: `35045a2741ddef8a4475725b73228dbd4ff26ecd`
+- Control 014.2 release reconciliation: `dbdf81fea7aad0ea0c31093623b85cb0526be00a`
+- Control 014.3 implementation and governance: `d311595efac182bcf6008ba5e61d92a5c68d61c1`
+
+### Final Verification Baseline
+
+- RolePermission database tenant integrity: **VERIFIED**
+- Permission inheritance through tenant roles: **VERIFIED**
+- Stable permission-code resolution: **VERIFIED**
+- Permission evaluation boundary: **VERIFIED**
+- Denial security-event recording: **VERIFIED**
+- Safe failure: **VERIFIED**
+- Final backend build: **PASSED**
+- Final full regression: **97/97 test files and 778/778 tests passed**
+- Knowledge Base typecheck: **PASSED**
+- Docusaurus production build: **PASSED**
+- Cloudflare Pages publication: **VERIFIED**
+- Cloudflare Access protection: **VERIFIED**
+- Authenticated Mission 014 production page: **VERIFIED**
+- Protected route: `/docs/missions/014/`
+
+### Final Classification
+
+All three Mission 014 controls are implemented or verified, committed, pushed, documented, published, and publicly verified.
+
+**Mission 014 - ROLE PERMISSION ASSIGNMENT is COMPLETE / VERIFIED / PUBLISHED / RELEASED.**
