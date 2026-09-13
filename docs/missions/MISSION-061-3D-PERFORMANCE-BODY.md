@@ -2,11 +2,14 @@
 
 ## Status
 
-ACTIVE
+COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ## Objective
 
 Build the TITAN 3D performance-body capability through independently verified frontend controls.
+
+**Mission objective documentation timestamp:** 2026-09-13T16:09:28+02:00
+
 
 ## Classification
 
@@ -26,7 +29,7 @@ Visible integration is permitted only where an authorized control explicitly req
 
 ## Control 061.1 — Male Model
 
-**Status:** COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ### Implementation
 
@@ -71,7 +74,7 @@ The model provides:
 Female modelling, user-facing rendering, measurements, muscle mapping, progress visualisation, interactive controls, athlete integration and backend persistence remain outside Control 061.1.
 ## Control 061.2 — Female Model
 
-**Status:** COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ### Implementation
 
@@ -116,7 +119,7 @@ The procedural proportions are visual implementation values. They are not repres
 User-facing rendering, measurements, muscle mapping, progress visualisation, interactive controls, athlete integration and backend persistence remain outside Control 061.2.
 ## Control 061.3-R1 — Deterministic Body Visualisation Component
 
-**Status:** COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ### Implementation
 
@@ -362,7 +365,7 @@ No progress snapshot, chronological comparison, delta calculation, accessible pr
 - Release timestamp: **2026-09-13T15:56:10+02:00**
 ## Control 061.7 - Interactive Model Controls
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ### Control Objective
 
@@ -415,4 +418,45 @@ The verified performance-body viewer rendered a static frame and provided no dir
 
 ### Release State
 
-Commit, push, Docusaurus publication and authenticated production-page verification are pending.
+- Implementation commit: `2b88dd8a879f5f931de742696b189e182273d08d`
+- Push: `main` equals `origin/main`
+- Docusaurus publication: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Protected route: `/docs/missions/061/`
+- Release timestamp: **2026-09-13T16:09:28+02:00**
+## Mission 061 Final Release
+
+**Mission objective:** Deliver deterministic male and female 3D performance-body models with body visualisation, validated measurements, muscle-development visualisation, progress comparison and accessible interactive controls.
+
+**Objective confirmation timestamp:** 2026-09-13T16:09:28+02:00
+
+### Control Objectives and Release Evidence
+
+| Control | Objective | Implementation commit | Final state |
+|---|---|---|---|
+| 061.1 | Provide a deterministic procedural male performance-body model. | `5b91415` | RELEASED |
+| 061.2 | Provide a deterministic procedural female performance-body model. | `6c5e8ee` | RELEASED |
+| 061.3 | Provide a safe deterministic visualisation component for both verified models. | `29d5e19` | RELEASED |
+| 061.4 | Provide validated, ordered and accessible explicit body measurements. | `64b96759e6dfa33785e51e75feafb3984d4a538e` | RELEASED |
+| 061.5 | Provide explicit bounded muscle-development visualisation. | `562e98d8e0bd2647691096ce03689e005923c2f9` | RELEASED |
+| 061.6 | Provide deterministic and accessible body-progress comparison. | `8a5da0e9be110260822f1d5facffe723b5f46255` | RELEASED |
+| 061.7 | Provide bounded rotation, zoom and reset controls. | `2b88dd8a879f5f931de742696b189e182273d08d` | RELEASED |
+
+### Mission Exit Evidence
+
+- All seven controls: **COMPLETE / VERIFIED / PUBLISHED / RELEASED**
+- Latest frontend regression: **20/20 files; 121/121 tests passed**
+- Latest performance-body regression: **6/6 files; 30/30 tests passed**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN with zero warnings**
+- Knowledge Base typecheck: **GREEN**
+- Docusaurus production build: **GREEN**
+- Cloudflare Pages publication: **VERIFIED**
+- Cloudflare Access protection: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Protected production route: `/docs/missions/061/`
+- Final release evidence timestamp: **2026-09-13T16:09:28+02:00**
+
+The explicit `MALE` or `FEMALE` athlete-profile selection and persistence boundary remains correctly deferred to the authoritative athlete onboarding/profile mission. No model type is inferred or defaulted.
+
+**Mission 061 classification: COMPLETE / VERIFIED / PUBLISHED / RELEASED.**

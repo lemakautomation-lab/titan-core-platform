@@ -6,6 +6,8 @@ sidebar_position: 61
 
 # Mission 061 - 3D PERFORMANCE BODY
 
+> **Status: COMPLETE / VERIFIED / PUBLISHED / RELEASED**
+
 > Authoritative scope imported from the TITAN Master Mission Control Register.
 
 ## Objective
@@ -18,6 +20,9 @@ Build the 3D performance body capability.
 - **Last evidence update:** 2026-09-13T15:56:10+02:00
 - **Timezone:** Africa/Johannesburg
 
+**Mission objective documentation timestamp:** 2026-09-13T16:09:28+02:00
+
+
 ## Delivery Classification
 
 - **Frontend classification:** FRONTEND-VISIBLE
@@ -27,16 +32,58 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 61.1 - Male model
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
+#### Control Objective
+
+Provide a deterministic, independently instantiated procedural male performance-body model without external model assets.
+
+**Objective confirmation timestamp:** 2026-09-13T16:09:28+02:00
+
+#### Release Evidence
+
+- Implementation commit: `5b91415`
+- Docusaurus production build: GREEN
+- Cloudflare Pages publication: VERIFIED
+- Authenticated production page: VERIFIED
+- Protected production route: `/docs/missions/061/`
+- Final release confirmation timestamp: **2026-09-13T16:09:28+02:00**
 ### Control 61.2 - Female model
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
+#### Control Objective
+
+Provide a deterministic, independently instantiated procedural female performance-body model with an explicit non-medical boundary.
+
+**Objective confirmation timestamp:** 2026-09-13T16:09:28+02:00
+
+#### Release Evidence
+
+- Implementation commit: `6c5e8ee`
+- Docusaurus production build: GREEN
+- Cloudflare Pages publication: VERIFIED
+- Authenticated production page: VERIFIED
+- Protected production route: `/docs/missions/061/`
+- Final release confirmation timestamp: **2026-09-13T16:09:28+02:00**
 ### Control 61.3 - Body visualisation
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
+#### Control Objective
+
+Provide safe deterministic rendering for the verified male and female models, including resource cleanup and an accessible WebGL failure state.
+
+**Objective confirmation timestamp:** 2026-09-13T16:09:28+02:00
+
+#### Release Evidence
+
+- Implementation commit: `29d5e19`
+- Docusaurus production build: GREEN
+- Cloudflare Pages publication: VERIFIED
+- Authenticated production page: VERIFIED
+- Protected production route: `/docs/missions/061/`
+- Final release confirmation timestamp: **2026-09-13T16:09:28+02:00**
 ### Control 61.4 - Measurements
 
 **Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
@@ -158,7 +205,7 @@ Provide deterministic, timestamped comparison of supplied measurement and muscle
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 61.7 - Interactive model controls
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 #### Control Objective
 
@@ -186,9 +233,46 @@ Provide accessible, deterministic and bounded rotate, zoom and reset controls fo
 - Whitespace audit: GREEN.
 - Evidence timestamp: **2026-09-13T16:04:44+02:00**
 
-#### Release State
+#### Release Evidence
 
-Commit, push, Docusaurus publication and authenticated production-page verification are pending.
+- Implementation commit: `2b88dd8a879f5f931de742696b189e182273d08d`
+- Push: VERIFIED
+- Docusaurus publication: VERIFIED
+- Authenticated production page: VERIFIED
+- Protected production route: `/docs/missions/061/`
+- Release timestamp: **2026-09-13T16:09:28+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ## Mission Exit Gate
 
-all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
+| Gate | Result |
+|---|---|
+| 61.1 Male model | RELEASED |
+| 61.2 Female model | RELEASED |
+| 61.3 Body visualisation | RELEASED |
+| 61.4 Measurements | RELEASED |
+| 61.5 Muscle development | RELEASED |
+| 61.6 Progress visualisation | RELEASED |
+| 61.7 Interactive model controls | RELEASED |
+| Latest targeted viewer regression | GREEN - 6/6 tests |
+| Broader performance-body regression | GREEN - 6/6 files, 30/30 tests |
+| Full frontend regression | GREEN - 20/20 files, 121/121 tests |
+| Frontend production build | GREEN |
+| Frontend lint | GREEN - zero warnings |
+| Security, tenant and RBAC implications | VERIFIED - no boundary changes |
+| Migration/API contract | NONE REQUIRED |
+| Documentation and timestamped evidence | CAPTURED |
+| Cloudflare Pages publication | VERIFIED |
+| Cloudflare Access protection | VERIFIED |
+| Authenticated production page | VERIFIED |
+| Protected production route | `/docs/missions/061/` |
+
+**Mission objective:** Deliver the complete deterministic 3D performance-body capability covering both models, rendering, measurements, muscle development, progress and interactive inspection.
+
+**Mission objective confirmation timestamp:** 2026-09-13T16:09:28+02:00
+
+**Final release evidence timestamp:** 2026-09-13T16:09:28+02:00
+
+The model-selection persistence dependency remains deferred to the authoritative athlete onboarding/profile mission. TITAN does not infer or default a model type.
+
+**Mission 061 is COMPLETE / VERIFIED / PUBLISHED / RELEASED.**
