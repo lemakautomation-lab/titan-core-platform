@@ -95,7 +95,8 @@ implements RolePermissionRepository {
         const existing =
             await this.database.prisma.rolePermission.findUnique({
                 where: {
-                    roleId_permissionId: {
+                    tenantId_roleId_permissionId: {
+                        tenantId,
                         roleId,
                         permissionId,
                     },
@@ -181,7 +182,8 @@ implements RolePermissionRepository {
 
         await this.database.prisma.rolePermission.delete({
             where: {
-                roleId_permissionId: {
+                tenantId_roleId_permissionId: {
+                    tenantId,
                     roleId,
                     permissionId,
                 },

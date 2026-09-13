@@ -5,7 +5,7 @@ export class RolePermission {
     private constructor(
 
         public readonly id: string,
-
+        public readonly tenantId: string,
         public readonly roleId: string,
 
         public readonly permissionId: string,
@@ -16,7 +16,7 @@ export class RolePermission {
 
 
     static create(
-
+        tenantId: string,
         roleId: string,
 
         permissionId: string,
@@ -26,7 +26,7 @@ export class RolePermission {
         return new RolePermission(
 
             randomUUID(),
-
+            tenantId,
             roleId,
 
             permissionId,
@@ -39,9 +39,8 @@ export class RolePermission {
 
 
     static restore(
-
         id: string,
-
+        tenantId: string,
         roleId: string,
 
         permissionId: string,
@@ -51,9 +50,8 @@ export class RolePermission {
     ): RolePermission {
 
         return new RolePermission(
-
             id,
-
+            tenantId,
             roleId,
 
             permissionId,

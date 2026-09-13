@@ -401,7 +401,8 @@ it(
         const assignment =
             await testPrisma.rolePermission.findUnique({
                 where: {
-                    roleId_permissionId: {
+                    tenantId_roleId_permissionId: {
+                        tenantId: tenantAUser.tenant.id,
                         roleId: tenantARole.id,
                         permissionId: tenantBPermission.id,
                     },
@@ -472,7 +473,8 @@ it(
         const assignment =
             await testPrisma.rolePermission.findUnique({
                 where: {
-                    roleId_permissionId: {
+                    tenantId_roleId_permissionId: {
+                        tenantId: tenantBUser.tenant.id,
                         roleId: tenantBRole.id,
                         permissionId: tenantAPermission.id,
                     },
@@ -513,6 +515,7 @@ it(
 
         await testPrisma.rolePermission.create({
             data: {
+                tenantId: tenantBUser.tenant.id,
                 roleId: tenantBRole.id,
                 permissionId: tenantBPermission.id,
             },
@@ -550,7 +553,8 @@ it(
         const assignment =
             await testPrisma.rolePermission.findUnique({
                 where: {
-                    roleId_permissionId: {
+                    tenantId_roleId_permissionId: {
+                        tenantId: tenantBUser.tenant.id,
                         roleId: tenantBRole.id,
                         permissionId: tenantBPermission.id,
                     },
@@ -618,10 +622,11 @@ async () => {
     const assignment =
         await testPrisma.rolePermission.findUnique({
             where: {
-                roleId_permissionId: {
-                    roleId: role.id,
-                    permissionId: permission.id,
-                },
+                tenantId_roleId_permissionId: {
+                        tenantId: tenantAUser.tenant.id,
+                        roleId: role.id,
+                        permissionId: permission.id,
+                    },
             },
         });
 
@@ -849,10 +854,9 @@ it(
 
         await testPrisma.rolePermission.create({
             data: {
-                roleId:
-                    role.id,
-                permissionId:
-                    permission.id,
+                tenantId: tenantAUser.tenant.id,
+                roleId: role.id,
+                permissionId: permission.id,
             },
         });
 
@@ -904,11 +908,10 @@ it(
         const assignment =
             await testPrisma.rolePermission.findUnique({
                 where: {
-                    roleId_permissionId: {
-                        roleId:
-                            role.id,
-                        permissionId:
-                            permission.id,
+                    tenantId_roleId_permissionId: {
+                        tenantId: tenantAUser.tenant.id,
+                        roleId: role.id,
+                        permissionId: permission.id,
                     },
                 },
             });

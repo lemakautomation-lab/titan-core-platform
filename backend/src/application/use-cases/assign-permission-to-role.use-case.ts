@@ -82,6 +82,7 @@ implements UseCase<AssignPermissionToRoleCommand, Result<void>>
 
         const rolePermission =
             RolePermission.create(
+                command.tenantId,
                 command.roleId,
                 command.permissionId,
             );

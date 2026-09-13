@@ -41,7 +41,8 @@ export async function createRole(
         await testPrisma.rolePermission.upsert({
 
             where: {
-                roleId_permissionId: {
+                tenantId_roleId_permissionId: {
+                    tenantId,
                     roleId: role.id,
                     permissionId: permission.id,
                 },
@@ -50,6 +51,7 @@ export async function createRole(
             update: {},
 
             create: {
+                tenantId,
                 roleId: role.id,
                 permissionId: permission.id,
             },

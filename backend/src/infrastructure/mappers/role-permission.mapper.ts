@@ -16,7 +16,7 @@ export class RolePermissionMapper {
         return RolePermission.restore(
 
             prisma.id,
-
+            prisma.tenantId,
             prisma.roleId,
 
             prisma.permissionId,
@@ -40,7 +40,7 @@ export class RolePermissionMapper {
 
 
             id: rolePermission.id,
-
+            tenantId: rolePermission.tenantId,
             roleId: rolePermission.roleId,
 
             permissionId: rolePermission.permissionId,

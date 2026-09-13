@@ -144,6 +144,7 @@ model Role {
   userRoles   UserRole[]
 
   @@unique([tenantId, name])
+  @@unique([id, tenantId])
 }
 
 model Permission {
@@ -160,6 +161,7 @@ model Permission {
   @@unique([tenantId, code])
 
   @@unique([tenantId, name])
+  @@unique([id, tenantId])
 }
 
 model UserRole {
@@ -175,13 +177,16 @@ model UserRole {
 
 model RolePermission {
   id           String     @id @default(uuid())
+  tenantId     String
   roleId       String
   permissionId String
   createdAt    DateTime   @default(now())
-  permission   Permission @relation(fields: [permissionId], references: [id])
-  role         Role       @relation(fields: [roleId], references: [id])
 
-  @@unique([roleId, permissionId])
+  permission   Permission @relation(fields: [permissionId, tenantId], references: [id, tenantId])
+  role         Role       @relation(fields: [roleId, tenantId], references: [id, tenantId])
+
+  @@unique([tenantId, roleId, permissionId])
+  @@index([tenantId, roleId])
 }
 
 model Session {
