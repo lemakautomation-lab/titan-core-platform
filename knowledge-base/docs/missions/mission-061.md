@@ -33,7 +33,7 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 61.4 - Measurements
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 #### Identified Gap
 
@@ -60,9 +60,15 @@ No explicit measurement contract, validation, canonical ordering, accessible dis
 - Lint: **GREEN with zero warnings**
 - Whitespace audit: **GREEN**
 
-#### Release State
+#### Release Evidence
 
-Commit, push, Docusaurus publication and public verification are pending.
+- Commit: `64b96759e6dfa33785e51e75feafb3984d4a538e`
+- Push: VERIFIED
+- Docusaurus build: GREEN
+- Cloudflare publication: VERIFIED
+- Authenticated production page: VERIFIED
+
+**Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 61.5 - Muscle development
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

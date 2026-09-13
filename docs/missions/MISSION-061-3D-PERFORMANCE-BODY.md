@@ -172,7 +172,7 @@ The authoritative product requirement is:
 Persistence and onboarding capture remain deferred to the authoritative Athlete onboarding/profile mission. No premature signup, persistence or migration architecture is introduced here.
 ## Control 061.4 - Measurements
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ### Identified Gap
 
@@ -225,3 +225,13 @@ Control 061.4 establishes an explicit centimetre-based measurement boundary. Val
 ### Deferred Scope
 
 Measurement persistence and athlete-profile capture remain deferred until an authoritative athlete-profile contract exists. Muscle development, progress visualisation and interactive controls remain in Controls 061.5-061.7.
+
+### Release Evidence
+
+- Commit: `64b96759e6dfa33785e51e75feafb3984d4a538e`
+- Push: `main` equals `origin/main`
+- Knowledge Base typecheck: **GREEN**
+- Docusaurus production build: **GREEN**
+- Cloudflare Pages publication: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Protected route: `/docs/missions/061/`
