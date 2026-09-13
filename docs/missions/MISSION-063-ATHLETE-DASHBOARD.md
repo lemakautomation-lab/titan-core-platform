@@ -76,7 +76,7 @@ Replace the static dashboard placeholder with a visible, permission-controlled o
 **Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED / FRONTEND RELEASE PENDING
 ## Control 063.2 - Training Overview
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED / FRONTEND RELEASE PENDING
 
 ### Control Objective
 
@@ -122,4 +122,12 @@ Add a visible permission-controlled dashboard overview of authorised tenant-scop
 
 ### Release State
 
-Commit, push, frontend deployment, Docusaurus publication and authenticated product-page verification are pending.
+- Implementation commit: `b0f044a3e0ac0c0c49b2fef64dc594d8f36ac219`
+- Push: `main` equals `origin/main`
+- Knowledge Base publication: **VERIFIED**
+- Authenticated local dashboard: **VERIFIED**
+- Training Overview panel: **VERIFIED**
+- Production frontend deployment: **PENDING**
+- Verification timestamp: **2026-09-13T21:28:36+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED / FRONTEND RELEASE PENDING
