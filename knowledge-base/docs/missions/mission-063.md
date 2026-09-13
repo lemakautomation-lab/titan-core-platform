@@ -24,7 +24,7 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 63.1 - Athlete performance overview
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED / FRONTEND RELEASE PENDING
 
 #### Control Objective
 
@@ -49,7 +49,17 @@ Replace the static dashboard placeholder with a visible, permission-controlled o
 
 #### Release State
 
-Commit, push, frontend deployment, Docusaurus publication and authenticated product-page verification are pending.
+- Implementation commit: `54a7a816c8ed9c40034f34330f1f69ff2268c4d5`
+- Push: `main` equals `origin/main`
+- Knowledge Base typecheck and build: **GREEN**
+- Cloudflare Knowledge Base publication: **VERIFIED**
+- Authenticated local product page: **VERIFIED**
+- Visible dashboard panel: **VERIFIED**
+- Verified state: `No performance metrics are available.`
+- Verification timestamp: **2026-09-13T21:16:28+02:00**
+- Production frontend deployment: **PENDING - no authoritative hosting workflow exists**
+
+**Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED / FRONTEND RELEASE PENDING
 ### Control 63.2 - Training overview
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
