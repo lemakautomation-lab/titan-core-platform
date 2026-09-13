@@ -268,7 +268,7 @@ Transform two or more explicitly supplied body-progress snapshots into a determi
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ## Control 062.5 - Measurement Mapping
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ### Control Objective
 
@@ -315,4 +315,12 @@ Map each canonical body measurement deterministically to its relevant verified b
 
 ### Release State
 
-Commit, push, Docusaurus publication and authenticated production-page verification are pending.
+- Implementation commit: `954c27f954374155c57a8515b8fae5028380d63c`
+- Push: `main` equals `origin/main`
+- Docusaurus production build: **GREEN**
+- Cloudflare Pages publication: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Protected route: `/docs/missions/062/`
+- Release timestamp: **2026-09-13T20:56:25+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED

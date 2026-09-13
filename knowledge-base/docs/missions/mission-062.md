@@ -173,7 +173,7 @@ Create a deterministic chronological series of adjacent comparisons from two or 
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 62.5 - Measurement mapping
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 #### Control Objective
 
@@ -199,7 +199,15 @@ Map canonical body measurements deterministically to verified body-model segment
 
 #### Release State
 
-Commit, push, Docusaurus publication and authenticated production-page verification are pending.
+- Implementation commit: `954c27f954374155c57a8515b8fae5028380d63c`
+- Push: `main` equals `origin/main`
+- Docusaurus production build: **GREEN**
+- Cloudflare Pages publication: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Protected route: `/docs/missions/062/`
+- Release timestamp: **2026-09-13T20:56:25+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 62.6 - Authorised visualisation of body data
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
