@@ -43,6 +43,16 @@ interface PerformanceBodyViewerProps {
 
 const VIEWPORT_WIDTH = 480;
 const VIEWPORT_HEIGHT = 640;
+const DEFAULT_CAMERA_DISTANCE = 7;
+const MIN_CAMERA_DISTANCE = 5;
+const MAX_CAMERA_DISTANCE = 9;
+const ZOOM_STEP = 0.5;
+const ROTATION_STEP_DEGREES = 15;
+
+interface ViewState {
+  readonly rotationDegrees: number;
+  readonly cameraDistance: number;
+}
 
 function disposeModel(model: Group): void {
   model.traverse((object) => {
@@ -69,8 +79,20 @@ export default function PerformanceBodyViewer({
   progressSnapshots,
 }: PerformanceBodyViewerProps) {
   const hostRef = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<Scene | null>(null);
+  const cameraRef =
+    useRef<PerspectiveCamera | null>(null);
+  const modelRef = useRef<Group | null>(null);
+  const rendererRef =
+    useRef<WebGLRenderer | null>(null);
+
   const [renderError, setRenderError] =
     useState(false);
+
+  const [view, setView] = useState<ViewState>({
+    rotationDegrees: 0,
+    cameraDistance: DEFAULT_CAMERA_DISTANCE,
+  });
 
   useEffect(() => {
     const host = hostRef.current;
@@ -102,7 +124,15 @@ export default function PerformanceBodyViewer({
         100,
       );
 
-      camera.position.set(0, 0.8, 7);
+      camera.position.set(
+        0,
+        0.8,
+        view.cameraDistance,
+      );
+
+      model.rotation.y =
+        (view.rotationDegrees * Math.PI) /
+        180;
       camera.lookAt(0, 0.8, 0);
 
       scene.add(new AmbientLight(0xffffff, 1.8));
@@ -141,6 +171,12 @@ export default function PerformanceBodyViewer({
       );
 
       host.replaceChildren(renderer.domElement);
+
+      sceneRef.current = scene;
+      cameraRef.current = camera;
+      modelRef.current = model;
+      rendererRef.current = renderer;
+
       renderer.render(scene, camera);
       setRenderError(false);
     } catch {
@@ -152,8 +188,53 @@ export default function PerformanceBodyViewer({
       host.replaceChildren();
       disposeModel(model);
       renderer?.dispose();
+
+      if (modelRef.current === model) {
+        sceneRef.current = null;
+        cameraRef.current = null;
+        modelRef.current = null;
+        rendererRef.current = null;
+      }
     };
-  }, [modelType, muscleDevelopment]);
+  }, [
+    modelType,
+    muscleDevelopment,
+    view.cameraDistance,
+    view.rotationDegrees,
+  ]);
+
+  function updateView(next: ViewState): void {
+    setView(next);
+  }
+
+  function rotate(delta: number): void {
+    updateView({
+      ...view,
+      rotationDegrees:
+        view.rotationDegrees + delta,
+    });
+  }
+
+  function zoom(delta: number): void {
+    updateView({
+      ...view,
+      cameraDistance: Math.min(
+        MAX_CAMERA_DISTANCE,
+        Math.max(
+          MIN_CAMERA_DISTANCE,
+          view.cameraDistance + delta,
+        ),
+      ),
+    });
+  }
+
+  function resetView(): void {
+    updateView({
+      rotationDegrees: 0,
+      cameraDistance:
+        DEFAULT_CAMERA_DISTANCE,
+    });
+  }
 
   return (
     <section
@@ -166,6 +247,71 @@ export default function PerformanceBodyViewer({
         role="img"
         aria-label={`${modelType.toLowerCase()} 3D performance body`}
       />
+
+      <nav
+        className="performance-body-controls"
+        aria-label="3D body controls"
+      >
+        <button
+          type="button"
+          onClick={() =>
+            rotate(-ROTATION_STEP_DEGREES)
+          }
+          disabled={renderError}
+        >
+          Rotate left
+        </button>
+
+        <button
+          type="button"
+          onClick={() =>
+            rotate(ROTATION_STEP_DEGREES)
+          }
+          disabled={renderError}
+        >
+          Rotate right
+        </button>
+
+        <button
+          type="button"
+          onClick={() => zoom(-ZOOM_STEP)}
+          disabled={
+            renderError ||
+            view.cameraDistance <=
+              MIN_CAMERA_DISTANCE
+          }
+        >
+          Zoom in
+        </button>
+
+        <button
+          type="button"
+          onClick={() => zoom(ZOOM_STEP)}
+          disabled={
+            renderError ||
+            view.cameraDistance >=
+              MAX_CAMERA_DISTANCE
+          }
+        >
+          Zoom out
+        </button>
+
+        <button
+          type="button"
+          onClick={resetView}
+          disabled={renderError}
+        >
+          Reset view
+        </button>
+      </nav>
+
+      <output
+        className="performance-body-controls__status"
+        aria-live="polite"
+      >
+        Rotation {view.rotationDegrees} degrees;
+        camera distance {view.cameraDistance}
+      </output>
 
       <BodyMeasurementsPanel
         measurements={measurements}

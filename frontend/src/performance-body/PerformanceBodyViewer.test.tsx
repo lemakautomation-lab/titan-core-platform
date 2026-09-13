@@ -1,5 +1,6 @@
 import {
   cleanup,
+  fireEvent,
   render,
   screen,
 } from "@testing-library/react";
@@ -116,6 +117,70 @@ describe("PerformanceBodyViewer", () => {
     );
 
     expect(rendererState.render).toHaveBeenCalledOnce();
+  });
+
+  it("provides bounded rotation, zoom and reset controls", () => {
+    render(
+      <PerformanceBodyViewer modelType="MALE" />,
+    );
+
+    const status =
+      screen.getByText(
+        /Rotation 0 degrees; camera distance 7/,
+      );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Rotate right",
+      }),
+    );
+
+    expect(status).toHaveTextContent(
+      "Rotation 15 degrees; camera distance 7",
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Zoom in",
+      }),
+    );
+
+    expect(status).toHaveTextContent(
+      "Rotation 15 degrees; camera distance 6.5",
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Reset view",
+      }),
+    );
+
+    expect(status).toHaveTextContent(
+      "Rotation 0 degrees; camera distance 7",
+    );
+
+    expect(rendererState.render)
+      .toHaveBeenCalledTimes(4);
+  });
+
+  it("disables controls when WebGL is unavailable", () => {
+    rendererState.fail = true;
+
+    render(
+      <PerformanceBodyViewer modelType="MALE" />,
+    );
+
+    expect(
+      screen.getByRole("button", {
+        name: "Rotate left",
+      }),
+    ).toBeDisabled();
+
+    expect(
+      screen.getByRole("button", {
+        name: "Zoom in",
+      }),
+    ).toBeDisabled();
   });
 
   it("disposes the renderer on unmount", () => {

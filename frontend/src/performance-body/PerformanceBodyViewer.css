@@ -108,3 +108,37 @@
   color: #aeb9bd;
   font-size: 0.75rem;
 }
+.performance-body-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  width: min(100% - 2rem, 30rem);
+  margin: 0 1rem 0.75rem;
+}
+
+.performance-body-controls button {
+  padding: 0.55rem 0.8rem;
+  border: 1px solid rgba(66, 245, 197, 0.5);
+  border-radius: 0.5rem;
+  color: #f4f7f8;
+  background: #10171b;
+  cursor: pointer;
+}
+
+.performance-body-controls button:hover:not(:disabled),
+.performance-body-controls button:focus-visible {
+  border-color: #42f5c5;
+  color: #42f5c5;
+}
+
+.performance-body-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.performance-body-controls__status {
+  margin: 0 1rem 1rem;
+  color: #aeb9bd;
+  font-size: 0.75rem;
+}

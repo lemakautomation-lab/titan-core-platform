@@ -360,3 +360,59 @@ No progress snapshot, chronological comparison, delta calculation, accessible pr
 - Cloudflare publication: **VERIFIED**
 - Authenticated production page: **VERIFIED**
 - Release timestamp: **2026-09-13T15:56:10+02:00**
+## Control 061.7 - Interactive Model Controls
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+### Control Objective
+
+Provide accessible, deterministic and bounded controls that allow a user to rotate, zoom and reset the 3D performance-body view without changing persisted athlete data or weakening the established security boundary.
+
+**Objective evidence timestamp:** 2026-09-13T16:04:44+02:00
+
+### Identified Gap
+
+The verified performance-body viewer rendered a static frame and provided no direct mechanism for users to inspect the model from controlled viewing positions.
+
+### Implementation
+
+- Added explicit rotate-left and rotate-right controls.
+- Added bounded zoom-in and zoom-out controls.
+- Added a deterministic reset-view action.
+- Added an accessible live view-status description.
+- Added disabled states at zoom boundaries.
+- Disabled all controls when WebGL rendering is unavailable.
+- Preserved safe renderer, geometry and material cleanup.
+- Added focused automated interaction and failure-state coverage.
+
+### Verification Evidence
+
+- Targeted viewer regression: **1/1 file; 6/6 tests passed**
+- Broader performance-body regression: **6/6 files; 30/30 tests passed**
+- Full frontend regression: **20/20 files; 121/121 tests passed**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN with zero warnings**
+- Whitespace audit: **GREEN**
+- Evidence timestamp: **2026-09-13T16:04:44+02:00**
+
+### Security and Integrity
+
+- Controls modify only local presentation state.
+- Rotation and zoom values are explicitly bounded.
+- Reset restores the deterministic default view.
+- No backend, database, migration or API change was introduced.
+- No authentication, authorization, RBAC, tenant or session behaviour changed.
+- No athlete data is inferred, persisted or transmitted.
+- No external request, asset or credential was introduced.
+
+### Authorized Files
+
+- `frontend/src/performance-body/PerformanceBodyViewer.tsx`
+- `frontend/src/performance-body/PerformanceBodyViewer.css`
+- `frontend/src/performance-body/PerformanceBodyViewer.test.tsx`
+- `docs/missions/MISSION-061-3D-PERFORMANCE-BODY.md`
+- `knowledge-base/docs/missions/mission-061.md`
+
+### Release State
+
+Commit, push, Docusaurus publication and authenticated production-page verification are pending.

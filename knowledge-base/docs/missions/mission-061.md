@@ -158,8 +158,37 @@ Provide deterministic, timestamped comparison of supplied measurement and muscle
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 61.7 - Interactive model controls
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
 
+#### Control Objective
+
+Provide accessible, deterministic and bounded rotate, zoom and reset controls for inspecting the 3D performance body while preserving the established non-persistent presentation boundary.
+
+**Objective evidence timestamp:** 2026-09-13T16:04:44+02:00
+
+#### Implementation
+
+- Bounded left and right rotation.
+- Bounded zoom in and zoom out.
+- Deterministic reset action.
+- Accessible view-status output.
+- Boundary-aware disabled states.
+- Safe disabled state when WebGL is unavailable.
+- No persistence, inference or network request.
+
+#### Evidence
+
+- Targeted viewer regression: 1/1 file and 6/6 tests passed.
+- Broader performance-body regression: 6/6 files and 30/30 tests passed.
+- Full frontend regression: 20/20 files and 121/121 tests passed.
+- Production build: GREEN.
+- Lint: GREEN with zero warnings.
+- Whitespace audit: GREEN.
+- Evidence timestamp: **2026-09-13T16:04:44+02:00**
+
+#### Release State
+
+Commit, push, Docusaurus publication and authenticated production-page verification are pending.
 ## Mission Exit Gate
 
 all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
