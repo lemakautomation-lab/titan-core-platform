@@ -6,6 +6,8 @@ sidebar_position: 62
 
 # Mission 062 - PERFORMANCE BODY MAPPING
 
+> **Status: COMPLETE / VERIFIED / PUBLISHED / RELEASED**
+
 > Authoritative scope imported from the TITAN Master Mission Control Register.
 
 ## Objective
@@ -210,7 +212,7 @@ Map canonical body measurements deterministically to verified body-model segment
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 62.6 - Authorised visualisation of body data
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 #### Control Objective
 
@@ -238,7 +240,43 @@ Visible Athlete Digital Twin mounting remains dependent on Mission 113 providing
 
 #### Release State
 
-Commit, push, Docusaurus publication and authenticated production-page verification are pending.
+- Implementation commit: `7690344c35a1f115b2bea12feb046012039e4069`
+- Push: `main` equals `origin/main`
+- Docusaurus production build: **GREEN**
+- Cloudflare Pages publication: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Protected route: `/docs/missions/062/`
+- Release timestamp: **2026-09-13T21:03:24+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ## Mission Exit Gate
 
-all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
+| Gate | Result |
+|---|---|
+| 62.1 Before state | RELEASED |
+| 62.2 Current state | RELEASED |
+| 62.3 Target state | RELEASED |
+| 62.4 Longitudinal comparison | RELEASED |
+| 62.5 Measurement mapping | RELEASED |
+| 62.6 Authorised body-data visualisation | RELEASED |
+| Latest authorization regression | GREEN - 2/2 files, 19/19 tests |
+| Full frontend regression | GREEN - 26/26 files, 146/146 tests |
+| Frontend production build | GREEN |
+| Frontend lint | GREEN - zero warnings |
+| Security, tenant and RBAC implications | VERIFIED |
+| Migration/API contract | NONE REQUIRED |
+| Timestamped objectives and evidence | CAPTURED |
+| Cloudflare Pages publication | VERIFIED |
+| Cloudflare Access protection | VERIFIED |
+| Authenticated production page | VERIFIED |
+| Protected production route | `/docs/missions/062/` |
+
+**Mission objective:** Visualise explicitly supplied body development over time through deterministic before, current and target states, longitudinal comparison, measurement mapping and authorised presentation.
+
+**Mission objective confirmation timestamp:** 2026-09-13T21:03:24+02:00
+
+**Final release evidence timestamp:** 2026-09-13T21:03:24+02:00
+
+Visible Athlete Digital Twin mounting remains dependent on Mission 113 Athlete Onboarding providing an explicit persisted `MALE` or `FEMALE` selection. TITAN does not infer or default the model type.
+
+**Mission 062 is COMPLETE / VERIFIED / PUBLISHED / RELEASED.**

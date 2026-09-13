@@ -2,7 +2,7 @@
 
 ## Status
 
-ACTIVE
+COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ## Mission Objective
 
@@ -326,7 +326,7 @@ Map each canonical body measurement deterministically to its relevant verified b
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ## Control 062.6 - Authorised Visualisation of Body Data
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ### Control Objective
 
@@ -371,8 +371,49 @@ Prevent protected athlete body-data visualisation components from mounting unles
 
 ### Release State
 
-Commit, push, Docusaurus publication and authenticated production-page verification are pending.
+- Implementation commit: `7690344c35a1f115b2bea12feb046012039e4069`
+- Push: `main` equals `origin/main`
+- Docusaurus production build: **GREEN**
+- Cloudflare Pages publication: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Protected route: `/docs/missions/062/`
+- Release timestamp: **2026-09-13T21:03:24+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ### Integration Boundary
 
 Mounting the body-mapping capability into the Athlete Digital Twin page remains dependent on Mission 113 Athlete Onboarding providing an explicit persisted `MALE` or `FEMALE` model selection. No model type is inferred or defaulted.
+## Mission Exit Gate
+
+**Mission objective:** Visualise explicitly supplied body development over time through before, current and target states, longitudinal comparison, measurement mapping and authorised visualisation.
+
+**Mission objective confirmation timestamp:** 2026-09-13T21:03:24+02:00
+
+| Control | Objective | Implementation commit | Final state |
+|---|---|---|---|
+| 062.1 | Deterministic earliest BEFORE state | `2cdbb3b11a6d38706773a914734671db48bb86b8` | RELEASED |
+| 062.2 | Deterministic latest CURRENT state | `021cb0c97423fcc5b46ea3d8c4f0757d24843513` | RELEASED |
+| 062.3 | Explicit forward-dated TARGET state | `737fed6d4d1573b76bfe9208816679dee22d2662` | RELEASED |
+| 062.4 | Multi-interval longitudinal comparison | `cf536db7c063d80e17afcb13292ce56b9935af43` | RELEASED |
+| 062.5 | Canonical measurement-to-segment mapping | `954c27f954374155c57a8515b8fae5028380d63c` | RELEASED |
+| 062.6 | Authorised body-data presentation boundary | `7690344c35a1f115b2bea12feb046012039e4069` | RELEASED |
+
+### Final Verification
+
+- All six controls: **COMPLETE / VERIFIED / PUBLISHED / RELEASED**
+- Targeted authorization regression: **2/2 files; 19/19 tests passed**
+- Full frontend regression: **26/26 files; 146/146 tests passed**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN with zero warnings**
+- Knowledge Base typecheck: **GREEN**
+- Docusaurus production build: **GREEN**
+- Cloudflare Pages publication: **VERIFIED**
+- Cloudflare Access protection: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Protected route: `/docs/missions/062/`
+- Final release evidence timestamp: **2026-09-13T21:03:24+02:00**
+
+The reusable mapping and authorization capability is released. Mounting it into the Athlete Digital Twin remains dependent on Mission 113 providing the explicit persisted `MALE` or `FEMALE` selection. No model type is inferred or defaulted.
+
+**Mission 062 classification: COMPLETE / VERIFIED / PUBLISHED / RELEASED.**
