@@ -95,7 +95,7 @@ Mission 061.6 compared the earliest and latest snapshots but did not expose the 
 Current state, target state, longitudinal comparison, measurement mapping and authorised application integration remain within Controls 062.2-062.6.
 ## Control 062.2 - Current State
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ### Control Objective
 
@@ -141,4 +141,12 @@ Select the latest valid body-progress snapshot deterministically and render it a
 
 ### Release State
 
-Commit, push, Docusaurus publication and authenticated production-page verification are pending.
+- Implementation commit: `021cb0c97423fcc5b46ea3d8c4f0757d24843513`
+- Push: `main` equals `origin/main`
+- Docusaurus production build: **GREEN**
+- Cloudflare Pages publication: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Protected route: `/docs/missions/062/`
+- Release timestamp: **2026-09-13T20:33:22+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
