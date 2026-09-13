@@ -266,3 +266,53 @@ Transform two or more explicitly supplied body-progress snapshots into a determi
 - Release timestamp: **2026-09-13T20:46:48+02:00**
 
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
+## Control 062.5 - Measurement Mapping
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+### Control Objective
+
+Map each canonical body measurement deterministically to its relevant verified body-model segment or to the whole body, while preserving the supplied centimetre value and an explicit non-medical boundary.
+
+**Control objective evidence timestamp:** 2026-09-13T20:52:47+02:00
+
+### Implementation
+
+- Added an immutable measurement-to-segment mapping contract.
+- Mapped height to all sixteen verified body segments.
+- Mapped chest and waist to the torso.
+- Mapped hips to the pelvis.
+- Mapped upper-arm and thigh measurements to matching named segments.
+- Preserved canonical measurement ordering and centimetre values.
+- Rejected duplicate measurement identifiers.
+- Added an accessible mapping panel and safe empty state.
+- Added explicit non-medical, non-diagnostic and non-anatomical wording.
+
+### Verification Evidence
+
+- Targeted regression: **2/2 files; 11/11 tests passed**
+- Full frontend regression: **25/25 files; 142/142 tests passed**
+- Production build: **GREEN**
+- Lint: **GREEN with zero warnings**
+- Whitespace audit: **GREEN**
+- Evidence timestamp: **2026-09-13T20:52:47+02:00**
+
+### Security and Integrity
+
+- Uses only explicit validated measurements.
+- Mapping identifies display regions and does not infer anatomy or outcomes.
+- No persistence, database, migration or API change was introduced.
+- Authentication, authorization, tenant, RBAC and session boundaries were unchanged.
+- No external request, asset or credential was introduced.
+
+### Authorized Files
+
+- `frontend/src/performance-body/mapping/measurement-mapping.ts`
+- `frontend/src/performance-body/mapping/BodyMeasurementMappingPanel.tsx`
+- `frontend/src/performance-body/mapping/BodyMeasurementMappingPanel.test.tsx`
+- `docs/missions/MISSION-062-PERFORMANCE-BODY-MAPPING.md`
+- `knowledge-base/docs/missions/mission-062.md`
+
+### Release State
+
+Commit, push, Docusaurus publication and authenticated production-page verification are pending.

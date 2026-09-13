@@ -173,8 +173,33 @@ Create a deterministic chronological series of adjacent comparisons from two or 
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 62.5 - Measurement mapping
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
 
+#### Control Objective
+
+Map canonical body measurements deterministically to verified body-model segments while preserving explicit centimetre values.
+
+**Control objective evidence timestamp:** 2026-09-13T20:52:47+02:00
+
+#### Implementation and Evidence
+
+- Immutable measurement-to-segment mappings.
+- Height mapped to the whole verified model.
+- Chest and waist mapped to torso.
+- Hips mapped to pelvis.
+- Upper arms and thighs mapped to matching segments.
+- Duplicate identifier rejection.
+- Accessible panel and safe empty state.
+- Targeted: 2/2 files and 11/11 tests passed.
+- Full frontend: 25/25 files and 142/142 tests passed.
+- Production build: GREEN.
+- Lint: GREEN with zero warnings.
+- Whitespace audit: GREEN.
+- Evidence timestamp: **2026-09-13T20:52:47+02:00**
+
+#### Release State
+
+Commit, push, Docusaurus publication and authenticated production-page verification are pending.
 ### Control 62.6 - Authorised visualisation of body data
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
