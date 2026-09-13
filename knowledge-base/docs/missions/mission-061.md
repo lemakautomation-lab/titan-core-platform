@@ -15,7 +15,7 @@ Build the 3D performance body capability.
 ## Governance Metadata
 
 - **Mission objective:** Build a deterministic, accessible and verified 3D performance-body capability.
-- **Last evidence update:** 2026-09-13T15:54:02+02:00
+- **Last evidence update:** 2026-09-13T15:56:10+02:00
 - **Timezone:** Africa/Johannesburg
 
 ## Delivery Classification
@@ -118,7 +118,7 @@ Provide deterministic, explicitly supplied muscle-development visualisation acro
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 61.6 - Progress visualisation
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 **Evidence timestamp:** 2026-09-13T15:54:02+02:00
 
@@ -146,9 +146,16 @@ Provide deterministic, timestamped comparison of supplied measurement and muscle
 - Lint: **GREEN with zero warnings**
 - Whitespace audit: **GREEN**
 
-#### Release State
+#### Release Evidence
 
-Commit, push, publication and public verification are pending.
+- Implementation commit: `8a5da0e9be110260822f1d5facffe723b5f46255`
+- Push: VERIFIED
+- Docusaurus build: GREEN
+- Cloudflare publication: VERIFIED
+- Authenticated production page: VERIFIED
+- Release timestamp: **2026-09-13T15:56:10+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 61.7 - Interactive model controls
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

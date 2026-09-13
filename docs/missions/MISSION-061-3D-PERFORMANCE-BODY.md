@@ -298,7 +298,7 @@ No muscle-development contract, validation, canonical segment mapping, visual ap
 - Release timestamp: **2026-09-13T15:46:52+02:00**
 ## Control 061.6 - Progress Visualisation
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 **Evidence timestamp:** 2026-09-13T15:54:02+02:00
 
@@ -352,6 +352,11 @@ No progress snapshot, chronological comparison, delta calculation, accessible pr
 - No backend, migration, API, authentication, RBAC or tenant change was introduced.
 - No external asset, request or credential was introduced.
 
-### Release State
+### Release Evidence
 
-Commit, push, Docusaurus publication and public verification are pending.
+- Implementation commit: `8a5da0e9be110260822f1d5facffe723b5f46255`
+- Push: `main` equals `origin/main`
+- Docusaurus build: **GREEN**
+- Cloudflare publication: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Release timestamp: **2026-09-13T15:56:10+02:00**
