@@ -296,3 +296,62 @@ No muscle-development contract, validation, canonical segment mapping, visual ap
 - Cloudflare publication: **VERIFIED**
 - Authenticated production page: **VERIFIED**
 - Release timestamp: **2026-09-13T15:46:52+02:00**
+## Control 061.6 - Progress Visualisation
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+**Evidence timestamp:** 2026-09-13T15:54:02+02:00
+
+### Objective
+
+Provide deterministic, timestamped comparison of explicitly supplied body measurements and muscle-development records.
+
+### Identified Gap
+
+No progress snapshot, chronological comparison, delta calculation, accessible progress display or direct regression coverage existed.
+
+### Design and Implementation
+
+- Added ISO 8601 timestamps with mandatory timezone.
+- Added immutable progress snapshots.
+- Required at least one explicit supplied value per snapshot.
+- Added deterministic earliest-to-latest comparison.
+- Added measurement deltas in centimetres.
+- Added muscle-development score deltas.
+- Added stable two-decimal delta rounding.
+- Added accessible progress and insufficient-history states.
+- Added non-medical and non-diagnostic boundary text.
+- Added optional viewer integration.
+- No history or result is inferred.
+
+### Authorized Files
+
+- `frontend/src/performance-body/progress/body-progress.ts`
+- `frontend/src/performance-body/progress/BodyProgressPanel.tsx`
+- `frontend/src/performance-body/progress/BodyProgressPanel.test.tsx`
+- `frontend/src/performance-body/PerformanceBodyViewer.tsx`
+- `frontend/src/performance-body/PerformanceBodyViewer.css`
+- `docs/missions/MISSION-061-3D-PERFORMANCE-BODY.md`
+- `knowledge-base/docs/missions/mission-061.md`
+
+### Verification Evidence
+
+- Targeted regression: **2/2 files; 9/9 tests passed**
+- Broader performance-body regression: **PASSED**
+- Full frontend regression: **20/20 files; 119/119 tests passed**
+- Production build: **GREEN**
+- Lint: **GREEN with zero warnings**
+- Whitespace audit: **GREEN**
+
+### Security and Integrity
+
+- Invalid or timezone-free timestamps are rejected.
+- Current snapshots must be later than baseline.
+- Empty snapshots are rejected.
+- Inputs are explicitly supplied and immutable.
+- No backend, migration, API, authentication, RBAC or tenant change was introduced.
+- No external asset, request or credential was introduced.
+
+### Release State
+
+Commit, push, Docusaurus publication and public verification are pending.

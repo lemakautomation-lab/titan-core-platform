@@ -70,3 +70,41 @@
   color: #aeb9bd;
   font-size: 0.75rem;
 }
+.performance-body-progress,
+.performance-body-progress__empty {
+  width: min(100% - 2rem, 30rem);
+  margin: 0 1rem 1.5rem;
+  padding: 1rem;
+  border: 1px solid rgba(66, 245, 197, 0.24);
+  border-radius: 0.75rem;
+  color: #f4f7f8;
+  background: rgba(7, 10, 13, 0.88);
+}
+
+.performance-body-progress h2 {
+  margin: 0 0 0.75rem;
+  color: #42f5c5;
+  font-size: 1rem;
+}
+
+.performance-body-progress dl {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.performance-body-progress dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.performance-body-progress dt,
+.performance-body-progress dd {
+  margin: 0;
+}
+
+.performance-body-progress p {
+  color: #aeb9bd;
+  font-size: 0.75rem;
+}

@@ -15,7 +15,7 @@ Build the 3D performance body capability.
 ## Governance Metadata
 
 - **Mission objective:** Build a deterministic, accessible and verified 3D performance-body capability.
-- **Last evidence update:** 2026-09-13T15:46:52+02:00
+- **Last evidence update:** 2026-09-13T15:54:02+02:00
 - **Timezone:** Africa/Johannesburg
 
 ## Delivery Classification
@@ -118,8 +118,37 @@ Provide deterministic, explicitly supplied muscle-development visualisation acro
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 61.6 - Progress visualisation
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
 
+**Evidence timestamp:** 2026-09-13T15:54:02+02:00
+
+#### Objective
+
+Provide deterministic, timestamped comparison of supplied measurement and muscle-development records.
+
+#### Gap and Implementation
+
+- No prior progress snapshot or comparison capability existed.
+- Added timezone-qualified immutable snapshots.
+- Added chronological baseline/current validation.
+- Added centimetre and muscle-score deltas.
+- Added deterministic rounding.
+- Added accessible progress and insufficient-history displays.
+- Added viewer integration and direct tests.
+- No inferred history or medical claim is permitted.
+
+#### Evidence
+
+- Targeted: **2/2 files and 9/9 tests passed**
+- Broader performance-body regression: **PASSED**
+- Full frontend: **20/20 files and 119/119 tests passed**
+- Production build: **GREEN**
+- Lint: **GREEN with zero warnings**
+- Whitespace audit: **GREEN**
+
+#### Release State
+
+Commit, push, publication and public verification are pending.
 ### Control 61.7 - Interactive model controls
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

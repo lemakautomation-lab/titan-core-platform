@@ -21,6 +21,10 @@ import {
   type MuscleDevelopment,
 } from "./muscle-development/muscle-development";
 import BodyMeasurementsPanel from "./measurements/BodyMeasurementsPanel";
+import BodyProgressPanel from "./progress/BodyProgressPanel";
+import type {
+  BodyProgressSnapshot,
+} from "./progress/body-progress";
 import type {
   BodyMeasurement,
 } from "./measurements/body-measurements";
@@ -34,6 +38,7 @@ interface PerformanceBodyViewerProps {
   modelType: PerformanceBodyModelType;
   measurements?: readonly BodyMeasurement[];
   muscleDevelopment?: readonly MuscleDevelopment[];
+  progressSnapshots?: readonly BodyProgressSnapshot[];
 }
 
 const VIEWPORT_WIDTH = 480;
@@ -61,6 +66,7 @@ export default function PerformanceBodyViewer({
   modelType,
   measurements = [],
   muscleDevelopment,
+  progressSnapshots,
 }: PerformanceBodyViewerProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [renderError, setRenderError] =
@@ -164,6 +170,12 @@ export default function PerformanceBodyViewer({
       <BodyMeasurementsPanel
         measurements={measurements}
       />
+
+      {progressSnapshots && (
+        <BodyProgressPanel
+          snapshots={progressSnapshots}
+        />
+      )}
 
       {renderError && (
         <p
