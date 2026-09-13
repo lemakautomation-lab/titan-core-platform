@@ -12,6 +12,12 @@ sidebar_position: 61
 
 Build the 3D performance body capability.
 
+## Governance Metadata
+
+- **Mission objective:** Build a deterministic, accessible and verified 3D performance-body capability.
+- **Last evidence update:** 2026-09-13T15:44:12+02:00
+- **Timezone:** Africa/Johannesburg
+
 ## Delivery Classification
 
 - **Frontend classification:** FRONTEND-VISIBLE
@@ -71,8 +77,38 @@ No explicit measurement contract, validation, canonical ordering, accessible dis
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 61.5 - Muscle development
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
 
+**Evidence timestamp:** 2026-09-13T15:44:12+02:00
+
+#### Objective
+
+Provide deterministic, explicitly supplied muscle-development visualisation across supported performance-body segments.
+
+#### Gap and Implementation
+
+- No prior development contract or visual mapping existed.
+- Added eleven canonical development segments.
+- Added explicit integer scores from 0 to 100.
+- Added deterministic ordering and immutable profiles.
+- Added score-proportional neon highlighting.
+- Added material isolation for selected segments.
+- Added optional viewer integration.
+- Added validation and visual-application tests.
+- No score inference or medical claim is permitted.
+
+#### Evidence
+
+- Targeted: **2/2 files and 11/11 tests passed**
+- Broader performance-body regression: **PASSED**
+- Full frontend: **19/19 files and 114/114 tests passed**
+- Production build: **GREEN**
+- Lint: **GREEN with zero warnings**
+- Whitespace audit: **GREEN**
+
+#### Release State
+
+Commit, push, publication and public verification are pending.
 ### Control 61.6 - Progress visualisation
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

@@ -235,3 +235,59 @@ Measurement persistence and athlete-profile capture remain deferred until an aut
 - Cloudflare Pages publication: **VERIFIED**
 - Authenticated production page: **VERIFIED**
 - Protected route: `/docs/missions/061/`
+## Control 061.5 - Muscle Development
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+**Evidence timestamp:** 2026-09-13T15:44:12+02:00
+
+### Objective
+
+Provide deterministic, explicitly supplied muscle-development visualisation across supported performance-body segments.
+
+### Identified Gap
+
+No muscle-development contract, validation, canonical segment mapping, visual application or automated regression coverage existed.
+
+### Design and Implementation
+
+- Eleven supported development segments.
+- Explicit integer score from 0 to 100.
+- Deterministic canonical ordering.
+- Immutable development profiles.
+- Tenant-neutral frontend value contract.
+- Neon emissive intensity proportional to the supplied score.
+- Material cloning isolates highlighted segments.
+- Unselected body segments remain unchanged.
+- Viewer accepts an optional muscle-development profile.
+- No score is inferred from model type, measurements or appearance.
+- No medical or diagnostic meaning is claimed.
+
+### Authorized Files
+
+- `frontend/src/performance-body/muscle-development/muscle-development.ts`
+- `frontend/src/performance-body/muscle-development/muscle-development.test.ts`
+- `frontend/src/performance-body/PerformanceBodyViewer.tsx`
+- `docs/missions/MISSION-061-3D-PERFORMANCE-BODY.md`
+- `knowledge-base/docs/missions/mission-061.md`
+
+### Verification Evidence
+
+- Targeted regression: **2/2 files; 11/11 tests passed**
+- Broader performance-body regression: **PASSED**
+- Full frontend regression: **19/19 files; 114/114 tests passed**
+- Production build: **GREEN**
+- Lint: **GREEN with zero warnings**
+- Whitespace audit: **GREEN**
+
+### Security and Integrity
+
+- Invalid negative, over-100, fractional, NaN and infinite scores are rejected.
+- Scores are explicit and never inferred.
+- No backend, database, migration or API change was introduced.
+- No authentication, authorization, RBAC, tenant or session behaviour changed.
+- No external asset, request or credential was introduced.
+
+### Release State
+
+Commit, push, Docusaurus publication and public verification are pending.

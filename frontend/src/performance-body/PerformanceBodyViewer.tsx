@@ -16,6 +16,10 @@ import {
 
 import { createFemaleBodyModel } from "./models/female-body.model";
 import { createMaleBodyModel } from "./models/male-body.model";
+import {
+  applyMuscleDevelopment,
+  type MuscleDevelopment,
+} from "./muscle-development/muscle-development";
 import BodyMeasurementsPanel from "./measurements/BodyMeasurementsPanel";
 import type {
   BodyMeasurement,
@@ -29,6 +33,7 @@ export type PerformanceBodyModelType =
 interface PerformanceBodyViewerProps {
   modelType: PerformanceBodyModelType;
   measurements?: readonly BodyMeasurement[];
+  muscleDevelopment?: readonly MuscleDevelopment[];
 }
 
 const VIEWPORT_WIDTH = 480;
@@ -55,6 +60,7 @@ function disposeModel(model: Group): void {
 export default function PerformanceBodyViewer({
   modelType,
   measurements = [],
+  muscleDevelopment,
 }: PerformanceBodyViewerProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [renderError, setRenderError] =
@@ -71,6 +77,13 @@ export default function PerformanceBodyViewer({
       modelType === "MALE"
         ? createMaleBodyModel()
         : createFemaleBodyModel();
+
+    if (muscleDevelopment) {
+      applyMuscleDevelopment(
+        model,
+        muscleDevelopment,
+      );
+    }
 
     let renderer: WebGLRenderer | null = null;
 
@@ -134,7 +147,7 @@ export default function PerformanceBodyViewer({
       disposeModel(model);
       renderer?.dispose();
     };
-  }, [modelType]);
+  }, [modelType, muscleDevelopment]);
 
   return (
     <section
