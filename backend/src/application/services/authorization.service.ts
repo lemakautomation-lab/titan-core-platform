@@ -10,13 +10,13 @@ export class AuthorizationService {
     async hasPermission(
         userId: string,
         tenantId: string,
-        permissionName: string,
+        permissionCode: string,
     ): Promise<boolean> {
 
         return this.permissionResolutionService.hasPermission(
             userId,
             tenantId,
-            permissionName,
+            permissionCode,
         );
     }
 }

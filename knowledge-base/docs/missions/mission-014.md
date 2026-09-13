@@ -17,8 +17,8 @@ Implement secure, tenant-isolated role-permission assignment, permission inherit
 - **Mission status:** ACTIVE
 - **Frontend classification:** BACKEND-ONLY
 - **Local frontend:** No visible change required
-- **Current control:** 014.1
-- **Current control state:** RELEASED
+- **Current control:** 014.2
+- **Current control state:** TECHNICALLY COMPLETE / VERIFIED
 - **Mission release state:** NOT RELEASED
 
 ## Controls
@@ -26,7 +26,7 @@ Implement secure, tenant-isolated role-permission assignment, permission inherit
 | Control | Description | Status |
 |---|---|---|
 | 14.1 | RolePermission model | RELEASED |
-| 14.2 | Permission inheritance through roles | NOT STARTED |
+| 14.2 | Permission inheritance through roles | TECHNICALLY COMPLETE / VERIFIED |
 | 14.3 | Permission evaluation | NOT STARTED |
 
 ## Control 014.1 - RolePermission Model
@@ -221,12 +221,146 @@ Control 014.1 is committed, pushed, published, and publicly verified. Mission 01
 
 ## Control 014.2 - Permission Inheritance Through Roles
 
-**Status:** NOT STARTED
+### Objective
 
-The actual authorization services, permission-resolution services, repository contracts, use cases, queries, role assignment/removal behaviour, and integration coverage must be inspected before identifying the implementation gap.
+Ensure users deterministically inherit the union of permissions assigned to all of their tenant-scoped roles.
 
-No implementation claim is made.
+### Identified Gap
 
+Permission inheritance already traversed user roles and their assigned permissions, but the resolution service used mutable permission display names as authorization identifiers.
+
+Mission 012 established `Permission.code` as the stable authorization identity. Continuing to evaluate `Permission.name` could cause authorization behaviour to change when a display name was edited.
+
+No direct automated tests covered multi-role inheritance, duplicate elimination, stable-code evaluation, or defence against a foreign-tenant permission returned by a defective repository.
+
+The role-permission repository query also did not directly filter `RolePermission.tenantId`, although related role and permission tenant filters were present.
+
+### Design Decision
+
+Control 014.2:
+
+- Resolves inherited permissions by stable `Permission.code`.
+- Aggregates permissions from every role assigned to the user.
+- Deduplicates permission codes through a deterministic set.
+- Retains application-layer tenant validation for resolved permissions.
+- Passes the tenant identifier to every role-permission lookup.
+- Directly filters `RolePermission.tenantId`.
+- Keeps related role and permission tenant filters as defence in depth.
+- Adds focused tests for multi-role inheritance, deduplication, tenant rejection, and code-based evaluation.
+
+### Implementation
+
+Changed:
+
+- `PermissionResolutionService` now adds `permission.code`.
+- Permission evaluation parameters are named `permissionCode`.
+- `AuthorizationService` forwards the stable permission code.
+- `PrismaRoleRepository.findPermissions()` directly filters `tenantId`.
+- Added direct unit coverage for inheritance and evaluation behaviour.
+
+### Files Changed
+
+- `backend/src/application/services/authorization.service.ts`
+- `backend/src/application/services/permission-resolution.service.ts`
+- `backend/src/infrastructure/repositories/role.repository.ts`
+- `backend/tests/unit/application/services/permission-resolution.service.spec.ts`
+
+### Migration and API Impact
+
+- Database migration: **NONE**
+- HTTP route change: **NONE**
+- Request/response contract change: **NONE**
+- Authorization identity correction: display name to stable permission code
+
+### Targeted Test Evidence
+
+Test:
+
+`tests/unit/application/services/permission-resolution.service.spec.ts`
+
+Verified:
+
+- Permissions are inherited from all assigned roles.
+- Duplicate permission codes are returned once.
+- A foreign-tenant permission is excluded.
+- Role lookups receive the authoritative tenant.
+- Stable permission code grants access.
+- Mutable display name does not grant access.
+
+Result:
+
+- **1 test file passed**
+- **2 tests passed**
+
+### Broader RBAC Regression
+
+Suites:
+
+- Permission-resolution unit tests
+- RBAC tenant-isolation integration tests
+- Role-delegation integration tests
+
+Result:
+
+- **3 test files passed**
+- **19 tests passed**
+
+### Full Backend Regression
+
+Result:
+
+- **96 of 96 test files passed**
+- **774 of 774 tests passed**
+- **Duration: 314.35 seconds**
+
+### Build and Quality Evidence
+
+- Backend TypeScript build: **PASSED**
+- Targeted test: **PASSED**
+- Broader serial regression: **PASSED**
+- Full backend regression: **PASSED**
+- Whitespace audit: **PASSED**
+- Unrelated file changes: **NONE**
+
+### Security and Tenant-Isolation Evidence
+
+Permission inheritance is tenant-scoped across:
+
+1. User-to-role resolution.
+2. Direct `RolePermission.tenantId` filtering.
+3. Related role tenant filtering.
+4. Related permission tenant filtering.
+5. Application-layer permission tenant validation.
+
+Authorization decisions now use stable permission codes rather than mutable presentation names.
+
+This strengthens deterministic RBAC evaluation and reduces accidental authorization changes caused by permission renaming.
+
+### ISO-Aligned Engineering Evidence
+
+This control provides engineering evidence aligned with ISO/IEC 27001:2022 security principles and ISO 9001:2015 documented-information and verification principles.
+
+It does not claim formal certification.
+
+### Control 014.2 Release State
+
+| Release gate | State |
+|---|---|
+| Implementation | COMPLETE |
+| Targeted verification | PASSED |
+| Broader RBAC regression | PASSED |
+| Full backend regression | PASSED |
+| Backend build | PASSED |
+| Governance documentation | UPDATED LOCALLY |
+| GitHub commit | PENDING |
+| GitHub push | PENDING |
+| Docusaurus build | PENDING |
+| Cloudflare publication | PENDING |
+| Public-page verification | PENDING |
+
+**Current classification: TECHNICALLY COMPLETE / VERIFIED.**
+
+Control 014.2 is not yet committed, pushed, published, or released.
 ## Control 014.3 - Permission Evaluation
 
 **Status:** NOT STARTED

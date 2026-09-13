@@ -36,7 +36,7 @@ export class PermissionResolutionService {
                 ) {
 
                     permissions.add(
-                        permission.name,
+                        permission.code,
                     );
                 }
             }
@@ -50,7 +50,7 @@ export class PermissionResolutionService {
     async hasPermission(
         userId: string,
         tenantId: string,
-        permissionName: string,
+        permissionCode: string,
     ): Promise<boolean> {
 
         const permissions =
@@ -60,7 +60,7 @@ export class PermissionResolutionService {
             );
 
         return permissions.includes(
-            permissionName,
+            permissionCode,
         );
     }
 }

@@ -187,6 +187,7 @@ implements RoleRepository {
 
                 where: {
 
+                    tenantId,
                     roleId,
 
                     role: {
