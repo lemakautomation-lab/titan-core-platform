@@ -18,14 +18,14 @@ Implement secure, tenant-isolated role-permission assignment, permission inherit
 - **Frontend classification:** BACKEND-ONLY
 - **Local frontend:** No visible change required
 - **Current control:** 014.1
-- **Current control state:** TECHNICALLY COMPLETE / VERIFIED
+- **Current control state:** RELEASED
 - **Mission release state:** NOT RELEASED
 
 ## Controls
 
 | Control | Description | Status |
 |---|---|---|
-| 14.1 | RolePermission model | TECHNICALLY COMPLETE / VERIFIED |
+| 14.1 | RolePermission model | RELEASED |
 | 14.2 | Permission inheritance through roles | NOT STARTED |
 | 14.3 | Permission evaluation | NOT STARTED |
 
@@ -208,16 +208,16 @@ This evidence does not claim formal certification. Certification requires the wi
 | TypeScript verification | PASSED |
 | Backend build | PASSED |
 | Migration status | SCHEMA UP TO DATE |
-| Governance documentation | UPDATED LOCALLY |
-| GitHub commit | PENDING |
-| GitHub push | PENDING |
-| Docusaurus validation/build | PENDING |
-| Cloudflare publication | PENDING |
-| Public-page verification | PENDING |
+| Governance documentation | COMPLETE |
+| GitHub commit | VERIFIED - `e40f578612b06e166d3a9adb09aa1628d9590213` |
+| GitHub push | VERIFIED - `main` equals `origin/main` |
+| Docusaurus validation/build | PASSED |
+| Cloudflare publication | VERIFIED |
+| Public-page verification | VERIFIED |
 
-**Current classification: TECHNICALLY COMPLETE / VERIFIED.**
+**Current classification: RELEASED (Control 014.1).**
 
-Control 014.1 is not yet committed, pushed, published, or released.
+Control 014.1 is committed, pushed, published, and publicly verified. Mission 014 remains ACTIVE because Controls 014.2 and 014.3 are not yet complete.
 
 ## Control 014.2 - Permission Inheritance Through Roles
 
@@ -235,15 +235,15 @@ The actual authorization service, permission-resolution service, commands, queri
 
 No implementation claim is made.
 
-## Outstanding Publication Carry-Over
+## Mission 013 Publication Closure
 
-Mission 013 repository work is complete, verified, committed, and pushed at commit:
+Mission 013 repository work was completed, verified, committed, and pushed at commit:
 
 `8994a7907e30095ae6c0351a86cea5186e05bf50`
 
-Mission 013 remains not fully released because its Docusaurus/Cloudflare publication and public-page verification are pending.
+Its Docusaurus build, Cloudflare Pages publication, Cloudflare Access protection, protected route, and authenticated production page were verified.
 
-This carry-over must be completed at the appropriate publication gate and must not be silently omitted.
+Mission 013 is **COMPLETE / VERIFIED / PUBLISHED / RELEASED**.
 
 ## Mission Exit Gate
 

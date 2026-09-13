@@ -6,7 +6,7 @@ sidebar_position: 13
 
 # Mission 013 - USER ROLE ASSIGNMENT
 
-> **Status: COMPLETE / VERIFIED / RELEASE PENDING**
+> **Status: COMPLETE / VERIFIED / PUBLISHED / RELEASED**
 >
 > Authoritative mission scope is derived from the TITAN Master Mission Control Register.
 
@@ -58,7 +58,7 @@ The existing role-assignment application path was inspected, including:
 
 Authorization behavior was verified through the targeted regression suite. Assignment is denied when the acting principal lacks the required role-management permission and when the target role does not satisfy the required permission conditions.
 
-**Targeted regression: GREEN — 3/3 tests passed.**
+**Targeted regression: GREEN - 3/3 tests passed.**
 
 ### Control 13.3 - Role removal
 
@@ -72,7 +72,7 @@ The existing role-removal application path was inspected, including:
 
 Authorization behavior was verified through the targeted regression suite. Unauthorized role removal is denied.
 
-**Targeted regression: GREEN — 3/3 tests passed.**
+**Targeted regression: GREEN - 3/3 tests passed.**
 
 ### Control 13.4 - Role validation
 
@@ -103,6 +103,7 @@ Verified:
 ### Repository inspection
 
 - Mission 013 authoritative record located at `knowledge-base/docs/missions/mission-013.md`.
+- Technical/governance commit: `89948994a7907e30095ae6c0351a86cea5186e05bf50`.
 - `UserRole` persistence verified.
 - `UserRole.tenantId` verified.
 - Tenant-scoped uniqueness verified.
@@ -149,19 +150,24 @@ TypeScript/backend build completed successfully.
 | Tenant isolation | VERIFIED |
 | Database integrity | VERIFIED |
 | Targeted regression | GREEN |
-| Full serial regression | GREEN — 94/94 files, 769/769 tests |
+| Full serial regression | GREEN - 94/94 files, 769/769 tests |
 | Prisma validation | GREEN |
 | Backend build | GREEN |
 | Frontend impact | NONE |
 | Migration/API contract change | NONE REQUIRED |
 | Documentation evidence | CAPTURED |
+| Docusaurus production build | GREEN |
+| Cloudflare Pages publication | VERIFIED |
+| Cloudflare Access protection | VERIFIED - HTTP 302 redirect |
+| Protected production route | `/docs/missions/013/` |
+| Authenticated public-page verification | VERIFIED |
 
 ## Engineering Conclusion
 
-Mission 013 — USER ROLE ASSIGNMENT is **COMPLETE and VERIFIED**.
+Mission 013 - USER ROLE ASSIGNMENT is **COMPLETE / VERIFIED / PUBLISHED / RELEASED**.
 
 All four mission controls are satisfied by the existing implementation and verified against the repository architecture and automated regression suite.
 
 No production-code modification was required for this mission.
 
-The mission is now **RELEASE PENDING** documentation publication and final production knowledge-base verification.
+The GitHub-integrated Cloudflare Pages publication, Cloudflare Access protection, protected route, and authenticated production page were verified.
