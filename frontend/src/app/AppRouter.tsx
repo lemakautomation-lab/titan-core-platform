@@ -129,7 +129,12 @@ export default function AppRouter({
         <Route
           path="/dashboard"
           element={
-            <DashboardPage />
+            user ? (
+              <DashboardPage
+                tenantId={user.tenantId}
+                permissions={user.permissions}
+              />
+            ) : null
           }
         />
 

@@ -12,6 +12,9 @@ sidebar_position: 63
 
 Create the complete athlete command centre.
 
+**Mission objective documentation timestamp:** 2026-09-13T21:11:17+02:00
+
+
 ## Delivery Classification
 
 - **Frontend classification:** FRONTEND-VISIBLE
@@ -21,8 +24,32 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 63.1 - Athlete performance overview
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
 
+#### Control Objective
+
+Replace the static dashboard placeholder with a visible, permission-controlled overview of authorised tenant-scoped performance metric records.
+
+**Control objective evidence timestamp:** 2026-09-13T21:11:17+02:00
+
+#### Implementation and Evidence
+
+- Visible Athlete Performance Overview panel.
+- Authenticated tenant and permission context supplied by the router.
+- `performance-metrics.read` required before data loading.
+- Unauthorized requests prevented.
+- Metric, athlete, sport and active-status totals.
+- Loading, empty, denied and safe-error states.
+- Targeted: 3/3 files and 28/28 tests passed.
+- Full frontend: 26/26 files and 150/150 tests passed.
+- Production build: GREEN.
+- Lint: GREEN with zero warnings.
+- Whitespace audit: GREEN.
+- Evidence timestamp: **2026-09-13T21:11:17+02:00**
+
+#### Release State
+
+Commit, push, frontend deployment, Docusaurus publication and authenticated product-page verification are pending.
 ### Control 63.2 - Training overview
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
