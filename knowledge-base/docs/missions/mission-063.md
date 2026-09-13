@@ -62,8 +62,31 @@ Replace the static dashboard placeholder with a visible, permission-controlled o
 **Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED / FRONTEND RELEASE PENDING
 ### Control 63.2 - Training overview
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
 
+#### Control Objective
+
+Add a visible permission-controlled dashboard overview of authorised tenant-scoped training exercise records.
+
+**Control objective evidence timestamp:** 2026-09-13T21:25:16+02:00
+
+#### Implementation and Evidence
+
+- Visible Training Overview panel.
+- `exercises.read` required before loading.
+- Unauthorized requests prevented.
+- Exercise, active-status, objective and muscle-group totals.
+- Loading, empty, denied and safe-error states.
+- Targeted: 3/3 files and 24/24 tests passed.
+- Full frontend: 27/27 files and 154/154 tests passed.
+- Production build: GREEN.
+- Lint: GREEN with zero warnings.
+- Whitespace audit: GREEN.
+- Evidence timestamp: **2026-09-13T21:25:16+02:00**
+
+#### Release State
+
+Commit, push, frontend deployment, Docusaurus publication and authenticated product-page verification are pending.
 ### Control 63.3 - Progress visibility
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

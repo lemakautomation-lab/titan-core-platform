@@ -74,3 +74,52 @@ Replace the static dashboard placeholder with a visible, permission-controlled o
 - Production frontend deployment: **PENDING - no authoritative hosting workflow exists**
 
 **Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED / FRONTEND RELEASE PENDING
+## Control 063.2 - Training Overview
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+### Control Objective
+
+Add a visible permission-controlled dashboard overview of authorised tenant-scoped training exercise records.
+
+**Control objective evidence timestamp:** 2026-09-13T21:25:16+02:00
+
+### Implementation
+
+- Added a visible Training Overview dashboard panel.
+- Required `exercises.read` before loading exercise data.
+- Prevented unauthorized requests.
+- Added available exercise, active exercise, training objective and muscle-group totals.
+- Added loading, empty, denied and safe-error states.
+- Normalized permission codes.
+- Preserved backend tenant isolation and authorization as authoritative.
+
+### Verification Evidence
+
+- Targeted regression: **3/3 files; 24/24 tests passed**
+- Full frontend regression: **27/27 files; 154/154 tests passed**
+- Production build: **GREEN**
+- Lint: **GREEN with zero warnings**
+- Whitespace audit: **GREEN**
+- Evidence timestamp: **2026-09-13T21:25:16+02:00**
+
+### Security and Integrity
+
+- No request occurs without `exercises.read`.
+- Exercise data remains tenant-scoped by the authenticated backend boundary.
+- No database, migration or API contract change was introduced.
+- Errors fail safely.
+- No external asset or credential was introduced.
+
+### Authorized Files
+
+- `frontend/src/dashboard/DashboardPage.tsx`
+- `frontend/src/dashboard/DashboardPage.test.tsx`
+- `frontend/src/dashboard/TrainingOverviewPanel.tsx`
+- `frontend/src/dashboard/TrainingOverviewPanel.test.tsx`
+- `docs/missions/MISSION-063-ATHLETE-DASHBOARD.md`
+- `knowledge-base/docs/missions/mission-063.md`
+
+### Release State
+
+Commit, push, frontend deployment, Docusaurus publication and authenticated product-page verification are pending.

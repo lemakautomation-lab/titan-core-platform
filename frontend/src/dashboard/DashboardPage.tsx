@@ -1,3 +1,5 @@
+import TrainingOverviewPanel from "./TrainingOverviewPanel";
+
 import {
   useEffect,
   useMemo,
@@ -174,6 +176,10 @@ export default function DashboardPage({
             </>
           )}
       </section>
+      <TrainingOverviewPanel
+        permissions={permissions}
+      />
+
     </section>
   );
 }

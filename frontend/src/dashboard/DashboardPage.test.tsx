@@ -94,7 +94,9 @@ describe("DashboardPage", () => {
       />,
     );
 
-    expect(screen.getByRole("status"))
+    expect(screen.getByText(
+      "Performance overview requires the performance-metrics.read permission.",
+    ))
       .toHaveTextContent(
         "performance-metrics.read permission",
       );
