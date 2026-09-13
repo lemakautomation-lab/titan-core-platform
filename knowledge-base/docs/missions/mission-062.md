@@ -101,8 +101,32 @@ Select the latest valid body-progress snapshot deterministically and render it a
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 62.3 - Target state
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
 
+#### Control Objective
+
+Create and render an explicit immutable TARGET state with a timestamp later than the current state and directly supplied values.
+
+**Control objective evidence timestamp:** 2026-09-13T20:38:17+02:00
+
+#### Implementation and Evidence
+
+- Explicit immutable `TARGET` state.
+- Valid current and target timestamps.
+- Enforced forward chronology.
+- At least one explicit target value required.
+- Accessible verified-viewer rendering.
+- No inference, prediction or medical guarantee.
+- Targeted mapping regression: 3/3 files and 11/11 tests passed.
+- Full frontend regression: 23/23 files and 132/132 tests passed.
+- Production build: GREEN.
+- Lint: GREEN with zero warnings.
+- Whitespace audit: GREEN.
+- Evidence timestamp: **2026-09-13T20:38:17+02:00**
+
+#### Release State
+
+Commit, push, Docusaurus publication and authenticated production-page verification are pending.
 ### Control 62.4 - Longitudinal comparison
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

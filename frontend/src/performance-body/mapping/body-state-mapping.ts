@@ -98,3 +98,54 @@ export function selectCurrentBodyState(
     ]),
   });
 }
+export interface TargetBodyState {
+  readonly state: "TARGET";
+  readonly targetAt: string;
+  readonly measurements: readonly BodyMeasurement[];
+  readonly muscleDevelopment: readonly MuscleDevelopment[];
+}
+
+export function createTargetBodyState(
+  currentAt: string,
+  targetAt: string,
+  measurements: readonly BodyMeasurement[],
+  muscleDevelopment: readonly MuscleDevelopment[],
+): TargetBodyState {
+  const currentTime = Date.parse(currentAt);
+  const targetTime = Date.parse(targetAt);
+
+  if (
+    Number.isNaN(currentTime) ||
+    Number.isNaN(targetTime)
+  ) {
+    throw new Error(
+      "Target body state requires valid timestamps.",
+    );
+  }
+
+  if (targetTime <= currentTime) {
+    throw new Error(
+      "Target body state must be later than the current state.",
+    );
+  }
+
+  if (
+    measurements.length === 0 &&
+    muscleDevelopment.length === 0
+  ) {
+    throw new Error(
+      "Target body state requires at least one explicit value.",
+    );
+  }
+
+  return Object.freeze({
+    state: "TARGET" as const,
+    targetAt,
+    measurements: Object.freeze([
+      ...measurements,
+    ]),
+    muscleDevelopment: Object.freeze([
+      ...muscleDevelopment,
+    ]),
+  });
+}

@@ -150,3 +150,53 @@ Select the latest valid body-progress snapshot deterministically and render it a
 - Release timestamp: **2026-09-13T20:33:22+02:00**
 
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
+## Control 062.3 - Target State
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+### Control Objective
+
+Create and render an explicit, immutable TARGET body state whose timestamp is later than the current state and whose values are supplied directly rather than inferred.
+
+**Control objective evidence timestamp:** 2026-09-13T20:38:17+02:00
+
+### Implementation
+
+- Added an immutable explicit `TARGET` state.
+- Required valid current and target timestamps.
+- Required the target timestamp to be later than current.
+- Required at least one explicit target value.
+- Reused validated measurement and muscle-development contracts.
+- Added an accessible target-state viewer.
+- Rendered targets through the verified performance-body viewer.
+- Added explicit non-inference and non-medical boundaries.
+
+### Verification Evidence
+
+- Targeted mapping regression: **3/3 files; 11/11 tests passed**
+- Full frontend regression: **23/23 files; 132/132 tests passed**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN with zero warnings**
+- Whitespace audit: **GREEN**
+- Evidence timestamp: **2026-09-13T20:38:17+02:00**
+
+### Security and Integrity
+
+- Target values must be explicitly supplied.
+- Targets are not predictions or guarantees.
+- No model type, body value or medical outcome is inferred.
+- No backend, database, migration or API change was introduced.
+- Authentication, authorization, RBAC, tenant and session boundaries were unchanged.
+- No external request, asset or credential was introduced.
+
+### Authorized Files
+
+- `frontend/src/performance-body/mapping/body-state-mapping.ts`
+- `frontend/src/performance-body/mapping/TargetBodyStateViewer.tsx`
+- `frontend/src/performance-body/mapping/TargetBodyStateViewer.test.tsx`
+- `docs/missions/MISSION-062-PERFORMANCE-BODY-MAPPING.md`
+- `knowledge-base/docs/missions/mission-062.md`
+
+### Release State
+
+Commit, push, Docusaurus publication and authenticated production-page verification are pending.
