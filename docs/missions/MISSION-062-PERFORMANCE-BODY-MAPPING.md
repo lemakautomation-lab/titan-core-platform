@@ -152,7 +152,7 @@ Select the latest valid body-progress snapshot deterministically and render it a
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ## Control 062.3 - Target State
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ### Control Objective
 
@@ -199,4 +199,12 @@ Create and render an explicit, immutable TARGET body state whose timestamp is la
 
 ### Release State
 
-Commit, push, Docusaurus publication and authenticated production-page verification are pending.
+- Implementation commit: `737fed6d4d1573b76bfe9208816679dee22d2662`
+- Push: `main` equals `origin/main`
+- Docusaurus production build: **GREEN**
+- Cloudflare Pages publication: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Protected route: `/docs/missions/062/`
+- Release timestamp: **2026-09-13T20:40:39+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
