@@ -49,3 +49,52 @@ export function selectBeforeBodyState(
     ]),
   });
 }
+export interface CurrentBodyState {
+  readonly state: "CURRENT";
+  readonly recordedAt: string;
+  readonly measurements: readonly BodyMeasurement[];
+  readonly muscleDevelopment: readonly MuscleDevelopment[];
+}
+
+export function selectCurrentBodyState(
+  snapshots: readonly BodyProgressSnapshot[],
+): CurrentBodyState {
+  if (snapshots.length === 0) {
+    throw new Error(
+      "Current body state requires at least one progress snapshot.",
+    );
+  }
+
+  const dated = snapshots.map((snapshot) => {
+    const timestamp = Date.parse(snapshot.recordedAt);
+
+    if (Number.isNaN(timestamp)) {
+      throw new Error(
+        "Current body state requires valid timestamps.",
+      );
+    }
+
+    return {
+      snapshot,
+      timestamp,
+    };
+  });
+
+  dated.sort(
+    (left, right) =>
+      right.timestamp - left.timestamp,
+  );
+
+  const current = dated[0].snapshot;
+
+  return Object.freeze({
+    state: "CURRENT" as const,
+    recordedAt: current.recordedAt,
+    measurements: Object.freeze([
+      ...current.measurements,
+    ]),
+    muscleDevelopment: Object.freeze([
+      ...current.muscleDevelopment,
+    ]),
+  });
+}

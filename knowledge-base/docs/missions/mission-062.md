@@ -67,8 +67,30 @@ Select the earliest valid body-progress snapshot deterministically and render it
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 62.2 - Current state
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
 
+#### Control Objective
+
+Select the latest valid body-progress snapshot deterministically and render it as an explicit, accessible CURRENT state through the verified performance-body viewer.
+
+**Control objective evidence timestamp:** 2026-09-13T20:29:11+02:00
+
+#### Implementation and Evidence
+
+- Immutable explicit `CURRENT` state.
+- Deterministic latest-snapshot selection.
+- Validation of all supplied timestamps.
+- Accessible rendering through the verified viewer.
+- Targeted mapping regression: 2/2 files and 7/7 tests passed.
+- Full frontend regression: 22/22 files and 128/128 tests passed.
+- Production build: GREEN.
+- Lint: GREEN with zero warnings.
+- Whitespace audit: GREEN.
+- Evidence timestamp: **2026-09-13T20:29:11+02:00**
+
+#### Release State
+
+Commit, push, Docusaurus publication and authenticated production-page verification are pending.
 ### Control 62.3 - Target state
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
