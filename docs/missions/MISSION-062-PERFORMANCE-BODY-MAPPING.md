@@ -208,3 +208,53 @@ Create and render an explicit, immutable TARGET body state whose timestamp is la
 - Release timestamp: **2026-09-13T20:40:39+02:00**
 
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
+## Control 062.4 - Longitudinal Comparison
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+### Control Objective
+
+Transform two or more explicitly supplied body-progress snapshots into a deterministic chronological series of adjacent comparisons and present every interval accessibly.
+
+**Control objective evidence timestamp:** 2026-09-13T20:44:33+02:00
+
+### Implementation
+
+- Added an immutable longitudinal-progress contract.
+- Required at least two snapshots.
+- Validated all timestamps.
+- Rejected duplicate timestamps.
+- Sorted unsorted input chronologically.
+- Compared every adjacent interval.
+- Preserved deterministic measurement and muscle-development deltas.
+- Added an accessible ordered timeline.
+- Preserved the non-medical and non-diagnostic boundary.
+
+### Verification Evidence
+
+- Targeted regression: **2/2 files; 10/10 tests passed**
+- Full frontend regression: **24/24 files; 137/137 tests passed**
+- Production build: **GREEN**
+- Lint: **GREEN with zero warnings**
+- Whitespace audit: **GREEN**
+- Evidence timestamp: **2026-09-13T20:44:33+02:00**
+
+### Security and Integrity
+
+- Uses only explicitly supplied validated snapshots.
+- Does not infer missing body data or medical outcomes.
+- No backend, database, migration or API change was introduced.
+- Authentication, authorization, tenant, RBAC and session boundaries were unchanged.
+- No external request, asset or credential was introduced.
+
+### Authorized Files
+
+- `frontend/src/performance-body/mapping/body-longitudinal.ts`
+- `frontend/src/performance-body/mapping/BodyLongitudinalPanel.tsx`
+- `frontend/src/performance-body/mapping/BodyLongitudinalPanel.test.tsx`
+- `docs/missions/MISSION-062-PERFORMANCE-BODY-MAPPING.md`
+- `knowledge-base/docs/missions/mission-062.md`
+
+### Release State
+
+Commit, push, Docusaurus publication and authenticated production-page verification are pending.

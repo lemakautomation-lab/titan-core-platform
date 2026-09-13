@@ -137,8 +137,32 @@ Create and render an explicit immutable TARGET state with a timestamp later than
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 62.4 - Longitudinal comparison
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
 
+#### Control Objective
+
+Create a deterministic chronological series of adjacent comparisons from two or more explicitly supplied body-progress snapshots.
+
+**Control objective evidence timestamp:** 2026-09-13T20:44:33+02:00
+
+#### Implementation and Evidence
+
+- Immutable longitudinal comparison.
+- Minimum two-snapshot requirement.
+- Valid timestamp and unique timestamp enforcement.
+- Deterministic chronological ordering.
+- Every adjacent interval compared.
+- Accessible ordered timeline.
+- Targeted: 2/2 files and 10/10 tests passed.
+- Full frontend: 24/24 files and 137/137 tests passed.
+- Production build: GREEN.
+- Lint: GREEN with zero warnings.
+- Whitespace audit: GREEN.
+- Evidence timestamp: **2026-09-13T20:44:33+02:00**
+
+#### Release State
+
+Commit, push, Docusaurus publication and authenticated production-page verification are pending.
 ### Control 62.5 - Measurement mapping
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
