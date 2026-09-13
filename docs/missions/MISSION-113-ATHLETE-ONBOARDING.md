@@ -79,7 +79,7 @@ Control 113.1 completes the validated athlete-name foundation.
 The visible onboarding workflow remains pending later Mission 113 controls. This control alone does not claim that athlete onboarding is released or available in the product frontend.
 ## Control 113.2 — Surname
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED
 
 ### Control Objective
 
@@ -118,6 +118,14 @@ The Athlete domain now:
 - Whitespace audit: **GREEN**
 - Objective evidence timestamp: **2026-09-13T21:55:31+02:00**
 
+### Publication Evidence
+
+- Implementation commit: `d148285c49247783c0657a6130d6b47ea6d194e2`
+- Push synchronization: `main` equals `origin/main`
+- Knowledge Base publication: **VERIFIED**
+- Published-page verification timestamp: **2026-09-13T22:03:48+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED
 ### Security and Data Integrity
 
 - Existing tenant-scoped repository behavior remains unchanged.
