@@ -210,8 +210,35 @@ Map canonical body measurements deterministically to verified body-model segment
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 62.6 - Authorised visualisation of body data
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
 
+#### Control Objective
+
+Prevent protected body-data components from mounting unless the authenticated user holds `athlete_digital_twins.read`, while retaining backend RBAC as authoritative.
+
+**Control objective evidence timestamp:** 2026-09-13T21:00:44+02:00
+
+#### Implementation and Evidence
+
+- Existing Athlete Digital Twin route permission verified.
+- Reusable defence-in-depth authorization boundary.
+- Normalized permission-code evaluation.
+- Accessible denied state.
+- Unauthorized protected children do not mount.
+- Targeted: 2/2 files and 19/19 tests passed.
+- Full frontend: 26/26 files and 146/146 tests passed.
+- Production build: GREEN.
+- Lint: GREEN with zero warnings.
+- Whitespace audit: GREEN.
+- Evidence timestamp: **2026-09-13T21:00:44+02:00**
+
+#### Integration Boundary
+
+Visible Athlete Digital Twin mounting remains dependent on Mission 113 providing an explicit persisted `MALE` or `FEMALE` selection. TITAN does not infer or default the model type.
+
+#### Release State
+
+Commit, push, Docusaurus publication and authenticated production-page verification are pending.
 ## Mission Exit Gate
 
 all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.

@@ -324,3 +324,55 @@ Map each canonical body measurement deterministically to its relevant verified b
 - Release timestamp: **2026-09-13T20:56:25+02:00**
 
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
+## Control 062.6 - Authorised Visualisation of Body Data
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+### Control Objective
+
+Prevent protected athlete body-data visualisation components from mounting unless the authenticated user holds the canonical `athlete_digital_twins.read` permission, while retaining backend authorization as the authoritative security boundary.
+
+**Control objective evidence timestamp:** 2026-09-13T21:00:44+02:00
+
+### Implementation
+
+- Confirmed the Athlete Digital Twin route requires `athlete_digital_twins.read`.
+- Added a reusable defence-in-depth body-data authorization boundary.
+- Normalized permission codes before evaluation.
+- Rendered an accessible access-denied state.
+- Prevented protected child components from mounting when denied.
+- Preserved backend authorization as authoritative.
+- Added focused permission and non-mounting regression coverage.
+
+### Verification Evidence
+
+- Targeted authorization regression: **2/2 files; 19/19 tests passed**
+- Full frontend regression: **26/26 files; 146/146 tests passed**
+- Production build: **GREEN**
+- Lint: **GREEN with zero warnings**
+- Whitespace audit: **GREEN**
+- Evidence timestamp: **2026-09-13T21:00:44+02:00**
+
+### Security and Integrity
+
+- Required permission: `athlete_digital_twins.read`.
+- Unauthorized children are not mounted.
+- Frontend enforcement is defence in depth; backend RBAC remains authoritative.
+- No tenant identifier, model type or body value is inferred.
+- No backend, database, migration or API change was introduced.
+- No external request, asset or credential was introduced.
+
+### Authorized Files
+
+- `frontend/src/performance-body/mapping/AuthorizedBodyData.tsx`
+- `frontend/src/performance-body/mapping/AuthorizedBodyData.test.tsx`
+- `docs/missions/MISSION-062-PERFORMANCE-BODY-MAPPING.md`
+- `knowledge-base/docs/missions/mission-062.md`
+
+### Release State
+
+Commit, push, Docusaurus publication and authenticated production-page verification are pending.
+
+### Integration Boundary
+
+Mounting the body-mapping capability into the Athlete Digital Twin page remains dependent on Mission 113 Athlete Onboarding providing an explicit persisted `MALE` or `FEMALE` model selection. No model type is inferred or defaulted.
