@@ -16,6 +16,10 @@ import {
 
 import { createFemaleBodyModel } from "./models/female-body.model";
 import { createMaleBodyModel } from "./models/male-body.model";
+import BodyMeasurementsPanel from "./measurements/BodyMeasurementsPanel";
+import type {
+  BodyMeasurement,
+} from "./measurements/body-measurements";
 import "./PerformanceBodyViewer.css";
 
 export type PerformanceBodyModelType =
@@ -24,6 +28,7 @@ export type PerformanceBodyModelType =
 
 interface PerformanceBodyViewerProps {
   modelType: PerformanceBodyModelType;
+  measurements?: readonly BodyMeasurement[];
 }
 
 const VIEWPORT_WIDTH = 480;
@@ -49,6 +54,7 @@ function disposeModel(model: Group): void {
 
 export default function PerformanceBodyViewer({
   modelType,
+  measurements = [],
 }: PerformanceBodyViewerProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [renderError, setRenderError] =
@@ -140,6 +146,10 @@ export default function PerformanceBodyViewer({
         className="performance-body-viewer__canvas"
         role="img"
         aria-label={`${modelType.toLowerCase()} 3D performance body`}
+      />
+
+      <BodyMeasurementsPanel
+        measurements={measurements}
       />
 
       {renderError && (

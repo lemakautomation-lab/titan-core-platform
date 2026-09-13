@@ -170,3 +170,58 @@ The authoritative product requirement is:
 - The selected value must determine the rendered performance-body model.
 
 Persistence and onboarding capture remain deferred to the authoritative Athlete onboarding/profile mission. No premature signup, persistence or migration architecture is introduced here.
+## Control 061.4 - Measurements
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+### Identified Gap
+
+The performance-body capability had no explicit body-measurement contract, validation, deterministic ordering, accessible display or direct regression coverage.
+
+### Design
+
+Control 061.4 establishes an explicit centimetre-based measurement boundary. Values must be supplied directly, remain non-medical and non-diagnostic, and are never inferred from the selected body model.
+
+### Implementation
+
+- Added eight canonical measurement identifiers.
+- Added finite-positive-value validation.
+- Added deterministic measurement ordering.
+- Added immutable measurement records and collection.
+- Added an accessible measurement panel to the body viewer.
+- Added explicit centimetre units.
+- Added a non-medical and non-diagnostic boundary statement.
+- Added focused model and rendering tests.
+
+### Authorized Files
+
+- `frontend/src/performance-body/measurements/body-measurements.ts`
+- `frontend/src/performance-body/measurements/BodyMeasurementsPanel.tsx`
+- `frontend/src/performance-body/measurements/BodyMeasurementsPanel.test.tsx`
+- `frontend/src/performance-body/PerformanceBodyViewer.tsx`
+- `frontend/src/performance-body/PerformanceBodyViewer.css`
+- `docs/missions/MISSION-061-3D-PERFORMANCE-BODY.md`
+- `knowledge-base/docs/missions/mission-061.md`
+
+### Verification Evidence
+
+- Targeted regression: **1/1 file; 6/6 tests passed**
+- Broader performance-body regression: **4/4 files; 16/16 tests passed**
+- Full frontend regression: **18/18 files; 107/107 tests passed**
+- Final focused regression after lint correction: **2/2 files; 10/10 tests passed**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN with zero warnings**
+- Whitespace audit: **GREEN**
+
+### Security and Integrity
+
+- No backend, database, migration or API change was introduced.
+- No authentication, authorization, RBAC, tenant or session behaviour changed.
+- Invalid, zero, negative, NaN and infinite values are rejected.
+- Measurements are explicit and never inferred.
+- No medical or diagnostic claim is made.
+- No external request, asset or credential was introduced.
+
+### Deferred Scope
+
+Measurement persistence and athlete-profile capture remain deferred until an authoritative athlete-profile contract exists. Muscle development, progress visualisation and interactive controls remain in Controls 061.5-061.7.

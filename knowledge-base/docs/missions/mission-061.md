@@ -33,8 +33,36 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 61.4 - Measurements
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
 
+#### Identified Gap
+
+No explicit measurement contract, validation, canonical ordering, accessible display or direct automated coverage existed.
+
+#### Design and Implementation
+
+- Eight canonical body-measurement identifiers.
+- Explicit centimetre values.
+- Finite-positive-value validation.
+- Deterministic ordering.
+- Immutable results.
+- Accessible viewer measurement panel.
+- Non-medical and non-diagnostic boundary.
+- No inferred measurements or backend persistence.
+
+#### Verification Evidence
+
+- Targeted: **1/1 file and 6/6 tests passed**
+- Broader: **4/4 files and 16/16 tests passed**
+- Full frontend: **18/18 files and 107/107 tests passed**
+- Final focused: **2/2 files and 10/10 tests passed**
+- Production build: **GREEN**
+- Lint: **GREEN with zero warnings**
+- Whitespace audit: **GREEN**
+
+#### Release State
+
+Commit, push, Docusaurus publication and public verification are pending.
 ### Control 61.5 - Muscle development
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

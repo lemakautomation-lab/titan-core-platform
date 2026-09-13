@@ -31,3 +31,42 @@
   color: #f4f7f8;
   text-align: center;
 }
+
+.performance-body-measurements {
+  width: min(100% - 2rem, 30rem);
+  margin: 0 1rem 1.5rem;
+  padding: 1rem;
+  border: 1px solid rgba(66, 245, 197, 0.24);
+  border-radius: 0.75rem;
+  color: #f4f7f8;
+  background: rgba(7, 10, 13, 0.88);
+}
+
+.performance-body-measurements h2 {
+  margin: 0 0 0.75rem;
+  color: #42f5c5;
+  font-size: 1rem;
+}
+
+.performance-body-measurements dl {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.performance-body-measurements dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.performance-body-measurements dt,
+.performance-body-measurements dd {
+  margin: 0;
+}
+
+.performance-body-measurements p {
+  margin: 0.75rem 0 0;
+  color: #aeb9bd;
+  font-size: 0.75rem;
+}
