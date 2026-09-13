@@ -237,7 +237,7 @@ Measurement persistence and athlete-profile capture remain deferred until an aut
 - Protected route: `/docs/missions/061/`
 ## Control 061.5 - Muscle Development
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 **Evidence timestamp:** 2026-09-13T15:44:12+02:00
 
@@ -288,6 +288,11 @@ No muscle-development contract, validation, canonical segment mapping, visual ap
 - No authentication, authorization, RBAC, tenant or session behaviour changed.
 - No external asset, request or credential was introduced.
 
-### Release State
+### Release Evidence
 
-Commit, push, Docusaurus publication and public verification are pending.
+- Implementation commit: `562e98d8e0bd2647691096ce03689e005923c2f9`
+- Push: `main` equals `origin/main`
+- Docusaurus build: **GREEN**
+- Cloudflare publication: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Release timestamp: **2026-09-13T15:46:52+02:00**
