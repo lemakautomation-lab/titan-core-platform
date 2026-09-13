@@ -22,7 +22,7 @@ Local frontend expectation: visible change is expected only where the listed mis
 ### Control 113.1 - Name
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED
 
 **Objective:** Establish the validated athlete given-name contract used by onboarding and profile workflows.
 
@@ -46,7 +46,12 @@ Verification evidence:
 
 The visible onboarding workflow remains pending later Mission 113 controls.
 
-**Current classification:** TECHNICALLY COMPLETE / VERIFIED
+- Implementation commit: `c87dc3f3ee7a81d19f6acd4663e54421698f8c10`
+- Push synchronization: `main` equals `origin/main`
+- Knowledge Base publication: **VERIFIED**
+- Published-page verification timestamp: **2026-09-13T21:49:34+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED
 
 ### Control 113.2 - Surname
 

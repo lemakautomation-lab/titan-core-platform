@@ -10,7 +10,7 @@ Build athlete onboarding through validated, tenant-scoped and authorised athlete
 
 ## Control 113.1 — Name
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED
 
 ### Control Objective
 
@@ -64,6 +64,14 @@ The Athlete domain now:
 - `backend/src/domain/entities/athlete.entity.ts`
 - `backend/tests/unit/athlete-name.spec.ts`
 
+### Publication Evidence
+
+- Implementation commit: `c87dc3f3ee7a81d19f6acd4663e54421698f8c10`
+- Push synchronization: `main` equals `origin/main`
+- Knowledge Base publication: **VERIFIED**
+- Published-page verification timestamp: **2026-09-13T21:49:34+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED
 ### Delivery Boundary
 
 Control 113.1 completes the validated athlete-name foundation.
