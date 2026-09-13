@@ -24,7 +24,7 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 62.1 - Before state
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 #### Control Objective
 
@@ -53,9 +53,18 @@ Select the earliest valid body-progress snapshot deterministically and render it
 - Whitespace audit: GREEN.
 - Evidence timestamp: **2026-09-13T20:21:34+02:00**
 
-#### Release State
+#### Release Evidence
 
-Commit, push, Docusaurus publication and authenticated production-page verification are pending.
+- Implementation commit: `2cdbb3b11a6d38706773a914734671db48bb86b8`
+- Push: VERIFIED
+- Knowledge Base typecheck: GREEN
+- Docusaurus production build: GREEN
+- Cloudflare Pages publication: VERIFIED
+- Authenticated production page: VERIFIED
+- Protected route: `/docs/missions/062/`
+- Release timestamp: **2026-09-13T20:24:13+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ### Control 62.2 - Current state
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

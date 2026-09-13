@@ -27,7 +27,7 @@ Visible application integration remains subject to the authoritative athlete dat
 
 ## Control 062.1 - Before State
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ### Control Objective
 
@@ -81,7 +81,14 @@ Mission 061.6 compared the earliest and latest snapshots but did not expose the 
 
 ### Release State
 
-Commit, push, Docusaurus publication and authenticated production-page verification are pending.
+- Implementation commit: `2cdbb3b11a6d38706773a914734671db48bb86b8`
+- Push: `main` equals `origin/main`
+- Knowledge Base typecheck: **GREEN**
+- Docusaurus production build: **GREEN**
+- Cloudflare Pages publication: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Protected route: `/docs/missions/062/`
+- Release timestamp: **2026-09-13T20:24:13+02:00**
 
 ### Deferred Scope
 
