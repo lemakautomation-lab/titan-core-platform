@@ -210,7 +210,7 @@ Create and render an explicit, immutable TARGET body state whose timestamp is la
 **Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 ## Control 062.4 - Longitudinal Comparison
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
 
 ### Control Objective
 
@@ -257,4 +257,12 @@ Transform two or more explicitly supplied body-progress snapshots into a determi
 
 ### Release State
 
-Commit, push, Docusaurus publication and authenticated production-page verification are pending.
+- Implementation commit: `cf536db7c063d80e17afcb13292ce56b9935af43`
+- Push: `main` equals `origin/main`
+- Docusaurus production build: **GREEN**
+- Cloudflare Pages publication: **VERIFIED**
+- Authenticated production page: **VERIFIED**
+- Protected route: `/docs/missions/062/`
+- Release timestamp: **2026-09-13T20:46:48+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / PUBLISHED / RELEASED
