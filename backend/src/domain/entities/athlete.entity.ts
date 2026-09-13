@@ -26,6 +26,8 @@ export class Athlete {
 
         public updatedAt: Date,
 
+        public countryCode: string | null = null,
+
     ) {}
 
     static create(
@@ -35,6 +37,7 @@ export class Athlete {
         firstName: string,
         lastName: string,
         dateOfBirth: Date | null,
+        countryCode: string | null = null,
     ): Athlete {
 
         const now = new Date();
@@ -50,6 +53,11 @@ export class Athlete {
             RecordStatus.ACTIVE,
             now,
             now,
+            countryCode === null
+                ? null
+                : Athlete.normalizeCountryCode(
+                    countryCode,
+                ),
         );
 
     }
@@ -73,6 +81,19 @@ export class Athlete {
         this.firstName = normalizedFirstName;
         this.lastName = normalizedLastName;
         this.dateOfBirth = dateOfBirth;
+        this.updatedAt = new Date();
+
+    }
+
+    updateCountry(
+        countryCode: string,
+    ): void {
+
+        this.countryCode =
+            Athlete.normalizeCountryCode(
+                countryCode,
+            );
+
         this.updatedAt = new Date();
 
     }
@@ -117,6 +138,35 @@ export class Athlete {
 
     }
 
+    private static normalizeCountryCode(
+        countryCode: string,
+    ): string {
+
+        if (
+            typeof countryCode !== "string" ||
+            !countryCode.trim()
+        ) {
+
+            throw new Error(
+                "Athlete country code is required.",
+            );
+
+        }
+
+        const normalized =
+            countryCode.trim().toUpperCase();
+
+        if (!/^[A-Z]{2}$/.test(normalized)) {
+
+            throw new Error(
+                "Athlete country code must contain exactly two letters.",
+            );
+
+        }
+
+        return normalized;
+
+    }
     private static normalizeLastName(
         lastName: string,
     ): string {

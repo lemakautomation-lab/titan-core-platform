@@ -17,6 +17,7 @@ export class AthleteMapper {
             prisma.status as RecordStatus,
             prisma.createdAt,
             prisma.updatedAt,
+            prisma.countryCode,
         );
 
     }
@@ -40,6 +41,8 @@ export class AthleteMapper {
             lastName: athlete.lastName,
 
             dateOfBirth: athlete.dateOfBirth,
+
+            countryCode: athlete.countryCode,
 
             status: athlete.status,
 

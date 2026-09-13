@@ -142,3 +142,55 @@ The Athlete domain now:
 ### Delivery Boundary
 
 Control 113.2 completes the validated athlete-surname foundation. The visible onboarding workflow remains pending later Mission 113 controls.
+## Control 113.3 — Country
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+### Control Objective
+
+Establish a normalized country-code field for athlete onboarding and profile data.
+
+### Implementation
+
+- Added nullable `Athlete.countryCode` storage for legacy compatibility.
+- Added a forward-only Prisma migration.
+- Normalizes supplied codes to uppercase.
+- Requires exactly two alphabetic characters when supplied.
+- Enforces the same format through a PostgreSQL check constraint.
+- Supports deterministic country updates.
+- Preserves the previous country when validation fails.
+- Updated Athlete persistence and rehydration mapping.
+
+Existing athletes are not assigned an inferred country. The onboarding submission boundary will require an explicit country later in Mission 113.
+
+### Verification
+
+- Prisma client generation: **GREEN**
+- Migration deployment to protected local `titan_core_test`: **GREEN**
+- Targeted country regression: **2 files / 10 tests GREEN**
+- Broader Athlete regression: **GREEN**
+- Full backend regression: **101 test files / 798 tests GREEN**
+- Backend build: **GREEN**
+- Whitespace audit: **GREEN**
+- Objective evidence timestamp: **2026-09-13T22:22:10+02:00**
+
+### Security and Data Integrity
+
+- No production or remote database was targeted.
+- Migration execution was restricted to local `titan_core_test`.
+- Existing tenant-scoped Athlete repository behavior remains intact.
+- No country is inferred from user identity, location or tenant.
+- Existing Athlete records remain valid with a null country code.
+
+### Files
+
+- `backend/prisma/migrations/20260913221500_add_athlete_country/migration.sql`
+- `backend/prisma/schema.prisma`
+- `backend/src/domain/entities/athlete.entity.ts`
+- `backend/src/infrastructure/mappers/athlete.mapper.ts`
+- `backend/tests/integration/athlete/athlete-country.repository.spec.ts`
+- `backend/tests/unit/athlete-country.spec.ts`
+
+### Delivery Boundary
+
+Control 113.3 completes the country persistence and validation foundation. The visible onboarding workflow remains pending later Mission 113 controls.
