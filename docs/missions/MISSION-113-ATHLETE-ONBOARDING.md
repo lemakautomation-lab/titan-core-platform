@@ -257,7 +257,7 @@ Control 113.4 completes the authoritative email foundation. The visible onboardi
 
 ## Control 113.5 — Contact Number
 
-Status: **TECHNICALLY COMPLETE / VERIFIED**
+Status: **COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED**
 
 Control 113.5 establishes the authoritative contact-number foundation required by athlete onboarding.
 
@@ -307,7 +307,8 @@ Evidence timestamp: **2026-09-14 08:41:18 +02:00**
 - Backend lint passed with 0 errors and 29 existing warnings.
 - `git diff --check` passed.
 - Unauthorized files changed: none.
+- Knowledge Base publication visually verified at **2026-09-14 08:56:30 +02:00**.
 
 ### Delivery classification
 
-Control 113.5 is technically complete and verified. Knowledge Base publication verification remains outstanding. Mission 113 remains active.
+Control 113.5 is complete, verified and published. Mission 113 remains active.
