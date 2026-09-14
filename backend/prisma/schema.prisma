@@ -78,26 +78,29 @@ model Organisation {
 }
 
 model User {
-  id                   String                @id @default(uuid())
-  tenantId             String
-  organisationId       String?
-  email                String
-  contactNumber        String?
-  selectedUserType     OnboardingUserType?
-  passwordHash         String
-  firstName            String?
-  lastName             String?
-  status               UserStatus            @default(ACTIVE)
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  auditLogs            AuditLog[]
-  sessions             Session[]
-  organisation         Organisation?         @relation(fields: [organisationId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  tenant               Tenant                @relation(fields: [tenantId], references: [id])
-  userRoles            UserRole[]
-  athletes             Athlete[]
-  payments             Payment[]             @relation("PaymentUserTenant")
-  userTypeEntitlements UserTypeEntitlement[] @relation("EntitlementUserTenant")
+  id                       String                @id @default(uuid())
+  tenantId                 String
+  organisationId           String?
+  email                    String
+  contactNumber            String?
+  selectedUserType         OnboardingUserType?
+  profilePictureStorageKey String?
+  profilePictureMimeType   String?
+  profilePictureSizeBytes  Int?
+  passwordHash             String
+  firstName                String?
+  lastName                 String?
+  status                   UserStatus            @default(ACTIVE)
+  createdAt                DateTime              @default(now())
+  updatedAt                DateTime              @updatedAt
+  auditLogs                AuditLog[]
+  sessions                 Session[]
+  organisation             Organisation?         @relation(fields: [organisationId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  tenant                   Tenant                @relation(fields: [tenantId], references: [id])
+  userRoles                UserRole[]
+  athletes                 Athlete[]
+  payments                 Payment[]             @relation("PaymentUserTenant")
+  userTypeEntitlements     UserTypeEntitlement[] @relation("EntitlementUserTenant")
 
   @@unique([tenantId, email])
   @@unique([id, tenantId], map: "User_id_tenantId_key")

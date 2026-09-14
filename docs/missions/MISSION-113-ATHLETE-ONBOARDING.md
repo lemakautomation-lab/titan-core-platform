@@ -522,3 +522,70 @@ Evidence timestamp: **2026-09-14 12:08:13 +02:00**
 ### Delivery classification
 
 Control 113.8 is complete, verified and published as a backend entitlement foundation. It does not claim a live checkout, payment-provider integration, frontend onboarding release or automatic RBAC assignment. The canonical Cloudflare alias incident remains tracked separately. Mission 113 remains active.
+## Control 113.9 - Profile Picture
+
+Status: **TECHNICALLY COMPLETE / VERIFIED**
+
+Control 113.9 establishes the secure, provider-neutral profile-picture foundation for athlete onboarding.
+
+### Ownership decision
+
+- The authoritative profile picture belongs to the `User` personal profile.
+- `Athlete` does not duplicate profile-picture data.
+- Athlete access resolves through the explicit User-to-Athlete relationship.
+- Existing users remain compatible through nullable metadata.
+- No image, tenant, User or storage location is inferred.
+
+### Image contract
+
+- Supported formats are JPEG, PNG and WebP.
+- SVG and other unsupported formats are rejected.
+- Empty images are rejected.
+- Maximum image size is 5 MiB.
+- Storage keys are opaque and limited to 512 characters.
+- Storage keys must be owned by the explicit tenant and User path.
+- URL-shaped, traversal and backslash-containing keys are rejected.
+- Invalid replacements preserve the existing profile-picture state.
+
+### Persistence integrity
+
+- Added nullable storage key, MIME type and byte-size fields to `User`.
+- Added forward-only migration `20260914122500_add_user_profile_picture`.
+- Database constraints require all profile-picture metadata fields to be either complete or null.
+- Database constraints enforce supported MIME types and size limits.
+- Existing users remain valid without profile pictures.
+- Prisma persistence and rehydration mapping were updated.
+
+### Application and storage boundary
+
+- Added a provider-neutral profile-picture storage contract.
+- No Cloudflare R2, S3 or other provider credentials were invented.
+- Added tenant-bounded User profile lookup.
+- Added profile-picture set and removal commands.
+- Added profile-picture set and removal use cases.
+- Upload content is validated before storage.
+- A newly stored object is deleted if database persistence fails.
+- Removal clears persisted metadata and requests deletion from storage.
+- Cross-tenant User lookup returns no record.
+- Raw image bytes are not stored in PostgreSQL.
+- Arbitrary external image URLs are not persisted.
+
+### Verification evidence
+
+Evidence timestamp: **2026-09-14 14:42:36 +02:00**
+
+- Migration deployed only to protected local database `titan_core_test`.
+- Prisma migration status verified.
+- Profile-picture domain tests passed.
+- Profile-picture application tests passed.
+- Profile-picture persistence and tenant-isolation tests passed.
+- User and authentication regression passed.
+- Full backend test suite passed.
+- Backend TypeScript build passed.
+- Backend lint passed with no errors.
+- `git diff --check` passed.
+- Unauthorized files changed: none.
+
+### Delivery classification
+
+Control 113.9 is technically complete and verified as a secure backend profile-picture foundation. It does not claim that a storage provider, multipart HTTP endpoint or frontend uploader is released. Knowledge Base publication verification remains outstanding. Mission 113 remains active.

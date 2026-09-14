@@ -21,6 +21,9 @@ export class UserMapper {
             prisma.updatedAt,
             prisma.contactNumber,
             prisma.selectedUserType as OnboardingUserType | null,
+            prisma.profilePictureStorageKey,
+            prisma.profilePictureMimeType,
+            prisma.profilePictureSizeBytes,
         );
 
     }
@@ -46,6 +49,9 @@ export class UserMapper {
             lastName: user.lastName,
             contactNumber: user.contactNumber,
             selectedUserType: user.selectedUserType,
+            profilePictureStorageKey: user.profilePictureStorageKey,
+            profilePictureMimeType: user.profilePictureMimeType,
+            profilePictureSizeBytes: user.profilePictureSizeBytes,
 
             status: user.status,
 

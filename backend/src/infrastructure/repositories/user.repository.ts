@@ -29,6 +29,23 @@ implements UserRepository {
             : null;
     }
 
+    async findByIdInTenant(
+        id: string,
+        tenantId: string,
+    ): Promise<User | null> {
+
+        const user =
+            await this.database.prisma.user.findFirst({
+                where: {
+                    id,
+                    tenantId,
+                },
+            });
+
+        return user
+            ? UserMapper.toDomain(user)
+            : null;
+    }
     async findByEmail(
         email: string,
         tenantId: string,

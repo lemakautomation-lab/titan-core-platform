@@ -4,6 +4,8 @@ import { UserStatus } from "../enums/user-status.enum";
 
 import { OnboardingUserType } from "../enums/onboarding-user-type.enum";
 
+import { ProfilePictureReference } from "../value-objects/profile-picture-reference";
+
 export class User {
 
     constructor(
@@ -31,6 +33,12 @@ export class User {
         public contactNumber: string | null = null,
 
         public selectedUserType: OnboardingUserType | null = null,
+
+        public profilePictureStorageKey: string | null = null,
+
+        public profilePictureMimeType: string | null = null,
+
+        public profilePictureSizeBytes: number | null = null,
 
     ) {}
 
@@ -197,6 +205,42 @@ export class User {
         return selectedUserType as OnboardingUserType;
 
     }
+    updateProfilePicture(
+        storageKey: string,
+        mimeType: string,
+        sizeBytes: number,
+    ): void {
+
+        const reference =
+            ProfilePictureReference.create(
+                this.tenantId,
+                this.id,
+                storageKey,
+                mimeType,
+                sizeBytes,
+            );
+
+        this.profilePictureStorageKey =
+            reference.storageKey;
+
+        this.profilePictureMimeType =
+            reference.mimeType;
+
+        this.profilePictureSizeBytes =
+            reference.sizeBytes;
+
+        this.updatedAt =
+            new Date();
+    }
+
+    removeProfilePicture(): void {
+
+        this.profilePictureStorageKey = null;
+        this.profilePictureMimeType = null;
+        this.profilePictureSizeBytes = null;
+        this.updatedAt = new Date();
+    }
+
     changePassword(
         passwordHash: string,
     ): void {
