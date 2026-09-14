@@ -767,3 +767,57 @@ Control 113.12 establishes authenticated self-service capture of Athlete body me
 ### Delivery classification
 
 Control 113.12 is complete and verified as a backend self-service body-measurement boundary. No frontend release is claimed. Control 113.13 has not started. Mission 113 remains active.
+## Control 113.13 - Onboarding Validation
+
+Status: **COMPLETE / VERIFIED**
+
+Control 113.13 establishes a deterministic, authenticated and read-only Athlete onboarding-readiness boundary.
+
+### Completion requirements
+
+An Athlete onboarding profile is complete only when all of the following evidence exists:
+
+- the selected onboarding user type is `ATHLETE`;
+- an active Athlete entitlement exists for the authenticated User;
+- a linked active Athlete profile exists;
+- first name and surname are present;
+- email and contact number are present;
+- country code and date of birth are present;
+- at least one Athlete goal exists with exactly one primary goal;
+- at least one body-measurement snapshot exists.
+
+Profile-picture metadata is optional because no preceding Mission 113 contract makes it mandatory.
+
+### Authenticated API boundary
+
+- Added `GET /api/v1/auth/me/onboarding-status`.
+- User and tenant identity come exclusively from the authenticated request context.
+- The request does not accept User, Athlete or tenant identity.
+- The response contains `complete` and a deterministic `missingRequirements` list.
+- The endpoint is read-only and marked `Cache-Control: no-store`.
+- Missing onboarding evidence returns an incomplete status rather than mutating data.
+- Missing or inactive authenticated User records return controlled failures.
+
+### Architecture and isolation
+
+- A domain readiness service defines the canonical requirement order.
+- An application use case delegates to one frozen authenticated query.
+- The Prisma query evaluates User, entitlement, Athlete, goal and body-measurement evidence in one database transaction.
+- Every lookup is tenant-scoped.
+- Existing payment, entitlement, profile, goal and measurement records are not modified.
+- No new database migration is required.
+
+### Verification evidence
+
+- Domain and application readiness tests: passed.
+- Authenticated API tests: passed.
+- Targeted total: 2 test files and 8 tests passed.
+- TypeScript build: passed.
+- Backend lint: 0 errors and 29 pre-existing warnings.
+- Full backend regression: 122 test files and 950 tests passed.
+- Knowledge Base build: passed.
+- No frontend or Cloudflare release was performed.
+
+### Delivery classification
+
+Control 113.13 is complete and verified as a backend onboarding-readiness boundary. It does not claim that the visible frontend onboarding journey is released. All Mission 113 controls are complete and verified; Mission 113 is closed.

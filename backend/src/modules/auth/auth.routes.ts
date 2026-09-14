@@ -69,6 +69,14 @@ export function createAuthRoutes(
             .createMyBodyMeasurement
             .bind(authController),
     );
+
+    router.get(
+        "/me/onboarding-status",
+        authMiddleware,
+        authController
+            .getMyOnboardingStatus
+            .bind(authController),
+    );
     return router;
 
 }

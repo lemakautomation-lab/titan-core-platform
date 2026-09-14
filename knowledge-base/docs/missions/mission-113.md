@@ -250,7 +250,28 @@ Control 113.12 is complete and verified. Mission 113 remains active, and Control
 
 ### Control 113.13 - Onboarding validation
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+Status: **COMPLETE / VERIFIED**
+
+Control 113.13 provides a deterministic, authenticated and read-only Athlete onboarding status.
+
+#### Completion requirements
+
+Completion requires an Athlete user type, an active matching entitlement, a linked active Athlete, complete personal details, country, date of birth, at least one goal with exactly one primary, and at least one body-measurement snapshot. Profile-picture metadata remains optional.
+
+#### API and security
+
+- The endpoint is `GET /api/v1/auth/me/onboarding-status`.
+- Identity and tenant scope come only from authentication.
+- The response returns `complete` and canonically ordered `missingRequirements`.
+- The query is tenant-scoped and executes against a consistent transactional snapshot.
+- The endpoint does not mutate profile, payment, entitlement, goal or measurement data.
+- No database migration is required.
+
+#### Verification state
+
+Two targeted test files with eight tests passed. TypeScript build passed. Backend lint completed with 0 errors and 29 pre-existing warnings. The full backend regression passed with 122 test files and 950 tests. The Knowledge Base build passed. No frontend or Cloudflare release occurred.
+
+Control 113.13 is complete and verified. All Mission 113 controls are complete and verified, and Mission 113 is closed.
 
 ## Mission Exit Gate
 

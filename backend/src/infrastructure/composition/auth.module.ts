@@ -12,6 +12,8 @@ import { UpdateMyAthleteGoalsUseCase } from "../../application/use-cases/update-
 import { PrismaAthleteGoalsUpdateTransaction } from "../transactions/athlete-goals-update.transaction";
 import { CreateMyAthleteBodyMeasurementUseCase } from "../../application/use-cases/create-my-athlete-body-measurement.use-case";
 import { PrismaAthleteBodyMeasurementCreateTransaction } from "../transactions/athlete-body-measurement-create.transaction";
+import { GetMyAthleteOnboardingStatusUseCase } from "../../application/use-cases/get-my-athlete-onboarding-status.use-case";
+import { PrismaAthleteOnboardingStatusQuery } from "../queries/athlete-onboarding-status.query";
 
 import { auditLogModule } from "./audit-log.module";
 import { authorizationModule } from "./authorization.module";
@@ -39,6 +41,11 @@ const athleteBodyMeasurementCreateTransaction =
         databaseService,
     );
 
+const athleteOnboardingStatusQuery =
+    new PrismaAthleteOnboardingStatusQuery(
+        databaseService,
+    );
+
 export const sessionRepository =
     new PrismaSessionRepository(
         databaseService,
@@ -61,6 +68,10 @@ export const authModule = {
     createMyAthleteBodyMeasurementUseCase:
         new CreateMyAthleteBodyMeasurementUseCase(
             athleteBodyMeasurementCreateTransaction,
+        ),
+    getMyAthleteOnboardingStatusUseCase:
+        new GetMyAthleteOnboardingStatusUseCase(
+            athleteOnboardingStatusQuery,
         ),
     loginUseCase:
         new LoginUseCase(
