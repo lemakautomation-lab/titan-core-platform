@@ -528,3 +528,83 @@ Evidence timestamp: **2026-09-14 14:42:36 +02:00**
 ### Delivery classification
 
 Control 113.9 is complete, verified and published as a secure backend profile-picture foundation. It does not claim that a storage provider, multipart HTTP endpoint or frontend uploader is released. The canonical Cloudflare alias incident remains tracked separately. Mission 113 remains active.
+## Control 113.10 - Editable Personal Details
+
+Status: **TECHNICALLY COMPLETE / VERIFIED**
+
+Control 113.10 establishes an authenticated self-service boundary for editing the personal details owned jointly by the User identity and its linked Athlete profile.
+
+### Self-service boundary
+
+- Added authenticated `PUT /api/v1/auth/me`.
+- User and tenant identity come only from the verified authentication context.
+- No request-supplied User or tenant identity is trusted.
+- This boundary does not reuse the permissioned administrator User-update route.
+- Unauthenticated requests are rejected.
+- A linked, tenant-owned Athlete profile is required.
+
+### Editable details
+
+- First name.
+- Surname.
+- Email address.
+- Contact number.
+- Country code.
+- Date of birth.
+
+### Protected account fields
+
+The self-service boundary cannot change:
+
+- tenant ownership;
+- organisation ownership;
+- selected onboarding user type;
+- roles or permissions;
+- account status;
+- password;
+- payment or entitlement state.
+
+Requests containing protected account fields are rejected.
+
+### Validation and normalization
+
+- Athlete first name and surname use the existing required, trimmed and bounded Athlete contracts.
+- User and Athlete names persist from the same canonical normalized values.
+- Email uses the existing trimmed, lowercase User email contract.
+- Email uniqueness remains tenant-scoped.
+- Contact number uses the existing nullable E.164 User contract.
+- Country uses the existing required two-letter uppercase Athlete contract.
+- Date of birth must be a valid, non-future date.
+- Invalid requests do not partially mutate either record.
+
+### Atomic persistence and tenant isolation
+
+- Added a dedicated personal-details transaction port.
+- Added a Prisma transaction implementation.
+- User and linked Athlete updates occur in one database transaction.
+- Duplicate email is checked inside the transaction.
+- User lookup is bounded by authenticated User and tenant identity.
+- Athlete lookup is bounded by authenticated User and tenant identity.
+- Cross-tenant access returns no User.
+- Failure of either update rolls back both records.
+
+### Verification evidence
+
+Evidence timestamp: **2026-09-14 15:12:56 +02:00**
+
+- Personal-details application tests passed.
+- Atomic User/Athlete transaction tests passed.
+- Authenticated API tests passed.
+- Cross-tenant rejection tests passed.
+- Duplicate-email rollback tests passed.
+- Invalid Athlete-data rollback tests passed.
+- User, Athlete and authentication regression passed.
+- Full backend test suite passed.
+- Backend TypeScript build passed.
+- Backend lint passed with no errors.
+- `git diff --check` passed.
+- Unauthorized files changed: none.
+
+### Delivery classification
+
+Control 113.10 is technically complete and verified as a backend self-service personal-details boundary. It does not claim that the product frontend is released. Knowledge Base publication verification remains outstanding. Mission 113 remains active.

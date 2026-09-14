@@ -5,6 +5,7 @@ import { authorizationModule } from "../../infrastructure/composition/authorizat
 
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { RequestWithId } from "../../middleware/request-id.middleware";
+import { UpdateMyPersonalDetailsCommand } from "../../application/commands/update-my-personal-details.command";
 
 import {
     REFRESH_TOKEN_COOKIE_NAME,
@@ -204,6 +205,120 @@ export class AuthController {
     }
 
 
+
+    async updateMe(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+
+        res.set("Cache-Control", "no-store");
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const body =
+            req.body as Record<string, unknown>;
+
+        const forbiddenFields = [
+            "tenantId",
+            "organisationId",
+            "selectedUserType",
+            "roles",
+            "status",
+            "password",
+        ];
+
+        if (
+            !body ||
+            typeof body !== "object" ||
+            forbiddenFields.some(
+                (field) =>
+                    Object.prototype.hasOwnProperty.call(
+                        body,
+                        field,
+                    ),
+            )
+        ) {
+            res.status(400).json({
+                error:
+                    "Invalid personal-details payload.",
+            });
+            return;
+        }
+
+        if (
+            typeof body.firstName !== "string" ||
+            typeof body.lastName !== "string" ||
+            typeof body.email !== "string" ||
+            (
+                body.contactNumber !== null &&
+                typeof body.contactNumber !== "string"
+            ) ||
+            typeof body.countryCode !== "string" ||
+            (
+                body.dateOfBirth !== null &&
+                typeof body.dateOfBirth !== "string"
+            )
+        ) {
+            res.status(400).json({
+                error:
+                    "Invalid personal-details payload.",
+            });
+            return;
+        }
+
+        let dateOfBirth: Date | null = null;
+
+        if (body.dateOfBirth !== null) {
+            dateOfBirth =
+                new Date(body.dateOfBirth);
+
+            if (
+                Number.isNaN(
+                    dateOfBirth.getTime(),
+                )
+            ) {
+                res.status(400).json({
+                    error:
+                        "Date of birth is invalid.",
+                });
+                return;
+            }
+        }
+
+        const result =
+            await authModule
+                .updateMyPersonalDetailsUseCase
+                .execute(
+                    new UpdateMyPersonalDetailsCommand(
+                        authUser.userId,
+                        authUser.tenantId,
+                        body.firstName,
+                        body.lastName,
+                        body.email,
+                        body.contactNumber,
+                        body.countryCode,
+                        dateOfBirth,
+                    ),
+                );
+
+        if (!result.isSuccess) {
+            res.status(400).json({
+                error: result.error,
+            });
+            return;
+        }
+
+        res.status(200).json(
+            result.value,
+        );
+    }
 
     async me(
         req: AuthRequest,

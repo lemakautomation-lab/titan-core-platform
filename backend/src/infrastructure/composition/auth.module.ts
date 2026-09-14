@@ -6,12 +6,19 @@ import { PrismaSessionRepository } from "../repositories/session.repository";
 import { LoginUseCase } from "../../application/use-cases/auth/login.use-case";
 import { RefreshTokenUseCase } from "../../application/use-cases/auth/refresh-token.use-case";
 import { LogoutUseCase } from "../../application/use-cases/auth/logout.use-case";
+import { UpdateMyPersonalDetailsUseCase } from "../../application/use-cases/update-my-personal-details.use-case";
+import { PrismaPersonalDetailsUpdateTransaction } from "../transactions/personal-details-update.transaction";
 
 import { auditLogModule } from "./audit-log.module";
 import { authorizationModule } from "./authorization.module";
 
 const databaseService =
     new DatabaseService();
+
+const personalDetailsUpdateTransaction =
+    new PrismaPersonalDetailsUpdateTransaction(
+        databaseService,
+    );
 
 export const userRepository =
     new PrismaUserRepository(
@@ -29,6 +36,10 @@ export const authModule = {
 
     sessionRepository,
 
+    updateMyPersonalDetailsUseCase:
+        new UpdateMyPersonalDetailsUseCase(
+            personalDetailsUpdateTransaction,
+        ),
     loginUseCase:
         new LoginUseCase(
             userRepository,

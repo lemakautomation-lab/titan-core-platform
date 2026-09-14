@@ -50,6 +50,12 @@ export function createAuthRoutes(
         authController.me.bind(authController),
     );
 
+    router.put(
+        "/me",
+        authMiddleware,
+        authController.updateMe.bind(authController),
+    );
+
     return router;
 
 }
