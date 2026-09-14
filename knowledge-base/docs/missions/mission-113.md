@@ -530,7 +530,7 @@ Evidence timestamp: **2026-09-14 14:42:36 +02:00**
 Control 113.9 is complete, verified and published as a secure backend profile-picture foundation. It does not claim that a storage provider, multipart HTTP endpoint or frontend uploader is released. The canonical Cloudflare alias incident remains tracked separately. Mission 113 remains active.
 ## Control 113.10 - Editable Personal Details
 
-Status: **TECHNICALLY COMPLETE / VERIFIED**
+Status: **COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED**
 
 Control 113.10 establishes an authenticated self-service boundary for editing the personal details owned jointly by the User identity and its linked Athlete profile.
 
@@ -604,7 +604,8 @@ Evidence timestamp: **2026-09-14 15:12:56 +02:00**
 - Backend lint passed with no errors.
 - `git diff --check` passed.
 - Unauthorized files changed: none.
+- Knowledge Base publication visually verified: 2026-09-14 15:24:58 SAST
 
 ### Delivery classification
 
-Control 113.10 is technically complete and verified as a backend self-service personal-details boundary. It does not claim that the product frontend is released. Knowledge Base publication verification remains outstanding. Mission 113 remains active.
+Control 113.10 is complete, verified and published as a backend self-service personal-details boundary. It does not claim that the product frontend is released. The canonical Cloudflare alias incident remains tracked separately. Mission 113 remains active.
