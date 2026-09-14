@@ -8,6 +8,7 @@ import { UseCase } from "../common/use-case.interface";
 import { ProductApplicationMapper } from "../mappers/product.mapper";
 
 import { BillingInterval } from "../../domain/enums/billing-interval.enum";
+import { OnboardingUserType } from "../../domain/enums/onboarding-user-type.enum";
 
 export class UpdateProductUseCase
 implements UseCase<UpdateProductCommand, Result<ProductDto>>
@@ -61,6 +62,9 @@ implements UseCase<UpdateProductCommand, Result<ProductDto>>
                 product.status,
                 product.createdAt,
                 new Date(),
+                command.entitlementUserType === undefined
+                    ? product.entitlementUserType
+                    : command.entitlementUserType as OnboardingUserType | null,
             );
 
         await this.productRepository.update(updated);

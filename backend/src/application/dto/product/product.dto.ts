@@ -1,4 +1,4 @@
-﻿export interface ProductDto {
+export interface ProductDto {
 
     id: string;
 
@@ -13,6 +13,8 @@
     currency: string;
 
     billingInterval: string;
+
+    entitlementUserType: string | null;
 
     status: string;
 

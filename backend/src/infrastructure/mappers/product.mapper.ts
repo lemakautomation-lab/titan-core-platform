@@ -2,6 +2,7 @@ import { Product as PrismaProduct } from "../../generated/prisma/client";
 
 import { Product } from "../../domain/entities/product.entity";
 import { BillingInterval } from "../../domain/enums/billing-interval.enum";
+import { OnboardingUserType } from "../../domain/enums/onboarding-user-type.enum";
 import { ProductStatus } from "../../domain/enums/product-status.enum";
 
 export class ProductMapper {
@@ -22,6 +23,7 @@ export class ProductMapper {
             prisma.status as ProductStatus,
             prisma.createdAt,
             prisma.updatedAt,
+            prisma.entitlementUserType as OnboardingUserType | null,
         );
     }
 
@@ -38,6 +40,7 @@ export class ProductMapper {
             priceCents: product.priceCents,
             currency: product.currency,
             billingInterval: product.billingInterval,
+            entitlementUserType: product.entitlementUserType,
             status: product.status,
         };
     }

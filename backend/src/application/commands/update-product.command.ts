@@ -9,6 +9,7 @@ export class UpdateProductCommand {
         public readonly priceCents: number,
         public readonly currency: string,
         public readonly billingInterval: string,
+        public readonly entitlementUserType: string | null | undefined = undefined,
     ) {}
 
 }

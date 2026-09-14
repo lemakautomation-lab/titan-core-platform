@@ -454,3 +454,70 @@ Evidence timestamp: **2026-09-14 10:57:13 +02:00**
 ### Delivery classification
 
 Control 113.7 is complete, verified and published through the verified Cloudflare deployment artifact. It establishes the payment-before-access foundation, not a live payment gateway or checkout release. The canonical Cloudflare alias incident remains open. Mission 113 remains active.
+## Control 113.8 - Paid User-Type Entitlement
+
+Status: **TECHNICALLY COMPLETE / VERIFIED**
+
+Control 113.8 establishes the tenant-bound entitlement foundation that connects a confirmed payment to the user type selected during onboarding.
+
+### Entitlement policy
+
+- Entitlements are issued only from confirmed payments.
+- The selected User type must match the Product entitlement target.
+- Supported targets are `ATHLETE`, `TRAINER` and `ORGANISATION`.
+- Organisation represents the organisation-management onboarding path, including team or organisation managers.
+- A payment can issue no more than one user-type entitlement.
+- Pending, failed, cancelled and refunded payments do not permit access.
+- Expired and revoked entitlements do not permit access.
+- Entitlements remain separate from RBAC roles and permissions.
+- No role, user type, payment or tenant ownership is inferred.
+
+### Product boundary
+
+- Added nullable `Product.entitlementUserType` for legacy compatibility.
+- Updated Product create and update commands.
+- Updated Product DTO and application mapping.
+- Updated Product create and update use cases.
+- Updated Product request validation.
+- Updated Prisma Product persistence mapping.
+- Invalid entitlement targets are rejected at the request boundary.
+- An omitted update value preserves the existing Product target.
+
+### Entitlement domain
+
+- Added the `UserTypeEntitlement` aggregate.
+- Added `ACTIVE`, `EXPIRED` and `REVOKED` lifecycle states.
+- Added deterministic monthly, quarterly and annual validity periods.
+- Added non-expiring one-time entitlement support.
+- Added explicit expiry and revocation behavior.
+- Access evaluation requires both an active entitlement and its confirmed source payment.
+
+### Persistence and tenant isolation
+
+- Added forward-only migration `20260914114500_add_user_type_entitlement`.
+- Added a unique payment-to-entitlement constraint.
+- Added tenant-bounded User and Product foreign keys.
+- Added a composite Payment ownership foreign key covering payment, tenant, User and Product.
+- Added a validity-period database check.
+- Added tenant-scoped repository reads and writes.
+- Cross-tenant entitlement retrieval returns no record.
+- Repository updates require both entitlement identity and tenant ownership.
+
+### Verification evidence
+
+Evidence timestamp: **2026-09-14 12:08:13 +02:00**
+
+- Migration deployed only to protected local database `titan_core_test`.
+- Prisma migration status verified.
+- Entitlement domain and payment-policy tests passed.
+- Entitlement repository integration tests passed.
+- Product, payment and entitlement regression passed.
+- Full backend test suite passed.
+- Backend TypeScript build passed.
+- Backend lint passed with no errors.
+- `git diff --check` passed.
+- Unauthorized files changed: none.
+
+### Delivery classification
+
+Control 113.8 is technically complete and verified as a backend entitlement foundation. It does not claim a live checkout, payment-provider integration, frontend onboarding release or automatic RBAC assignment. Knowledge Base publication verification remains outstanding. Mission 113 remains active.

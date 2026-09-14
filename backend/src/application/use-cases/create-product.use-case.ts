@@ -8,6 +8,7 @@ import { ProductApplicationMapper } from "../mappers/product.mapper";
 
 import { Product } from "../../domain/entities/product.entity";
 import { BillingInterval } from "../../domain/enums/billing-interval.enum";
+import { OnboardingUserType } from "../../domain/enums/onboarding-user-type.enum";
 import { ProductStatus } from "../../domain/enums/product-status.enum";
 
 export class CreateProductUseCase
@@ -49,6 +50,7 @@ implements UseCase<CreateProductCommand, Result<ProductDto>>
                 ProductStatus.ACTIVE,
                 now,
                 now,
+                command.entitlementUserType as OnboardingUserType | null,
             );
 
         await this.productRepository.create(product);

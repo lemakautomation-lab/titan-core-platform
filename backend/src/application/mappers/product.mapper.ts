@@ -1,4 +1,4 @@
-﻿import { Product } from "../../domain/entities/product.entity";
+import { Product } from "../../domain/entities/product.entity";
 import { ProductDto } from "../dto/product/product.dto";
 
 export class ProductApplicationMapper {
@@ -22,6 +22,8 @@ export class ProductApplicationMapper {
             currency: product.currency,
 
             billingInterval: product.billingInterval,
+
+            entitlementUserType: product.entitlementUserType,
 
             status: product.status,
 

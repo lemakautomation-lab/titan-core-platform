@@ -1,4 +1,5 @@
 import { BillingInterval } from "../enums/billing-interval.enum";
+import { OnboardingUserType } from "../enums/onboarding-user-type.enum";
 import { ProductStatus } from "../enums/product-status.enum";
 
 export class Product {
@@ -15,6 +16,7 @@ export class Product {
         public readonly status: ProductStatus,
         public readonly createdAt: Date,
         public readonly updatedAt: Date,
+        public readonly entitlementUserType: OnboardingUserType | null = null,
     ) {}
 
 }

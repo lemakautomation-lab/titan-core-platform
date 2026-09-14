@@ -8,6 +8,7 @@ export class CreateProductCommand {
         public readonly priceCents: number,
         public readonly currency: string,
         public readonly billingInterval: string,
+        public readonly entitlementUserType: string | null = null,
     ) {}
 
 }

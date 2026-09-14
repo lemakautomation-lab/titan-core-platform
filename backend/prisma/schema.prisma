@@ -28,15 +28,16 @@ model Tenant {
   performanceMeasurements PerformanceMeasurement[]
   exercises               Exercise[]
 
-  workoutProgrammes WorkoutProgramme[]
-  products          Product[]
-  nutritionPlans    NutritionPlan[]
-  shoppingLists     ShoppingList[]
-  recoveryTrackings RecoveryTracking[]
-  sleepTrackings    SleepTracking[]
-  restTrackings     RestTracking[]
-  trainingStresses  TrainingStress[]
-  payments          Payment[]          @relation("PaymentTenant")
+  workoutProgrammes    WorkoutProgramme[]
+  products             Product[]
+  nutritionPlans       NutritionPlan[]
+  shoppingLists        ShoppingList[]
+  recoveryTrackings    RecoveryTracking[]
+  sleepTrackings       SleepTracking[]
+  restTrackings        RestTracking[]
+  trainingStresses     TrainingStress[]
+  payments             Payment[]             @relation("PaymentTenant")
+  userTypeEntitlements UserTypeEntitlement[] @relation("EntitlementTenant")
 }
 
 model Sport {
@@ -77,25 +78,26 @@ model Organisation {
 }
 
 model User {
-  id               String              @id @default(uuid())
-  tenantId         String
-  organisationId   String?
-  email            String
-  contactNumber    String?
-  selectedUserType OnboardingUserType?
-  passwordHash     String
-  firstName        String?
-  lastName         String?
-  status           UserStatus          @default(ACTIVE)
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
-  auditLogs        AuditLog[]
-  sessions         Session[]
-  organisation     Organisation?       @relation(fields: [organisationId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  tenant           Tenant              @relation(fields: [tenantId], references: [id])
-  userRoles        UserRole[]
-  athletes         Athlete[]
-  payments         Payment[]           @relation("PaymentUserTenant")
+  id                   String                @id @default(uuid())
+  tenantId             String
+  organisationId       String?
+  email                String
+  contactNumber        String?
+  selectedUserType     OnboardingUserType?
+  passwordHash         String
+  firstName            String?
+  lastName             String?
+  status               UserStatus            @default(ACTIVE)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  auditLogs            AuditLog[]
+  sessions             Session[]
+  organisation         Organisation?         @relation(fields: [organisationId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  tenant               Tenant                @relation(fields: [tenantId], references: [id])
+  userRoles            UserRole[]
+  athletes             Athlete[]
+  payments             Payment[]             @relation("PaymentUserTenant")
+  userTypeEntitlements UserTypeEntitlement[] @relation("EntitlementUserTenant")
 
   @@unique([tenantId, email])
   @@unique([id, tenantId], map: "User_id_tenantId_key")
@@ -521,21 +523,23 @@ enum BillingInterval {
 }
 
 model Product {
-  id              String          @id @default(uuid())
-  tenantId        String
-  name            String
-  slug            String
-  description     String?
-  priceCents      Int
-  currency        String
-  billingInterval BillingInterval
-  status          ProductStatus   @default(ACTIVE)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  id                  String              @id @default(uuid())
+  tenantId            String
+  name                String
+  slug                String
+  description         String?
+  priceCents          Int
+  currency            String
+  billingInterval     BillingInterval
+  entitlementUserType OnboardingUserType?
+  status              ProductStatus       @default(ACTIVE)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
 
-  tenant   Tenant         @relation(fields: [tenantId], references: [id])
-  prices   ProductPrice[]
-  payments Payment[]      @relation("PaymentProductTenant")
+  tenant               Tenant                @relation(fields: [tenantId], references: [id])
+  prices               ProductPrice[]
+  payments             Payment[]             @relation("PaymentProductTenant")
+  userTypeEntitlements UserTypeEntitlement[] @relation("EntitlementProductTenant")
 
   @@unique([tenantId, slug])
   @@unique([id, tenantId], map: "Product_id_tenantId_key")
@@ -762,12 +766,14 @@ model Payment {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 
-  tenant       Tenant       @relation("PaymentTenant", fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  user         User         @relation("PaymentUserTenant", fields: [userId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  product      Product      @relation("PaymentProductTenant", fields: [productId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  productPrice ProductPrice @relation("PaymentPriceProduct", fields: [productPriceId, productId], references: [id, productId], onDelete: Restrict, onUpdate: Cascade)
+  tenant       Tenant               @relation("PaymentTenant", fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user         User                 @relation("PaymentUserTenant", fields: [userId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  product      Product              @relation("PaymentProductTenant", fields: [productId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  productPrice ProductPrice         @relation("PaymentPriceProduct", fields: [productPriceId, productId], references: [id, productId], onDelete: Restrict, onUpdate: Cascade)
+  entitlement  UserTypeEntitlement? @relation("EntitlementPaymentOwnership")
 
   @@unique([tenantId, providerReference])
+  @@unique([id, tenantId, userId, productId], map: "Payment_id_tenantId_userId_productId_key")
   @@index([tenantId, userId])
   @@index([tenantId, userId, productId, status])
   @@index([productId])
@@ -781,4 +787,37 @@ enum PaymentStatus {
   FAILED
   CANCELLED
   REFUNDED
+}
+
+model UserTypeEntitlement {
+  id         String             @id @default(uuid())
+  tenantId   String
+  userId     String
+  paymentId  String             @unique
+  productId  String
+  userType   OnboardingUserType
+  status     EntitlementStatus  @default(ACTIVE)
+  validFrom  DateTime
+  validUntil DateTime?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  tenant  Tenant  @relation("EntitlementTenant", fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user    User    @relation("EntitlementUserTenant", fields: [userId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  product Product @relation("EntitlementProductTenant", fields: [productId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  payment Payment @relation("EntitlementPaymentOwnership", fields: [paymentId, tenantId, userId, productId], references: [id, tenantId, userId, productId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([id, tenantId], map: "UserTypeEntitlement_id_tenantId_key")
+  @@unique([paymentId, tenantId, userId, productId], map: "UserTypeEntitlement_payment_ownership_key")
+  @@index([tenantId, userId])
+  @@index([tenantId, userId, userType, status])
+  @@index([tenantId, productId])
+  @@index([status])
+  @@index([validUntil])
+}
+
+enum EntitlementStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
 }

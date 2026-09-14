@@ -1,4 +1,4 @@
-﻿import { Response } from "express";
+import { Response } from "express";
 
 import { CreateProductCommand } from "../../application/commands/create-product.command";
 import { UpdateProductCommand } from "../../application/commands/update-product.command";
@@ -69,6 +69,16 @@ function validateProductBody(body: unknown): string | null {
         return "Product description must be a string or null.";
     }
 
+    if (
+        input.entitlementUserType !== undefined &&
+        input.entitlementUserType !== null &&
+        input.entitlementUserType !== "ATHLETE" &&
+        input.entitlementUserType !== "TRAINER" &&
+        input.entitlementUserType !== "ORGANISATION"
+    ) {
+        return "Invalid entitlement user type.";
+    }
+
     return null;
 }
 
@@ -107,6 +117,7 @@ export class ProductController {
                     req.body.priceCents,
                     req.body.currency.trim(),
                     req.body.billingInterval,
+                    req.body.entitlementUserType ?? null,
                 ),
             );
 
@@ -189,6 +200,9 @@ export class ProductController {
                     req.body.priceCents,
                     req.body.currency.trim(),
                     req.body.billingInterval,
+                    req.body.entitlementUserType === undefined
+                        ? undefined
+                        : req.body.entitlementUserType,
                 ),
             );
 
