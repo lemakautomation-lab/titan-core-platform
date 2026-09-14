@@ -382,3 +382,74 @@ Controls 113.5 and 113.6 are present in the successful Cloudflare Pages producti
 - No backend, database or product code change was required for the publication incident.
 
 The immutable deployment URL is the verified publication evidence while Cloudflare refreshes or repairs the canonical alias.
+
+## Control 113.7 - Payment Before Access
+
+Status: **TECHNICALLY COMPLETE / VERIFIED**
+
+Control 113.7 establishes a provider-neutral and default-deny payment boundary for athlete onboarding.
+
+### Payment contract
+
+- Payments begin in `PENDING` status.
+- Access is denied unless payment is `CONFIRMED`.
+- `FAILED`, `CANCELLED` and `REFUNDED` payments do not permit access.
+- Confirmation requires a server-held provider reference.
+- Frontend-supplied paid status is not trusted.
+- Amount, currency and billing interval are captured as an immutable price snapshot.
+- No payment gateway is falsely represented as connected or released.
+
+### Tenant and product integrity
+
+- Every Payment belongs to one tenant and one User in that tenant.
+- Every Payment belongs to one tenant-owned Product.
+- The selected ProductPrice must belong to the selected Product.
+- Composite database constraints prevent cross-tenant User and Product associations.
+- Repository reads and updates require explicit tenant identity.
+- Cross-tenant payment retrieval returns no record.
+- ProductPrice lookup alone is not accepted as tenant authority.
+
+### Payment lifecycle
+
+Supported states:
+
+- `PENDING`
+- `CONFIRMED`
+- `FAILED`
+- `CANCELLED`
+- `REFUNDED`
+
+Only pending payments can be confirmed, failed or cancelled. Only confirmed payments can be refunded.
+
+### Implementation
+
+- Added the Payment domain entity.
+- Added the PaymentStatus enum.
+- Added the default-deny payment access policy.
+- Added the tenant-bounded Payment repository contract.
+- Added Prisma persistence mapping and repository implementation.
+- Added the Payment persistence model and forward-only migration.
+- Added database amount, currency, confirmation-state and ownership constraints.
+- Added domain and tenant-isolation persistence tests.
+- No checkout endpoint or external gateway integration was claimed.
+- Control 113.8 will convert confirmed payment evidence into the appropriate paid user-type entitlement.
+
+### Verification evidence
+
+Evidence timestamp: **2026-09-14 10:57:13 +02:00**
+
+- Migration deployed only to protected local `titan_core_test`.
+- Prisma migration status verified.
+- Targeted payment suite: 2 test files / 13 tests passed.
+- Cross-tenant User association was rejected by persistence constraints.
+- Cross-tenant payment retrieval returned no record.
+- Confirmed-payment lookup remained tenant and Product bounded.
+- Full backend test suite passed.
+- Backend TypeScript build passed.
+- Backend lint passed.
+- `git diff --check` passed.
+- Unauthorized files changed: none.
+
+### Delivery classification
+
+Control 113.7 is technically complete and verified. It establishes the payment-before-access foundation, not a live payment gateway or checkout release. Knowledge Base publication verification remains outstanding. Mission 113 remains active.

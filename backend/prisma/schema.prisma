@@ -36,6 +36,7 @@ model Tenant {
   sleepTrackings    SleepTracking[]
   restTrackings     RestTracking[]
   trainingStresses  TrainingStress[]
+  payments          Payment[]          @relation("PaymentTenant")
 }
 
 model Sport {
@@ -57,10 +58,10 @@ model Sport {
 }
 
 model Organisation {
-  id        String       @id @default(uuid())
-  name      String
-  slug      String       @unique
-  status    RecordStatus @default(ACTIVE)
+  id                   String         @id @default(uuid())
+  name                 String
+  slug                 String         @unique
+  status               RecordStatus   @default(ACTIVE)
   tenantId             String
   parentOrganisationId String?
   createdAt            DateTime       @default(now())
@@ -76,26 +77,28 @@ model Organisation {
 }
 
 model User {
-  id             String        @id @default(uuid())
-  tenantId       String
-  organisationId String?
-  email          String
-  contactNumber  String?
+  id               String              @id @default(uuid())
+  tenantId         String
+  organisationId   String?
+  email            String
+  contactNumber    String?
   selectedUserType OnboardingUserType?
-  passwordHash   String
-  firstName      String?
-  lastName       String?
-  status         UserStatus    @default(ACTIVE)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  auditLogs      AuditLog[]
-  sessions       Session[]
-  organisation   Organisation? @relation(fields: [organisationId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  tenant         Tenant        @relation(fields: [tenantId], references: [id])
-  userRoles      UserRole[]
-  athletes       Athlete[]
+  passwordHash     String
+  firstName        String?
+  lastName         String?
+  status           UserStatus          @default(ACTIVE)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  auditLogs        AuditLog[]
+  sessions         Session[]
+  organisation     Organisation?       @relation(fields: [organisationId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  tenant           Tenant              @relation(fields: [tenantId], references: [id])
+  userRoles        UserRole[]
+  athletes         Athlete[]
+  payments         Payment[]           @relation("PaymentUserTenant")
 
   @@unique([tenantId, email])
+  @@unique([id, tenantId], map: "User_id_tenantId_key")
   @@index([tenantId])
   @@index([organisationId])
   @@index([tenantId, organisationId])
@@ -162,7 +165,6 @@ model Permission {
   roles       RolePermission[]
 
   @@unique([tenantId, code])
-
   @@unique([tenantId, name])
   @@unique([id, tenantId])
 }
@@ -179,14 +181,14 @@ model UserRole {
 }
 
 model RolePermission {
-  id           String     @id @default(uuid())
+  id           String   @id @default(uuid())
   tenantId     String
   roleId       String
   permissionId String
-  createdAt    DateTime   @default(now())
+  createdAt    DateTime @default(now())
 
-  permission   Permission @relation(fields: [permissionId, tenantId], references: [id, tenantId])
-  role         Role       @relation(fields: [roleId, tenantId], references: [id, tenantId])
+  permission Permission @relation(fields: [permissionId, tenantId], references: [id, tenantId])
+  role       Role       @relation(fields: [roleId, tenantId], references: [id, tenantId])
 
   @@unique([tenantId, roleId, permissionId])
   @@index([tenantId, roleId])
@@ -531,10 +533,12 @@ model Product {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  tenant Tenant         @relation(fields: [tenantId], references: [id])
-  prices ProductPrice[]
+  tenant   Tenant         @relation(fields: [tenantId], references: [id])
+  prices   ProductPrice[]
+  payments Payment[]      @relation("PaymentProductTenant")
 
   @@unique([tenantId, slug])
+  @@unique([id, tenantId], map: "Product_id_tenantId_key")
   @@index([tenantId])
   @@index([status])
   @@index([billingInterval])
@@ -550,8 +554,10 @@ model ProductPrice {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  product  Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
+  payments Payment[] @relation("PaymentPriceProduct")
 
+  @@unique([id, productId], map: "ProductPrice_id_productId_key")
   @@index([productId])
   @@index([status])
   @@index([productId, status])
@@ -739,4 +745,40 @@ enum OnboardingUserType {
   ATHLETE
   TRAINER
   ORGANISATION
+}
+
+model Payment {
+  id                String          @id @default(uuid())
+  tenantId          String
+  userId            String
+  productId         String
+  productPriceId    String
+  amountMinor       Int
+  currency          String
+  billingInterval   BillingInterval
+  status            PaymentStatus   @default(PENDING)
+  providerReference String?
+  confirmedAt       DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  tenant       Tenant       @relation("PaymentTenant", fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user         User         @relation("PaymentUserTenant", fields: [userId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  product      Product      @relation("PaymentProductTenant", fields: [productId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  productPrice ProductPrice @relation("PaymentPriceProduct", fields: [productPriceId, productId], references: [id, productId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([tenantId, providerReference])
+  @@index([tenantId, userId])
+  @@index([tenantId, userId, productId, status])
+  @@index([productId])
+  @@index([productPriceId])
+  @@index([status])
+}
+
+enum PaymentStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+  CANCELLED
+  REFUNDED
 }
