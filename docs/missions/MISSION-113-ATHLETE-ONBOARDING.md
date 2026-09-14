@@ -456,7 +456,7 @@ Evidence timestamp: **2026-09-14 10:57:13 +02:00**
 Control 113.7 is complete, verified and published through the verified Cloudflare deployment artifact. It establishes the payment-before-access foundation, not a live payment gateway or checkout release. The canonical Cloudflare alias incident remains open. Mission 113 remains active.
 ## Control 113.8 - Paid User-Type Entitlement
 
-Status: **TECHNICALLY COMPLETE / VERIFIED**
+Status: **COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED**
 
 Control 113.8 establishes the tenant-bound entitlement foundation that connects a confirmed payment to the user type selected during onboarding.
 
@@ -517,7 +517,8 @@ Evidence timestamp: **2026-09-14 12:08:13 +02:00**
 - Backend lint passed with no errors.
 - `git diff --check` passed.
 - Unauthorized files changed: none.
+- Knowledge Base publication visually verified at **2026-09-14 12:14:46 +02:00**.
 
 ### Delivery classification
 
-Control 113.8 is technically complete and verified as a backend entitlement foundation. It does not claim a live checkout, payment-provider integration, frontend onboarding release or automatic RBAC assignment. Knowledge Base publication verification remains outstanding. Mission 113 remains active.
+Control 113.8 is complete, verified and published as a backend entitlement foundation. It does not claim a live checkout, payment-provider integration, frontend onboarding release or automatic RBAC assignment. The canonical Cloudflare alias incident remains tracked separately. Mission 113 remains active.
