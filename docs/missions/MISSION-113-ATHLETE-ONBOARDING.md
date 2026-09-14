@@ -204,7 +204,7 @@ Existing athletes are not assigned an inferred country. The onboarding submissio
 Control 113.3 completes the country persistence and validation foundation. The visible onboarding workflow remains pending later Mission 113 controls.
 ## Control 113.4 — Email Address
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED
+**Status:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED
 
 ### Control Objective
 
@@ -243,6 +243,14 @@ No duplicate Athlete email column or migration was introduced.
 - Athlete email is resolved only through the explicit User-to-Athlete association.
 - No email address is inferred or duplicated.
 
+### Publication Evidence
+
+- Implementation commit: `fd99c14de89a34eb7c4f859a8ace5f72c185b12c`
+- Push synchronization: `main` equals `origin/main`
+- Knowledge Base publication: **VERIFIED**
+- Published-page verification timestamp: **2026-09-14T07:56:05+02:00**
+
+**Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED
 ### Delivery Boundary
 
 Control 113.4 completes the authoritative email foundation. The visible onboarding form remains pending later Mission 113 controls.
