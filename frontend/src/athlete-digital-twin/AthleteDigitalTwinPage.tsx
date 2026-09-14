@@ -6,6 +6,7 @@ import {
   updateAthleteDigitalTwinLifecycle,
   type AthleteDigitalTwinLifecycleAction,
 } from "./athlete-digital-twin.api";
+import AthletePerformanceBodyPanel from "./AthletePerformanceBodyPanel";
 
 type Props = {
   athleteId: string;
@@ -201,6 +202,10 @@ export default function AthleteDigitalTwinPage({
                 Delete
               </button>
             </div>
+
+            <AthletePerformanceBodyPanel
+              athleteId={athleteId}
+            />
           </>
         )}
       </section>

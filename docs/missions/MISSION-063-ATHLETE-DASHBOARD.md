@@ -131,3 +131,63 @@ Add a visible permission-controlled dashboard overview of authorised tenant-scop
 - Verification timestamp: **2026-09-13T21:28:36+02:00**
 
 **Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED / FRONTEND RELEASE PENDING
+## Control 063.3 - Progress Visibility
+
+### Control Objective
+
+Provide authenticated, tenant-safe Athlete progress visibility by mounting the verified 3D performance-body capability into the Athlete Digital Twin page.
+
+### Implementation
+
+- Added an authenticated frontend client for `GET /api/v1/auth/me/performance-body`.
+- Added explicit model selection through `PUT /api/v1/auth/me/body-model`.
+- Mounted the existing verified `PerformanceBodyViewer` in the Athlete Digital Twin page.
+- Rendered only the persisted `MALE` or `FEMALE` model selection.
+- No body model is inferred or defaulted.
+- Mapped persisted height observations to the canonical centimetre measurement contract.
+- Mapped historical height observations to deterministic progress snapshots.
+- Displayed current weight, BMI, optional body-fat percentage and observation timestamp as supporting data.
+- Preserved the existing non-medical and non-diagnostic boundary.
+- Added loading, selection, ownership-mismatch and safe-error states.
+
+### Security and Integrity
+
+- Authentication remains enforced by the backend `/auth/me` boundary.
+- The backend derives User and tenant identity exclusively from the authenticated request.
+- The frontend does not submit or select a tenant identifier.
+- The returned Athlete must match the Athlete Digital Twin route before rendering.
+- The existing `athlete_digital_twins.read` route permission remains required.
+- Existing Digital Twin lifecycle behavior remains unchanged.
+- No new database migration or backend API change was introduced by this control.
+- Weight, BMI and body-fat percentage are not misrepresented as centimetre measurements.
+- Existing 3D geometry is not claimed to morph from measurement data.
+
+### Authorized Files
+
+- `frontend/src/athlete-digital-twin/AthleteDigitalTwinPage.tsx`
+- `frontend/src/athlete-digital-twin/AthletePerformanceBodyPanel.tsx`
+- `frontend/src/athlete-digital-twin/AthletePerformanceBodyPanel.test.tsx`
+- `frontend/src/athlete-digital-twin/athlete-performance-body.api.ts`
+- `frontend/src/athlete-digital-twin/athlete-performance-body.api.test.ts`
+- `docs/missions/MISSION-063-ATHLETE-DASHBOARD.md`
+- `knowledge-base/docs/missions/mission-063.md`
+
+### Verification Evidence
+
+- Targeted frontend tests: **PASSED**
+- Full frontend regression: **PASSED**
+- Production frontend build: **PASSED**
+- Frontend lint: **PASSED WITH ZERO WARNINGS**
+- Knowledge Base build: **PASSED**
+- Evidence timestamp: 2026-09-14T22:58:31+02:00
+
+### Release State
+
+- Control implementation: **COMPLETE**
+- Production migration for the supporting 113.14 backend contract: **NOT DEPLOYED**
+- Production frontend deployment: **NOT PERFORMED**
+- Commit: **NOT CREATED**
+- Push: **NOT PERFORMED**
+- Control 063.4: **NOT STARTED**
+
+**Current classification:** COMPLETE / VERIFIED / RELEASE PENDING

@@ -97,8 +97,25 @@ Add a visible permission-controlled dashboard overview of authorised tenant-scop
 **Current classification:** COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED / FRONTEND RELEASE PENDING
 ### Control 63.3 - Progress visibility
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+Status: **COMPLETE / VERIFIED / RELEASE PENDING**
 
+Control 63.3 mounts authenticated Athlete progress visibility into the Athlete Digital Twin page.
+
+- The frontend consumes `GET /api/v1/auth/me/performance-body`.
+- The Athlete explicitly selects `MALE` or `FEMALE` through `PUT /api/v1/auth/me/body-model`.
+- TITAN does not infer or default a body-model type.
+- The verified 3D performance-body viewer is reused.
+- Current persisted height uses the canonical centimetre contract.
+- Historical height snapshots provide deterministic progress comparison.
+- Current weight, BMI and optional body-fat percentage are supporting data.
+- Weight, BMI and body-fat percentage are not treated as circumference measurements.
+- The body geometry is not claimed to morph from measurement data.
+- Authentication and tenant identity remain backend-authoritative.
+- The returned Athlete must match the Athlete Digital Twin route.
+- The route continues to require `athlete_digital_twins.read`.
+- Loading, explicit-selection, ownership-mismatch and safe-error states are included.
+- No database migration or backend contract was added by Control 63.3.
+- Production deployment has not occurred.
 ### Control 63.4 - Relevant body/recovery/nutrition context
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
