@@ -87,6 +87,7 @@ export class UserController {
                 req.body.password,
                 req.body.firstName ?? null,
                 req.body.lastName ?? null,
+                req.body.contactNumber ?? null,
             );
 
         const result =
@@ -239,6 +240,9 @@ export class UserController {
                 req.body.firstName ?? null,
                 req.body.lastName ?? null,
                 authUser.tenantId,
+                req.body.contactNumber === undefined
+                    ? undefined
+                    : req.body.contactNumber,
             );
 
         const result =

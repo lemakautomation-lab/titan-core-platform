@@ -16,6 +16,8 @@ export class UpdateUserCommand {
 
         public readonly tenantId: string,
 
+        public readonly contactNumber: string | null | undefined = undefined,
+
     ) {}
 
 }

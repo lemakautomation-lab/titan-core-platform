@@ -18,6 +18,8 @@ export class UserApplicationMapper {
 
             email: user.email,
 
+            contactNumber: user.contactNumber,
+
             firstName: user.firstName,
 
             lastName: user.lastName,

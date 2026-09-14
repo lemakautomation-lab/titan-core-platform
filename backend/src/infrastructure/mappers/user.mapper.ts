@@ -17,6 +17,7 @@ export class UserMapper {
             prisma.status as UserStatus,
             prisma.createdAt,
             prisma.updatedAt,
+            prisma.contactNumber,
         );
 
     }
@@ -40,6 +41,7 @@ export class UserMapper {
             firstName: user.firstName,
 
             lastName: user.lastName,
+            contactNumber: user.contactNumber,
 
             status: user.status,
 

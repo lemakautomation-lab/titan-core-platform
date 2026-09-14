@@ -26,6 +26,8 @@ export class User {
 
         public updatedAt: Date,
 
+        public contactNumber: string | null = null,
+
     ) {}
 
     static create(
@@ -35,6 +37,7 @@ export class User {
         passwordHash: string,
         firstName: string | null,
         lastName: string | null,
+        contactNumber: string | null = null,
     ): User {
 
         const now = new Date();
@@ -50,6 +53,7 @@ export class User {
             UserStatus.ACTIVE,
             now,
             now,
+            User.normalizeContactNumber(contactNumber),
         );
 
     }
@@ -59,15 +63,24 @@ export class User {
         email: string,
         firstName: string | null,
         lastName: string | null,
+        contactNumber: string | null | undefined = undefined,
     ): void {
 
         const normalizedEmail =
             User.normalizeEmail(email);
 
+        const normalizedContactNumber =
+            contactNumber === undefined
+                ? this.contactNumber
+                : User.normalizeContactNumber(
+                    contactNumber,
+                );
+
         this.organisationId = organisationId;
         this.email = normalizedEmail;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.contactNumber = normalizedContactNumber;
         this.updatedAt = new Date();
 
     }
@@ -107,6 +120,43 @@ export class User {
 
     }
 
+    updateContactNumber(
+        contactNumber: string | null,
+    ): void {
+
+        const normalized =
+            User.normalizeContactNumber(
+                contactNumber,
+            );
+
+        this.contactNumber = normalized;
+        this.updatedAt = new Date();
+
+    }
+
+    static normalizeContactNumber(
+        contactNumber: string | null,
+    ): string | null {
+
+        if (contactNumber === null) {
+
+            return null;
+
+        }
+
+        const normalized = contactNumber.trim();
+
+        if (!/^\+[1-9]\d{7,14}$/.test(normalized)) {
+
+            throw new Error(
+                "User contact number must use E.164 format.",
+            );
+
+        }
+
+        return normalized;
+
+    }
     changePassword(
         passwordHash: string,
     ): void {

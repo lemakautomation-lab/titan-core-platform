@@ -14,6 +14,8 @@ export class CreateUserCommand {
 
         public readonly lastName: string | null,
 
+        public readonly contactNumber: string | null = null,
+
     ) {}
 
 }

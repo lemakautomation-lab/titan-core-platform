@@ -192,3 +192,60 @@ The visible onboarding workflow remains pending later Mission 113 controls.
 ## Mission Exit Gate
 
 all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
+
+## Control 113.5 — Contact Number
+
+Status: **TECHNICALLY COMPLETE / VERIFIED**
+
+Control 113.5 establishes the authoritative contact-number foundation required by athlete onboarding.
+
+### Ownership decision
+
+- Contact number belongs to the authoritative `User` personal profile.
+- `Athlete` does not duplicate the contact number.
+- Athlete access resolves through the explicit, tenant-bounded `Athlete.userId` relationship.
+- Existing users remain compatible through a nullable contact number.
+- No contact number is inferred.
+
+### Domain contract
+
+- Values are trimmed before persistence.
+- Persisted values must use E.164 format.
+- Values begin with `+`.
+- The first digit after `+` is non-zero.
+- Values contain between 8 and 15 digits.
+- Invalid values are rejected before profile mutation.
+- Invalid updates preserve the previous value.
+- `null` remains valid for legacy users.
+- Later onboarding submission will require explicit completion.
+
+### Persistence and application boundary
+
+- Added nullable `User.contactNumber`.
+- Added a PostgreSQL E.164 check constraint.
+- Added migration `20260914081500_add_user_contact_number`.
+- Updated User domain construction and profile updates.
+- Updated Prisma and application mapping.
+- Updated create and update commands and use cases.
+- Updated the User controller boundary.
+- Contact number is not duplicated on `Athlete`.
+
+### Verification evidence
+
+Evidence timestamp: **2026-09-14 08:41:18 +02:00**
+
+- Migration encoding verified as UTF-8 without BOM.
+- Failed local test migration explicitly marked rolled back.
+- Migration deployed only to protected local `titan_core_test`.
+- Prisma migration status verified.
+- Targeted suite: 2 test files / 20 tests passed.
+- User and authentication regression passed.
+- Full backend test suite passed.
+- Backend TypeScript build passed.
+- Backend lint passed with 0 errors and 29 existing warnings.
+- `git diff --check` passed.
+- Unauthorized files changed: none.
+
+### Delivery classification
+
+Control 113.5 is technically complete and verified. Knowledge Base publication verification remains outstanding. Mission 113 remains active.

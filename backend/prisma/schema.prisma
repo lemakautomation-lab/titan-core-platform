@@ -80,6 +80,7 @@ model User {
   tenantId       String
   organisationId String?
   email          String
+  contactNumber  String?
   passwordHash   String
   firstName      String?
   lastName       String?

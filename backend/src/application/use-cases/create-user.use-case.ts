@@ -36,9 +36,16 @@ export class CreateUserUseCase
 
         let normalizedEmail: string;
 
+        let normalizedContactNumber: string | null;
+
         try {
             normalizedEmail =
                 User.normalizeEmail(command.email);
+
+            normalizedContactNumber =
+                User.normalizeContactNumber(
+                    command.contactNumber,
+                );
         } catch (error) {
             return Result.failure(
                 error instanceof Error
@@ -106,6 +113,7 @@ export class CreateUserUseCase
             passwordHash,
             command.firstName,
             command.lastName,
+            normalizedContactNumber,
         );
 
         await this.userRepository.create(

@@ -36,9 +36,18 @@ implements UseCase<UpdateUserCommand, Result<UserDto>>
 
         let normalizedEmail: string;
 
+        let normalizedContactNumber: string | null | undefined;
+
         try {
             normalizedEmail =
                 User.normalizeEmail(command.email);
+
+            normalizedContactNumber =
+                command.contactNumber === undefined
+                    ? undefined
+                    : User.normalizeContactNumber(
+                        command.contactNumber,
+                    );
         } catch (error) {
             return Result.failure(
                 error instanceof Error
@@ -103,6 +112,7 @@ implements UseCase<UpdateUserCommand, Result<UserDto>>
 
             command.lastName,
 
+            normalizedContactNumber,
         );
 
         if (command.password) {

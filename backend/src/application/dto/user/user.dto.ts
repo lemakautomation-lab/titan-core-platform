@@ -8,6 +8,8 @@ export interface UserDto {
 
     email: string;
 
+    contactNumber: string | null;
+
     firstName: string | null;
 
     lastName: string | null;
