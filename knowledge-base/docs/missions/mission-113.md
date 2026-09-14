@@ -250,3 +250,55 @@ Evidence timestamp: **2026-09-14 08:41:18 +02:00**
 ### Delivery classification
 
 Control 113.5 is complete, verified and published. Mission 113 remains active.
+## Control 113.6 - Selected User Type
+
+Status: **TECHNICALLY COMPLETE / VERIFIED**
+
+Control 113.6 establishes an explicit onboarding user-type selection without converting self-selection into authorization.
+
+### Allowed user types
+
+- `ATHLETE`
+- `TRAINER`
+- `ORGANISATION`
+
+`ORGANISATION` represents a team, club, academy, school, corporate wellness or other organisation manager.
+
+### Security boundary
+
+- Selected user type is onboarding profile data.
+- Existing RBAC roles remain separate.
+- Selecting a user type does not assign permissions or roles.
+- `ADMIN`, `OPERATOR` and `VIEWER` are not selectable onboarding types.
+- Unsupported values are rejected before persistence.
+- Existing users remain compatible through a nullable value.
+- No user type is inferred.
+
+### Implementation
+
+- Added the `OnboardingUserType` domain enum.
+- Added nullable `User.selectedUserType`.
+- Added a forward-only PostgreSQL enum migration.
+- Updated User domain construction and update behavior.
+- Updated Prisma and application mapping.
+- Updated create and update commands and use cases.
+- Updated User DTO and controller boundaries.
+- No RBAC role assignment was introduced.
+
+### Verification evidence
+
+Evidence timestamp: **2026-09-14 09:22:50 +02:00**
+
+- Migration deployed only to protected local `titan_core_test`.
+- Prisma migration status verified.
+- Targeted User suite: 3 test files / 31 tests passed.
+- User and authentication regression passed.
+- Full backend test suite passed.
+- Backend TypeScript build passed.
+- Backend lint passed.
+- `git diff --check` passed.
+- Unauthorized files changed: none.
+
+### Delivery classification
+
+Control 113.6 is technically complete and verified. Knowledge Base publication verification remains outstanding. Mission 113 remains active.

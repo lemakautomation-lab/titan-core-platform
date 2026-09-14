@@ -102,6 +102,28 @@ implements UseCase<UpdateUserCommand, Result<UserDto>>
 
         }
 
+
+        let normalizedSelectedUserType;
+
+        try {
+
+            normalizedSelectedUserType =
+                command.selectedUserType === undefined
+                    ? undefined
+                    : User.normalizeSelectedUserType(
+                        command.selectedUserType,
+                    );
+
+        }
+        catch (error) {
+
+            return Result.failure(
+                error instanceof Error
+                    ? error.message
+                    : "User type is invalid.",
+            );
+
+        }
         user.updateProfile(
 
             command.organisationId,
@@ -114,6 +136,14 @@ implements UseCase<UpdateUserCommand, Result<UserDto>>
 
             normalizedContactNumber,
         );
+
+        if (normalizedSelectedUserType !== undefined) {
+
+            user.updateSelectedUserType(
+                normalizedSelectedUserType,
+            );
+
+        }
 
         if (command.password) {
 

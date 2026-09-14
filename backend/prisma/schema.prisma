@@ -81,6 +81,7 @@ model User {
   organisationId String?
   email          String
   contactNumber  String?
+  selectedUserType OnboardingUserType?
   passwordHash   String
   firstName      String?
   lastName       String?
@@ -732,4 +733,10 @@ model TrainingStress {
   @@index([tenantId])
   @@index([tenantId, athleteId])
   @@index([tenantId, athleteId, recordedAt])
+}
+
+enum OnboardingUserType {
+  ATHLETE
+  TRAINER
+  ORGANISATION
 }

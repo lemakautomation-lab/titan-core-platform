@@ -16,6 +16,8 @@ export class CreateUserCommand {
 
         public readonly contactNumber: string | null = null,
 
+        public readonly selectedUserType: string | null = null,
+
     ) {}
 
 }

@@ -88,6 +88,7 @@ export class UserController {
                 req.body.firstName ?? null,
                 req.body.lastName ?? null,
                 req.body.contactNumber ?? null,
+                req.body.selectedUserType ?? null,
             );
 
         const result =
@@ -243,6 +244,9 @@ export class UserController {
                 req.body.contactNumber === undefined
                     ? undefined
                     : req.body.contactNumber,
+                req.body.selectedUserType === undefined
+                    ? undefined
+                    : req.body.selectedUserType,
             );
 
         const result =

@@ -20,6 +20,8 @@ export class UserApplicationMapper {
 
             contactNumber: user.contactNumber,
 
+            selectedUserType: user.selectedUserType,
+
             firstName: user.firstName,
 
             lastName: user.lastName,

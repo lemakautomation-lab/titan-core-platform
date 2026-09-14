@@ -101,6 +101,26 @@ export class CreateUserUseCase
 
         }
 
+
+        let normalizedSelectedUserType;
+
+        try {
+
+            normalizedSelectedUserType =
+                User.normalizeSelectedUserType(
+                    command.selectedUserType,
+                );
+
+        }
+        catch (error) {
+
+            return Result.failure(
+                error instanceof Error
+                    ? error.message
+                    : "User type is invalid.",
+            );
+
+        }
         const passwordHash =
             await passwordSecurity.hash(
                 command.password,
@@ -114,6 +134,7 @@ export class CreateUserUseCase
             command.firstName,
             command.lastName,
             normalizedContactNumber,
+            normalizedSelectedUserType,
         );
 
         await this.userRepository.create(

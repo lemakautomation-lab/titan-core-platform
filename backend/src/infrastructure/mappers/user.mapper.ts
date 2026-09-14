@@ -2,6 +2,8 @@ import { User as PrismaUser } from "../../generated/prisma/client";
 import { User } from "../../domain/entities/user.entity";
 import { UserStatus } from "../../domain/enums/user-status.enum";
 
+import { OnboardingUserType } from "../../domain/enums/onboarding-user-type.enum";
+
 export class UserMapper {
 
     static toDomain(prisma: PrismaUser): User {
@@ -18,6 +20,7 @@ export class UserMapper {
             prisma.createdAt,
             prisma.updatedAt,
             prisma.contactNumber,
+            prisma.selectedUserType as OnboardingUserType | null,
         );
 
     }
@@ -42,6 +45,7 @@ export class UserMapper {
 
             lastName: user.lastName,
             contactNumber: user.contactNumber,
+            selectedUserType: user.selectedUserType,
 
             status: user.status,
 

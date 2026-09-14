@@ -18,6 +18,8 @@ export class UpdateUserCommand {
 
         public readonly contactNumber: string | null | undefined = undefined,
 
+        public readonly selectedUserType: string | null | undefined = undefined,
+
     ) {}
 
 }

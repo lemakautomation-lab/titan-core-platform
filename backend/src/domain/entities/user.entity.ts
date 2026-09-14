@@ -2,6 +2,8 @@ import { randomUUID } from "crypto";
 
 import { UserStatus } from "../enums/user-status.enum";
 
+import { OnboardingUserType } from "../enums/onboarding-user-type.enum";
+
 export class User {
 
     constructor(
@@ -28,6 +30,8 @@ export class User {
 
         public contactNumber: string | null = null,
 
+        public selectedUserType: OnboardingUserType | null = null,
+
     ) {}
 
     static create(
@@ -38,6 +42,7 @@ export class User {
         firstName: string | null,
         lastName: string | null,
         contactNumber: string | null = null,
+        selectedUserType: OnboardingUserType | string | null = null,
     ): User {
 
         const now = new Date();
@@ -54,6 +59,7 @@ export class User {
             now,
             now,
             User.normalizeContactNumber(contactNumber),
+            User.normalizeSelectedUserType(selectedUserType),
         );
 
     }
@@ -155,6 +161,40 @@ export class User {
         }
 
         return normalized;
+
+    }
+    updateSelectedUserType(
+        selectedUserType: OnboardingUserType | null,
+    ): void {
+
+        this.selectedUserType = selectedUserType;
+        this.updatedAt = new Date();
+
+    }
+
+    static normalizeSelectedUserType(
+        selectedUserType: OnboardingUserType | string | null,
+    ): OnboardingUserType | null {
+
+        if (selectedUserType === null) {
+
+            return null;
+
+        }
+
+        if (
+            !Object.values(OnboardingUserType).includes(
+                selectedUserType as OnboardingUserType,
+            )
+        ) {
+
+            throw new Error(
+                "User type must be ATHLETE, TRAINER or ORGANISATION.",
+            );
+
+        }
+
+        return selectedUserType as OnboardingUserType;
 
     }
     changePassword(

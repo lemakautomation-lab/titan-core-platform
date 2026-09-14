@@ -10,6 +10,8 @@ export interface UserDto {
 
     contactNumber: string | null;
 
+    selectedUserType: string | null;
+
     firstName: string | null;
 
     lastName: string | null;
