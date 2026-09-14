@@ -215,11 +215,38 @@ The complete selection is validated before persistence. Previous goals are repla
 - The migration was applied only to protected local `titan_core_test`.
 - No production migration, frontend release or Cloudflare publication occurred.
 
+Control 113.12 is complete and verified. Mission 113 remains active, and Control 113.13 has not started.
+
 Control 113.11 is complete and verified. Mission 113 remains active, and Control 113.12 has not started.
 
 ### Control 113.12 - BMI/measurements capture
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+Status: **COMPLETE / VERIFIED**
+
+Control 113.12 provides authenticated self-service capture of Athlete body measurements.
+
+#### Product contract
+
+- Height in centimetres and weight in kilograms are required.
+- Body-fat percentage and the recorded date are optional.
+- BMI is calculated by the server and cannot be supplied by the client.
+- Each submission creates a historical measurement snapshot.
+- The existing sport-specific performance-measurement engine remains unchanged.
+
+#### Security and data integrity
+
+- The endpoint is `POST /api/v1/auth/me/body-measurements`.
+- Identity and tenant scope come only from the authenticated request.
+- Protected identity fields, client-supplied BMI and unknown fields are rejected.
+- The linked Athlete must exist and be active.
+- Composite database ownership prevents cross-tenant records.
+- Domain and database constraints enforce finite, positive and bounded measurements.
+
+#### Verification state
+
+The domain, persistence, transaction, authenticated API and focused tests are implemented. Three targeted test files with 28 tests passed. The full backend regression passed with 120 test files and 942 tests. Prisma generation, the protected local test migration, TypeScript build, backend lint and Knowledge Base build passed. No production migration, frontend release or Cloudflare publication occurred.
+
+Control 113.12 is complete and verified. Mission 113 remains active, and Control 113.13 has not started.
 
 ### Control 113.13 - Onboarding validation
 

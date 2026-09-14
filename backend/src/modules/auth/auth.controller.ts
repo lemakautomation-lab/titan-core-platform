@@ -7,6 +7,7 @@ import { AuthRequest } from "../../middleware/auth.middleware";
 import { RequestWithId } from "../../middleware/request-id.middleware";
 import { UpdateMyPersonalDetailsCommand } from "../../application/commands/update-my-personal-details.command";
 import { UpdateMyAthleteGoalsCommand } from "../../application/commands/update-my-athlete-goals.command";
+import { CreateMyAthleteBodyMeasurementCommand } from "../../application/commands/create-my-athlete-body-measurement.command";
 
 import {
     REFRESH_TOKEN_COOKIE_NAME,
@@ -71,6 +72,81 @@ export class AuthController {
         res.status(200).json(result.value);
     }
 
+
+    async createMyBodyMeasurement(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        res.set("Cache-Control", "no-store");
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const body =
+            req.body as Record<string, unknown>;
+
+        const allowedFields = new Set([
+            "heightCm",
+            "weightKg",
+            "bodyFatPercentage",
+            "recordedAt",
+        ]);
+
+        if (
+            !body ||
+            typeof body !== "object" ||
+            Array.isArray(body) ||
+            Object.keys(body).some(
+                (field) => !allowedFields.has(field),
+            ) ||
+            typeof body.heightCm !== "number" ||
+            typeof body.weightKg !== "number" ||
+            (
+                body.bodyFatPercentage !== undefined &&
+                body.bodyFatPercentage !== null &&
+                typeof body.bodyFatPercentage !== "number"
+            ) ||
+            (
+                body.recordedAt !== undefined &&
+                typeof body.recordedAt !== "string"
+            )
+        ) {
+            res.status(400).json({
+                error:
+                    "Invalid body-measurement payload.",
+            });
+            return;
+        }
+
+        const result =
+            await authModule
+                .createMyAthleteBodyMeasurementUseCase
+                .execute(
+                    new CreateMyAthleteBodyMeasurementCommand(
+                        authUser.userId,
+                        authUser.tenantId,
+                        body.heightCm,
+                        body.weightKg,
+                        body.bodyFatPercentage,
+                        body.recordedAt,
+                    ),
+                );
+
+        if (!result.isSuccess) {
+            res.status(400).json({
+                error: result.error,
+            });
+            return;
+        }
+
+        res.status(201).json(result.value);
+    }
 
     async login(
         req: RequestWithId,

@@ -718,3 +718,52 @@ The complete selection is validated before existing goals are deleted. The trans
 ### Delivery classification
 
 Control 113.11 is complete and verified as a backend Athlete-goals boundary. No frontend release or Cloudflare publication is claimed. Control 113.12 has not started. Mission 113 remains active.
+## Control 113.12 - BMI and Measurements Capture
+
+Status: **COMPLETE / VERIFIED**
+
+Control 113.12 establishes authenticated self-service capture of Athlete body measurements and server-calculated BMI.
+
+### Measurement contract
+
+- Required measurements are height in centimetres and weight in kilograms.
+- Body-fat percentage is optional.
+- The recorded date is optional and defaults to the server time.
+- BMI is calculated server-side as weight in kilograms divided by height in metres squared.
+- BMI is rounded to two decimal places.
+- A client-supplied BMI is prohibited.
+- Measurements are retained as historical snapshots rather than overwriting previous observations.
+
+### Ownership and persistence
+
+- Measurements are stored as tenant-owned `AthleteBodyMeasurement` records.
+- A composite foreign key links each record to `Athlete(id, tenantId)`.
+- Cross-tenant Athlete ownership is rejected by the database.
+- Height, weight, BMI and body-fat bounds are enforced at the domain and database layers.
+- The existing sport-specific `PerformanceMetric` and `PerformanceMeasurement` subsystem remains unchanged.
+
+### Authenticated API boundary
+
+- Added `POST /api/v1/auth/me/body-measurements`.
+- User and tenant identity come exclusively from the authenticated request context.
+- `userId`, `athleteId`, `tenantId`, `bmi` and unknown fields are rejected.
+- A linked and active Athlete is required.
+- Successful creation returns HTTP 201 with the stored snapshot and calculated BMI.
+- Responses are marked `Cache-Control: no-store`.
+
+### Verification evidence
+
+- Domain and application tests: passed.
+- Persistence and authenticated API tests: passed.
+- Targeted total: 3 test files and 28 tests passed.
+- Protected local `titan_core_test` migration: applied successfully.
+- Prisma generation and TypeScript build: passed.
+- Full backend regression: 120 test files and 942 tests passed.
+- Backend lint: passed with no errors.
+- Knowledge Base build: passed.
+- Production migration: not deployed.
+- Frontend and Cloudflare release: not performed.
+
+### Delivery classification
+
+Control 113.12 is complete and verified as a backend self-service body-measurement boundary. No frontend release is claimed. Control 113.13 has not started. Mission 113 remains active.

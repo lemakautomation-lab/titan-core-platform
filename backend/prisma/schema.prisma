@@ -137,6 +137,7 @@ model Athlete {
   restTrackings           RestTracking[]
   trainingStresses        TrainingStress[]
   goals                   AthleteGoal[]            @relation("AthleteGoalAthleteTenant")
+  bodyMeasurements        AthleteBodyMeasurement[] @relation("AthleteBodyMeasurementAthleteTenant")
 
   @@unique([id, tenantId], map: "Athlete_id_tenantId_key")
   @@index([tenantId])
@@ -158,6 +159,24 @@ model AthleteGoal {
   @@index([tenantId], map: "AthleteGoal_tenantId_idx")
   @@index([athleteId], map: "AthleteGoal_athleteId_idx")
   @@index([tenantId, athleteId], map: "AthleteGoal_tenantId_athleteId_idx")
+}
+
+model AthleteBodyMeasurement {
+  id                String   @id @default(uuid())
+  tenantId          String
+  athleteId         String
+  heightCm          Decimal  @db.Decimal(6, 2)
+  weightKg          Decimal  @db.Decimal(7, 3)
+  bmi               Decimal  @db.Decimal(6, 2)
+  bodyFatPercentage Decimal? @db.Decimal(5, 2)
+  recordedAt        DateTime @default(now())
+  createdAt         DateTime @default(now())
+  athlete           Athlete  @relation("AthleteBodyMeasurementAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([id, tenantId, athleteId], map: "AthleteBodyMeasurement_id_tenantId_athleteId_key")
+  @@index([tenantId], map: "AthleteBodyMeasurement_tenantId_idx")
+  @@index([athleteId], map: "AthleteBodyMeasurement_athleteId_idx")
+  @@index([tenantId, athleteId, recordedAt], map: "AthleteBodyMeasurement_timeline_idx")
 }
 
 model Role {

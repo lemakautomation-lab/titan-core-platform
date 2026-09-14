@@ -61,6 +61,14 @@ export function createAuthRoutes(
         authController.updateMyGoals.bind(authController),
     );
 
+
+    router.post(
+        "/me/body-measurements",
+        authMiddleware,
+        authController
+            .createMyBodyMeasurement
+            .bind(authController),
+    );
     return router;
 
 }
