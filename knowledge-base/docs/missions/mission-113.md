@@ -323,7 +323,7 @@ The immutable deployment URL is the verified publication evidence while Cloudfla
 
 ## Control 113.7 - Payment Before Access
 
-Status: **TECHNICALLY COMPLETE / VERIFIED**
+Status: **COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED**
 
 Control 113.7 establishes a provider-neutral and default-deny payment boundary for athlete onboarding.
 
@@ -387,7 +387,8 @@ Evidence timestamp: **2026-09-14 10:57:13 +02:00**
 - Backend lint passed.
 - `git diff --check` passed.
 - Unauthorized files changed: none.
+- Cloudflare deployment 353a7551 visually verified at **2026-09-14 11:05:42 +02:00**.
 
 ### Delivery classification
 
-Control 113.7 is technically complete and verified. It establishes the payment-before-access foundation, not a live payment gateway or checkout release. Knowledge Base publication verification remains outstanding. Mission 113 remains active.
+Control 113.7 is complete, verified and published through the verified Cloudflare deployment artifact. It establishes the payment-before-access foundation, not a live payment gateway or checkout release. The canonical Cloudflare alias incident remains open. Mission 113 remains active.
