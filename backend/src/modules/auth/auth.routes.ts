@@ -55,6 +55,11 @@ export function createAuthRoutes(
         authMiddleware,
         authController.updateMe.bind(authController),
     );
+    router.put(
+        "/me/goals",
+        authMiddleware,
+        authController.updateMyGoals.bind(authController),
+    );
 
     return router;
 

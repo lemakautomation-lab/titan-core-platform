@@ -8,6 +8,8 @@ import { RefreshTokenUseCase } from "../../application/use-cases/auth/refresh-to
 import { LogoutUseCase } from "../../application/use-cases/auth/logout.use-case";
 import { UpdateMyPersonalDetailsUseCase } from "../../application/use-cases/update-my-personal-details.use-case";
 import { PrismaPersonalDetailsUpdateTransaction } from "../transactions/personal-details-update.transaction";
+import { UpdateMyAthleteGoalsUseCase } from "../../application/use-cases/update-my-athlete-goals.use-case";
+import { PrismaAthleteGoalsUpdateTransaction } from "../transactions/athlete-goals-update.transaction";
 
 import { auditLogModule } from "./audit-log.module";
 import { authorizationModule } from "./authorization.module";
@@ -25,6 +27,11 @@ export const userRepository =
         databaseService,
     );
 
+const athleteGoalsUpdateTransaction =
+    new PrismaAthleteGoalsUpdateTransaction(
+        databaseService,
+    );
+
 export const sessionRepository =
     new PrismaSessionRepository(
         databaseService,
@@ -39,6 +46,10 @@ export const authModule = {
     updateMyPersonalDetailsUseCase:
         new UpdateMyPersonalDetailsUseCase(
             personalDetailsUpdateTransaction,
+        ),
+    updateMyAthleteGoalsUseCase:
+        new UpdateMyAthleteGoalsUseCase(
+            athleteGoalsUpdateTransaction,
         ),
     loginUseCase:
         new LoginUseCase(

@@ -179,7 +179,43 @@ The visible onboarding workflow remains pending later Mission 113 controls.
 
 ### Control 113.11 - Athlete goals
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+Status: **COMPLETE / VERIFIED**
+
+Control 113.11 introduces tenant-owned Athlete onboarding goals. An Athlete may select multiple canonical goals, with exactly one selected goal identified as primary.
+
+#### Product and data contract
+
+- `AthleteGoal` owns each selected classification for a tenant-scoped Athlete.
+- The nine allowed values are `STRENGTH`, `HYPERTROPHY`, `ENDURANCE`, `SPEED`, `POWER`, `MOBILITY`, `CONDITIONING`, `GENERAL_FITNESS` and `SPORT_PERFORMANCE`.
+- Duplicate classifications are prohibited.
+- The database permits at most one primary goal for an Athlete.
+- The existing workout-programme goal field remains unchanged.
+
+#### Security and API contract
+
+- The authenticated endpoint is `PUT /api/v1/auth/me/goals`.
+- Identity and tenant scope come exclusively from the authenticated request.
+- Request-supplied identity, tenant fields and unknown fields are rejected.
+- The linked Athlete must exist in the authenticated tenant and must be active.
+- Another Athlete's goals cannot be changed through this boundary.
+
+#### Transaction contract
+
+The complete selection is validated before persistence. Previous goals are replaced atomically, deterministic canonical ordering is returned, and any failure rolls back the transaction and preserves the previous selection.
+
+#### Verification evidence
+
+- Domain and application tests: 6 passed.
+- Persistence transaction tests: 8 passed.
+- Authenticated API coverage passed.
+- Full backend regression: 117 test files and 914 tests passed.
+- TypeScript build passed.
+- Lint completed with 0 errors and 29 pre-existing warnings.
+- Tenant isolation, atomic replacement, deterministic ordering, rollback preservation and database constraints were verified.
+- The migration was applied only to protected local `titan_core_test`.
+- No production migration, frontend release or Cloudflare publication occurred.
+
+Control 113.11 is complete and verified. Mission 113 remains active, and Control 113.12 has not started.
 
 ### Control 113.12 - BMI/measurements capture
 

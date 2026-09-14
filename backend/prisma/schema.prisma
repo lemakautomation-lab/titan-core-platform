@@ -136,11 +136,28 @@ model Athlete {
   sleepTrackings          SleepTracking[]
   restTrackings           RestTracking[]
   trainingStresses        TrainingStress[]
+  goals                   AthleteGoal[]            @relation("AthleteGoalAthleteTenant")
 
   @@unique([id, tenantId], map: "Athlete_id_tenantId_key")
   @@index([tenantId])
   @@index([organisationId])
   @@index([userId])
+}
+
+model AthleteGoal {
+  id             String   @id @default(uuid())
+  tenantId       String
+  athleteId      String
+  classification String
+  isPrimary      Boolean
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  athlete        Athlete  @relation("AthleteGoalAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([tenantId, athleteId, classification], map: "AthleteGoal_tenantId_athleteId_classification_key")
+  @@index([tenantId], map: "AthleteGoal_tenantId_idx")
+  @@index([athleteId], map: "AthleteGoal_athleteId_idx")
+  @@index([tenantId, athleteId], map: "AthleteGoal_tenantId_athleteId_idx")
 }
 
 model Role {

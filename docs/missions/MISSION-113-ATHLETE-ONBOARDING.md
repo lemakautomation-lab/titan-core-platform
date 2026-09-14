@@ -671,3 +671,50 @@ Evidence timestamp: **2026-09-14 15:12:56 +02:00**
 ### Delivery classification
 
 Control 113.10 is complete, verified and published as a backend self-service personal-details boundary. It does not claim that the product frontend is released. The canonical Cloudflare alias incident remains tracked separately. Mission 113 remains active.
+## Control 113.11 - Athlete Goals
+
+Status: **COMPLETE / VERIFIED**
+
+Control 113.11 establishes tenant-owned Athlete onboarding goals. An Athlete can select multiple canonical goal classifications, with exactly one selected goal designated as primary.
+
+### Persistence contract
+
+- Goals are stored as tenant-owned `AthleteGoal` records.
+- A composite foreign key links `AthleteGoal(athleteId, tenantId)` to `Athlete(id, tenantId)`.
+- Cascading updates and deletion preserve lifecycle integrity.
+- A classification can occur only once per tenant-owned Athlete.
+- A partial unique index permits at most one primary goal.
+- A CHECK constraint restricts persistence to the nine canonical `ProgrammeGoalClassification` values.
+- Existing Athlete composite tenant integrity remains intact.
+- `WorkoutProgramme.goal` is unchanged and has not been repurposed.
+
+### Authenticated boundary
+
+- Added authenticated `PUT /api/v1/auth/me/goals`.
+- User and tenant identity come exclusively from the authenticated request context.
+- `userId`, `athleteId`, `tenantId` and unknown request fields are rejected.
+- The transaction resolves the authenticated User and linked tenant-owned Athlete.
+- A missing or inactive Athlete is rejected.
+- Secondary goals are returned in deterministic canonical order.
+
+### Atomic replacement
+
+The complete selection is validated before existing goals are deleted. The transaction replaces the authenticated Athlete's complete goal selection and returns the persisted result. Any failure rolls back the transaction and preserves the previous selection.
+
+### Verification evidence
+
+- Focused domain and application suite: 6 tests passed.
+- Focused persistence suite: 8 tests passed.
+- Authenticated API coverage passed as part of the targeted and full regression gates.
+- Full backend regression: 117 test files and 914 tests passed.
+- Backend TypeScript build: passed.
+- Backend lint: 0 errors and 29 pre-existing warnings.
+- Prisma schema validation and client generation: passed.
+- Database uniqueness, one-primary, tenant ownership and rollback behavior: verified.
+- The migration was applied only to the protected local `titan_core_test` database.
+- No production migration was deployed.
+- No frontend or Cloudflare release was performed.
+
+### Delivery classification
+
+Control 113.11 is complete and verified as a backend Athlete-goals boundary. No frontend release or Cloudflare publication is claimed. Control 113.12 has not started. Mission 113 remains active.
