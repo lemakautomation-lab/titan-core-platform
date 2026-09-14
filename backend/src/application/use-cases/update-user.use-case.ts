@@ -1,6 +1,7 @@
 import { UseCase } from "../common/use-case.interface";
 import { Result } from "../common/result";
 
+import { User } from "../../domain/entities/user.entity";
 import { UserRepository } from "../../domain/repositories/user.repository";
 
 import { UpdateUserCommand } from "../commands/update-user.command";
@@ -32,6 +33,20 @@ implements UseCase<UpdateUserCommand, Result<UserDto>>
 
     ): Promise<Result<UserDto>> {
 
+
+        let normalizedEmail: string;
+
+        try {
+            normalizedEmail =
+                User.normalizeEmail(command.email);
+        } catch (error) {
+            return Result.failure(
+                error instanceof Error
+                    ? error.message
+                    : "User email format is invalid.",
+            );
+        }
+
         const user =
             await this.userRepository.findById(
                 command.id,
@@ -56,11 +71,11 @@ implements UseCase<UpdateUserCommand, Result<UserDto>>
 
         }
 
-        if (user.email !== command.email) {
+        if (user.email !== normalizedEmail) {
 
             const existingUser =
                 await this.userRepository.findByEmail(
-                command.email,
+                normalizedEmail,
                 user.tenantId,
             );
 
@@ -82,7 +97,7 @@ implements UseCase<UpdateUserCommand, Result<UserDto>>
 
             command.organisationId,
 
-            command.email,
+            normalizedEmail,
 
             command.firstName,
 

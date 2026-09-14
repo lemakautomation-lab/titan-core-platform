@@ -202,3 +202,47 @@ Existing athletes are not assigned an inferred country. The onboarding submissio
 ### Delivery Boundary
 
 Control 113.3 completes the country persistence and validation foundation. The visible onboarding workflow remains pending later Mission 113 controls.
+## Control 113.4 — Email Address
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+### Control Objective
+
+Establish a canonical email-address contract for athlete onboarding without duplicating email on the Athlete record.
+
+### Implementation
+
+The authoritative email remains owned by `User` and is associated with an Athlete through `Athlete.userId`.
+
+The implementation:
+
+- requires a supplied email address;
+- trims surrounding whitespace;
+- normalizes email to lowercase;
+- validates the normalized format;
+- limits normalized email to 254 characters;
+- performs tenant-scoped uniqueness checks using the normalized value;
+- persists only the normalized value;
+- prevents invalid updates from partially mutating User state.
+
+No duplicate Athlete email column or migration was introduced.
+
+### Verification
+
+- Targeted email regression: **1 file / 9 tests GREEN**
+- Authentication and User regression: **GREEN**
+- Full backend regression: **102 test files / 807 tests GREEN**
+- Backend build: **GREEN**
+- Whitespace audit: **GREEN**
+- Objective evidence timestamp: **2026-09-14T07:52:35+02:00**
+
+### Security and Data Integrity
+
+- Email remains protected by existing tenant-scoped User uniqueness.
+- Normalization occurs before duplicate lookup and persistence.
+- Athlete email is resolved only through the explicit User-to-Athlete association.
+- No email address is inferred or duplicated.
+
+### Delivery Boundary
+
+Control 113.4 completes the authoritative email foundation. The visible onboarding form remains pending later Mission 113 controls.

@@ -33,12 +33,26 @@ export class CreateUserUseCase
         command: CreateUserCommand,
     ): Promise<Result<UserDto>> {
 
+
+        let normalizedEmail: string;
+
+        try {
+            normalizedEmail =
+                User.normalizeEmail(command.email);
+        } catch (error) {
+            return Result.failure(
+                error instanceof Error
+                    ? error.message
+                    : "User email format is invalid.",
+            );
+        }
+
         const validation =
             new UserValidator().validate({
 
                 tenantId: command.tenantId,
 
-                email: command.email,
+                email: normalizedEmail,
 
                 password: command.password,
 
@@ -65,7 +79,7 @@ export class CreateUserUseCase
 
         const existingUser =
             await this.userRepository.findByEmail(
-            command.email,
+            normalizedEmail,
             command.tenantId,
         );
 
@@ -88,7 +102,7 @@ export class CreateUserUseCase
         const user = User.create(
             command.tenantId,
             command.organisationId,
-            command.email,
+            normalizedEmail,
             passwordHash,
             command.firstName,
             command.lastName,

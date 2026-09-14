@@ -123,6 +123,30 @@ The visible onboarding workflow remains pending later Mission 113 controls.
 ### Control 113.4 - Email address
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** TECHNICALLY COMPLETE / VERIFIED
+
+**Objective:** Establish the canonical User email contract used by athlete onboarding.
+
+Verified implementation:
+
+- required, trimmed and lowercase email;
+- normalized format and length validation;
+- normalized tenant-scoped duplicate lookup;
+- normalized persistence;
+- atomic rejection of invalid profile updates;
+- no duplicate email field on Athlete.
+
+Verification evidence:
+
+- Targeted regression: **1 file / 9 tests GREEN**
+- Authentication and User regression: **GREEN**
+- Full backend regression: **102 test files / 807 tests GREEN**
+- Backend build: **GREEN**
+- Objective evidence timestamp: **2026-09-14T07:52:35+02:00**
+
+The visible onboarding workflow remains pending later Mission 113 controls.
+
+**Current classification:** TECHNICALLY COMPLETE / VERIFIED
 
 ### Control 113.5 - Contact number
 

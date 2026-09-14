@@ -43,7 +43,7 @@ export class User {
             randomUUID(),
             tenantId,
             organisationId,
-            email,
+            User.normalizeEmail(email),
             passwordHash,
             firstName,
             lastName,
@@ -61,11 +61,49 @@ export class User {
         lastName: string | null,
     ): void {
 
+        const normalizedEmail =
+            User.normalizeEmail(email);
+
         this.organisationId = organisationId;
-        this.email = email;
+        this.email = normalizedEmail;
         this.firstName = firstName;
         this.lastName = lastName;
         this.updatedAt = new Date();
+
+    }
+
+    static normalizeEmail(
+        email: string,
+    ): string {
+
+        if (
+            typeof email !== "string" ||
+            !email.trim()
+        ) {
+
+            throw new Error(
+                "User email is required.",
+            );
+
+        }
+
+        const normalized =
+            email.trim().toLowerCase();
+
+        if (
+            normalized.length > 254 ||
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+                normalized,
+            )
+        ) {
+
+            throw new Error(
+                "User email format is invalid.",
+            );
+
+        }
+
+        return normalized;
 
     }
 
