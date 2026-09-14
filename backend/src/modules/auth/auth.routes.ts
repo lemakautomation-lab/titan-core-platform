@@ -77,6 +77,22 @@ export function createAuthRoutes(
             .getMyOnboardingStatus
             .bind(authController),
     );
+
+    router.put(
+        "/me/body-model",
+        authMiddleware,
+        authController
+            .updateMyBodyModel
+            .bind(authController),
+    );
+
+    router.get(
+        "/me/performance-body",
+        authMiddleware,
+        authController
+            .getMyPerformanceBodyProfile
+            .bind(authController),
+    );
     return router;
 
 }

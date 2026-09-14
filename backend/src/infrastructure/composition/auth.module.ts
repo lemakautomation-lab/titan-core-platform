@@ -14,6 +14,10 @@ import { CreateMyAthleteBodyMeasurementUseCase } from "../../application/use-cas
 import { PrismaAthleteBodyMeasurementCreateTransaction } from "../transactions/athlete-body-measurement-create.transaction";
 import { GetMyAthleteOnboardingStatusUseCase } from "../../application/use-cases/get-my-athlete-onboarding-status.use-case";
 import { PrismaAthleteOnboardingStatusQuery } from "../queries/athlete-onboarding-status.query";
+import { UpdateMyAthleteBodyModelUseCase } from "../../application/use-cases/update-my-athlete-body-model.use-case";
+import { GetMyAthletePerformanceBodyProfileUseCase } from "../../application/use-cases/get-my-athlete-performance-body-profile.use-case";
+import { PrismaAthleteBodyModelUpdateTransaction } from "../transactions/athlete-body-model-update.transaction";
+import { PrismaAthletePerformanceBodyProfileQuery } from "../queries/athlete-performance-body-profile.query";
 
 import { auditLogModule } from "./audit-log.module";
 import { authorizationModule } from "./authorization.module";
@@ -46,6 +50,16 @@ const athleteOnboardingStatusQuery =
         databaseService,
     );
 
+const athleteBodyModelUpdateTransaction =
+    new PrismaAthleteBodyModelUpdateTransaction(
+        databaseService,
+    );
+
+const athletePerformanceBodyProfileQuery =
+    new PrismaAthletePerformanceBodyProfileQuery(
+        databaseService,
+    );
+
 export const sessionRepository =
     new PrismaSessionRepository(
         databaseService,
@@ -72,6 +86,14 @@ export const authModule = {
     getMyAthleteOnboardingStatusUseCase:
         new GetMyAthleteOnboardingStatusUseCase(
             athleteOnboardingStatusQuery,
+        ),
+    updateMyAthleteBodyModelUseCase:
+        new UpdateMyAthleteBodyModelUseCase(
+            athleteBodyModelUpdateTransaction,
+        ),
+    getMyAthletePerformanceBodyProfileUseCase:
+        new GetMyAthletePerformanceBodyProfileUseCase(
+            athletePerformanceBodyProfileQuery,
         ),
     loginUseCase:
         new LoginUseCase(

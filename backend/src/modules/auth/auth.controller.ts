@@ -8,6 +8,7 @@ import { RequestWithId } from "../../middleware/request-id.middleware";
 import { UpdateMyPersonalDetailsCommand } from "../../application/commands/update-my-personal-details.command";
 import { UpdateMyAthleteGoalsCommand } from "../../application/commands/update-my-athlete-goals.command";
 import { CreateMyAthleteBodyMeasurementCommand } from "../../application/commands/create-my-athlete-body-measurement.command";
+import { UpdateMyAthleteBodyModelCommand } from "../../application/commands/update-my-athlete-body-model.command";
 
 import {
     REFRESH_TOKEN_COOKIE_NAME,
@@ -166,6 +167,97 @@ export class AuthController {
         const result =
             await authModule
                 .getMyAthleteOnboardingStatusUseCase
+                .execute({
+                    userId: authUser.userId,
+                    tenantId: authUser.tenantId,
+                });
+
+        if (!result.isSuccess) {
+            res.status(400).json({
+                error: result.error,
+            });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
+
+    async updateMyBodyModel(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        res.set("Cache-Control", "no-store");
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const body =
+            req.body as Record<string, unknown>;
+
+        if (
+            !body ||
+            typeof body !== "object" ||
+            Array.isArray(body) ||
+            Object.keys(body).length !== 1 ||
+            !Object.prototype.hasOwnProperty.call(
+                body,
+                "modelType",
+            ) ||
+            typeof body.modelType !== "string"
+        ) {
+            res.status(400).json({
+                error:
+                    "Invalid performance-body model payload.",
+            });
+            return;
+        }
+
+        const result =
+            await authModule
+                .updateMyAthleteBodyModelUseCase
+                .execute(
+                    new UpdateMyAthleteBodyModelCommand(
+                        authUser.userId,
+                        authUser.tenantId,
+                        body.modelType,
+                    ),
+                );
+
+        if (!result.isSuccess) {
+            res.status(400).json({
+                error: result.error,
+            });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
+
+
+    async getMyPerformanceBodyProfile(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        res.set("Cache-Control", "no-store");
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const result =
+            await authModule
+                .getMyAthletePerformanceBodyProfileUseCase
                 .execute({
                     userId: authUser.userId,
                     tenantId: authUser.tenantId,

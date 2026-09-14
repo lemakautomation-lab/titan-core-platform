@@ -821,3 +821,47 @@ Profile-picture metadata is optional because no preceding Mission 113 contract m
 ### Delivery classification
 
 Control 113.13 is complete and verified as a backend onboarding-readiness boundary. It does not claim that the visible frontend onboarding journey is released. All Mission 113 controls are complete and verified; Mission 113 is closed.
+## Control 113.14 - Performance Body Profile Bridge
+
+Status: **COMPLETE / VERIFIED**
+
+Control 113.14 reconciles the explicit backend dependency required to mount the verified 3D performance-body capability into the authenticated Athlete frontend workflow.
+
+### Explicit model selection
+
+- Added nullable `Athlete.bodyModelType`.
+- The only valid persisted values are `MALE` and `FEMALE`.
+- No body model is inferred from name, profile data, measurements, appearance or any other attribute.
+- No default body model is assigned.
+- Existing Athlete records remain unselected until the Athlete makes an explicit choice.
+
+### Authenticated boundaries
+
+- Added `PUT /api/v1/auth/me/body-model`.
+- Added `GET /api/v1/auth/me/performance-body`.
+- Both endpoints derive User, Athlete and tenant identity exclusively from authentication.
+- Request-supplied identity and unknown fields are rejected.
+- Missing or inactive Athlete profiles fail safely.
+- Responses use `Cache-Control: no-store`.
+
+### Performance body profile
+
+The authenticated read boundary returns the explicit model selection and up to 100 authoritative Athlete body-measurement snapshots in deterministic chronological order. Each snapshot includes height, weight, calculated BMI, optional body-fat percentage and recorded time.
+
+The existing eight-field frontend performance-body measurement contract remains unchanged. Height can be mapped directly. Weight, BMI and body fat remain explicit supporting body-profile data and are not misrepresented as circumference measurements.
+
+### Verification evidence
+
+- Body-model domain and application tests: passed.
+- Authenticated persistence and API tests: passed.
+- Targeted total: 4 test files and 24 tests passed.
+- Prisma generation and TypeScript build: passed.
+- Backend lint: passed with the existing warning baseline.
+- Migration applied only to protected local `titan_core_test`.
+- Full backend regression: 126 test files and 974 tests passed.
+- Knowledge Base build: passed.
+- Production migration, frontend mounting and Cloudflare release: not performed.
+
+### Delivery classification
+
+Control 113.14 completes and verifies the missing backend performance-body bridge. Mission 063 frontend integration remains pending and is not claimed by this control.

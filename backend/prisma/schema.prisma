@@ -117,6 +117,7 @@ model Athlete {
   firstName               String
   lastName                String
   dateOfBirth             DateTime?
+  bodyModelType           PerformanceBodyModelType?
   countryCode             String?
   status                  RecordStatus             @default(ACTIVE)
   createdAt               DateTime                 @default(now())
@@ -434,6 +435,10 @@ enum AthleteRelationshipType {
   ORGANISATION
 }
 
+enum PerformanceBodyModelType {
+  MALE
+  FEMALE
+}
 enum RecordStatus {
   ACTIVE
   INACTIVE

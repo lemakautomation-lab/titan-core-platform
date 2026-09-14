@@ -693,3 +693,23 @@ Evidence timestamp: **2026-09-14 15:12:56 +02:00**
 ### Delivery classification
 
 Control 113.10 is complete, verified and published as a backend self-service personal-details boundary. It does not claim that the product frontend is released. The canonical Cloudflare alias incident remains tracked separately. Mission 113 remains active.
+## Control 113.14 - Performance Body Profile Bridge
+
+Status: **COMPLETE / VERIFIED**
+
+Control 113.14 supplies the explicit backend dependency needed by the Athlete 3D performance-body frontend.
+
+- Athlete body-model selection is persisted explicitly as `MALE` or `FEMALE`.
+- No model is inferred or defaulted.
+- `PUT /api/v1/auth/me/body-model` records the authenticated Athlete's selection.
+- `GET /api/v1/auth/me/performance-body` returns the authenticated Athlete identity, selected model and bounded chronological body-measurement history.
+- Identity and tenant scope come only from authentication.
+- Height maps directly into the existing frontend centimetre measurement contract.
+- Weight, BMI and body-fat percentage remain explicit supporting data and are not presented as circumference measurements.
+- Four targeted test files with 24 tests passed.
+- Prisma generation, TypeScript build, lint and protected local test migration passed.
+- Full backend regression passed with 126 test files and 974 tests.
+- Knowledge Base build passed.
+- Production migration, frontend mounting and Cloudflare publication did not occur.
+
+Control 113.14 is complete and verified. Mission 113 reconciliation is complete. Mission 063 remains the owner of the visible Athlete dashboard and 3D body integration.
