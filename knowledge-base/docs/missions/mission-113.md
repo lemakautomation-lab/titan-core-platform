@@ -252,7 +252,7 @@ Evidence timestamp: **2026-09-14 08:41:18 +02:00**
 Control 113.5 is complete, verified and published. Mission 113 remains active.
 ## Control 113.6 - Selected User Type
 
-Status: **TECHNICALLY COMPLETE / VERIFIED**
+Status: **COMPLETE / VERIFIED / KNOWLEDGE BASE PUBLISHED**
 
 Control 113.6 establishes an explicit onboarding user-type selection without converting self-selection into authorization.
 
@@ -301,4 +301,22 @@ Evidence timestamp: **2026-09-14 09:22:50 +02:00**
 
 ### Delivery classification
 
-Control 113.6 is technically complete and verified. Knowledge Base publication verification remains outstanding. Mission 113 remains active.
+Control 113.6 is complete, verified and published through the verified Cloudflare deployment artifact. The canonical alias incident remains open. Mission 113 remains active.
+
+## Mission 113 Knowledge Base Publication Status
+
+Publication evidence timestamp: **2026-09-14 10:11:15 +02:00**
+
+Controls 113.5 and 113.6 are present in the successful Cloudflare Pages production artifact:
+
+- [Verified Mission 113 deployment](https://9284e34b.titan-core-platform.pages.dev/docs/missions/113/)
+- Control 113.5 content verified in the deployed artifact.
+- Control 113.6 content verified in the deployed artifact.
+- Docusaurus production build passed.
+- Cloudflare Pages build and asset publication passed.
+- GitHub `main` and `origin/main` were synchronized.
+- The canonical `titan-core-platform.pages.dev` alias remained temporarily stale after successful deployment and retry.
+- This is tracked as a Cloudflare production-alias incident.
+- No backend, database or product code change was required for the publication incident.
+
+The immutable deployment URL is the verified publication evidence while Cloudflare refreshes or repairs the canonical alias.
