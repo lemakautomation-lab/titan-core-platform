@@ -21,6 +21,16 @@ import { PrismaAthletePerformanceBodyProfileQuery } from "../queries/athlete-per
 import { PrismaAthleteRegistrationTransaction } from "../transactions/athlete-registration.transaction";
 import { getConsumerTenantSlug } from "../../config/consumer-tenant.config";
 
+import { RequestPasswordResetUseCase } from "../../application/use-cases/request-password-reset.use-case";
+import { CompletePasswordResetUseCase } from "../../application/use-cases/complete-password-reset.use-case";
+import { PrismaPasswordResetTransaction } from "../transactions/password-reset.transaction";
+import { createResendPasswordResetEmailDelivery } from "../email/resend-password-reset-email-delivery";
+import { UnavailablePasswordResetEmailDelivery } from "../email/unavailable-password-reset-email-delivery";
+import {
+    getPasswordResetFrontendUrl,
+    getPasswordResetTokenTtlMinutes,
+    getResendPasswordResetConfig,
+} from "../../config/password-reset.config";
 import { auditLogModule } from "./audit-log.module";
 import { authorizationModule } from "./authorization.module";
 
@@ -32,6 +42,21 @@ const athleteRegistrationTransaction =
         databaseService,
     );
 
+const passwordResetTransaction =
+    new PrismaPasswordResetTransaction(
+        databaseService,
+    );
+
+const resendPasswordResetConfig =
+    getResendPasswordResetConfig();
+
+const passwordResetEmailDelivery =
+    resendPasswordResetConfig
+        ? createResendPasswordResetEmailDelivery(
+            resendPasswordResetConfig.apiKey,
+            resendPasswordResetConfig.fromEmail,
+        )
+        : new UnavailablePasswordResetEmailDelivery();
 const personalDetailsUpdateTransaction =
     new PrismaPersonalDetailsUpdateTransaction(
         databaseService,
@@ -78,6 +103,19 @@ export const authModule = {
 
     sessionRepository,
 
+    requestPasswordResetUseCase:
+        new RequestPasswordResetUseCase(
+            passwordResetTransaction,
+            passwordResetEmailDelivery,
+            getConsumerTenantSlug(),
+            getPasswordResetFrontendUrl(),
+            getPasswordResetTokenTtlMinutes(),
+        ),
+
+    completePasswordResetUseCase:
+        new CompletePasswordResetUseCase(
+            passwordResetTransaction,
+        ),
     registerAthleteUseCase:
         new RegisterAthleteUseCase(
             athleteRegistrationTransaction,

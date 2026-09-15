@@ -8,7 +8,9 @@ import type {
   MeResponse,
   RegisterAthleteRequest,
   RegisterAthleteResponse,
-} from "./auth.types";
+  PasswordResetRequest,
+  PasswordResetCompleteRequest,
+  PasswordResetResponse,} from "./auth.types";
 
 
 export function registerAthlete(
@@ -74,4 +76,28 @@ export function me(): Promise<MeResponse> {
     },
   );
 
+}
+
+export function requestPasswordReset(
+  request: PasswordResetRequest,
+): Promise<PasswordResetResponse> {
+  return apiRequest<PasswordResetResponse>(
+    "/auth/password-reset/request",
+    {
+      method: "POST",
+      body: JSON.stringify(request),
+    },
+  );
+}
+
+export function completePasswordReset(
+  request: PasswordResetCompleteRequest,
+): Promise<PasswordResetResponse> {
+  return apiRequest<PasswordResetResponse>(
+    "/auth/password-reset/complete",
+    {
+      method: "POST",
+      body: JSON.stringify(request),
+    },
+  );
 }

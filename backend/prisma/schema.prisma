@@ -38,6 +38,7 @@ model Tenant {
   trainingStresses     TrainingStress[]
   payments             Payment[]             @relation("PaymentTenant")
   userTypeEntitlements UserTypeEntitlement[] @relation("EntitlementTenant")
+  passwordResetTokens  PasswordResetToken[]
 }
 
 model Sport {
@@ -101,6 +102,7 @@ model User {
   athletes                 Athlete[]
   payments                 Payment[]             @relation("PaymentUserTenant")
   userTypeEntitlements     UserTypeEntitlement[] @relation("EntitlementUserTenant")
+  passwordResetTokens      PasswordResetToken[]
 
   @@unique([tenantId, email])
   @@unique([id, tenantId], map: "User_id_tenantId_key")
@@ -234,6 +236,22 @@ model RolePermission {
 
   @@unique([tenantId, roleId, permissionId])
   @@index([tenantId, roleId])
+}
+
+model PasswordResetToken {
+  id         String    @id @default(uuid())
+  tenantId   String
+  userId     String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user       User      @relation(fields: [userId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([tenantId, userId])
+  @@index([expiresAt])
 }
 
 model Session {

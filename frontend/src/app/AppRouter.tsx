@@ -5,6 +5,8 @@ import {
 } from "react-router-dom";
 
 import LoginPage from "../auth/LoginPage";
+import ForgotPasswordPage from "../auth/ForgotPasswordPage";
+import ResetPasswordPage from "../auth/ResetPasswordPage";
 import AthleteSignupPage from "../auth/AthleteSignupPage";
 import AthleteOnboardingPage from "../auth/AthleteOnboardingPage";
 import DashboardPage from "../dashboard/DashboardPage";
@@ -135,6 +137,33 @@ export default function AppRouter({
         }
       />
 
+      <Route
+        path="/forgot-password"
+        element={
+          authState === "authenticated" ? (
+            <Navigate
+              to={getAuthenticatedLandingRoute(user)}
+              replace
+            />
+          ) : (
+            <ForgotPasswordPage />
+          )
+        }
+      />
+
+      <Route
+        path="/reset-password"
+        element={
+          authState === "authenticated" ? (
+            <Navigate
+              to={getAuthenticatedLandingRoute(user)}
+              replace
+            />
+          ) : (
+            <ResetPasswordPage />
+          )
+        }
+      />
       <Route
         path="/signup/athlete"
         element={

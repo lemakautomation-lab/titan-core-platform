@@ -131,6 +131,11 @@ export default function LoginPage({
       </form>
 
       <p>
+        <Link to="/forgot-password">
+          Forgot password?
+        </Link>
+      </p>
+      <p>
         New Athlete?{" "}
         <Link to="/signup/athlete">
           Create an account

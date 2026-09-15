@@ -64,3 +64,15 @@ export interface RegisterAthleteResponse {
     registration: AthleteRegistration;
   };
 }
+export interface PasswordResetRequest {
+  email: string;
+}
+
+export interface PasswordResetCompleteRequest {
+  token: string;
+  newPassword: string;
+}
+
+export interface PasswordResetResponse {
+  message: string;
+}

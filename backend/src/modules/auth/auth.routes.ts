@@ -1,6 +1,9 @@
 import { Router } from "express";
 
 import { AuthController } from "./auth.controller";
+import {
+    passwordResetController,
+} from "./password-reset.controller";
 
 import { authMiddleware } from "../../middleware/auth.middleware";
 import {
@@ -33,6 +36,21 @@ export function createAuthRoutes(
             .bind(authController),
     );
 
+    router.post(
+        "/password-reset/request",
+        authRateLimiter,
+        passwordResetController
+            .request
+            .bind(passwordResetController),
+    );
+
+    router.post(
+        "/password-reset/complete",
+        authRateLimiter,
+        passwordResetController
+            .complete
+            .bind(passwordResetController),
+    );
     router.post(
         "/login",
         authRateLimiter,
