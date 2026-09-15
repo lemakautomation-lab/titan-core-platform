@@ -84,9 +84,11 @@ Live Resend delivery is not yet claimed. It requires a verified sending domain, 
 - Frontend lint passed with zero warnings.
 - Production deployment was not performed.
 
-### Outstanding
+### Publication evidence
 
-- Local visual verification.
-- Controlled Git release gates.
-- Cloudflare Knowledge Base publication and live verification.
-- Production Resend configuration and delivery verification.
+- Source commit: `7fafcc67a670919ec0daf40d79f2a057b125cc9f`.
+- Local visual verification passed.
+- Controlled Git release gates passed.
+- Cloudflare Mission 016 page was verified live at 2026-09-15 18:39:22 SAST.
+- Production Resend configuration and real-message delivery remain outstanding.
+- Production application and database deployment were not performed.

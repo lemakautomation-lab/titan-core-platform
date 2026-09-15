@@ -12,7 +12,7 @@ TITAN Enterprise is the top-level platform. TITAN Health is a product within TIT
 
 ### Status
 
-TECHNICALLY COMPLETE / AUTOMATED VERIFICATION PASSED / LOCAL VISUAL VERIFICATION PENDING / CLOUDFLARE PUBLICATION PENDING
+COMPLETE / VERIFIED / COMMITTED / PUSHED / LOCALLY VISUALLY VERIFIED / CLOUDFLARE PUBLISHED
 
 ### Security objective
 
@@ -106,13 +106,13 @@ Migration state:
 - Protected test migration status passed.
 - `git diff --check` passed.
 
-### Remaining release gates
+### Publication evidence
 
-- Local visual verification.
-- Knowledge Base build.
-- Exact authorized-file audit.
-- Controlled staging.
-- Separate commit and push.
-- Cloudflare publication and live page verification.
-- Production Resend configuration and verified real delivery.
-- Production application and database deployment remain unauthorized.
+- Source commit: `7fafcc67a670919ec0daf40d79f2a057b125cc9f`.
+- `HEAD` equals `origin/main` with ahead/behind `0 0`.
+- Working tree was clean after push.
+- Local visual verification passed.
+- Docusaurus Knowledge Base build passed.
+- Cloudflare Mission 016 page was verified live at 2026-09-15 18:39:22 SAST.
+- Production Resend delivery remains unverified.
+- Production application and database deployment were not performed.
