@@ -13,6 +13,7 @@ interface AuthAppProps {
 }
 
 type NavigationItem =
+  | "Onboarding"
   | "Dashboard"
   | "Training"
   | "Performance"
@@ -94,6 +95,10 @@ function getNavigationRoute(
 function getActiveSection(
   pathname: string,
 ): NavigationItem {
+  if (pathname === "/onboarding") {
+    return "Onboarding";
+  }
+
   if (pathname === "/sports") {
     return "Performance";
   }
@@ -126,10 +131,20 @@ export default function AuthApp({
   const permissions =
     normalizePermissions(user.permissions);
 
+  const onboardingOnly =
+    user.roles.length === 0 &&
+    permissions.size === 0;
+
   const allowedNavigation =
-    navigation.filter((item) =>
-      canAccess(item, permissions),
-    );
+    onboardingOnly
+      ? [{
+          label: "Onboarding" as const,
+          route: "/onboarding",
+          permission: [],
+        }]
+      : navigation.filter((item) =>
+          canAccess(item, permissions),
+        );
 
   const activeSection =
     getActiveSection(location.pathname);
@@ -266,7 +281,9 @@ export default function AuthApp({
                 {
                   safeActiveSection === "Dashboard"
                     ? "Performance Command Centre"
-                    : safeActiveSection
+                    : safeActiveSection === "Onboarding"
+                      ? "Athlete Onboarding"
+                      : safeActiveSection
                 }
               </h2>
 

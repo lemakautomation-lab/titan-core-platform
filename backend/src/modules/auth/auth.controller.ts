@@ -8,7 +8,7 @@ import { RequestWithId } from "../../middleware/request-id.middleware";
 import { UpdateMyPersonalDetailsCommand } from "../../application/commands/update-my-personal-details.command";
 import { UpdateMyAthleteGoalsCommand } from "../../application/commands/update-my-athlete-goals.command";
 import { CreateMyAthleteBodyMeasurementCommand } from "../../application/commands/create-my-athlete-body-measurement.command";
-import { UpdateMyAthleteBodyModelCommand } from "../../application/commands/update-my-athlete-body-model.command";
+import { UpdateMyAthleteBodyModelCommand } from "../../application/commands/update-my-athlete-body-model.command";import { RegisterAthleteCommand } from "../../application/commands/register-athlete.command";
 
 import {
     REFRESH_TOKEN_COOKIE_NAME,
@@ -272,6 +272,131 @@ export class AuthController {
 
         res.status(200).json(result.value);
     }
+
+    async registerAthlete(
+        req: RequestWithId,
+        res: Response,
+    ): Promise<void> {
+        res.set("Cache-Control", "no-store");
+
+        const body =
+            req.body as Record<string, unknown>;
+
+        const allowedFields = new Set([
+            "firstName",
+            "lastName",
+            "email",
+            "password",
+            "countryCode",
+            "dateOfBirth",
+        ]);
+
+        if (
+            !body ||
+            typeof body !== "object" ||
+            Array.isArray(body) ||
+            Object.keys(body).some(
+                (field) =>
+                    !allowedFields.has(field),
+            ) ||
+            typeof body.firstName !== "string" ||
+            typeof body.lastName !== "string" ||
+            typeof body.email !== "string" ||
+            typeof body.password !== "string" ||
+            typeof body.countryCode !== "string" ||
+            typeof body.dateOfBirth !== "string"
+        ) {
+            res.status(400).json({
+                error:
+                    "Invalid Athlete registration payload.",
+            });
+            return;
+        }
+
+        const dateOfBirth =
+            new Date(body.dateOfBirth);
+
+        if (
+            Number.isNaN(
+                dateOfBirth.getTime(),
+            )
+        ) {
+            res.status(400).json({
+                error:
+                    "Athlete date of birth is invalid.",
+            });
+            return;
+        }
+
+        const result =
+            await authModule
+                .registerAthleteUseCase
+                .execute(
+                    new RegisterAthleteCommand(
+                        body.firstName,
+                        body.lastName,
+                        body.email,
+                        body.password,
+                        body.countryCode,
+                        dateOfBirth,
+                    ),
+                );
+
+        if (!result.isSuccess) {
+            res.status(
+                result.error ===
+                    "Email already exists for this tenant."
+                    ? 409
+                    : 400,
+            ).json({
+                error: result.error,
+            });
+            return;
+        }
+
+        if (!result.value) {
+            res.status(500).json({
+                error: "Athlete registration failed.",
+            });
+            return;
+        }
+
+        const loginResult =
+            await authModule.loginUseCase.execute({
+                tenantId:
+                    result.value.tenantId,
+                email:
+                    result.value.email,
+                password:
+                    body.password,
+                ipAddress:
+                    req.ip,
+                userAgent:
+                    req.get("User-Agent") ??
+                    undefined,
+                requestId:
+                    req.requestId,
+            });
+
+        res.cookie(
+            REFRESH_TOKEN_COOKIE_NAME,
+            loginResult.refreshToken,
+            refreshTokenCookieOptions,
+        );
+
+        res.status(201).json({
+            success: true,
+            data: {
+                user:
+                    loginResult.user,
+                accessToken:
+                    loginResult.accessToken,
+                registration:
+                    result.value,
+            },
+        });
+    }
+
 
     async login(
         req: RequestWithId,

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  registerAthlete,
   login,
   refresh,
   logout,
@@ -112,4 +113,47 @@ describe("auth.api", () => {
 
   });
 
+
+
+  it("registers an Athlete without client-owned tenant or access fields", async () => {
+    apiRequestMock.mockResolvedValue({
+      success: true,
+      data: {
+        user: {
+          id: "user-1",
+          tenantId: "tenant-1",
+          email: "athlete@example.com",
+          roles: [],
+          permissions: [],
+        },
+        accessToken: "access-token",
+        registration: {
+          userId: "user-1",
+          athleteId: "athlete-1",
+          digitalTwinId: "twin-1",
+          tenantId: "tenant-1",
+          email: "athlete@example.com",
+        },
+      },
+    });
+
+    const request = {
+      firstName: "Titan",
+      lastName: "Athlete",
+      email: "athlete@example.com",
+      password: "Password123!",
+      countryCode: "ZA",
+      dateOfBirth: "1995-01-01",
+    };
+
+    await registerAthlete(request);
+
+    expect(apiRequestMock).toHaveBeenCalledWith(
+      "/auth/register/athlete",
+      {
+        method: "POST",
+        body: JSON.stringify(request),
+      },
+    );
+  });
 });

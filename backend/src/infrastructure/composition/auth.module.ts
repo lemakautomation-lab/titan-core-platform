@@ -17,13 +17,20 @@ import { PrismaAthleteOnboardingStatusQuery } from "../queries/athlete-onboardin
 import { UpdateMyAthleteBodyModelUseCase } from "../../application/use-cases/update-my-athlete-body-model.use-case";
 import { GetMyAthletePerformanceBodyProfileUseCase } from "../../application/use-cases/get-my-athlete-performance-body-profile.use-case";
 import { PrismaAthleteBodyModelUpdateTransaction } from "../transactions/athlete-body-model-update.transaction";
-import { PrismaAthletePerformanceBodyProfileQuery } from "../queries/athlete-performance-body-profile.query";
+import { PrismaAthletePerformanceBodyProfileQuery } from "../queries/athlete-performance-body-profile.query";import { RegisterAthleteUseCase } from "../../application/use-cases/register-athlete.use-case";
+import { PrismaAthleteRegistrationTransaction } from "../transactions/athlete-registration.transaction";
+import { getConsumerTenantSlug } from "../../config/consumer-tenant.config";
 
 import { auditLogModule } from "./audit-log.module";
 import { authorizationModule } from "./authorization.module";
 
 const databaseService =
     new DatabaseService();
+
+const athleteRegistrationTransaction =
+    new PrismaAthleteRegistrationTransaction(
+        databaseService,
+    );
 
 const personalDetailsUpdateTransaction =
     new PrismaPersonalDetailsUpdateTransaction(
@@ -70,6 +77,12 @@ export const authModule = {
     userRepository,
 
     sessionRepository,
+
+    registerAthleteUseCase:
+        new RegisterAthleteUseCase(
+            athleteRegistrationTransaction,
+            getConsumerTenantSlug(),
+        ),
 
     updateMyPersonalDetailsUseCase:
         new UpdateMyPersonalDetailsUseCase(

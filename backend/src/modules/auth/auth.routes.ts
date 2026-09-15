@@ -26,6 +26,14 @@ export function createAuthRoutes(
     const router = Router();
 
     router.post(
+        "/register/athlete",
+        authRateLimiter,
+        authController
+            .registerAthlete
+            .bind(authController),
+    );
+
+    router.post(
         "/login",
         authRateLimiter,
         authController.login.bind(authController),

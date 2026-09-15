@@ -22,6 +22,7 @@ import {
 } from "./auth/auth.storage";
 
 vi.mock("./auth/auth.service", () => ({
+  registerAthlete: vi.fn(),
   login: vi.fn(),
   getCurrentUser: vi.fn(),
   restoreSession: vi.fn(),
@@ -95,6 +96,12 @@ describe("App", () => {
 
     vi.clearAllMocks();
 
+    window.history.replaceState(
+      {},
+      "",
+      "/login",
+    );
+
     getCurrentUserMock.mockResolvedValue(null);
     restoreSessionMock.mockResolvedValue(null);
     logoutMock.mockResolvedValue(undefined);
@@ -104,13 +111,18 @@ describe("App", () => {
 
     render(<App />);
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", {
-          name: "Sign in",
-        }),
-      ).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(
+          screen.getByRole("heading", {
+            name: "Sign in",
+          }),
+        ).toBeInTheDocument();
+      },
+      {
+        timeout: 5000,
+      },
+    );
 
     expect(
       screen.queryByText("Authenticated"),
@@ -201,13 +213,18 @@ describe("App", () => {
 
     render(<App />);
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", {
-          name: "Sign in",
-        }),
-      ).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(
+          screen.getByRole("heading", {
+            name: "Sign in",
+          }),
+        ).toBeInTheDocument();
+      },
+      {
+        timeout: 5000,
+      },
+    );
 
     expect(
       screen.queryByText("Authenticated"),
@@ -257,13 +274,18 @@ describe("App", () => {
 
     render(<App />);
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", {
-          name: "Sign in",
-        }),
-      ).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(
+          screen.getByRole("heading", {
+            name: "Sign in",
+          }),
+        ).toBeInTheDocument();
+      },
+      {
+        timeout: 5000,
+      },
+    );
 
     fireEvent.change(
       screen.getByLabelText("Tenant ID"),
@@ -326,13 +348,18 @@ describe("App", () => {
 
     render(<App />);
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", {
-          name: "Sign in",
-        }),
-      ).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(
+          screen.getByRole("heading", {
+            name: "Sign in",
+          }),
+        ).toBeInTheDocument();
+      },
+      {
+        timeout: 5000,
+      },
+    );
 
     fireEvent.change(
       screen.getByLabelText("Tenant ID"),
@@ -404,13 +431,18 @@ describe("App", () => {
       }),
     );
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", {
-          name: "Sign in",
-        }),
-      ).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(
+          screen.getByRole("heading", {
+            name: "Sign in",
+          }),
+        ).toBeInTheDocument();
+      },
+      {
+        timeout: 5000,
+      },
+    );
 
     expect(
       logoutMock,

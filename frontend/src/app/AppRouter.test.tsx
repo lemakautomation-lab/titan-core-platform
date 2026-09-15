@@ -288,4 +288,133 @@ describe("AppRouter", () => {
       }),
     ).toBeInTheDocument();
   });
+
+
+  it("renders public Athlete signup without a tenant field", () => {
+    renderRouter(
+      "/signup/athlete",
+      false,
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Create your Athlete account",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByLabelText("Tenant ID"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("links the sign-in page to Athlete signup", () => {
+    renderRouter(
+      "/login",
+      false,
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: "Create an account",
+      }),
+    ).toHaveAttribute(
+      "href",
+      "/signup/athlete",
+    );
+  });
+
+  it("redirects an authenticated onboarding-only Athlete away from signup", () => {
+    render(
+      <MemoryRouter
+        initialEntries={[
+          "/signup/athlete",
+        ]}
+      >
+        <AppRouter
+          authState="authenticated"
+          user={{
+            id: "athlete-user-1",
+            tenantId: "tenant-1",
+            email: "athlete@example.com",
+            roles: [],
+            permissions: [],
+          }}
+          onAuthenticated={vi.fn()}
+          onLogout={async () => undefined}
+          loggingOut={false}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Athlete Onboarding",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Your Athlete account is ready",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        /Paid performance features remain locked/,
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", {
+        name: "Dashboard",
+      }),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByRole("button", {
+        name: "Onboarding",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("redirects onboarding-only Athletes from login to onboarding", () => {
+    render(
+      <MemoryRouter
+        initialEntries={[
+          "/login",
+        ]}
+      >
+        <AppRouter
+          authState="authenticated"
+          user={{
+            id: "athlete-user-1",
+            tenantId: "tenant-1",
+            email: "athlete@example.com",
+            roles: [],
+            permissions: [],
+          }}
+          onAuthenticated={vi.fn()}
+          onLogout={async () => undefined}
+          loggingOut={false}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Athlete Onboarding",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("heading", {
+        level: 2,
+        name: "Sign in",
+      }),
+    ).not.toBeInTheDocument();
+  });
 });

@@ -1,4 +1,5 @@
 import {
+  registerAthlete as registerAthleteApi,
   login as loginApi,
   logout as logoutApi,
   me as meApi,
@@ -16,7 +17,26 @@ import {
 import type {
   AuthUser,
   LoginRequest,
+  RegisterAthleteRequest,
 } from "./auth.types";
+
+export async function registerAthlete(
+  request: RegisterAthleteRequest,
+): Promise<AuthUser> {
+
+  const response =
+    await registerAthleteApi(request);
+
+  setAccessToken(
+    response.data.accessToken,
+  );
+
+  setAuthUser(
+    response.data.user,
+  );
+
+  return response.data.user;
+}
 
 export async function login(
   request: LoginRequest,

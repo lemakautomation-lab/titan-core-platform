@@ -7,6 +7,7 @@ import {
 } from "vitest";
 
 import {
+  registerAthlete as registerAthleteApi,
   login as loginApi,
   logout as logoutApi,
   me as meApi,
@@ -20,6 +21,7 @@ import {
 } from "./auth.storage";
 
 import {
+  registerAthlete,
   login,
   logout,
   getCurrentUser,
@@ -30,6 +32,7 @@ import {
 } from "./auth.service";
 
 vi.mock("./auth.api", () => ({
+  registerAthlete: vi.fn(),
   login: vi.fn(),
   refresh: vi.fn(),
   logout: vi.fn(),
@@ -349,4 +352,61 @@ describe("auth.service", () => {
 
   });
 
+
+
+  it("registers an Athlete and stores the authenticated session", async () => {
+    const user = {
+      id: "user-1",
+      tenantId: "tenant-1",
+      email: "athlete@example.com",
+      roles: [],
+      permissions: [],
+    };
+
+    vi.mocked(registerAthleteApi).mockResolvedValue({
+      success: true,
+      data: {
+        user,
+        accessToken: "signup-access-token",
+        registration: {
+          userId: user.id,
+          athleteId: "athlete-1",
+          digitalTwinId: "twin-1",
+          tenantId: user.tenantId,
+          email: user.email,
+        },
+      },
+    });
+
+    const registeredUser =
+      await registerAthlete({
+        firstName: "Titan",
+        lastName: "Athlete",
+        email: user.email,
+        password: "Password123!",
+        countryCode: "ZA",
+        dateOfBirth: "1995-01-01",
+      });
+
+    expect(registeredUser).toEqual(user);
+
+    expect(
+      registerAthleteApi,
+    ).toHaveBeenCalledWith({
+      firstName: "Titan",
+      lastName: "Athlete",
+      email: user.email,
+      password: "Password123!",
+      countryCode: "ZA",
+      dateOfBirth: "1995-01-01",
+    });
+
+    expect(getAccessToken()).toBe(
+      "signup-access-token",
+    );
+
+    expect(getAuthUser()).toEqual(user);
+
+    expect(isAuthenticated()).toBe(true);
+  });
 });

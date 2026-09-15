@@ -713,3 +713,36 @@ Control 113.14 supplies the explicit backend dependency needed by the Athlete 3D
 - Production migration, frontend mounting and Cloudflare publication did not occur.
 
 Control 113.14 is complete and verified. Mission 113 reconciliation is complete. Mission 063 remains the owner of the visible Athlete dashboard and 3D body integration.
+## Control 113.15 - Athlete Self-Signup
+
+Status: **COMPLETE / VERIFIED / RELEASE CANDIDATE**
+
+Control 113.15 adds the standard public Athlete account-creation journey.
+
+- Athletes register at `/signup/athlete`.
+- Signup does not expose or request a tenant ID.
+- The backend selects the configured TITAN Health consumer tenant.
+- User, Athlete and Digital Twin records are created atomically.
+- Successful signup creates an authenticated session.
+- No role, permission, payment confirmation or paid entitlement is created.
+- Unpaid Athletes land on the onboarding page.
+- Dashboard navigation remains unavailable until the appropriate paid access controls are satisfied.
+- Protected and unknown signup fields are rejected.
+- Duplicate or invalid registration fails without partial persistence.
+- Backend targeted coverage passed with 3 files and 18 tests.
+- Full backend regression and TypeScript build passed.
+- Backend lint returned the existing 29-warning baseline with no new warning.
+- Frontend targeted coverage passed with 5 files and 49 tests.
+- Full frontend regression passed with 30 files and 168 tests.
+- Frontend build and zero-warning lint passed.
+- No database migration was introduced.
+- Production configuration and deployment have not occurred.
+- Local signup journey visually verified at http://localhost:5173 on 2026-09-15T10:29:58+02:00.
+- Verified automatic authentication, onboarding landing, server-owned tenant assignment and locked paid access.
+- Local signup journey visually verified at http://localhost:5173 on 2026-09-15T10:18:27+02:00.
+- Verified automatic authentication, onboarding landing, server-owned tenant assignment and locked paid access.
+- Live checkout, password recovery and forgotten-email assistance remain separate pending controls.
+
+Evidence timestamp: **2026-09-15T10:00:43+02:00**
+
+Control 113.15 is complete and verified as a local release candidate. Mission 113 is reconciled but production signup is not released.

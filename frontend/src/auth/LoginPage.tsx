@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { login } from "./auth.service";
 import type { AuthUser } from "./auth.types";
@@ -128,6 +129,13 @@ export default function LoginPage({
         </button>
 
       </form>
+
+      <p>
+        New Athlete?{" "}
+        <Link to="/signup/athlete">
+          Create an account
+        </Link>
+      </p>
     </main>
   );
 }

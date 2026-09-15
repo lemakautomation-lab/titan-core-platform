@@ -1,4 +1,4 @@
-﻿export interface AuthUser {
+export interface AuthUser {
   id: string;
   tenantId: string;
   email: string;
@@ -37,4 +37,30 @@ export interface MeResponse {
   tenantId: string;
   roles: string[];
   permissions: string[];
+}
+
+export interface RegisterAthleteRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  countryCode: string;
+  dateOfBirth: string;
+}
+
+export interface AthleteRegistration {
+  userId: string;
+  athleteId: string;
+  digitalTwinId: string;
+  tenantId: string;
+  email: string;
+}
+
+export interface RegisterAthleteResponse {
+  success: true;
+  data: {
+    user: AuthUser;
+    accessToken: string;
+    registration: AthleteRegistration;
+  };
 }

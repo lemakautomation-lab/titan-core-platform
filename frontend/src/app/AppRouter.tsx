@@ -5,6 +5,8 @@ import {
 } from "react-router-dom";
 
 import LoginPage from "../auth/LoginPage";
+import AthleteSignupPage from "../auth/AthleteSignupPage";
+import AthleteOnboardingPage from "../auth/AthleteOnboardingPage";
 import DashboardPage from "../dashboard/DashboardPage";
 import AuthApp from "../auth/AuthApp";
 import UsersPage from "../users/UsersPage";
@@ -70,6 +72,24 @@ function RequirePermission({
   return <>{children}</>;
 }
 
+function getAuthenticatedLandingRoute(
+  user: AuthUser | null,
+): string {
+  if (
+    user &&
+    user.roles.length === 0 &&
+    user.permissions.length === 0
+  ) {
+    return "/onboarding";
+  }
+
+  if (user?.permissions.includes("users.read")) {
+    return "/users";
+  }
+
+  return "/dashboard";
+}
+
 function NotFoundPage() {
   return (
     <main>
@@ -103,9 +123,28 @@ export default function AppRouter({
         path="/login"
         element={
           authState === "authenticated" ? (
-            <Navigate to="/users" replace />
+            <Navigate
+              to={getAuthenticatedLandingRoute(user)}
+              replace
+            />
           ) : (
             <LoginPage
+              onAuthenticated={onAuthenticated}
+            />
+          )
+        }
+      />
+
+      <Route
+        path="/signup/athlete"
+        element={
+          authState === "authenticated" ? (
+            <Navigate
+              to={getAuthenticatedLandingRoute(user)}
+              replace
+            />
+          ) : (
+            <AthleteSignupPage
               onAuthenticated={onAuthenticated}
             />
           )
@@ -124,6 +163,11 @@ export default function AppRouter({
         <Route
           path="/"
           element={<Navigate to="/dashboard" replace />}
+        />
+
+        <Route
+          path="/onboarding"
+          element={<AthleteOnboardingPage />}
         />
 
         <Route

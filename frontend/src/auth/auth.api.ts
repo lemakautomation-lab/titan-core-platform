@@ -6,7 +6,24 @@ import type {
   RefreshResponse,
   LogoutResponse,
   MeResponse,
+  RegisterAthleteRequest,
+  RegisterAthleteResponse,
 } from "./auth.types";
+
+
+export function registerAthlete(
+  request: RegisterAthleteRequest,
+): Promise<RegisterAthleteResponse> {
+
+  return apiRequest<RegisterAthleteResponse>(
+    "/auth/register/athlete",
+    {
+      method: "POST",
+      body: JSON.stringify(request),
+    },
+  );
+
+}
 
 
 export function login(

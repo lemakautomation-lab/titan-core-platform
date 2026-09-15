@@ -865,3 +865,86 @@ The existing eight-field frontend performance-body measurement contract remains 
 ### Delivery classification
 
 Control 113.14 completes and verifies the missing backend performance-body bridge. Mission 063 frontend integration remains pending and is not claimed by this control.
+## Control 113.15 - Athlete Self-Signup
+
+Status: **COMPLETE / VERIFIED / RELEASE CANDIDATE**
+
+Control 113.15 reconciles the missing public Athlete account-creation journey required before payment, entitlement activation and paid onboarding access.
+
+### Public signup boundary
+
+- Added `POST /api/v1/auth/register/athlete`.
+- The public route is protected by the existing authentication rate limiter.
+- Signup accepts first name, surname, email, password, country code and date of birth.
+- Tenant identity is never accepted from the browser.
+- The backend resolves the configured TITAN Health consumer tenant by server-owned slug.
+- Selected user type, roles, permissions, payment state, entitlement state and unknown fields are rejected.
+- Email, password, names, country and date of birth use existing domain validation contracts.
+
+### Atomic account creation
+
+One database transaction creates:
+
+- an active User with selected user type `ATHLETE`;
+- a linked active Athlete;
+- a linked active Athlete Digital Twin.
+
+Duplicate email, invalid data or missing consumer-tenant configuration produces no partial account. No database migration was required.
+
+### Authentication and access state
+
+- Successful signup authenticates the new Athlete using the existing login and session controls.
+- The access token remains in memory.
+- The refresh token remains in the existing HttpOnly cookie.
+- No paid role, permission or user-type entitlement is created during signup.
+- Unpaid Athletes are directed to `/onboarding`.
+- Paid dashboard navigation remains hidden while the account has no role or permission.
+- Payment checkout is explicitly shown as unavailable in this local release.
+- Payment-before-access and entitlement activation remain owned by Missions 110 and 093.
+
+### Frontend journey
+
+- Added `/signup/athlete`.
+- Added a visible Create Account link from Sign In.
+- The Athlete is not asked to enter a tenant UUID.
+- Successful registration continues directly into the authenticated onboarding state.
+- Registration failures return a safe user-facing error.
+- Existing administrator and permission-based navigation remains unchanged.
+
+### Verification evidence
+
+Evidence timestamp: **2026-09-15T10:00:43+02:00**
+
+- Backend application, persistence and public API coverage: 3 files and 18 tests passed.
+- Final backend registration regression: 2 files and 14 tests passed.
+- Full backend regression: passed.
+- Backend TypeScript build: passed.
+- Backend lint: 0 errors; 29 pre-existing warnings; no new Control 113.15 warning.
+- Frontend signup client and page coverage: 3 files and 17 tests passed.
+- Frontend access-journey coverage: 5 files and 49 tests passed.
+- Full frontend regression: 30 files and 168 tests passed.
+- Frontend production build: passed.
+- Frontend lint: passed with zero warnings.
+- `git diff --check`: passed.
+- Knowledge Base build: verified after documentation update.
+
+### Release state
+
+- Local implementation: complete and verified.
+- Production consumer-tenant configuration: not performed.
+- Production backend deployment: not performed.
+- Production frontend deployment: not performed.
+- Local signup journey visually verified at http://localhost:5173 on 2026-09-15T10:29:58+02:00.
+- Verified automatic authentication, onboarding landing, server-owned tenant assignment and locked paid access.
+- Local signup journey visually verified at http://localhost:5173 on 2026-09-15T10:18:27+02:00.
+- Verified automatic authentication, onboarding landing, server-owned tenant assignment and locked paid access.
+- Live payment checkout: not implemented.
+- Paid access granted during signup: no.
+- Password recovery: pending Mission 016 reconciliation.
+- Forgotten-email assistance: pending Control 115.5.
+- Commit: not yet created.
+- Push: not yet performed.
+
+### Mission reconciliation
+
+Mission 113 is reopened only to capture this previously missing signup control. Control 113.15 completes the signup foundation but does not claim production release, live payment processing, email verification, password recovery or paid entitlement activation.
