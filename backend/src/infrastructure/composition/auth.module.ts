@@ -31,6 +31,8 @@ import {
     getPasswordResetTokenTtlMinutes,
     getResendPasswordResetConfig,
 } from "../../config/password-reset.config";
+import { RequestAccountAssistanceUseCase } from "../../application/use-cases/request-account-assistance.use-case";
+import { PrismaAccountAssistanceTransaction } from "../transactions/account-assistance.transaction";
 import { auditLogModule } from "./audit-log.module";
 import { authorizationModule } from "./authorization.module";
 
@@ -42,6 +44,10 @@ const athleteRegistrationTransaction =
         databaseService,
     );
 
+const accountAssistanceTransaction =
+    new PrismaAccountAssistanceTransaction(
+        databaseService,
+    );
 const passwordResetTransaction =
     new PrismaPasswordResetTransaction(
         databaseService,
@@ -103,6 +109,11 @@ export const authModule = {
 
     sessionRepository,
 
+    requestAccountAssistanceUseCase:
+        new RequestAccountAssistanceUseCase(
+            accountAssistanceTransaction,
+            getConsumerTenantSlug(),
+        ),
     requestPasswordResetUseCase:
         new RequestPasswordResetUseCase(
             passwordResetTransaction,

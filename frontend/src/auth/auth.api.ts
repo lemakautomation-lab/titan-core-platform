@@ -101,3 +101,21 @@ export function completePasswordReset(
     },
   );
 }
+export interface AccountAssistanceApiResponse {
+  data: {
+    reference: string;
+    expiresAt: string;
+    message: string;
+  };
+}
+
+export function requestAccountAssistance():
+Promise<AccountAssistanceApiResponse> {
+  return apiRequest<AccountAssistanceApiResponse>(
+    "/auth/account-assistance/request",
+    {
+      method: "POST",
+      body: JSON.stringify({}),
+    },
+  );
+}

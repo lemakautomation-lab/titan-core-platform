@@ -39,6 +39,7 @@ model Tenant {
   payments             Payment[]             @relation("PaymentTenant")
   userTypeEntitlements UserTypeEntitlement[] @relation("EntitlementTenant")
   passwordResetTokens  PasswordResetToken[]
+  accountAssistanceRequests AccountAssistanceRequest[]
 }
 
 model Sport {
@@ -882,4 +883,25 @@ enum EntitlementStatus {
   ACTIVE
   EXPIRED
   REVOKED
+}
+
+enum AccountAssistanceStatus {
+  OPEN
+  CLOSED
+  EXPIRED
+}
+
+model AccountAssistanceRequest {
+  id            String                  @id @default(uuid())
+  tenantId      String
+  referenceHash String                  @unique
+  status        AccountAssistanceStatus @default(OPEN)
+  expiresAt     DateTime
+  closedAt      DateTime?
+  createdAt     DateTime                @default(now())
+  tenant        Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([tenantId, status])
+  @@index([expiresAt])
+  @@index([createdAt])
 }

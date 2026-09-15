@@ -6,6 +6,7 @@ import {
 
 import LoginPage from "../auth/LoginPage";
 import ForgotPasswordPage from "../auth/ForgotPasswordPage";
+import AccountAssistancePage from "../auth/AccountAssistancePage";
 import ResetPasswordPage from "../auth/ResetPasswordPage";
 import AthleteSignupPage from "../auth/AthleteSignupPage";
 import AthleteOnboardingPage from "../auth/AthleteOnboardingPage";
@@ -137,6 +138,19 @@ export default function AppRouter({
         }
       />
 
+      <Route
+        path="/account-assistance"
+        element={
+          authState === "authenticated" ? (
+            <Navigate
+              to={getAuthenticatedLandingRoute(user)}
+              replace
+            />
+          ) : (
+            <AccountAssistancePage />
+          )
+        }
+      />
       <Route
         path="/forgot-password"
         element={

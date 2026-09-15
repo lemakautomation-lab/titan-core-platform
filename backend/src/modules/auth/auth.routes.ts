@@ -2,6 +2,9 @@ import { Router } from "express";
 
 import { AuthController } from "./auth.controller";
 import {
+    accountAssistanceController,
+} from "./account-assistance.controller";
+import {
     passwordResetController,
 } from "./password-reset.controller";
 
@@ -36,6 +39,13 @@ export function createAuthRoutes(
             .bind(authController),
     );
 
+    router.post(
+        "/account-assistance/request",
+        authRateLimiter,
+        accountAssistanceController
+            .request
+            .bind(accountAssistanceController),
+    );
     router.post(
         "/password-reset/request",
         authRateLimiter,

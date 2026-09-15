@@ -131,6 +131,11 @@ export default function LoginPage({
       </form>
 
       <p>
+        <Link to="/account-assistance">
+          Forgot email?
+        </Link>
+      </p>
+      <p>
         <Link to="/forgot-password">
           Forgot password?
         </Link>
