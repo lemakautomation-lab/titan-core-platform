@@ -64,7 +64,16 @@ Control 64.1 establishes the authenticated Trainer subscription/access boundary.
 
 **Release state**
 
-Technical implementation and verification are complete. Commit/push and Knowledge Base publication evidence remain pending.
+Control 64.1 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**.
+
+- Source commit: `ddba6c2ece8175c38112041fcd27ef66b183ee33`
+- Cloudflare deployment: `9827bd34`
+- Immutable publication: `https://9827bd34.titan-core-platform.pages.dev/docs/missions/064/`
+- Canonical publication: `https://titan-core-platform.pages.dev/docs/missions/064/`
+- Immutable and canonical HTTP verification: **200 / VERIFIED**
+- Cloudflare Access interception: **ABSENT / VERIFIED**
+- Docusaurus production build: **GREEN**
+- TITAN product frontend production deployment: **NOT CLAIMED**
 
 Mission 064 remains **ACTIVE** because Controls 64.2 through 64.11 remain outstanding.
 ### Control 64.2 - Trainer sign-up

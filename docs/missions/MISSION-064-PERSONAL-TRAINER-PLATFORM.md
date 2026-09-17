@@ -1,4 +1,4 @@
-﻿# Mission 064 — Personal Trainer Platform
+# Mission 064 — Personal Trainer Platform
 
 ## Mission Status
 
@@ -152,11 +152,20 @@ No live payment gateway or checkout capability is claimed.
 
 ### Release State
 
-Control 64.1 is technically complete and verified.
+Control 64.1 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**.
 
-Commit, push, Knowledge Base publication and Cloudflare publication evidence are pending.
+- Source commit: `ddba6c2ece8175c38112041fcd27ef66b183ee33`
+- Cloudflare deployment: `9827bd34`
+- Immutable publication: `https://9827bd34.titan-core-platform.pages.dev/docs/missions/064/`
+- Canonical publication: `https://titan-core-platform.pages.dev/docs/missions/064/`
+- Immutable HTTP verification: **200 / VERIFIED**
+- Canonical HTTP verification: **200 / VERIFIED**
+- Cloudflare Access interception: **ABSENT / VERIFIED**
+- Docusaurus production build: **GREEN**
 
-Mission 064 remains **ACTIVE**.
+This publication classification applies to the Mission 064 Knowledge Base evidence. It does not claim deployment of the TITAN product frontend to a production hosting environment.
+
+Mission 064 remains **ACTIVE** because Controls 64.2 through 64.11 remain outstanding.
 
 ---
 
