@@ -1,5 +1,6 @@
 import TrainingOverviewPanel from "./TrainingOverviewPanel";
 import RelevantContextPanel from "./RelevantContextPanel";
+import ActionableInsightsPanel from "./ActionableInsightsPanel";
 
 import {
   useEffect,
@@ -184,6 +185,8 @@ export default function DashboardPage({
       <RelevantContextPanel
         permissions={permissions}
       />
+
+      <ActionableInsightsPanel />
 
     </section>
   );
