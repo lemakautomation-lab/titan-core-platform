@@ -1,6 +1,9 @@
 import { DatabaseService } from "../database/database.service";
 
 import { PrismaUserRepository } from "../repositories/user.repository";
+import { PrismaAthleteRepository } from "../repositories/athlete.repository";
+import { PrismaRecoveryTrackingRepository } from "../repositories/recovery-tracking/recovery-tracking.repository";
+import { PrismaNutritionPlanRepository } from "../repositories/nutrition-plan/nutrition-plan.repository";
 import { PrismaSessionRepository } from "../repositories/session.repository";
 
 import { LoginUseCase } from "../../application/use-cases/auth/login.use-case";
@@ -16,6 +19,8 @@ import { GetMyAthleteOnboardingStatusUseCase } from "../../application/use-cases
 import { PrismaAthleteOnboardingStatusQuery } from "../queries/athlete-onboarding-status.query";
 import { UpdateMyAthleteBodyModelUseCase } from "../../application/use-cases/update-my-athlete-body-model.use-case";
 import { GetMyAthletePerformanceBodyProfileUseCase } from "../../application/use-cases/get-my-athlete-performance-body-profile.use-case";
+import { GetMyRelevantContextUseCase } from "../../application/use-cases/get-my-relevant-context.use-case";
+import { ListRecentRecoveryTrackingUseCase } from "../../application/use-cases/list-recent-recovery-tracking.use-case";
 import { PrismaAthleteBodyModelUpdateTransaction } from "../transactions/athlete-body-model-update.transaction";
 import { PrismaAthletePerformanceBodyProfileQuery } from "../queries/athlete-performance-body-profile.query";import { RegisterAthleteUseCase } from "../../application/use-cases/register-athlete.use-case";
 import { PrismaAthleteRegistrationTransaction } from "../transactions/athlete-registration.transaction";
@@ -93,6 +98,21 @@ const athleteBodyModelUpdateTransaction =
         databaseService,
     );
 
+const athleteRepository =
+    new PrismaAthleteRepository(databaseService);
+
+const recoveryTrackingRepository =
+    new PrismaRecoveryTrackingRepository(databaseService);
+
+const nutritionPlanRepository =
+    new PrismaNutritionPlanRepository(databaseService);
+
+const listRecentRecoveryTrackingUseCase =
+    new ListRecentRecoveryTrackingUseCase(
+        recoveryTrackingRepository,
+        athleteRepository,
+    );
+
 const athletePerformanceBodyProfileQuery =
     new PrismaAthletePerformanceBodyProfileQuery(
         databaseService,
@@ -156,6 +176,15 @@ export const authModule = {
     getMyAthletePerformanceBodyProfileUseCase:
         new GetMyAthletePerformanceBodyProfileUseCase(
             athletePerformanceBodyProfileQuery,
+        ),
+    getMyRelevantContextUseCase:
+        new GetMyRelevantContextUseCase(
+            athleteRepository,
+            listRecentRecoveryTrackingUseCase,
+            nutritionPlanRepository,
+            new GetMyAthletePerformanceBodyProfileUseCase(
+                athletePerformanceBodyProfileQuery,
+            ),
         ),
     loginUseCase:
         new LoginUseCase(

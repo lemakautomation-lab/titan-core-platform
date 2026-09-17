@@ -44,6 +44,21 @@ implements NutritionPlanRepository {
             : null;
     }
 
+    async findLatestForAthlete(
+        tenantId: string,
+        athleteId: string,
+    ): Promise<NutritionPlan | null> {
+        const row = await this.database.prisma.nutritionPlan.findFirst({
+            where: { tenantId, athleteId },
+            orderBy: [
+                { createdAt: "desc" },
+                { id: "desc" },
+            ],
+        });
+
+        return row ? NutritionPlanMapper.toDomain(row) : null;
+    }
+
     async create(
         plan: NutritionPlan,
     ): Promise<NutritionPlan> {

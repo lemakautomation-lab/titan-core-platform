@@ -129,6 +129,14 @@ export function createAuthRoutes(
             .getMyPerformanceBodyProfile
             .bind(authController),
     );
-    return router;
+    router.get(
+        "/me/relevant-context",
+        authMiddleware,
+        authController
+            .getMyRelevantContext
+            .bind(authController),
+    );
+
+     return router;
 
 }

@@ -11,6 +11,11 @@ export interface NutritionPlanRepository {
         idempotencyKey: string,
     ): Promise<NutritionPlan | null>;
 
+    findLatestForAthlete(
+        tenantId: string,
+        athleteId: string,
+    ): Promise<NutritionPlan | null>;
+
     create(
         plan: NutritionPlan,
     ): Promise<NutritionPlan>;

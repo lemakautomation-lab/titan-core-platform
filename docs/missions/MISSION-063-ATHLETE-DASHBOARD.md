@@ -191,3 +191,72 @@ Provide authenticated, tenant-safe Athlete progress visibility by mounting the v
 - Control 063.4: **NOT STARTED**
 
 **Current classification:** COMPLETE / VERIFIED / RELEASE PENDING
+
+## Control 063.4 - Relevant Body, Recovery and Nutrition Context
+
+### Control Objective
+
+Provide authenticated, tenant-safe relevant Athlete context on the dashboard by presenting persisted body, recovery and nutrition data through an authorised read-only dashboard boundary.
+
+### Implementation
+
+- Added authenticated `GET /api/v1/auth/me/relevant-context`.
+- Derived User, tenant and Athlete identity exclusively from the authenticated request.
+- Reused the existing verified Athlete performance-body capability.
+- Added latest persisted recovery tracking retrieval.
+- Added latest persisted nutrition-plan retrieval without invoking nutrition-plan generation.
+- Exposed only dashboard-safe nutrition summary fields: goal classification, macro targets, hydration guidance and creation timestamp.
+- Excluded nutrition `inputSnapshot`, `idempotencyKey` and generator internals from the dashboard response.
+- Added a dedicated dashboard API client and Relevant Context panel.
+- Added safe loading, empty-data and error presentation states.
+- Sensitive dashboard context responses use `Cache-Control: no-store`.
+
+### Security and Integrity
+
+- Authentication remains enforced by the existing `/auth/me` middleware boundary.
+- No client-supplied tenant or Athlete identifier is accepted by the relevant-context route.
+- Athlete lookup is tenant-scoped.
+- Recovery retrieval is tenant- and Athlete-scoped.
+- Nutrition retrieval is tenant- and Athlete-scoped.
+- Nutrition generation permissions and routes were not weakened or reused.
+- Existing persisted domain data is read without mutation.
+- Cross-tenant access was explicitly tested.
+- Unauthenticated access was explicitly tested.
+- Client-supplied identity parameters were explicitly tested as non-authoritative.
+
+### Authorized Files
+
+- `backend/src/application/dto/athlete/relevant-context.dto.ts`
+- `backend/src/application/use-cases/get-my-relevant-context.use-case.ts`
+- `backend/src/domain/repositories/nutrition-plan/nutrition-plan.repository.ts`
+- `backend/src/infrastructure/repositories/nutrition-plan/nutrition-plan.repository.ts`
+- `backend/src/infrastructure/composition/auth.module.ts`
+- `backend/src/modules/auth/auth.controller.ts`
+- `backend/src/modules/auth/auth.routes.ts`
+- `backend/tests/integration/auth/relevant-context.spec.ts`
+- `frontend/src/dashboard/relevant-context.api.ts`
+- `frontend/src/dashboard/RelevantContextPanel.tsx`
+- `frontend/src/dashboard/RelevantContextPanel.test.tsx`
+- `frontend/src/dashboard/DashboardPage.tsx`
+- `docs/missions/MISSION-063-ATHLETE-DASHBOARD.md`
+
+### Verification Evidence
+
+- Backend targeted integration test: **5/5 PASSED**
+- Backend full serial regression: **140/140 test files; 1043/1043 tests PASSED**
+- Backend production build: **PASSED**
+- Frontend Relevant Context targeted test: **2/2 PASSED**
+- Dashboard targeted regression: **3/3 test files; 11/11 tests PASSED**
+- Full frontend serial regression: **33/33 test files; 177/177 tests PASSED**
+- Frontend production build: **PASSED**
+- Evidence date: **2026-09-17**
+
+### Release State
+
+- Control implementation: **COMPLETE**
+- Verification: **COMPLETE**
+- Production deployment: **NOT PERFORMED**
+- Commit: **NOT CREATED**
+- Push: **NOT PERFORMED**
+
+**Control 063.4 classification:** COMPLETE / VERIFIED / RELEASE PENDING

@@ -1,4 +1,4 @@
----
+﻿---
 title: "Mission 063 - ATHLETE DASHBOARD"
 slug: /missions/063/
 sidebar_position: 63
@@ -118,7 +118,23 @@ Control 63.3 mounts authenticated Athlete progress visibility into the Athlete D
 - Production deployment has not occurred.
 ### Control 63.4 - Relevant body/recovery/nutrition context
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** COMPLETE / VERIFIED / RELEASE PENDING
+
+- Added authenticated `GET /api/v1/auth/me/relevant-context`.
+- User, tenant and Athlete identity are derived from the authenticated request; no client-supplied tenant or Athlete identity is trusted.
+- Returns persisted body, latest recovery and latest nutrition context.
+- Nutrition output is limited to dashboard-safe summary fields; generation is not invoked and sensitive generation/input fields are excluded.
+- Recovery and nutrition retrieval are tenant- and Athlete-scoped.
+- Added safe loading, empty-data and failure states plus `Cache-Control: no-store`.
+- Unauthenticated access, cross-tenant isolation and client-supplied identity non-authority were integration-tested.
+- Backend targeted: **5/5 tests passed**.
+- Backend full serial: **140/140 test files; 1043/1043 tests passed**.
+- Backend build: **passed**.
+- Frontend targeted: **3/3 files; 11/11 tests passed**.
+- Frontend full serial: **33/33 test files; 177/177 tests passed**.
+- Frontend production build: **passed**.
+- Production deployment, commit and push: **not performed**.
+- Evidence date: **2026-09-17**
 
 ### Control 63.5 - Actionable insights
 
@@ -135,3 +151,4 @@ Control 63.3 mounts authenticated Athlete progress visibility into the Athlete D
 ## Mission Exit Gate
 
 all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
+
