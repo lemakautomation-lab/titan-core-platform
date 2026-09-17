@@ -192,6 +192,10 @@ describe("DashboardPage", () => {
         "Performance summary",
       ),
     ).toHaveTextContent("Active metrics1");
+
+    expect(
+      screen.getByLabelText("Performance summary"),
+    ).toHaveClass("titan-dashboard-summary");
   });
 
   it("renders the authorised empty state", async () => {

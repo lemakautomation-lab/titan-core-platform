@@ -97,6 +97,8 @@ describe("TrainingOverviewPanel", () => {
       .toHaveTextContent("Training objectives2");
     expect(summary)
       .toHaveTextContent("Muscle groups covered3");
+
+    expect(summary).toHaveClass("titan-dashboard-summary");
   });
 
   it("renders a safe empty state", async () => {

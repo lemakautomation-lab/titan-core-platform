@@ -133,7 +133,7 @@ export default function TrainingOverviewPanel({
         !error &&
         exercises.length > 0 && (
           <>
-            <dl aria-label="Training summary">
+            <dl className="titan-dashboard-summary" aria-label="Training summary">
               <div>
                 <dt>Available exercises</dt>
                 <dd>{summary.exercises}</dd>

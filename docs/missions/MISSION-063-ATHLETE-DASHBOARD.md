@@ -336,3 +336,53 @@ Verify that dashboard data access respects the existing authenticated capability
 - Push: **PENDING**
 
 **Control 063.6 classification:** COMPLETE / VERIFIED / RELEASE PENDING
+## Control 063.7 - Responsive dashboard experience
+
+### Control Objective
+
+Provide a responsive dashboard experience across supported desktop, tablet and mobile viewport widths without changing backend data contracts, tenant boundaries or authorization semantics.
+
+### Implementation
+
+- Added a dedicated responsive dashboard page boundary with horizontal-overflow protection.
+- Added responsive dashboard summary layout behavior for desktop, tablet and mobile widths.
+- Added responsive dashboard introduction-panel spacing for smaller viewports.
+- Preserved the existing dashboard authentication, capability permissions and tenant-safe data boundaries.
+- Added targeted regression assertions confirming the responsive summary styling hooks remain present.
+- No unrelated API, database, migration, RBAC or tenant-scope functionality was introduced.
+
+### Security and Integrity
+
+- Existing authentication remains authoritative.
+- Existing `performance-metrics.read` and `exercises.read` capability checks remain unchanged.
+- Existing authenticated self-context remains unchanged.
+- No client-supplied tenant or Athlete identity was introduced.
+- No database migration or API contract change was introduced.
+- Existing safe loading, empty and error states remain intact.
+
+### Verification
+
+- Targeted dashboard regression: **3/3 test files; 12/12 tests passed**.
+- Full frontend regression: **33/33 test files; 178/178 tests passed**.
+- Frontend production build: **GREEN**.
+- Responsive regression assertions: **GREEN**.
+- Evidence date: **2026-09-17**.
+
+### Authorized Files
+
+- `frontend/src/dashboard/DashboardPage.tsx`
+- `frontend/src/dashboard/DashboardPage.test.tsx`
+- `frontend/src/dashboard/TrainingOverviewPanel.tsx`
+- `frontend/src/dashboard/TrainingOverviewPanel.test.tsx`
+- `frontend/src/styles.css`
+- `docs/missions/MISSION-063-ATHLETE-DASHBOARD.md`
+
+### Release State
+
+- Control implementation: **COMPLETE**
+- Verification: **COMPLETE**
+- Production deployment: **PENDING**
+- Commit: **PENDING**
+- Push: **PENDING**
+
+**Control 063.7 classification:** COMPLETE / VERIFIED / RELEASE PENDING

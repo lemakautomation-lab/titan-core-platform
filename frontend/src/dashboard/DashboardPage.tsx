@@ -1,4 +1,4 @@
-﻿import TrainingOverviewPanel from "./TrainingOverviewPanel";
+import TrainingOverviewPanel from "./TrainingOverviewPanel";
 import RelevantContextPanel from "./RelevantContextPanel";
 
 import {
@@ -95,7 +95,7 @@ export default function DashboardPage({
 
   return (
     <section className="titan-dashboard-page">
-      <section className="titan-panel">
+      <section className="titan-panel titan-dashboard-intro">
         <span className="titan-eyebrow">
           PERFORMANCE COMMAND CENTRE
         </span>
@@ -148,7 +148,7 @@ export default function DashboardPage({
           !error &&
           metrics.length > 0 && (
             <>
-              <dl aria-label="Performance summary">
+              <dl className="titan-dashboard-summary" aria-label="Performance summary">
                 <div>
                   <dt>Tracked metrics</dt>
                   <dd>{summary.metrics}</dd>
