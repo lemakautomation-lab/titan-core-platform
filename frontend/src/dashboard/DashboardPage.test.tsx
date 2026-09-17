@@ -19,17 +19,67 @@ vi.mock(
   }),
 );
 
+vi.mock(
+  "../exercises/exercises.api",
+  () => ({
+    listExercises: vi.fn(),
+  }),
+);
+
+vi.mock(
+  "./relevant-context.api",
+  () => ({
+    getMyRelevantContext: vi.fn(),
+  }),
+);
+
 import {
   listPerformanceMetrics,
 } from "../performance-metrics/performance-metrics.api";
+import {
+  listExercises,
+} from "../exercises/exercises.api";
+import {
+  getMyRelevantContext,
+} from "./relevant-context.api";
 import DashboardPage from "./DashboardPage";
 
 const listMetricsMock=
   vi.mocked(listPerformanceMetrics);
+const listExercisesMock=
+  vi.mocked(listExercises);
+const getRelevantContextMock=
+  vi.mocked(getMyRelevantContext);
 
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+});
+
+describe("DashboardPage role-appropriate data access", () => {
+  it("enforces capability permissions while retaining authenticated self-context", async () => {
+    listMetricsMock.mockResolvedValue([]);
+    listExercisesMock.mockResolvedValue([]);
+    getRelevantContextMock.mockResolvedValue({
+      body: { athleteId: "athlete-1" },
+      recovery: { latest: null },
+      nutrition: { latest: null },
+    });
+
+    render(
+      <DashboardPage
+        tenantId="tenant-1"
+        permissions={["performance-metrics.read"]}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(listMetricsMock).toHaveBeenCalledWith("tenant-1"),
+    );
+
+    expect(listExercisesMock).not.toHaveBeenCalled();
+    expect(getRelevantContextMock).toHaveBeenCalledTimes(1);
+  });
 });
 
 const metrics=[

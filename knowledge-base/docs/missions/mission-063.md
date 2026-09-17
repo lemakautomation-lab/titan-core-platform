@@ -162,7 +162,39 @@ Implemented authenticated, tenant-safe actionable performance insights through G
 
 ### Control 63.6 - Role-appropriate data access
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** COMPLETE / VERIFIED / RELEASE PENDING
+
+**Control Objective:** Verify that dashboard data access respects existing authenticated capability permissions and tenant-safe self-context boundaries without introducing new role semantics or unrelated authorization functionality.
+
+**Implementation:**
+- Added frontend regression coverage for capability-based dashboard data access.
+- Verified performance-metrics.read permits the performance capability to load.
+- Verified absence of exercises.read prevents the exercise data API from loading.
+- Verified authenticated self-context remains available independently of those capability permissions.
+- No client-supplied tenant or Athlete identity was introduced.
+- No new roles, permissions, database migrations or API contracts were introduced.
+
+**Security and Integrity:**
+- Existing authenticated identity and tenant boundaries remain authoritative.
+- Existing capability permissions remain authoritative for capability-specific dashboard data.
+- Self-context continues to resolve from the authenticated request.
+- No production backend authorization behavior was changed.
+
+**Verification:**
+- Targeted DashboardPage regression: **1/1 test passed**.
+- Full frontend regression: **33/33 test files, 178/178 tests passed**.
+- Frontend production build: **GREEN**.
+- git diff --check: **GREEN**.
+- Evidence date: **2026-09-17**.
+
+**Release State:**
+- Control implementation: **COMPLETE**
+- Verification: **COMPLETE**
+- Production deployment: **NOT PERFORMED**
+- Commit: **PENDING**
+- Push: **PENDING**
+
+**Control 63.6 classification:** COMPLETE / VERIFIED / RELEASE PENDING
 
 ### Control 63.7 - Responsive dashboard experience
 
