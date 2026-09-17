@@ -205,49 +205,26 @@ Provide authenticated, tenant-safe relevant Athlete context on the dashboard by 
 - Reused the existing verified Athlete performance-body capability.
 - Added latest persisted recovery tracking retrieval.
 - Added latest persisted nutrition-plan retrieval without invoking nutrition-plan generation.
-- Exposed only dashboard-safe nutrition summary fields: goal classification, macro targets, hydration guidance and creation timestamp.
-- Excluded nutrition `inputSnapshot`, `idempotencyKey` and generator internals from the dashboard response.
-- Added a dedicated dashboard API client and Relevant Context panel.
+- Exposed only dashboard-safe nutrition summary fields.
+- Added the dashboard API client and Relevant Context panel.
 - Added safe loading, empty-data and error presentation states.
 - Sensitive dashboard context responses use `Cache-Control: no-store`.
 
 ### Security and Integrity
 
-- Authentication remains enforced by the existing `/auth/me` middleware boundary.
-- No client-supplied tenant or Athlete identifier is accepted by the relevant-context route.
-- Athlete lookup is tenant-scoped.
-- Recovery retrieval is tenant- and Athlete-scoped.
-- Nutrition retrieval is tenant- and Athlete-scoped.
-- Nutrition generation permissions and routes were not weakened or reused.
+- Existing authentication remains authoritative.
+- No client-supplied tenant or Athlete identifier is trusted.
+- Athlete, recovery and nutrition retrieval remain tenant-scoped.
 - Existing persisted domain data is read without mutation.
-- Cross-tenant access was explicitly tested.
-- Unauthenticated access was explicitly tested.
-- Client-supplied identity parameters were explicitly tested as non-authoritative.
-
-### Authorized Files
-
-- `backend/src/application/dto/athlete/relevant-context.dto.ts`
-- `backend/src/application/use-cases/get-my-relevant-context.use-case.ts`
-- `backend/src/domain/repositories/nutrition-plan/nutrition-plan.repository.ts`
-- `backend/src/infrastructure/repositories/nutrition-plan/nutrition-plan.repository.ts`
-- `backend/src/infrastructure/composition/auth.module.ts`
-- `backend/src/modules/auth/auth.controller.ts`
-- `backend/src/modules/auth/auth.routes.ts`
-- `backend/tests/integration/auth/relevant-context.spec.ts`
-- `frontend/src/dashboard/relevant-context.api.ts`
-- `frontend/src/dashboard/RelevantContextPanel.tsx`
-- `frontend/src/dashboard/RelevantContextPanel.test.tsx`
-- `frontend/src/dashboard/DashboardPage.tsx`
-- `docs/missions/MISSION-063-ATHLETE-DASHBOARD.md`
+- Cross-tenant access, unauthenticated access and client identity non-authority were explicitly tested.
 
 ### Verification Evidence
 
-- Backend targeted integration test: **5/5 PASSED**
-- Backend full serial regression: **140/140 test files; 1043/1043 tests PASSED**
+- Backend targeted integration: **5/5 tests PASSED**
+- Backend full serial regression: **140/140 files; 1043/1043 tests PASSED**
 - Backend production build: **PASSED**
-- Frontend Relevant Context targeted test: **2/2 PASSED**
-- Dashboard targeted regression: **3/3 test files; 11/11 tests PASSED**
-- Full frontend serial regression: **33/33 test files; 177/177 tests PASSED**
+- Frontend targeted dashboard regression: **3/3 files; 11/11 tests PASSED**
+- Full frontend regression: **33/33 files; 177/177 tests PASSED**
 - Frontend production build: **PASSED**
 - Evidence date: **2026-09-17**
 
@@ -255,88 +232,113 @@ Provide authenticated, tenant-safe relevant Athlete context on the dashboard by 
 
 - Control implementation: **COMPLETE**
 - Verification: **COMPLETE**
-- Production deployment: **NOT PERFORMED**
-- Commit: **NOT CREATED**
-- Push: **NOT PERFORMED**
+- Implementation commit: `1c2d3ec4b3a2727831d6f165461bf12033556c72`
+- Push: **VERIFIED**
+- Production frontend deployment: **NOT PERFORMED**
 
-**Control 063.4 classification:** COMPLETE / VERIFIED / RELEASE PENDING
+**Control 063.4 classification:** COMPLETE / VERIFIED / COMMITTED / PUSHED / FRONTEND RELEASE PENDING
+
 ## Control 063.5 - Actionable Insights
 
 ### Control Objective
 
-Provide authenticated, tenant-safe actionable performance insights using persisted performance measurements without inventing unsupported progression rules.
+Provide authenticated, tenant-safe actionable performance insights using persisted performance measurements without inventing unsupported progression rules, and expose those insights visibly through the Athlete Dashboard.
 
 ### Implementation
 
-- Added authenticated GET /api/v1/auth/me/actionable-insights.
+- Added authenticated `GET /api/v1/auth/me/actionable-insights`.
 - Derived User, tenant and Athlete identity exclusively from the authenticated request.
-- Added read-only retrieval of active performance metrics and recent effective measurements.
-- Added deterministic states for no measurements, one measurement requiring comparison, and available recent measurements for review.
-- Did not infer performance improvement direction because the persisted metric domain model does not define that property.
-- Added integration coverage for authentication, measurement states, tenant isolation and client-identity rejection.
-- Sensitive responses use Cache-Control: no-store.
+- Reads active performance metrics and recent effective measurements.
+- Provides deterministic `RECORD_MEASUREMENT`, `ESTABLISH_COMPARISON` and `REVIEW_SIGNAL` states.
+- Does not infer unsupported performance progression direction.
+- Added typed frontend actionable-insights API integration.
+- Added visible `ActionableInsightsPanel` to the Athlete Dashboard.
+- Added loading, empty-data and safe-error presentation states.
+- Sensitive responses use `Cache-Control: no-store`.
 
 ### Security and Integrity
 
-- Existing authentication middleware remains enforced.
-- No client-supplied tenant or Athlete identifier is accepted.
+- Existing authentication remains authoritative.
+- No client-supplied tenant or Athlete identifier is trusted.
 - Athlete, metric and measurement retrieval remains tenant-scoped.
 - No database migration was introduced.
+- No new RBAC semantics were introduced.
 
 ### Verification
 
-- Targeted integration tests: **1/1 test file, 6/6 tests passed**.
-- Full backend serial regression: **141/141 test files, 1049/1049 tests passed**.
-- Backend TypeScript build: **GREEN**.
+Backend evidence:
 
-**Control 063.5 classification:** COMPLETE / VERIFIED / RELEASE PENDING
+- Targeted integration: **1/1 file; 6/6 tests PASSED**
+- Full backend serial regression: **141/141 files; 1049/1049 tests PASSED**
+- Backend TypeScript build: **GREEN**
+
+Corrective frontend evidence:
+
+- Targeted frontend: **2/2 files; 9/9 tests PASSED**
+- Full frontend regression: **34/34 files; 181/181 tests PASSED**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN**
+- `git diff --check`: **GREEN**
+
+### Release State
+
+- Backend implementation commit: `7931d62c1fddf480d2a9bea08f65e58520a2cbd1`
+- Frontend corrective integration commit: `24304b8d57dd432481835c16e0307e56c11f5faf`
+- Push: **VERIFIED**
+- Production frontend deployment: **NOT PERFORMED**
+
+**Control 063.5 classification:** COMPLETE / VERIFIED / COMMITTED / PUSHED / FRONTEND RELEASE PENDING
+
 ## Control 063.6 - Role-appropriate Data Access
 
 ### Control Objective
 
-Verify that dashboard data access respects the existing authenticated capability permissions and tenant-safe self-context boundaries without introducing new role semantics or unrelated authorization functionality.
+Verify that dashboard data access respects existing authenticated capability permissions and tenant-safe self-context boundaries without introducing new role semantics or unrelated authorization functionality.
 
 ### Implementation
 
 - Added frontend regression coverage for capability-based dashboard data access.
-- Verified `performance-metrics.read` permits the performance capability to load.
-- Verified absence of `exercises.read` prevents the exercise data API from loading.
+- Verified `performance-metrics.read` permits performance data loading.
+- Verified absence of `exercises.read` prevents exercise API loading.
 - Verified authenticated self-context remains available independently of those capability permissions.
 - No client-supplied tenant or Athlete identity was introduced.
-- No new roles, permissions, database migrations or API contracts were introduced.
+- No new roles, permissions, migrations or API contracts were introduced.
 
 ### Security and Integrity
 
 - Existing authenticated identity and tenant boundaries remain authoritative.
-- Existing capability permissions remain authoritative for capability-specific dashboard data.
-- Self-context continues to resolve from the authenticated request.
-- No production backend authorization behavior was changed.
+- Existing capability permissions remain authoritative.
+- Self-context resolves from the authenticated request.
+- No production backend authorization behaviour was changed.
 
 ### Verification
 
-- Targeted DashboardPage regression: **1/1 test passed**.
-- Full frontend regression: **33/33 test files, 178/178 tests passed**.
-- Frontend production build: **GREEN**.
-- `git diff --check`: **GREEN**.
-- Evidence date: **2026-09-17**.
+- Targeted DashboardPage regression: **1/1 test PASSED**
+- Full frontend regression at control verification: **33/33 files; 178/178 tests PASSED**
+- Frontend production build: **GREEN**
+- `git diff --check`: **GREEN**
+- Evidence date: **2026-09-17**
 
-### Cloudflare Pages publication
+### Knowledge Base Publication Evidence
 
-- Production deployment: **VERIFIED**
-- Deployment commit: **29e40c3**
-- Immutable deployment: **8c39d3ea**
-- Live content verification: **HTTP 200 / 063.6 content FOUND**
+- Control verification commit: `29e40c3760ffb003115d43a0598cece9c1989d43`
+- Publication evidence commit: `1ab3433e23261709070bd43c10b6c1f5ee068fe2`
+- Immutable Cloudflare deployment evidence: `8c39d3ea`
+- Historical live verification: **HTTP 200 / 063.6 content FOUND**
+- This evidence refers to **Knowledge Base publication**, not TITAN frontend production deployment.
 
 ### Release State
 
 - Control implementation: **COMPLETE**
 - Verification: **COMPLETE**
-- Production deployment: **NOT PERFORMED**
-- Commit: **PENDING**
-- Push: **PENDING**
+- Commit: `29e40c3760ffb003115d43a0598cece9c1989d43`
+- Push: **VERIFIED**
+- Knowledge Base publication evidence: **VERIFIED**
+- Production frontend deployment: **NOT PERFORMED**
 
-**Control 063.6 classification:** COMPLETE / VERIFIED / RELEASE PENDING
-## Control 063.7 - Responsive dashboard experience
+**Control 063.6 classification:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED / FRONTEND RELEASE PENDING
+
+## Control 063.7 - Responsive Dashboard Experience
 
 ### Control Objective
 
@@ -344,11 +346,11 @@ Provide a responsive dashboard experience across supported desktop, tablet and m
 
 ### Implementation
 
-- Added a dedicated responsive dashboard page boundary with horizontal-overflow protection.
-- Added responsive dashboard summary layout behavior for desktop, tablet and mobile widths.
-- Added responsive dashboard introduction-panel spacing for smaller viewports.
-- Preserved the existing dashboard authentication, capability permissions and tenant-safe data boundaries.
-- Added targeted regression assertions confirming the responsive summary styling hooks remain present.
+- Added responsive dashboard page overflow protection.
+- Added responsive dashboard summary layouts for desktop, tablet and mobile widths.
+- Added responsive dashboard introduction-panel spacing.
+- Preserved authentication, capability permissions and tenant-safe boundaries.
+- Added regression assertions for responsive summary styling hooks.
 - No unrelated API, database, migration, RBAC or tenant-scope functionality was introduced.
 
 ### Security and Integrity
@@ -362,29 +364,52 @@ Provide a responsive dashboard experience across supported desktop, tablet and m
 
 ### Verification
 
-- Targeted dashboard regression: **3/3 test files; 12/12 tests passed**.
-- Full frontend regression: **33/33 test files; 178/178 tests passed**.
-- Frontend production build: **GREEN**.
-- Responsive regression assertions: **GREEN**.
-- Evidence date: **2026-09-17**.
-
-### Authorized Files
-
-- `frontend/src/dashboard/DashboardPage.tsx`
-- `frontend/src/dashboard/DashboardPage.test.tsx`
-- `frontend/src/dashboard/TrainingOverviewPanel.tsx`
-- `frontend/src/dashboard/TrainingOverviewPanel.test.tsx`
-- `frontend/src/styles.css`
-- `docs/missions/MISSION-063-ATHLETE-DASHBOARD.md`
+- Targeted dashboard regression: **3/3 files; 12/12 tests PASSED**
+- Full frontend regression at control verification: **33/33 files; 178/178 tests PASSED**
+- Frontend production build: **GREEN**
+- Responsive regression assertions: **GREEN**
+- Evidence date: **2026-09-17**
 
 ### Release State
 
 - Control implementation: **COMPLETE**
 - Verification: **COMPLETE**
+- Implementation commit: `3eb389ec4819a45ec14f24c37afefefe960bd36b`
+- Release-state reconciliation: `e2bc14b3f55ca0f4278f75ed32e44160865de02f`
+- Knowledge Base evidence reconciliation: `2af0a2408941bca0434454fb799d807fcfde1d57`
+- Push: **VERIFIED**
 - Production frontend deployment: **NOT PERFORMED**
 - Reason: **no authoritative frontend hosting/deployment workflow exists in the repository**
-- Commit: 3eb389e
-- Push: **VERIFIED — HEAD equals origin/main**
-- Knowledge Base publication remains separately verified under Mission 063.6.
 
 **Control 063.7 classification:** COMPLETE / VERIFIED / COMMITTED / PUSHED / FRONTEND RELEASE PENDING
+
+## Mission 063 Exit Gate
+
+### Engineering and Security
+
+- Controls 063.1-063.7: **IMPLEMENTED / VERIFIED**
+- Authentication boundary: **VERIFIED**
+- Tenant isolation: **VERIFIED**
+- Capability authorization: **VERIFIED**
+- RBAC semantics: **UNCHANGED**
+- Database/migration implications: **VERIFIED**
+- API contract implications: **VERIFIED**
+- Corrective Control 063.5 dashboard integration: **VERIFIED**
+
+### Current Regression Baseline
+
+- Full frontend regression: **34/34 test files; 181/181 tests PASSED**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN**
+- `git diff --check`: **GREEN**
+
+### Publication Gate
+
+- Engineering documentation reconciliation: **IN PROGRESS**
+- Knowledge Base reconciliation: **IN PROGRESS**
+- Docusaurus build: **PENDING**
+- Cloudflare Knowledge Base publication: **PENDING**
+- Live Mission 063 Knowledge Base verification: **PENDING**
+- TITAN frontend production deployment: **NOT PERFORMED**
+
+**Mission 063 current classification:** COMPLETE / VERIFIED / RELEASE DOCUMENTATION RECONCILIATION IN PROGRESS / FRONTEND RELEASE PENDING
