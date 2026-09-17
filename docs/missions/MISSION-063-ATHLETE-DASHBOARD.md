@@ -320,6 +320,13 @@ Verify that dashboard data access respects the existing authenticated capability
 - `git diff --check`: **GREEN**.
 - Evidence date: **2026-09-17**.
 
+### Cloudflare Pages publication
+
+- Production deployment: **VERIFIED**
+- Deployment commit: **29e40c3**
+- Immutable deployment: **8c39d3ea**
+- Live content verification: **HTTP 200 / 063.6 content FOUND**
+
 ### Release State
 
 - Control implementation: **COMPLETE**

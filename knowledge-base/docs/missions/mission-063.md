@@ -84,6 +84,13 @@ Add a visible permission-controlled dashboard overview of authorised tenant-scop
 - Whitespace audit: GREEN.
 - Evidence timestamp: **2026-09-13T21:25:16+02:00**
 
+##### Cloudflare Pages publication
+
+- Production deployment: **VERIFIED**
+- Deployment commit: **29e40c3**
+- Immutable deployment: **8c39d3ea**
+- Live content verification: **HTTP 200 / 063.6 content FOUND**
+
 #### Release State
 
 - Implementation commit: `b0f044a3e0ac0c0c49b2fef64dc594d8f36ac219`
@@ -203,4 +210,3 @@ Implemented authenticated, tenant-safe actionable performance insights through G
 ## Mission Exit Gate
 
 all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
-
