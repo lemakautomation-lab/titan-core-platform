@@ -1,4 +1,4 @@
-﻿---
+---
 title: "Mission 063 - ATHLETE DASHBOARD"
 slug: /missions/063/
 sidebar_position: 63
@@ -138,7 +138,27 @@ Control 63.3 mounts authenticated Athlete progress visibility into the Athlete D
 
 ### Control 63.5 - Actionable insights
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** COMPLETE / VERIFIED / RELEASE PENDING
+
+Implemented authenticated, tenant-safe actionable performance insights through GET /api/v1/auth/me/actionable-insights.
+
+- Uses authenticated User and tenant identity; no client-supplied Athlete identity.
+- Reads active performance metrics and recent effective measurements.
+- Provides deterministic states for no measurement, one measurement requiring comparison, and recent measurements available for review.
+- Does not infer unsupported performance progression direction from the persisted metric model.
+- Added authentication, measurement-state, tenant-isolation and client-identity integration coverage.
+- Response uses Cache-Control: no-store.
+- No database migration introduced.
+
+**Verification:**
+- Targeted: **1/1 test file; 6/6 tests passed**
+- Backend full serial: **141/141 test files; 1049/1049 tests passed**
+- Backend build: **passed**
+- Git commit: 7931d62
+- GitHub push: **verified**
+- Evidence date: **2026-09-17**
+
+**Control 63.5 classification:** COMPLETE / VERIFIED / RELEASE PENDING
 
 ### Control 63.6 - Role-appropriate data access
 
