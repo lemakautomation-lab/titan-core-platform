@@ -17,6 +17,7 @@ import SportsPage from "../sports/SportsPage";
 import PerformanceMetricsPage from "../performance-metrics/PerformanceMetricsPage";
 import ExercisesPage from "../exercises/ExercisesPage";
 import AthleteDigitalTwinPage from "../athlete-digital-twin/AthleteDigitalTwinPage";
+import TrainerAccessPage from "../trainer/TrainerAccessPage";
 import type { AuthUser } from "../auth/auth.types";
 
 type AppRouterProps = {
@@ -223,6 +224,11 @@ export default function AppRouter({
               />
             ) : null
           }
+        />
+
+        <Route
+          path="/trainer"
+          element={<TrainerAccessPage />}
         />
 
         <Route

@@ -1,3 +1,4 @@
+import { GetMyTrainerAccessUseCase } from "../../application/use-cases/get-my-trainer-access.use-case";
 import { DatabaseService } from "../database/database.service";
 
 import { PrismaUserRepository } from "../repositories/user.repository";
@@ -44,6 +45,8 @@ import { authorizationModule } from "./authorization.module";
 import { PrismaPerformanceMetricRepository } from "../repositories/performance-metric.repository";
 import { PrismaPerformanceMeasurementRepository } from "../repositories/performance-measurement/performance-measurement.repository";
 
+import { PrismaPaymentRepository } from "../repositories/payment.repository";
+import { PrismaUserTypeEntitlementRepository } from "../repositories/user-type-entitlement.repository";
 const databaseService =
     new DatabaseService();
 
@@ -76,6 +79,15 @@ const personalDetailsUpdateTransaction =
         databaseService,
     );
 
+const paymentRepository =
+    new PrismaPaymentRepository(
+        databaseService,
+    );
+
+const userTypeEntitlementRepository =
+    new PrismaUserTypeEntitlementRepository(
+        databaseService,
+    );
 export const userRepository =
     new PrismaUserRepository(
         databaseService,
@@ -199,6 +211,12 @@ export const authModule = {
             new GetMyAthletePerformanceBodyProfileUseCase(
                 athletePerformanceBodyProfileQuery,
             ),
+        ),
+    getMyTrainerAccessUseCase:
+        new GetMyTrainerAccessUseCase(
+            userRepository,
+            userTypeEntitlementRepository,
+            paymentRepository,
         ),
     loginUseCase:
         new LoginUseCase(

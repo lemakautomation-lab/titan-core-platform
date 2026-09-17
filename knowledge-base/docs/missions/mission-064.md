@@ -23,6 +23,50 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+#### Control 64.1 Status
+
+**COMPLETE / TECHNICALLY VERIFIED**
+
+Control 64.1 establishes the authenticated Trainer subscription/access boundary.
+
+**Backend boundary**
+
+- `GET /api/v1/auth/me/trainer-access`
+- identity and tenant derived from authentication;
+- ACTIVE account required;
+- selected user type must be `TRAINER`;
+- ACTIVE Trainer entitlement required;
+- exact source payment must remain `CONFIRMED`;
+- invalid, expired, revoked, refunded or missing commercial evidence fails closed;
+- no new migration, RBAC role, automatic role assignment or duplicate payment architecture.
+
+**Frontend boundary**
+
+- protected `/trainer` route;
+- authoritative Trainer access API consumed directly;
+- Trainer status is not inferred from RBAC;
+- deterministic granted, wrong-user-type, subscription-required, loading and safe-failure states;
+- Trainer signup and checkout remain outside Control 64.1.
+
+**Verification evidence**
+
+- Backend targeted Trainer integration: **8 tests passed**
+- Backend commercial/auth regression: **7 files / 48 tests passed**
+- Full backend: **142 files / 1057 tests passed**
+- Backend TypeScript build: **GREEN**
+- Trainer frontend UI: **4 tests passed**
+- Router regression: **19 tests passed**
+- Full frontend: **35 files / 185 tests passed**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN**
+- `git diff --check`: **GREEN**
+- Unauthorized implementation files: **NONE**
+
+**Release state**
+
+Technical implementation and verification are complete. Commit/push and Knowledge Base publication evidence remain pending.
+
+Mission 064 remains **ACTIVE** because Controls 64.2 through 64.11 remain outstanding.
 ### Control 64.2 - Trainer sign-up
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
