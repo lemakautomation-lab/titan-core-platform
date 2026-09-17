@@ -130,6 +130,13 @@ export function createAuthRoutes(
             .bind(authController),
     );
     router.get(
+        "/me/actionable-insights",
+        authMiddleware,
+        authController
+            .getMyActionableInsights
+            .bind(authController),
+    );
+    router.get(
         "/me/relevant-context",
         authMiddleware,
         authController

@@ -260,3 +260,33 @@ Provide authenticated, tenant-safe relevant Athlete context on the dashboard by 
 - Push: **NOT PERFORMED**
 
 **Control 063.4 classification:** COMPLETE / VERIFIED / RELEASE PENDING
+## Control 063.5 - Actionable Insights
+
+### Control Objective
+
+Provide authenticated, tenant-safe actionable performance insights using persisted performance measurements without inventing unsupported progression rules.
+
+### Implementation
+
+- Added authenticated GET /api/v1/auth/me/actionable-insights.
+- Derived User, tenant and Athlete identity exclusively from the authenticated request.
+- Added read-only retrieval of active performance metrics and recent effective measurements.
+- Added deterministic states for no measurements, one measurement requiring comparison, and available recent measurements for review.
+- Did not infer performance improvement direction because the persisted metric domain model does not define that property.
+- Added integration coverage for authentication, measurement states, tenant isolation and client-identity rejection.
+- Sensitive responses use Cache-Control: no-store.
+
+### Security and Integrity
+
+- Existing authentication middleware remains enforced.
+- No client-supplied tenant or Athlete identifier is accepted.
+- Athlete, metric and measurement retrieval remains tenant-scoped.
+- No database migration was introduced.
+
+### Verification
+
+- Targeted integration tests: **1/1 test file, 6/6 tests passed**.
+- Full backend serial regression: **141/141 test files, 1049/1049 tests passed**.
+- Backend TypeScript build: **GREEN**.
+
+**Control 063.5 classification:** COMPLETE / VERIFIED / RELEASE PENDING

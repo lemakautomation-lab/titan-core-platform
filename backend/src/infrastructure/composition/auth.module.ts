@@ -20,6 +20,7 @@ import { PrismaAthleteOnboardingStatusQuery } from "../queries/athlete-onboardin
 import { UpdateMyAthleteBodyModelUseCase } from "../../application/use-cases/update-my-athlete-body-model.use-case";
 import { GetMyAthletePerformanceBodyProfileUseCase } from "../../application/use-cases/get-my-athlete-performance-body-profile.use-case";
 import { GetMyRelevantContextUseCase } from "../../application/use-cases/get-my-relevant-context.use-case";
+import { GetMyActionableInsightsUseCase } from "../../application/use-cases/get-my-actionable-insights.use-case";
 import { ListRecentRecoveryTrackingUseCase } from "../../application/use-cases/list-recent-recovery-tracking.use-case";
 import { PrismaAthleteBodyModelUpdateTransaction } from "../transactions/athlete-body-model-update.transaction";
 import { PrismaAthletePerformanceBodyProfileQuery } from "../queries/athlete-performance-body-profile.query";import { RegisterAthleteUseCase } from "../../application/use-cases/register-athlete.use-case";
@@ -40,6 +41,8 @@ import { RequestAccountAssistanceUseCase } from "../../application/use-cases/req
 import { PrismaAccountAssistanceTransaction } from "../transactions/account-assistance.transaction";
 import { auditLogModule } from "./audit-log.module";
 import { authorizationModule } from "./authorization.module";
+import { PrismaPerformanceMetricRepository } from "../repositories/performance-metric.repository";
+import { PrismaPerformanceMeasurementRepository } from "../repositories/performance-measurement/performance-measurement.repository";
 
 const databaseService =
     new DatabaseService();
@@ -113,6 +116,11 @@ const listRecentRecoveryTrackingUseCase =
         athleteRepository,
     );
 
+const performanceMetricRepository =
+    new PrismaPerformanceMetricRepository(databaseService);
+const performanceMeasurementRepository =
+    new PrismaPerformanceMeasurementRepository(databaseService);
+
 const athletePerformanceBodyProfileQuery =
     new PrismaAthletePerformanceBodyProfileQuery(
         databaseService,
@@ -176,6 +184,12 @@ export const authModule = {
     getMyAthletePerformanceBodyProfileUseCase:
         new GetMyAthletePerformanceBodyProfileUseCase(
             athletePerformanceBodyProfileQuery,
+        ),
+    getMyActionableInsightsUseCase:
+        new GetMyActionableInsightsUseCase(
+            athleteRepository,
+            performanceMetricRepository,
+            performanceMeasurementRepository
         ),
     getMyRelevantContextUseCase:
         new GetMyRelevantContextUseCase(

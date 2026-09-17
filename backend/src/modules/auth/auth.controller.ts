@@ -306,6 +306,38 @@ export class AuthController {
         res.status(200).json(result.value);
     }
 
+    async getMyActionableInsights(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        res.set("Cache-Control", "no-store");
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const result =
+            await authModule
+                .getMyActionableInsightsUseCase
+                .execute({
+                    userId: authUser.userId,
+                    tenantId: authUser.tenantId,
+                });
+
+        if (!result.isSuccess) {
+            res.status(400).json({
+                error: result.error,
+            });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
     async registerAthlete(
         req: RequestWithId,
         res: Response,
@@ -776,5 +808,4 @@ export class AuthController {
     }
 
 }
-
 
