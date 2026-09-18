@@ -1,4 +1,4 @@
-# Mission 064 â€” Personal Trainer Platform
+# Mission 064 Ã¢â‚¬â€ Personal Trainer Platform
 
 ## Mission Status
 
@@ -14,7 +14,7 @@ Enable trainers to operate their professional environment.
 
 ---
 
-## Control 64.1 â€” Trainer Subscription / Access
+## Control 64.1 Ã¢â‚¬â€ Trainer Subscription / Access
 
 **Status:** COMPLETE / TECHNICALLY VERIFIED
 
@@ -137,7 +137,7 @@ Frontend:
 
 The following remain outside Control 64.1:
 
-- 64.2 - Trainer sign-up - COMPLETE / TECHNICALLY VERIFIED
+- 64.2 - Trainer sign-up - COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED
 - 64.3 Professional profile
 - 64.4 Client management
 - 64.5 Programme creation
@@ -170,9 +170,9 @@ Mission 064 remains **ACTIVE** because Controls 64.3 through 64.11 remain outsta
 ---
 
 
-## Control 64.2 — Trainer Sign-Up
+## Control 64.2 - Trainer Sign-Up
 
-**Status:** COMPLETE / TECHNICALLY VERIFIED
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED
 
 ### Objective
 
@@ -262,9 +262,18 @@ No Trainer professional profile, client-management capability, programme workflo
 
 ### Release State
 
-Control 64.2 is **COMPLETE / TECHNICALLY VERIFIED**.
+Control 64.2 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**.
 
-Implementation commit, push verification and Knowledge Base publication remain pending.
+Implementation and publication evidence:
+
+- Source commit: 2d017d2a562161e7e25605a9b8ce4cbddc1c8391
+- Cloudflare deployment ID: f3f56982-98d4-4448-8cc2-7225ca42185a
+- Immutable publication: https://f3f56982.titan-core-platform.pages.dev/docs/missions/064/
+- Canonical publication: https://titan-core-platform.pages.dev/docs/missions/064/
+- Immutable HTTP verification: **200 / VERIFIED**
+- Canonical HTTP verification: **200 / VERIFIED**
+- Control 64.2 publication content: **VERIFIED**
+- Docusaurus production build: **GREEN**
 
 TITAN product frontend production deployment is **NOT CLAIMED**.
 
@@ -273,16 +282,16 @@ Mission 064 remains **ACTIVE** because Controls 64.3 through 64.11 remain outsta
 ---
 ## Remaining Controls
 
-- 64.2 - Trainer sign-up - COMPLETE / TECHNICALLY VERIFIED
-- 64.3 â€” Professional profile â€” PENDING
-- 64.4 â€” Client management â€” PENDING
-- 64.5 â€” Programme creation â€” PENDING
-- 64.6 â€” Client workout assignment â€” PENDING
-- 64.7 â€” Client monitoring â€” PENDING
-- 64.8 â€” Reports â€” PENDING
-- 64.9 â€” AI assistance â€” PENDING
-- 64.10 â€” Session scheduling â€” PENDING
-- 64.11 â€” Business workflow controls â€” PENDING
+- 64.2 - Trainer sign-up - COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED
+- 64.3 Ã¢â‚¬â€ Professional profile Ã¢â‚¬â€ PENDING
+- 64.4 Ã¢â‚¬â€ Client management Ã¢â‚¬â€ PENDING
+- 64.5 Ã¢â‚¬â€ Programme creation Ã¢â‚¬â€ PENDING
+- 64.6 Ã¢â‚¬â€ Client workout assignment Ã¢â‚¬â€ PENDING
+- 64.7 Ã¢â‚¬â€ Client monitoring Ã¢â‚¬â€ PENDING
+- 64.8 Ã¢â‚¬â€ Reports Ã¢â‚¬â€ PENDING
+- 64.9 Ã¢â‚¬â€ AI assistance Ã¢â‚¬â€ PENDING
+- 64.10 Ã¢â‚¬â€ Session scheduling Ã¢â‚¬â€ PENDING
+- 64.11 Ã¢â‚¬â€ Business workflow controls Ã¢â‚¬â€ PENDING
 
 ## Mission Exit
 

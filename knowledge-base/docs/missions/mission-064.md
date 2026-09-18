@@ -82,7 +82,7 @@ Mission 064 remains **ACTIVE** because Controls 64.3 through 64.11 remain outsta
 
 #### Control 64.2 Status
 
-**COMPLETE / TECHNICALLY VERIFIED**
+**COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**
 
 Control 64.2 establishes the dedicated TITAN Health Trainer registration boundary.
 
@@ -135,9 +135,17 @@ Control 64.2 establishes the dedicated TITAN Health Trainer registration boundar
 
 **Release state**
 
-Control 64.2 is **COMPLETE / TECHNICALLY VERIFIED**.
+Control 64.2 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**.
 
-Implementation commit, push verification and Knowledge Base publication remain pending.
+Publication evidence:
+
+- Source commit: 2d017d2a562161e7e25605a9b8ce4cbddc1c8391
+- Cloudflare deployment ID: f3f56982-98d4-4448-8cc2-7225ca42185a
+- Immutable publication: https://f3f56982.titan-core-platform.pages.dev/docs/missions/064/
+- Canonical publication: https://titan-core-platform.pages.dev/docs/missions/064/
+- Immutable and canonical HTTP verification: **200 / VERIFIED**
+- Control 64.2 publication content: **VERIFIED**
+- Docusaurus production build: **GREEN**
 
 TITAN product frontend production deployment: **NOT CLAIMED**.
 
