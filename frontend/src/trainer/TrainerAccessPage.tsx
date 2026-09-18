@@ -7,6 +7,7 @@ import {
   getMyTrainerAccess,
   type TrainerAccessDto,
 } from "./trainer-access.api";
+import TrainerProfessionalProfile from "./TrainerProfessionalProfile";
 
 export default function TrainerAccessPage() {
   const [access, setAccess] =
@@ -97,6 +98,12 @@ export default function TrainerAccessPage() {
             </p>
           )}
       </section>
+
+      {!loading &&
+        !error &&
+        access?.accessGranted && (
+          <TrainerProfessionalProfile />
+        )}
     </section>
   );
 }

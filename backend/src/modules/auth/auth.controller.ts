@@ -10,6 +10,7 @@ import { UpdateMyAthleteGoalsCommand } from "../../application/commands/update-m
 import { CreateMyAthleteBodyMeasurementCommand } from "../../application/commands/create-my-athlete-body-measurement.command";
 import { UpdateMyAthleteBodyModelCommand } from "../../application/commands/update-my-athlete-body-model.command";import { RegisterAthleteCommand } from "../../application/commands/register-athlete.command";
 import { RegisterTrainerCommand } from "../../application/commands/register-trainer.command";
+import { UpdateMyTrainerProfileCommand } from "../../application/commands/update-my-trainer-profile.command";
 
 import {
     REFRESH_TOKEN_COOKIE_NAME,
@@ -19,6 +20,184 @@ import {
 
 
 export class AuthController {
+    async getMyTrainerProfile(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+
+        res.set("Cache-Control", "no-store");
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const result =
+            await authModule
+                .getMyTrainerProfileUseCase
+                .execute({
+                    userId: authUser.userId,
+                    tenantId: authUser.tenantId,
+                });
+
+        if (!result.isSuccess) {
+            res.status(403).json({
+                error: result.error,
+            });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
+
+
+    async updateMyTrainerProfile(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+
+        res.set("Cache-Control", "no-store");
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const body =
+            req.body as Record<string, unknown>;
+
+        const allowedFields = new Set([
+            "professionalTitle",
+            "bio",
+            "qualifications",
+            "specialisations",
+            "yearsExperience",
+            "countryCode",
+            "websiteUrl",
+        ]);
+
+        if (
+            !body ||
+            typeof body !== "object" ||
+            Array.isArray(body) ||
+            Object.keys(body).some(
+                (field) =>
+                    !allowedFields.has(field),
+            )
+        ) {
+            res.status(400).json({
+                error:
+                    "Invalid trainer-profile payload.",
+            });
+            return;
+        }
+
+        const nullableStringFields = [
+            "professionalTitle",
+            "bio",
+            "qualifications",
+            "specialisations",
+            "countryCode",
+            "websiteUrl",
+        ] as const;
+
+        for (
+            const field of nullableStringFields
+        ) {
+            const value = body[field];
+
+            if (
+                value !== undefined &&
+                value !== null &&
+                typeof value !== "string"
+            ) {
+                res.status(400).json({
+                    error:
+                        "Invalid trainer-profile payload.",
+                });
+                return;
+            }
+        }
+
+        if (
+            body.yearsExperience !== undefined &&
+            body.yearsExperience !== null &&
+            (
+                typeof body.yearsExperience !==
+                    "number" ||
+                !Number.isInteger(
+                    body.yearsExperience,
+                )
+            )
+        ) {
+            res.status(400).json({
+                error:
+                    "Invalid trainer-profile payload.",
+            });
+            return;
+        }
+
+        const result =
+            await authModule
+                .updateMyTrainerProfileUseCase
+                .execute(
+                    new UpdateMyTrainerProfileCommand(
+                        authUser.userId,
+                        authUser.tenantId,
+                        body.professionalTitle ===
+                            undefined
+                            ? null
+                            : body.professionalTitle as
+                                string | null,
+                        body.bio === undefined
+                            ? null
+                            : body.bio as
+                                string | null,
+                        body.qualifications ===
+                            undefined
+                            ? null
+                            : body.qualifications as
+                                string | null,
+                        body.specialisations ===
+                            undefined
+                            ? null
+                            : body.specialisations as
+                                string | null,
+                        body.yearsExperience ===
+                            undefined
+                            ? null
+                            : body.yearsExperience as
+                                number | null,
+                        body.countryCode ===
+                            undefined
+                            ? null
+                            : body.countryCode as
+                                string | null,
+                        body.websiteUrl ===
+                            undefined
+                            ? null
+                            : body.websiteUrl as
+                                string | null,
+                    ),
+                );
+
+        if (!result.isSuccess) {
+            res.status(400).json({
+                error: result.error,
+            });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
 
     async updateMyGoals(
         req: AuthRequest,

@@ -143,6 +143,20 @@ export function createAuthRoutes(
         authController
             .getMyTrainerAccess
             .bind(authController),
+    );    router.get(
+        "/me/trainer-profile",
+        authMiddleware,
+        authController
+            .getMyTrainerProfile
+            .bind(authController),
+    );
+
+    router.put(
+        "/me/trainer-profile",
+        authMiddleware,
+        authController
+            .updateMyTrainerProfile
+            .bind(authController),
     );
     router.get(
         "/me/actionable-insights",

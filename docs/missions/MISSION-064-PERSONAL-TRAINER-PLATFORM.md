@@ -280,6 +280,163 @@ TITAN product frontend production deployment is **NOT CLAIMED**.
 Mission 064 remains **ACTIVE** because Controls 64.3 through 64.11 remain outstanding.
 
 ---
+## Control 64.3 - Professional Profile
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+### Objective
+
+Provide an authenticated, tenant-owned professional profile capability for paid TITAN Health Trainer users without overloading the User identity aggregate or weakening the existing Trainer commercial-access boundary.
+
+### Persistence Boundary
+
+A dedicated `TrainerProfile` aggregate is persisted separately from `User`.
+
+The profile is owned one-to-one by the authenticated Trainer through the composite `(userId, tenantId)` boundary.
+
+Professional fields:
+
+- `professionalTitle`
+- `bio`
+- `qualifications`
+- `specialisations`
+- `yearsExperience`
+- `countryCode`
+- `websiteUrl`
+
+`User` remains authoritative for personal identity fields including name, surname, email, contact number and profile picture.
+
+Migration:
+
+`20260918150000_add_trainer_profile`
+
+Database controls include:
+
+- tenant ownership;
+- composite User/tenant foreign-key enforcement;
+- one Trainer profile per User/tenant;
+- tenant indexing;
+- cascading profile removal with its owning User;
+- restricted tenant deletion semantics.
+
+The migration was applied to the TITAN test database and Prisma migration status verified the schema as current.
+
+### Application and API Boundary
+
+Authenticated endpoints:
+
+`GET /api/v1/auth/me/trainer-profile`
+
+`PUT /api/v1/auth/me/trainer-profile`
+
+Both endpoints derive `userId` and `tenantId` from the authenticated server-side identity.
+
+Professional-profile access reuses the Control 64.1 Trainer-access policy and therefore requires:
+
+- authenticated user;
+- ACTIVE User state;
+- `selectedUserType = TRAINER`;
+- active Trainer commercial entitlement.
+
+The client cannot select or override tenant ownership, User ownership, selected user type, RBAC state, payment state or entitlement state.
+
+The public Trainer-profile DTO deliberately excludes `userId` and `tenantId`. Ownership metadata remains authoritative internally and is not exposed through the browser contract.
+
+### Domain Validation
+
+The Trainer profile enforces bounded professional data including:
+
+- trimmed nullable text;
+- professional-title length;
+- biography length;
+- qualification length;
+- specialisation length;
+- integer years of experience from 0 through 100;
+- two-letter country code normalized to uppercase;
+- HTTP/HTTPS website URL validation.
+
+Invalid profile data fails safely without bypassing the domain boundary.
+
+### Frontend Boundary
+
+The existing protected `/trainer` experience now exposes the professional-profile editor only after Trainer access has been granted.
+
+The Trainer can create or update:
+
+- professional title;
+- biography;
+- qualifications;
+- specialisations;
+- years of experience;
+- country code;
+- website URL.
+
+The frontend does not supply tenant identity, User identity, selected user type, roles, permissions, payment state or entitlement state.
+
+Loading, new-profile, update, validation and failure states are covered.
+
+### Security and Tenant Isolation
+
+Verified controls include:
+
+- authenticated access required;
+- non-Trainer access denied;
+- Trainer without active entitlement denied;
+- server-derived User and tenant ownership;
+- tenant-scoped persistence;
+- cross-tenant profile isolation;
+- one profile per Trainer/User tenant boundary;
+- protected client ownership/auth fields rejected;
+- public DTO ownership identifiers absent;
+- RBAC remains separate from commercial entitlement;
+- no client-management, programme, monitoring, reporting, AI or scheduling authority introduced.
+
+### Automated Verification
+
+Backend:
+
+- Full backend regression: **145 files / 1079 tests passed**
+- Final targeted Trainer profile/access regression: **2 files / 17 tests passed**
+- Backend TypeScript build: **GREEN**
+- Prisma migration deployment: **GREEN**
+- Prisma migration status: **DATABASE SCHEMA UP TO DATE**
+- Public DTO `userId` / `tenantId` exposure scan: **NONE**
+
+Frontend:
+
+- Full frontend regression: **37 files / 196 tests passed**
+- Final targeted Trainer profile/access regression: **2 files / 9 tests passed**
+- Trainer professional-profile targeted regression: **5 tests passed**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN / NO WARNINGS**
+
+Repository integrity:
+
+- `git diff --check`: **GREEN**
+- Protected Mission 001-145 closure register: **UNTRACKED / UNTOUCHED**
+- Unauthorized implementation scope: **NONE IDENTIFIED**
+- Pre-release baseline: `d250299a4fbb851279456203e8809919397d681c`
+- Baseline ahead/behind: **0 / 0**
+
+### Scope Explicitly Deferred
+
+Controls 64.4 through 64.11 remain outside Control 64.3.
+
+No client-management workflow, programme creation, client workout assignment, client monitoring, reports, AI assistance, session scheduling or business-workflow control is claimed by this control.
+
+### Release State
+
+Control 64.3 is **TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING**.
+
+Implementation commit: **PENDING**
+
+Knowledge Base publication: **PENDING**
+
+TITAN product frontend production deployment is **NOT CLAIMED**.
+
+Mission 064 remains **ACTIVE** because Controls 64.4 through 64.11 remain outstanding.
+
+---
 ## Remaining Controls
 
 - 64.2 - Trainer sign-up - COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED

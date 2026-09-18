@@ -1,4 +1,7 @@
 import { GetMyTrainerAccessUseCase } from "../../application/use-cases/get-my-trainer-access.use-case";
+import { GetMyTrainerProfileUseCase } from "../../application/use-cases/get-my-trainer-profile.use-case";
+import { UpdateMyTrainerProfileUseCase } from "../../application/use-cases/update-my-trainer-profile.use-case";
+import { PrismaTrainerProfileRepository } from "../repositories/trainer-profile.repository";
 import { DatabaseService } from "../database/database.service";
 
 import { PrismaUserRepository } from "../repositories/user.repository";
@@ -149,6 +152,10 @@ const trainerRegistrationTransaction =
     new PrismaTrainerRegistrationTransaction(
         databaseService,
     );
+const trainerProfileRepository =
+    new PrismaTrainerProfileRepository(
+        databaseService,
+    );
 export const authModule = {
 
     userRepository,
@@ -228,6 +235,23 @@ export const authModule = {
             userRepository,
             userTypeEntitlementRepository,
             paymentRepository,
+        ),    getMyTrainerProfileUseCase:
+        new GetMyTrainerProfileUseCase(
+            trainerProfileRepository,
+            new GetMyTrainerAccessUseCase(
+                userRepository,
+                userTypeEntitlementRepository,
+                paymentRepository,
+            ),
+        ),
+    updateMyTrainerProfileUseCase:
+        new UpdateMyTrainerProfileUseCase(
+            trainerProfileRepository,
+            new GetMyTrainerAccessUseCase(
+                userRepository,
+                userTypeEntitlementRepository,
+                paymentRepository,
+            ),
         ),
     loginUseCase:
         new LoginUseCase(

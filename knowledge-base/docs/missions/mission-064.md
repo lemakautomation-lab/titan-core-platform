@@ -154,6 +154,90 @@ Mission 064 remains **ACTIVE** because Controls 64.3 through 64.11 remain outsta
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+#### Control 64.3 Status
+
+**TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING**
+
+Control 64.3 establishes the tenant-owned TITAN Health Trainer professional-profile boundary.
+
+**Persistence boundary**
+
+- dedicated `TrainerProfile` aggregate;
+- one-to-one ownership through `(userId, tenantId)`;
+- composite tenant/User foreign-key enforcement;
+- professional profile remains separate from User identity/personal details;
+- migration `20260918150000_add_trainer_profile`;
+- Prisma migration deployed to the test database;
+- database schema verified up to date.
+
+Professional fields:
+
+- professional title;
+- biography;
+- qualifications;
+- specialisations;
+- years of experience;
+- country code;
+- website URL.
+
+**API and access boundary**
+
+- `GET /api/v1/auth/me/trainer-profile`
+- `PUT /api/v1/auth/me/trainer-profile`
+- authenticated User and tenant identity are server-derived;
+- ACTIVE Trainer user type is required;
+- active Trainer entitlement is required through the existing Control 64.1 access policy;
+- caller cannot supply ownership, selected user type, RBAC, payment or entitlement authority;
+- public profile DTO does not expose `userId` or `tenantId`.
+
+**Validation and security**
+
+- bounded professional text fields;
+- years of experience restricted to integer 0 through 100;
+- country code normalized and validated as two letters;
+- website restricted to valid HTTP/HTTPS URLs;
+- cross-tenant profile isolation verified;
+- protected client authority fields rejected;
+- commercial entitlement remains separate from RBAC;
+- failures are handled without bypassing tenant or access controls.
+
+**Frontend boundary**
+
+The protected `/trainer` experience now provides the professional-profile editor only after Trainer access is granted.
+
+The frontend supports professional-profile loading, first creation, update, validation and safe failure states without supplying tenant/User ownership or authorization state.
+
+**Verification evidence**
+
+- Full backend: **145 files / 1079 tests passed**
+- Final targeted backend Trainer profile/access: **2 files / 17 tests passed**
+- Backend TypeScript build: **GREEN**
+- Prisma migration deployment/status: **GREEN / SCHEMA UP TO DATE**
+- Public DTO ownership exposure: **NONE**
+- Full frontend: **37 files / 196 tests passed**
+- Final targeted frontend Trainer profile/access: **2 files / 9 tests passed**
+- Trainer professional-profile targeted tests: **5 tests passed**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN / NO WARNINGS**
+- `git diff --check`: **GREEN**
+- Protected Mission 001-145 closure register: **UNTRACKED / UNTOUCHED**
+- Unauthorized implementation scope: **NONE IDENTIFIED**
+
+**Scope deferred**
+
+Controls 64.4 through 64.11 remain outside Control 64.3.
+
+Client management, programme creation, client workout assignment, client monitoring, reports, AI assistance, session scheduling and business workflow controls are not claimed.
+
+**Release state**
+
+Control 64.3 is **TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING**.
+
+- Implementation commit: **PENDING**
+- Knowledge Base publication: **PENDING**
+- TITAN product frontend production deployment: **NOT CLAIMED**
+
+Mission 064 remains **ACTIVE** because Controls 64.4 through 64.11 remain outstanding.
 ### Control 64.4 - Client management
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

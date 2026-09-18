@@ -28,18 +28,19 @@ model Tenant {
   performanceMeasurements PerformanceMeasurement[]
   exercises               Exercise[]
 
-  workoutProgrammes    WorkoutProgramme[]
-  products             Product[]
-  nutritionPlans       NutritionPlan[]
-  shoppingLists        ShoppingList[]
-  recoveryTrackings    RecoveryTracking[]
-  sleepTrackings       SleepTracking[]
-  restTrackings        RestTracking[]
-  trainingStresses     TrainingStress[]
-  payments             Payment[]             @relation("PaymentTenant")
-  userTypeEntitlements UserTypeEntitlement[] @relation("EntitlementTenant")
-  passwordResetTokens  PasswordResetToken[]
+  workoutProgrammes         WorkoutProgramme[]
+  products                  Product[]
+  nutritionPlans            NutritionPlan[]
+  shoppingLists             ShoppingList[]
+  recoveryTrackings         RecoveryTracking[]
+  sleepTrackings            SleepTracking[]
+  restTrackings             RestTracking[]
+  trainingStresses          TrainingStress[]
+  payments                  Payment[]                  @relation("PaymentTenant")
+  userTypeEntitlements      UserTypeEntitlement[]      @relation("EntitlementTenant")
+  passwordResetTokens       PasswordResetToken[]
   accountAssistanceRequests AccountAssistanceRequest[]
+  trainerProfiles           TrainerProfile[]
 }
 
 model Sport {
@@ -104,6 +105,7 @@ model User {
   payments                 Payment[]             @relation("PaymentUserTenant")
   userTypeEntitlements     UserTypeEntitlement[] @relation("EntitlementUserTenant")
   passwordResetTokens      PasswordResetToken[]
+  trainerProfile           TrainerProfile?
 
   @@unique([tenantId, email])
   @@unique([id, tenantId], map: "User_id_tenantId_key")
@@ -112,8 +114,31 @@ model User {
   @@index([tenantId, organisationId])
 }
 
+model TrainerProfile {
+  id                String   @id @default(uuid())
+  tenantId          String
+  professionalTitle String?
+  bio               String?
+  qualifications    String?
+  specialisations   String?
+  yearsExperience   Int?
+  countryCode       String?
+  websiteUrl        String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user   User   @relation(fields: [userId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: Cascade)
+
+  userId String
+
+  @@unique([userId, tenantId], map: "TrainerProfile_userId_tenantId_key")
+  @@unique([id, tenantId], map: "TrainerProfile_id_tenantId_key")
+  @@index([tenantId])
+}
+
 model Athlete {
-  id                      String                   @id @default(uuid())
+  id                      String                    @id @default(uuid())
   tenantId                String
   organisationId          String?
   userId                  String?
@@ -122,17 +147,17 @@ model Athlete {
   dateOfBirth             DateTime?
   bodyModelType           PerformanceBodyModelType?
   countryCode             String?
-  status                  RecordStatus             @default(ACTIVE)
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime                 @updatedAt
-  tenant                  Tenant                   @relation(fields: [tenantId], references: [id])
-  organisation            Organisation?            @relation(fields: [organisationId], references: [id])
-  user                    User?                    @relation(fields: [userId], references: [id])
+  status                  RecordStatus              @default(ACTIVE)
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  tenant                  Tenant                    @relation(fields: [tenantId], references: [id])
+  organisation            Organisation?             @relation(fields: [organisationId], references: [id])
+  user                    User?                     @relation(fields: [userId], references: [id])
   relationships           AthleteRelationship[]
   athleteDigitalTwins     AthleteDigitalTwin[]
-  performanceMetrics      PerformanceMetric[]      @relation("PerformanceMetricAthleteTenant")
-  performanceMeasurements PerformanceMeasurement[] @relation("PerformanceMeasurementAthleteTenant")
-  workoutProgrammes       WorkoutProgramme[]       @relation("WorkoutProgrammeAthleteTenant")
+  performanceMetrics      PerformanceMetric[]       @relation("PerformanceMetricAthleteTenant")
+  performanceMeasurements PerformanceMeasurement[]  @relation("PerformanceMeasurementAthleteTenant")
+  workoutProgrammes       WorkoutProgramme[]        @relation("WorkoutProgrammeAthleteTenant")
   nutritionPlans          NutritionPlan[]
   mealPlans               MealPlan[]
   shoppingLists           ShoppingList[]
@@ -140,8 +165,8 @@ model Athlete {
   sleepTrackings          SleepTracking[]
   restTrackings           RestTracking[]
   trainingStresses        TrainingStress[]
-  goals                   AthleteGoal[]            @relation("AthleteGoalAthleteTenant")
-  bodyMeasurements        AthleteBodyMeasurement[] @relation("AthleteBodyMeasurementAthleteTenant")
+  goals                   AthleteGoal[]             @relation("AthleteGoalAthleteTenant")
+  bodyMeasurements        AthleteBodyMeasurement[]  @relation("AthleteBodyMeasurementAthleteTenant")
 
   @@unique([id, tenantId], map: "Athlete_id_tenantId_key")
   @@index([tenantId])
@@ -458,6 +483,7 @@ enum PerformanceBodyModelType {
   MALE
   FEMALE
 }
+
 enum RecordStatus {
   ACTIVE
   INACTIVE
