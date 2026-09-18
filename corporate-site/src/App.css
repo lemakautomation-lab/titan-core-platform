@@ -575,7 +575,31 @@ footer > p:last-child {
   }
 
   .hero-art {
-    object-position: 60% center;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 68% center;
+  }
+
+  .product-art-wrap {
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .product-art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .enterprise .product-art {
+    object-position: center center;
+  }
+
+  .health .product-art {
+    object-position: 62% center;
   }
 
   .hero-shade {
