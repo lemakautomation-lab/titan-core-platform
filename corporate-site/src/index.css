@@ -1,0 +1,49 @@
+:root {
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  color: #f7f9fb;
+  background: #030506;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --bg: #030506;
+  --surface: #080c0e;
+  --surface-soft: #0b1113;
+  --text: #f7f9fb;
+  --muted: #8c999e;
+  --line: rgba(255, 255, 255, 0.09);
+  --neon: #00ffc2;
+  --neon-blue: #20b8ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+button,
+a {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: var(--neon);
+  color: #00130e;
+}
+
+#root {
+  min-height: 100vh;
+}
