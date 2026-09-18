@@ -253,6 +253,110 @@ Mission 064 remains **ACTIVE** because Controls 64.4 through 64.11 remain outsta
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+#### Control 64.4 Status
+
+**COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**
+
+Control 64.4 establishes the secure tenant-scoped Trainer client-management boundary.
+
+**Relationship boundary**
+
+- existing `AthleteRelationship` aggregate reused;
+- `athleteId` identifies the client Athlete;
+- relationship type is server-fixed to `TRAINER`;
+- `relatedEntityId` is the authenticated Trainer User ID;
+- `tenantId` is derived from the authenticated tenant;
+- browser callers cannot override ownership, relationship type or commercial authority.
+
+**Trainer client API**
+
+- `GET /api/v1/auth/me/trainer-clients`
+- `POST /api/v1/auth/me/trainer-clients/:athleteId`
+- `DELETE /api/v1/auth/me/trainer-clients/:athleteId`
+
+Access reuses the Control 64.1 Trainer commercial-access policy.
+
+An authenticated ACTIVE User with `selectedUserType = TRAINER` and an active Trainer entitlement is required.
+
+**Client lifecycle**
+
+- active Trainer clients can be listed;
+- a tenant-owned Athlete can be associated with the authenticated Trainer;
+- duplicate active relationships are rejected;
+- removal preserves history by marking the relationship `INACTIVE` and recording `endsAt`;
+- re-adding an inactive client reactivates the existing relationship and clears `endsAt`;
+- inactive relationships are excluded from the active roster.
+
+**Security and isolation**
+
+- unauthenticated access denied;
+- non-Trainer access denied;
+- Trainer without active entitlement denied;
+- server-derived Trainer and tenant ownership;
+- cross-tenant Athlete association rejected;
+- Trainer roster isolation verified;
+- malicious ownership/relationship-type fields cannot override authoritative server identity;
+- public client DTO does not expose tenant or Trainer ownership;
+- commercial entitlement remains separate from RBAC.
+
+**Frontend boundary**
+
+The protected `/trainer` experience provides client management only after Trainer access has been granted.
+
+The Trainer can view the active roster, add an Athlete by Athlete ID and remove an active client association.
+
+Loading, empty, add, remove and safe failure states are covered.
+
+The roster passed the semantic accessibility lint gate.
+
+**Verification evidence**
+
+- Full backend: **146 files / 1088 tests passed**
+- Targeted Control 64.4 security/integration: **1 file / 9 tests passed**
+- Bounded Trainer/AthleteRelationship regression: **6 files / 31 tests passed**
+- Backend TypeScript build: **GREEN**
+- Full frontend: **38 files / 202 tests passed**
+- Final targeted Trainer client-management/access: **2 files / 10 tests passed**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN / NO WARNINGS**
+- Semantic accessibility gate: **GREEN**
+- `git diff --check`: **GREEN**
+- Implementation scope: **17 authorized files**
+- Unauthorized committed files: **NONE**
+- Protected Mission 001-145 closure register: **UNTRACKED / UNTOUCHED**
+
+**Scope deferred**
+
+Controls 64.5 through 64.11 remain outside Control 64.4.
+
+Programme creation, client workout assignment, client monitoring, reports, AI assistance, session scheduling and business workflow controls are not claimed.
+
+**Release state**
+
+Control 64.4 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
+
+- Implementation commit: `03182e8e8a7135af08f4afcb1df87fddc888743e`
+- Knowledge Base publication: **PENDING**
+- TITAN product frontend production deployment: **NOT CLAIMED**
+
+Mission 064 remains **ACTIVE** because Controls 64.5 through 64.11 remain outstanding.
+
+### Knowledge Base Publication Evidence
+
+- Candidate deployment ID: `60cd0f64-1227-4b49-8e10-f3887fca27a2`
+- Candidate source implementation: `03182e8e8a7135af08f4afcb1df87fddc888743e`
+- Immutable Mission 064 URL: `https://60cd0f64.titan-core-platform.pages.dev/docs/missions/064/`
+- Canonical Mission 064 URL: `https://titan-core-platform.pages.dev/docs/missions/064/`
+- Immutable HTTP verification: **200 / VERIFIED**
+- Canonical HTTP verification: **200 / VERIFIED**
+- Control 64.4 content: **VERIFIED**
+- Client management content: **VERIFIED**
+- Backend evidence (146 files / 1088 tests): **VERIFIED**
+- Frontend evidence (38 files / 202 tests): **VERIFIED**
+- Trainer client endpoint evidence: **VERIFIED**
+- Knowledge Base publication: **VERIFIED**
+- Product frontend production deployment: **NOT CLAIMED**
+- Mission 064 remains: **ACTIVE**
 ### Control 64.5 - Programme creation
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

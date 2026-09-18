@@ -448,6 +448,165 @@ TITAN product frontend production deployment is **NOT CLAIMED**.
 Mission 064 remains **ACTIVE** because Controls 64.4 through 64.11 remain outstanding.
 
 ---
+## Control 64.4 - Client Management
+
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED
+
+### Objective
+
+Provide an authenticated TITAN Health Trainer with a secure, tenant-scoped client-management boundary for associating Athlete clients with the Trainer, viewing the Trainer's active client roster, removing active client associations and safely reactivating historical associations.
+
+Control 64.4 reuses the existing `AthleteRelationship` aggregate rather than introducing a duplicate Trainer/client relationship model.
+
+### Relationship Boundary
+
+Trainer/client ownership is represented as:
+
+- `athleteId` = the client Athlete;
+- `relationshipType` = server-fixed `TRAINER`;
+- `relatedEntityId` = authenticated Trainer User ID;
+- `tenantId` = authenticated tenant.
+
+The browser cannot supply or override `tenantId`, Trainer ownership, `relatedEntityId`, relationship type, selected user type, RBAC authority, payment state or entitlement state.
+
+The existing generic AthleteRelationship API remains available for its existing RBAC-governed purpose. Control 64.4 introduces a dedicated authenticated Trainer application boundary and does not weaken or repurpose the generic relationship contract.
+
+### Application and Repository Boundary
+
+The AthleteRelationship repository now supports Trainer-side lookup by authoritative related entity and exact Athlete/Trainer relationship lookup.
+
+Client-management use cases:
+
+- list the authenticated Trainer's active clients;
+- add an Athlete as a Trainer client;
+- remove an active Trainer/client association;
+- reactivate an existing inactive Trainer/client relationship instead of creating duplicate relationship history.
+
+All Athlete resolution remains tenant-scoped.
+
+Removal preserves relationship history by transitioning the relationship to `INACTIVE` and recording `endsAt`.
+
+Reactivation restores the same relationship to `ACTIVE` and clears `endsAt`.
+
+### API Boundary
+
+Authenticated endpoints:
+
+`GET /api/v1/auth/me/trainer-clients`
+
+`POST /api/v1/auth/me/trainer-clients/:athleteId`
+
+`DELETE /api/v1/auth/me/trainer-clients/:athleteId`
+
+All endpoints derive Trainer User identity and tenant identity from the authenticated server-side session.
+
+Trainer client management reuses the Control 64.1 Trainer-access policy and therefore requires:
+
+- authenticated user;
+- ACTIVE User state;
+- `selectedUserType = TRAINER`;
+- active Trainer commercial entitlement.
+
+The public client DTO exposes only bounded client/relationship information required by the Trainer experience and does not expose tenant ownership or Trainer User ownership.
+
+### Security and Tenant Isolation
+
+Verified controls include:
+
+- unauthenticated requests denied;
+- non-Trainer users denied;
+- Trainers without active commercial entitlement denied;
+- Trainer and tenant ownership server-derived;
+- relationship type fixed server-side to `TRAINER`;
+- cross-tenant Athlete association rejected;
+- active duplicate association rejected;
+- Trainer roster isolation verified between Trainers in the same tenant;
+- inactive relationships excluded from the active roster;
+- relationship history preserved on removal;
+- inactive relationship safely reactivated;
+- malicious ownership and relationship-type fields cannot override authoritative server identity;
+- commercial entitlement remains separate from RBAC;
+- no programme, workout-assignment, monitoring, reporting, AI or scheduling authority introduced.
+
+### Frontend Boundary
+
+The protected `/trainer` experience now includes client management only after Control 64.1 Trainer access has been granted.
+
+The Trainer can:
+
+- view active clients;
+- add an Athlete by Athlete ID;
+- remove an active client association.
+
+The interface provides loading, empty-roster, add, remove and safe failure states.
+
+The frontend does not supply tenant identity, Trainer User ownership, relationship type, RBAC state, payment state or entitlement state.
+
+The client roster uses semantic accessible markup and passed the frontend accessibility lint gate.
+
+### Automated Verification
+
+Backend:
+
+- Full backend regression: **146 files / 1088 tests passed**
+- Targeted Control 64.4 security/integration regression: **1 file / 9 tests passed**
+- Bounded Trainer/AthleteRelationship regression: **6 files / 31 tests passed**
+- Backend TypeScript build: **GREEN**
+
+Frontend:
+
+- Full frontend regression: **38 files / 202 tests passed**
+- Final targeted Trainer access/client-management regression: **2 files / 10 tests passed**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN / NO WARNINGS**
+- Semantic accessibility gate: **GREEN**
+
+Repository integrity:
+
+- `git diff --check`: **GREEN**
+- Protected Mission 001-145 closure register: **UNTRACKED / UNTOUCHED**
+- Implementation scope: **17 authorized files**
+- Unauthorized committed files: **NONE**
+- Implementation commit: `03182e8e8a7135af08f4afcb1df87fddc888743e`
+- Implementation push: **VERIFIED**
+- Implementation HEAD/origin synchronization: **0 / 0**
+
+### Scope Explicitly Deferred
+
+Controls 64.5 through 64.11 remain outside Control 64.4.
+
+No programme creation, client workout assignment, client monitoring, reports, AI assistance, session scheduling or business workflow controls are claimed by this control.
+
+### Release State
+
+Control 64.4 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
+
+Implementation commit: `03182e8e8a7135af08f4afcb1df87fddc888743e`
+
+Knowledge Base publication: **PENDING**
+
+TITAN product frontend production deployment is **NOT CLAIMED**.
+
+Mission 064 remains **ACTIVE** because Controls 64.5 through 64.11 remain outstanding.
+
+---
+
+### Knowledge Base Publication Evidence
+
+- Candidate deployment ID: `60cd0f64-1227-4b49-8e10-f3887fca27a2`
+- Candidate source implementation: `03182e8e8a7135af08f4afcb1df87fddc888743e`
+- Immutable Mission 064 URL: `https://60cd0f64.titan-core-platform.pages.dev/docs/missions/064/`
+- Canonical Mission 064 URL: `https://titan-core-platform.pages.dev/docs/missions/064/`
+- Immutable HTTP verification: **200 / VERIFIED**
+- Canonical HTTP verification: **200 / VERIFIED**
+- Control 64.4 content: **VERIFIED**
+- Client management content: **VERIFIED**
+- Backend evidence (146 files / 1088 tests): **VERIFIED**
+- Frontend evidence (38 files / 202 tests): **VERIFIED**
+- Trainer client endpoint evidence: **VERIFIED**
+- Knowledge Base publication: **VERIFIED**
+- Product frontend production deployment: **NOT CLAIMED**
+- Mission 064 remains: **ACTIVE**
 ## Remaining Controls
 
 - 64.2 - Trainer sign-up - COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED
