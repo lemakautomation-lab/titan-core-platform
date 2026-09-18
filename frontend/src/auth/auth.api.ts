@@ -8,6 +8,8 @@ import type {
   MeResponse,
   RegisterAthleteRequest,
   RegisterAthleteResponse,
+  RegisterTrainerRequest,
+  RegisterTrainerResponse,
   PasswordResetRequest,
   PasswordResetCompleteRequest,
   PasswordResetResponse,} from "./auth.types";
@@ -28,6 +30,18 @@ export function registerAthlete(
 }
 
 
+
+export function registerTrainer(
+  request: RegisterTrainerRequest,
+): Promise<RegisterTrainerResponse> {
+  return apiRequest<RegisterTrainerResponse>(
+    "/auth/register/trainer",
+    {
+      method: "POST",
+      body: JSON.stringify(request),
+    },
+  );
+}
 export function login(
   request: LoginRequest,
 ): Promise<LoginResponse> {

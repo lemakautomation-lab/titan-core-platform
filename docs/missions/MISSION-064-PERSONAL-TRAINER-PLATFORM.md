@@ -1,4 +1,4 @@
-# Mission 064 — Personal Trainer Platform
+# Mission 064 â€” Personal Trainer Platform
 
 ## Mission Status
 
@@ -14,7 +14,7 @@ Enable trainers to operate their professional environment.
 
 ---
 
-## Control 64.1 — Trainer Subscription / Access
+## Control 64.1 â€” Trainer Subscription / Access
 
 **Status:** COMPLETE / TECHNICALLY VERIFIED
 
@@ -137,7 +137,7 @@ Frontend:
 
 The following remain outside Control 64.1:
 
-- 64.2 Trainer sign-up
+- 64.2 - Trainer sign-up - COMPLETE / TECHNICALLY VERIFIED
 - 64.3 Professional profile
 - 64.4 Client management
 - 64.5 Programme creation
@@ -165,22 +165,124 @@ Control 64.1 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBL
 
 This publication classification applies to the Mission 064 Knowledge Base evidence. It does not claim deployment of the TITAN product frontend to a production hosting environment.
 
-Mission 064 remains **ACTIVE** because Controls 64.2 through 64.11 remain outstanding.
+Mission 064 remains **ACTIVE** because Controls 64.3 through 64.11 remain outstanding.
 
 ---
 
+
+## Control 64.2 — Trainer Sign-Up
+
+**Status:** COMPLETE / TECHNICALLY VERIFIED
+
+### Objective
+
+Provide a dedicated public Trainer registration boundary while preserving separation between identity, Trainer user type, commercial entitlement and RBAC.
+
+### Backend Implementation
+
+Public endpoint:
+
+`POST /api/v1/auth/register/trainer`
+
+The registration boundary:
+
+- accepts only `firstName`, `lastName`, `email` and `password`;
+- uses the configured TITAN Health consumer tenant;
+- normalizes and validates identity through the existing User/security boundary;
+- hashes passwords through the established password-security service;
+- rejects duplicate tenant/email registration safely;
+- creates an ACTIVE User with `selectedUserType = TRAINER`;
+- creates no Athlete or AthleteDigitalTwin;
+- creates or grants no Payment or UserTypeEntitlement;
+- creates or grants no RBAC role or permission;
+- authenticates successful registration through the existing login/session boundary.
+
+No database migration was required because the User model already supports `TRAINER`.
+
+### Security Boundary
+
+- Tenant identity cannot be supplied by the caller.
+- User type cannot be supplied or overridden by the caller.
+- Roles and permissions cannot be supplied through registration.
+- Payment or entitlement state cannot be supplied through registration.
+- Athlete-specific fields are rejected.
+- Unknown or protected fields are rejected.
+- Duplicate tenant/email registration fails safely.
+- Trainer registration does not bypass Control 64.1 commercial-access enforcement.
+- Authentication, Trainer user type, paid entitlement and RBAC remain separate authoritative concerns.
+
+### Frontend Implementation
+
+Public route:
+
+`/signup/trainer`
+
+The signup UI accepts only:
+
+- First name
+- Last name
+- Email
+- Password
+
+The frontend uses the dedicated Trainer registration API and the established authentication-session service.
+
+The UI explicitly states that paid Trainer platform access is activated only after successful payment.
+
+Authenticated users continue through the existing authenticated landing-route boundary. The frontend does not infer commercial Trainer access.
+
+### Automated Verification
+
+Backend:
+
+- Targeted Trainer registration: **2 files / 13 tests passed**
+- Full backend regression: **GREEN**
+- Backend TypeScript build: **GREEN**
+
+Frontend:
+
+- Trainer signup page: **3 tests passed**
+- Targeted Trainer/auth/router regression: **4 files / 39 tests passed**
+- Full frontend regression: **36 files / 191 tests passed**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN**
+
+Repository integrity:
+
+- `git diff --check`: **GREEN**
+- Protected Mission 001-145 closure register: **UNTRACKED / UNTOUCHED**
+- Unauthorized implementation scope: **NONE IDENTIFIED**
+- Verification baseline: `2452e570fb421c81318631a2ce2778d709c637a8`
+- Baseline ahead/behind: **0 / 0**
+
+### Scope Explicitly Deferred
+
+Controls 64.3 through 64.11 remain outside Control 64.2.
+
+No Trainer professional profile, client-management capability, programme workflow, scheduling workflow, live payment gateway or checkout capability is claimed.
+
+### Release State
+
+Control 64.2 is **COMPLETE / TECHNICALLY VERIFIED**.
+
+Implementation commit, push verification and Knowledge Base publication remain pending.
+
+TITAN product frontend production deployment is **NOT CLAIMED**.
+
+Mission 064 remains **ACTIVE** because Controls 64.3 through 64.11 remain outstanding.
+
+---
 ## Remaining Controls
 
-- 64.2 — Trainer sign-up — PENDING
-- 64.3 — Professional profile — PENDING
-- 64.4 — Client management — PENDING
-- 64.5 — Programme creation — PENDING
-- 64.6 — Client workout assignment — PENDING
-- 64.7 — Client monitoring — PENDING
-- 64.8 — Reports — PENDING
-- 64.9 — AI assistance — PENDING
-- 64.10 — Session scheduling — PENDING
-- 64.11 — Business workflow controls — PENDING
+- 64.2 - Trainer sign-up - COMPLETE / TECHNICALLY VERIFIED
+- 64.3 â€” Professional profile â€” PENDING
+- 64.4 â€” Client management â€” PENDING
+- 64.5 â€” Programme creation â€” PENDING
+- 64.6 â€” Client workout assignment â€” PENDING
+- 64.7 â€” Client monitoring â€” PENDING
+- 64.8 â€” Reports â€” PENDING
+- 64.9 â€” AI assistance â€” PENDING
+- 64.10 â€” Session scheduling â€” PENDING
+- 64.11 â€” Business workflow controls â€” PENDING
 
 ## Mission Exit
 

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   registerAthlete,
+  registerTrainer,
   login,
   refresh,
   logout,
@@ -156,4 +157,22 @@ describe("auth.api", () => {
       },
     );
   });
-});
+
+  it("calls Trainer registration with the correct endpoint and payload", async () => {
+    const request = {
+      firstName: "Titan",
+      lastName: "Trainer",
+      email: "trainer@example.com",
+      password: "Password123!",
+    };
+
+    await registerTrainer(request);
+
+    expect(apiRequestMock).toHaveBeenCalledWith(
+      "/auth/register/trainer",
+      {
+        method: "POST",
+        body: JSON.stringify(request),
+      },
+    );
+  });});

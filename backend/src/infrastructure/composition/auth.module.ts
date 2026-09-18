@@ -26,6 +26,8 @@ import { ListRecentRecoveryTrackingUseCase } from "../../application/use-cases/l
 import { PrismaAthleteBodyModelUpdateTransaction } from "../transactions/athlete-body-model-update.transaction";
 import { PrismaAthletePerformanceBodyProfileQuery } from "../queries/athlete-performance-body-profile.query";import { RegisterAthleteUseCase } from "../../application/use-cases/register-athlete.use-case";
 import { PrismaAthleteRegistrationTransaction } from "../transactions/athlete-registration.transaction";
+import { RegisterTrainerUseCase } from "../../application/use-cases/register-trainer.use-case";
+import { PrismaTrainerRegistrationTransaction } from "../transactions/trainer-registration.transaction";
 import { getConsumerTenantSlug } from "../../config/consumer-tenant.config";
 
 import { RequestPasswordResetUseCase } from "../../application/use-cases/request-password-reset.use-case";
@@ -143,6 +145,10 @@ export const sessionRepository =
         databaseService,
     );
 
+const trainerRegistrationTransaction =
+    new PrismaTrainerRegistrationTransaction(
+        databaseService,
+    );
 export const authModule = {
 
     userRepository,
@@ -166,6 +172,11 @@ export const authModule = {
     completePasswordResetUseCase:
         new CompletePasswordResetUseCase(
             passwordResetTransaction,
+        ),
+    registerTrainerUseCase:
+        new RegisterTrainerUseCase(
+            trainerRegistrationTransaction,
+            getConsumerTenantSlug(),
         ),
     registerAthleteUseCase:
         new RegisterAthleteUseCase(

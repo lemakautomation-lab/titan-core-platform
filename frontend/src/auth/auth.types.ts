@@ -64,6 +64,28 @@ export interface RegisterAthleteResponse {
     registration: AthleteRegistration;
   };
 }
+
+export interface RegisterTrainerRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export interface TrainerRegistration {
+  userId: string;
+  tenantId: string;
+  email: string;
+}
+
+export interface RegisterTrainerResponse {
+  success: true;
+  data: {
+    user: AuthUser;
+    accessToken: string;
+    registration: TrainerRegistration;
+  };
+}
 export interface PasswordResetRequest {
   email: string;
 }

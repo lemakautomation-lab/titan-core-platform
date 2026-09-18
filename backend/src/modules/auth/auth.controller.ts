@@ -9,6 +9,7 @@ import { UpdateMyPersonalDetailsCommand } from "../../application/commands/updat
 import { UpdateMyAthleteGoalsCommand } from "../../application/commands/update-my-athlete-goals.command";
 import { CreateMyAthleteBodyMeasurementCommand } from "../../application/commands/create-my-athlete-body-measurement.command";
 import { UpdateMyAthleteBodyModelCommand } from "../../application/commands/update-my-athlete-body-model.command";import { RegisterAthleteCommand } from "../../application/commands/register-athlete.command";
+import { RegisterTrainerCommand } from "../../application/commands/register-trainer.command";
 
 import {
     REFRESH_TOKEN_COOKIE_NAME,
@@ -494,6 +495,110 @@ export class AuthController {
         });
     }
 
+
+    async registerTrainer(
+        req: RequestWithId,
+        res: Response,
+    ): Promise<void> {
+        res.set("Cache-Control", "no-store");
+
+        const body =
+            req.body as Record<string, unknown>;
+
+        const allowedFields = new Set([
+            "firstName",
+            "lastName",
+            "email",
+            "password",
+        ]);
+
+        if (
+            !body ||
+            typeof body !== "object" ||
+            Array.isArray(body) ||
+            Object.keys(body).some(
+                (field) =>
+                    !allowedFields.has(field),
+            ) ||
+            typeof body.firstName !== "string" ||
+            typeof body.lastName !== "string" ||
+            typeof body.email !== "string" ||
+            typeof body.password !== "string"
+        ) {
+            res.status(400).json({
+                error:
+                    "Invalid Trainer registration payload.",
+            });
+            return;
+        }
+
+        const result =
+            await authModule
+                .registerTrainerUseCase
+                .execute(
+                    new RegisterTrainerCommand(
+                        body.firstName,
+                        body.lastName,
+                        body.email,
+                        body.password,
+                    ),
+                );
+
+        if (!result.isSuccess) {
+            res.status(
+                result.error ===
+                    "Email already exists for this tenant."
+                    ? 409
+                    : 400,
+            ).json({
+                error: result.error,
+            });
+            return;
+        }
+
+        if (!result.value) {
+            res.status(500).json({
+                error:
+                    "Trainer registration failed.",
+            });
+            return;
+        }
+
+        const loginResult =
+            await authModule.loginUseCase.execute({
+                tenantId:
+                    result.value.tenantId,
+                email:
+                    result.value.email,
+                password:
+                    body.password,
+                ipAddress:
+                    req.ip,
+                userAgent:
+                    req.get("User-Agent") ??
+                    undefined,
+                requestId:
+                    req.requestId,
+            });
+
+        res.cookie(
+            REFRESH_TOKEN_COOKIE_NAME,
+            loginResult.refreshToken,
+            refreshTokenCookieOptions,
+        );
+
+        res.status(201).json({
+            success: true,
+            data: {
+                user:
+                    loginResult.user,
+                accessToken:
+                    loginResult.accessToken,
+                registration:
+                    result.value,
+            },
+        });
+    }
 
     async login(
         req: RequestWithId,

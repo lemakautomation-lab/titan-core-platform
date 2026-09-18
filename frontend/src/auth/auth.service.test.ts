@@ -8,6 +8,7 @@ import {
 
 import {
   registerAthlete as registerAthleteApi,
+  registerTrainer as registerTrainerApi,
   login as loginApi,
   logout as logoutApi,
   me as meApi,
@@ -22,6 +23,7 @@ import {
 
 import {
   registerAthlete,
+  registerTrainer,
   login,
   logout,
   getCurrentUser,
@@ -33,6 +35,7 @@ import {
 
 vi.mock("./auth.api", () => ({
   registerAthlete: vi.fn(),
+  registerTrainer: vi.fn(),
   login: vi.fn(),
   refresh: vi.fn(),
   logout: vi.fn(),
@@ -409,4 +412,54 @@ describe("auth.service", () => {
 
     expect(isAuthenticated()).toBe(true);
   });
-});
+
+  it("registers a Trainer and stores the authenticated session", async () => {
+    const user = {
+      id: "trainer-user-1",
+      tenantId: "tenant-1",
+      email: "trainer@example.com",
+      roles: [],
+      permissions: [],
+    };
+
+    vi.mocked(registerTrainerApi)
+      .mockResolvedValue({
+        success: true,
+        data: {
+          user,
+          accessToken:
+            "trainer-signup-access-token",
+          registration: {
+            userId: user.id,
+            tenantId: user.tenantId,
+            email: user.email,
+          },
+        },
+      });
+
+    const registeredUser =
+      await registerTrainer({
+        firstName: "Titan",
+        lastName: "Trainer",
+        email: user.email,
+        password: "Password123!",
+      });
+
+    expect(registeredUser).toEqual(user);
+
+    expect(
+      registerTrainerApi,
+    ).toHaveBeenCalledWith({
+      firstName: "Titan",
+      lastName: "Trainer",
+      email: user.email,
+      password: "Password123!",
+    });
+
+    expect(getAccessToken()).toBe(
+      "trainer-signup-access-token",
+    );
+
+    expect(getAuthUser()).toEqual(user);
+    expect(isAuthenticated()).toBe(true);
+  });});

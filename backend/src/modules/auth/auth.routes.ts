@@ -40,6 +40,14 @@ export function createAuthRoutes(
     );
 
     router.post(
+        "/register/trainer",
+        authRateLimiter,
+        authController
+            .registerTrainer
+            .bind(authController),
+    );
+
+    router.post(
         "/account-assistance/request",
         authRateLimiter,
         accountAssistanceController

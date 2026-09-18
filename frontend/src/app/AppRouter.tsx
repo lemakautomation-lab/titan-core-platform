@@ -9,6 +9,7 @@ import ForgotPasswordPage from "../auth/ForgotPasswordPage";
 import AccountAssistancePage from "../auth/AccountAssistancePage";
 import ResetPasswordPage from "../auth/ResetPasswordPage";
 import AthleteSignupPage from "../auth/AthleteSignupPage";
+import TrainerSignupPage from "../auth/TrainerSignupPage";
 import AthleteOnboardingPage from "../auth/AthleteOnboardingPage";
 import DashboardPage from "../dashboard/DashboardPage";
 import AuthApp from "../auth/AuthApp";
@@ -195,6 +196,21 @@ export default function AppRouter({
         }
       />
 
+      <Route
+        path="/signup/trainer"
+        element={
+          authState === "authenticated" ? (
+            <Navigate
+              to={getAuthenticatedLandingRoute(user)}
+              replace
+            />
+          ) : (
+            <TrainerSignupPage
+              onAuthenticated={onAuthenticated}
+            />
+          )
+        }
+      />
       <Route
         element={
           <ProtectedRoute

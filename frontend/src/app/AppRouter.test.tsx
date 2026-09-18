@@ -308,6 +308,32 @@ describe("AppRouter", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("renders public Trainer signup without protected fields", () => {
+    renderRouter(
+      "/signup/trainer",
+      false,
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Create your Trainer account",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByLabelText("Tenant ID"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByLabelText("Country code"),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByLabelText("Date of birth"),
+    ).not.toBeInTheDocument();
+  });
+
   it("links the sign-in page to Athlete signup", () => {
     renderRouter(
       "/login",

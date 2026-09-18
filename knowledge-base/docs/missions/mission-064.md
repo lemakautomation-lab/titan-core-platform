@@ -75,11 +75,73 @@ Control 64.1 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBL
 - Docusaurus production build: **GREEN**
 - TITAN product frontend production deployment: **NOT CLAIMED**
 
-Mission 064 remains **ACTIVE** because Controls 64.2 through 64.11 remain outstanding.
+Mission 064 remains **ACTIVE** because Controls 64.3 through 64.11 remain outstanding.
 ### Control 64.2 - Trainer sign-up
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+#### Control 64.2 Status
+
+**COMPLETE / TECHNICALLY VERIFIED**
+
+Control 64.2 establishes the dedicated TITAN Health Trainer registration boundary.
+
+**Backend boundary**
+
+- `POST /api/v1/auth/register/trainer`
+- only first name, last name, email and password are accepted;
+- configured consumer tenant is authoritative;
+- User is created ACTIVE with `selectedUserType = TRAINER`;
+- duplicate tenant/email registration fails safely;
+- successful registration uses the established authentication/session flow;
+- no Athlete or AthleteDigitalTwin is created;
+- no Payment or UserTypeEntitlement is created or granted;
+- no RBAC role or permission is created or granted;
+- no database migration was required.
+
+**Security boundary**
+
+- caller cannot supply tenant identity;
+- caller cannot supply selected user type;
+- caller cannot supply roles or permissions;
+- caller cannot supply payment or entitlement state;
+- Athlete-specific fields are rejected;
+- unknown/protected fields are rejected;
+- commercial Trainer access remains governed by Control 64.1;
+- authentication, Trainer user type, paid entitlement and RBAC remain separate.
+
+**Frontend boundary**
+
+- public `/signup/trainer` route;
+- first name, last name, email and password only;
+- dedicated Trainer registration API;
+- established auth-session storage reused;
+- paid Trainer access explicitly requires successful payment;
+- frontend does not infer commercial Trainer access.
+
+**Verification evidence**
+
+- Backend targeted Trainer registration: **2 files / 13 tests passed**
+- Full backend regression: **GREEN**
+- Backend TypeScript build: **GREEN**
+- Trainer signup page: **3 tests passed**
+- Targeted frontend Trainer/auth/router regression: **4 files / 39 tests passed**
+- Full frontend: **36 files / 191 tests passed**
+- Frontend production build: **GREEN**
+- Frontend lint: **GREEN**
+- `git diff --check`: **GREEN**
+- Protected Mission 001-145 closure register: **UNTRACKED / UNTOUCHED**
+- Unauthorized implementation scope: **NONE IDENTIFIED**
+
+**Release state**
+
+Control 64.2 is **COMPLETE / TECHNICALLY VERIFIED**.
+
+Implementation commit, push verification and Knowledge Base publication remain pending.
+
+TITAN product frontend production deployment: **NOT CLAIMED**.
+
+Mission 064 remains **ACTIVE** because Controls 64.3 through 64.11 remain outstanding.
 ### Control 64.3 - Professional profile
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
