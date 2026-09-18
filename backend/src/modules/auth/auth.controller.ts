@@ -11,6 +11,9 @@ import { CreateMyAthleteBodyMeasurementCommand } from "../../application/command
 import { UpdateMyAthleteBodyModelCommand } from "../../application/commands/update-my-athlete-body-model.command";import { RegisterAthleteCommand } from "../../application/commands/register-athlete.command";
 import { RegisterTrainerCommand } from "../../application/commands/register-trainer.command";
 import { UpdateMyTrainerProfileCommand } from "../../application/commands/update-my-trainer-profile.command";
+import { AddMyTrainerClientCommand } from "../../application/commands/add-my-trainer-client.command";
+import { RemoveMyTrainerClientCommand } from "../../application/commands/remove-my-trainer-client.command";
+import { ListMyTrainerClientsQuery } from "../../application/queries/trainer/list-my-trainer-clients.query";
 
 import {
     REFRESH_TOKEN_COOKIE_NAME,
@@ -20,6 +23,158 @@ import {
 
 
 export class AuthController {
+    async listMyTrainerClients(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+
+        res.set("Cache-Control", "no-store");
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const result =
+            await authModule
+                .listMyTrainerClientsUseCase
+                .execute(
+                    new ListMyTrainerClientsQuery(
+                        authUser.userId,
+                        authUser.tenantId,
+                    ),
+                );
+
+        if (!result.isSuccess) {
+            res.status(403).json({
+                error: result.error,
+            });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
+
+    async addMyTrainerClient(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+
+        res.set("Cache-Control", "no-store");
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const athleteId =
+            String(req.params.athleteId ?? "").trim();
+
+        if (!athleteId) {
+            res.status(400).json({
+                error: "Athlete id is required.",
+            });
+            return;
+        }
+
+        const result =
+            await authModule
+                .addMyTrainerClientUseCase
+                .execute(
+                    new AddMyTrainerClientCommand(
+                        authUser.userId,
+                        authUser.tenantId,
+                        athleteId,
+                    ),
+                );
+
+        if (!result.isSuccess) {
+            const error =
+                result.error ??
+                "Trainer client could not be added.";
+
+            res.status(
+                error === "Athlete not found."
+                    ? 404
+                    : error ===
+                        "Athlete is already a client."
+                        ? 409
+                        : 403,
+            ).json({
+                error,
+            });
+            return;
+        }
+
+        res.status(201).json({
+            relationshipId: result.value,
+        });
+    }
+
+    async removeMyTrainerClient(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+
+        res.set("Cache-Control", "no-store");
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const athleteId =
+            String(req.params.athleteId ?? "").trim();
+
+        if (!athleteId) {
+            res.status(400).json({
+                error: "Athlete id is required.",
+            });
+            return;
+        }
+
+        const result =
+            await authModule
+                .removeMyTrainerClientUseCase
+                .execute(
+                    new RemoveMyTrainerClientCommand(
+                        authUser.userId,
+                        authUser.tenantId,
+                        athleteId,
+                    ),
+                );
+
+        if (!result.isSuccess) {
+            const error =
+                result.error ??
+                "Trainer client could not be removed.";
+
+            res.status(
+                error ===
+                    "Trainer client relationship not found."
+                    ? 404
+                    : 403,
+            ).json({
+                error,
+            });
+            return;
+        }
+
+        res.status(204).send();
+    }
+
     async getMyTrainerProfile(
         req: AuthRequest,
         res: Response,

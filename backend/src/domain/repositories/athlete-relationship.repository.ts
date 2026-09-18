@@ -28,6 +28,18 @@ export interface AthleteRelationshipRepository {
         total: number;
     }>;
 
+    findAllByRelatedEntity(
+        relatedEntityId: string,
+        relationshipType: AthleteRelationshipType,
+        tenantId: string,
+    ): Promise<AthleteRelationship[]>;
+
+    findByAthleteAndRelatedEntity(
+        athleteId: string,
+        relatedEntityId: string,
+        relationshipType: AthleteRelationshipType,
+        tenantId: string,
+    ): Promise<AthleteRelationship | null>;
     create(
         relationship: AthleteRelationship,
     ): Promise<AthleteRelationship>;

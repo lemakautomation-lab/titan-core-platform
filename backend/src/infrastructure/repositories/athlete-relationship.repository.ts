@@ -122,6 +122,60 @@ implements AthleteRelationshipRepository {
         };
     }
 
+    async findAllByRelatedEntity(
+        relatedEntityId: string,
+        relationshipType: AthleteRelationshipType,
+        tenantId: string,
+    ): Promise<AthleteRelationship[]> {
+
+        const relationships =
+            await this.database.prisma.athleteRelationship.findMany({
+                where: {
+                    relatedEntityId,
+                    relationshipType,
+                    tenantId,
+                },
+                orderBy: [
+                    {
+                        createdAt: "asc",
+                    },
+                    {
+                        id: "asc",
+                    },
+                ],
+            });
+
+        return relationships.map(
+            AthleteRelationshipMapper.toDomain,
+        );
+    }
+
+    async findByAthleteAndRelatedEntity(
+        athleteId: string,
+        relatedEntityId: string,
+        relationshipType: AthleteRelationshipType,
+        tenantId: string,
+    ): Promise<AthleteRelationship | null> {
+
+        const relationship =
+            await this.database.prisma.athleteRelationship.findFirst({
+                where: {
+                    athleteId,
+                    relatedEntityId,
+                    relationshipType,
+                    tenantId,
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+            });
+
+        return relationship
+            ? AthleteRelationshipMapper.toDomain(
+                relationship,
+            )
+            : null;
+    }
     async create(
         relationship: AthleteRelationship,
     ): Promise<AthleteRelationship> {

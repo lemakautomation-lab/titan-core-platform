@@ -1,4 +1,4 @@
-﻿import {
+import {
   useEffect,
   useState,
 } from "react";
@@ -8,6 +8,7 @@ import {
   type TrainerAccessDto,
 } from "./trainer-access.api";
 import TrainerProfessionalProfile from "./TrainerProfessionalProfile";
+import TrainerClientManagement from "./TrainerClientManagement";
 
 export default function TrainerAccessPage() {
   const [access, setAccess] =
@@ -102,7 +103,10 @@ export default function TrainerAccessPage() {
       {!loading &&
         !error &&
         access?.accessGranted && (
-          <TrainerProfessionalProfile />
+          <>
+            <TrainerProfessionalProfile />
+            <TrainerClientManagement />
+          </>
         )}
     </section>
   );

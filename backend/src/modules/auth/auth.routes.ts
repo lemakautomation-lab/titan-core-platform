@@ -144,6 +144,29 @@ export function createAuthRoutes(
             .getMyTrainerAccess
             .bind(authController),
     );    router.get(
+        "/me/trainer-clients",
+        authMiddleware,
+        authController
+            .listMyTrainerClients
+            .bind(authController),
+    );
+
+    router.post(
+        "/me/trainer-clients/:athleteId",
+        authMiddleware,
+        authController
+            .addMyTrainerClient
+            .bind(authController),
+    );
+
+    router.delete(
+        "/me/trainer-clients/:athleteId",
+        authMiddleware,
+        authController
+            .removeMyTrainerClient
+            .bind(authController),
+    );
+    router.get(
         "/me/trainer-profile",
         authMiddleware,
         authController

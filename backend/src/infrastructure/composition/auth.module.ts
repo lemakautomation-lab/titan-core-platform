@@ -1,7 +1,11 @@
 import { GetMyTrainerAccessUseCase } from "../../application/use-cases/get-my-trainer-access.use-case";
+import { ListMyTrainerClientsUseCase } from "../../application/use-cases/list-my-trainer-clients.use-case";
+import { AddMyTrainerClientUseCase } from "../../application/use-cases/add-my-trainer-client.use-case";
+import { RemoveMyTrainerClientUseCase } from "../../application/use-cases/remove-my-trainer-client.use-case";
 import { GetMyTrainerProfileUseCase } from "../../application/use-cases/get-my-trainer-profile.use-case";
 import { UpdateMyTrainerProfileUseCase } from "../../application/use-cases/update-my-trainer-profile.use-case";
 import { PrismaTrainerProfileRepository } from "../repositories/trainer-profile.repository";
+import { PrismaAthleteRelationshipRepository } from "../repositories/athlete-relationship.repository";
 import { DatabaseService } from "../database/database.service";
 
 import { PrismaUserRepository } from "../repositories/user.repository";
@@ -155,6 +159,9 @@ const trainerRegistrationTransaction =
 const trainerProfileRepository =
     new PrismaTrainerProfileRepository(
         databaseService,
+    );const athleteRelationshipRepository =
+    new PrismaAthleteRelationshipRepository(
+        databaseService,
     );
 export const authModule = {
 
@@ -235,6 +242,34 @@ export const authModule = {
             userRepository,
             userTypeEntitlementRepository,
             paymentRepository,
+        ),    listMyTrainerClientsUseCase:
+        new ListMyTrainerClientsUseCase(
+            athleteRelationshipRepository,
+            athleteRepository,
+            new GetMyTrainerAccessUseCase(
+                userRepository,
+                userTypeEntitlementRepository,
+                paymentRepository,
+            ),
+        ),
+    addMyTrainerClientUseCase:
+        new AddMyTrainerClientUseCase(
+            athleteRelationshipRepository,
+            athleteRepository,
+            new GetMyTrainerAccessUseCase(
+                userRepository,
+                userTypeEntitlementRepository,
+                paymentRepository,
+            ),
+        ),
+    removeMyTrainerClientUseCase:
+        new RemoveMyTrainerClientUseCase(
+            athleteRelationshipRepository,
+            new GetMyTrainerAccessUseCase(
+                userRepository,
+                userTypeEntitlementRepository,
+                paymentRepository,
+            ),
         ),    getMyTrainerProfileUseCase:
         new GetMyTrainerProfileUseCase(
             trainerProfileRepository,
