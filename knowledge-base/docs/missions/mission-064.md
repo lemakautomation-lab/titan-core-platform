@@ -336,7 +336,7 @@ Programme creation, client workout assignment, client monitoring, reports, AI as
 Control 64.4 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
 
 - Implementation commit: `03182e8e8a7135af08f4afcb1df87fddc888743e`
-- Knowledge Base publication: **PENDING**
+- Knowledge Base publication: **VERIFIED**
 - TITAN product frontend production deployment: **NOT CLAIMED**
 
 Mission 064 remains **ACTIVE** because Controls 64.5 through 64.11 remain outstanding.
