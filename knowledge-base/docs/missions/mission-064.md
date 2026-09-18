@@ -156,7 +156,7 @@ Mission 064 remains **ACTIVE** because Controls 64.3 through 64.11 remain outsta
 
 #### Control 64.3 Status
 
-**TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING**
+**COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**
 
 Control 64.3 establishes the tenant-owned TITAN Health Trainer professional-profile boundary.
 
@@ -231,10 +231,21 @@ Client management, programme creation, client workout assignment, client monitor
 
 **Release state**
 
-Control 64.3 is **TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING**.
+Control 64.3 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**.
 
-- Implementation commit: **PENDING**
-- Knowledge Base publication: **PENDING**
+- Implementation commit: `fe57c14536c5499ad3699e53c879fd6009f6326a`
+- Knowledge Base publication: **VERIFIED**
+
+Publication evidence:
+
+- Source commit: `fe57c14536c5499ad3699e53c879fd6009f6326a`
+- Cloudflare deployment ID: `bfcc497b-8519-4025-957c-0209945f02ba`
+- Immutable publication: https://bfcc497b.titan-core-platform.pages.dev/docs/missions/064/
+- Canonical publication: https://titan-core-platform.pages.dev/docs/missions/064/
+- Immutable HTTP verification: **200 / VERIFIED**
+- Canonical HTTP verification: **200 / VERIFIED**
+- Control 64.3 publication content: **VERIFIED**
+- Docusaurus production build: **GREEN**
 - TITAN product frontend production deployment: **NOT CLAIMED**
 
 Mission 064 remains **ACTIVE** because Controls 64.4 through 64.11 remain outstanding.
