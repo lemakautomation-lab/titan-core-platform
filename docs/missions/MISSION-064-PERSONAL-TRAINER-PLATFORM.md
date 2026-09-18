@@ -583,7 +583,7 @@ Control 64.4 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
 
 Implementation commit: `03182e8e8a7135af08f4afcb1df87fddc888743e`
 
-Knowledge Base publication: **PENDING**
+Knowledge Base publication: **VERIFIED**
 
 TITAN product frontend production deployment is **NOT CLAIMED**.
 
@@ -607,6 +607,26 @@ Mission 064 remains **ACTIVE** because Controls 64.5 through 64.11 remain outsta
 - Knowledge Base publication: **VERIFIED**
 - Product frontend production deployment: **NOT CLAIMED**
 - Mission 064 remains: **ACTIVE**
+### Knowledge Base Access Security Evidence
+
+**Status:** PRIVATE / ACCESS-CONTROLLED / VERIFIED
+
+Cloudflare Access was applied to the TITAN engineering Knowledge Base on 18 September 2026.
+
+Security boundary verified:
+
+- `docs.titan-tech.co.za` requires Cloudflare Access authentication;
+- anonymous access to the custom Knowledge Base hostname is blocked;
+- authorized administrator access was successfully verified;
+- production `titan-core-platform.pages.dev` requires Cloudflare Access authentication;
+- wildcard preview/immutable `*.titan-core-platform.pages.dev` deployments are protected by Cloudflare Access;
+- an immutable Mission 064 deployment was independently tested and intercepted by Cloudflare Access;
+- no authentication credentials, email addresses, Access tokens, session tokens or private login URLs are recorded in repository evidence;
+- the public TitanTech corporate website remains outside the Knowledge Base Access boundary.
+
+This security hardening does not alter the implementation or closure state of Controls 64.1 through 64.4.
+
+Mission 064 remains **ACTIVE**. Control 64.5 remains **NOT STARTED**.
 ## Remaining Controls
 
 - 64.2 - Trainer sign-up - COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED
