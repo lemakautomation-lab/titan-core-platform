@@ -6,6 +6,12 @@ import { DeleteWorkoutProgrammeCommand } from "../../application/commands/delete
 import { UpdateWorkoutProgrammeStatusCommand } from "../../application/commands/update-workout-programme-status.command";
 import { AdaptWorkoutProgrammeFromPerformanceCommand } from "../../application/commands/adapt-workout-programme-from-performance.command";
 import { AssignTrainerWorkoutProgrammeCommand } from "../../application/commands/assign-trainer-workout-programme.command";
+import { CreateTrainerSessionScheduleCommand } from "../../application/commands/create-trainer-session-schedule.command";
+import { UpdateTrainerSessionScheduleCommand } from "../../application/commands/update-trainer-session-schedule.command";
+import { ListTrainerSessionSchedulesQuery } from "../../application/queries/trainer/list-trainer-session-schedules.query";
+import { CreateTrainerSessionScheduleUseCase } from "../../application/use-cases/create-trainer-session-schedule.use-case";
+import { ListTrainerSessionSchedulesUseCase } from "../../application/use-cases/list-trainer-session-schedules.use-case";
+import { UpdateTrainerSessionScheduleUseCase } from "../../application/use-cases/update-trainer-session-schedule.use-case";
 
 import { GetWorkoutProgrammeByIdQuery } from "../../application/queries/workout-programme/get-workout-programme-by-id.query";
 import { ListWorkoutProgrammesQuery } from "../../application/queries/workout-programme/list-workout-programmes.query";
@@ -43,6 +49,9 @@ export class WorkoutProgrammeController {
         private readonly getTrainerClientMonitoringUseCase: GetTrainerClientMonitoringUseCase,
         private readonly getTrainerClientReportUseCase: GetTrainerClientReportUseCase,
         private readonly getTrainerClientAiAssistanceUseCase: GetTrainerClientAiAssistanceUseCase,
+        private readonly createTrainerSessionScheduleUseCase: CreateTrainerSessionScheduleUseCase,
+        private readonly listTrainerSessionSchedulesUseCase: ListTrainerSessionSchedulesUseCase,
+        private readonly updateTrainerSessionScheduleUseCase: UpdateTrainerSessionScheduleUseCase,
         private readonly getWorkoutProgrammeByIdUseCase: GetWorkoutProgrammeByIdUseCase,
         private readonly listWorkoutProgrammesUseCase: ListWorkoutProgrammesUseCase,
         private readonly listWorkoutProgrammesByAthleteUseCase: ListWorkoutProgrammesByAthleteUseCase,
@@ -289,6 +298,117 @@ export class WorkoutProgrammeController {
             res.status(status).json({
                 error: result.error,
             });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
+    async createTrainerSession(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const result =
+            await this.createTrainerSessionScheduleUseCase.execute(
+                new CreateTrainerSessionScheduleCommand(
+                    authUser.tenantId,
+                    authUser.userId,
+                    String(req.body.athleteId),
+                    String(req.body.title),
+                    req.body.notes ?? null,
+                    new Date(req.body.startsAt),
+                    new Date(req.body.endsAt),
+                ),
+            );
+
+        if (!result.isSuccess) {
+            const status =
+                result.error === "Athlete not found."
+                    ? 404
+                    : 400;
+
+            res.status(status).json({ error: result.error });
+            return;
+        }
+
+        res.status(201).json(result.value);
+    }
+
+    async listTrainerSessions(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const result =
+            await this.listTrainerSessionSchedulesUseCase.execute(
+                new ListTrainerSessionSchedulesQuery(
+                    authUser.tenantId,
+                    authUser.userId,
+                    new Date(String(req.query.startsFrom)),
+                    new Date(String(req.query.startsBefore)),
+                    typeof req.query.athleteId === "string"
+                        ? req.query.athleteId
+                        : undefined,
+                ),
+            );
+
+        if (!result.isSuccess) {
+            const status =
+                result.error === "Athlete not found."
+                    ? 404
+                    : 400;
+
+            res.status(status).json({ error: result.error });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
+
+    async updateTrainerSession(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const result =
+            await this.updateTrainerSessionScheduleUseCase.execute(
+                new UpdateTrainerSessionScheduleCommand(
+                    String(req.params.id),
+                    authUser.tenantId,
+                    authUser.userId,
+                    String(req.body.title),
+                    req.body.notes ?? null,
+                    new Date(req.body.startsAt),
+                    new Date(req.body.endsAt),
+                ),
+            );
+
+        if (!result.isSuccess) {
+            const status =
+                result.error ===
+                    "Trainer session schedule not found."
+                    ? 404
+                    : 400;
+
+            res.status(status).json({ error: result.error });
             return;
         }
 

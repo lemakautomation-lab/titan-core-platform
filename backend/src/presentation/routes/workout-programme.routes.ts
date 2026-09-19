@@ -13,6 +13,23 @@ export function createWorkoutProgrammeRoutes(
 
     router.use(authMiddleware);
     router.post(
+        "/trainer/sessions",
+        requirePermission("workout-programmes.create"),
+        controller.createTrainerSession.bind(controller),
+    );
+
+    router.get(
+        "/trainer/sessions",
+        requirePermission("workout-programmes.read"),
+        controller.listTrainerSessions.bind(controller),
+    );
+
+    router.patch(
+        "/trainer/sessions/:id",
+        requirePermission("workout-programmes.update"),
+        controller.updateTrainerSession.bind(controller),
+    );
+    router.post(
         "/trainer",
         requirePermission("workout-programmes.create"),
         controller.createTrainer.bind(controller),

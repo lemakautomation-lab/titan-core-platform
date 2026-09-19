@@ -173,6 +173,9 @@ const workoutProgrammeController =
         workoutProgrammeModule.getTrainerClientMonitoringUseCase,
         workoutProgrammeModule.getTrainerClientReportUseCase,
         workoutProgrammeModule.getTrainerClientAiAssistanceUseCase,
+        workoutProgrammeModule.createTrainerSessionScheduleUseCase,
+        workoutProgrammeModule.listTrainerSessionSchedulesUseCase,
+        workoutProgrammeModule.updateTrainerSessionScheduleUseCase,
         workoutProgrammeModule.getWorkoutProgrammeByIdUseCase,
         workoutProgrammeModule.listWorkoutProgrammesUseCase,
         workoutProgrammeModule.listWorkoutProgrammesByAthleteUseCase,
@@ -331,4 +334,3 @@ router.use(
 );
 
 export default router;
-

@@ -41,6 +41,7 @@ model Tenant {
   passwordResetTokens       PasswordResetToken[]
   accountAssistanceRequests AccountAssistanceRequest[]
   trainerProfiles           TrainerProfile[]
+  trainerSessionSchedules   TrainerSessionSchedule[]
 }
 
 model Sport {
@@ -81,7 +82,7 @@ model Organisation {
 }
 
 model User {
-  id                       String                @id @default(uuid())
+  id                       String                   @id @default(uuid())
   tenantId                 String
   organisationId           String?
   email                    String
@@ -93,19 +94,20 @@ model User {
   passwordHash             String
   firstName                String?
   lastName                 String?
-  status                   UserStatus            @default(ACTIVE)
-  createdAt                DateTime              @default(now())
-  updatedAt                DateTime              @updatedAt
+  status                   UserStatus               @default(ACTIVE)
+  createdAt                DateTime                 @default(now())
+  updatedAt                DateTime                 @updatedAt
   auditLogs                AuditLog[]
   sessions                 Session[]
-  organisation             Organisation?         @relation(fields: [organisationId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  tenant                   Tenant                @relation(fields: [tenantId], references: [id])
+  organisation             Organisation?            @relation(fields: [organisationId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  tenant                   Tenant                   @relation(fields: [tenantId], references: [id])
   userRoles                UserRole[]
   athletes                 Athlete[]
-  payments                 Payment[]             @relation("PaymentUserTenant")
-  userTypeEntitlements     UserTypeEntitlement[] @relation("EntitlementUserTenant")
+  payments                 Payment[]                @relation("PaymentUserTenant")
+  userTypeEntitlements     UserTypeEntitlement[]    @relation("EntitlementUserTenant")
   passwordResetTokens      PasswordResetToken[]
   trainerProfile           TrainerProfile?
+  trainerSessionSchedules  TrainerSessionSchedule[] @relation("TrainerSessionScheduleTrainerTenant")
 
   @@unique([tenantId, email])
   @@unique([id, tenantId], map: "User_id_tenantId_key")
@@ -167,6 +169,7 @@ model Athlete {
   trainingStresses        TrainingStress[]
   goals                   AthleteGoal[]             @relation("AthleteGoalAthleteTenant")
   bodyMeasurements        AthleteBodyMeasurement[]  @relation("AthleteBodyMeasurementAthleteTenant")
+  trainerSessionSchedules TrainerSessionSchedule[]  @relation("TrainerSessionScheduleAthleteTenant")
 
   @@unique([id, tenantId], map: "Athlete_id_tenantId_key")
   @@index([tenantId])
@@ -507,6 +510,34 @@ enum SessionStatus {
 enum AuditLogStatus {
   SUCCESS
   FAILURE
+}
+
+model TrainerSessionSchedule {
+  id            String                       @id @default(uuid())
+  tenantId      String
+  trainerUserId String
+  athleteId     String
+  title         String
+  notes         String?
+  startsAt      DateTime
+  endsAt        DateTime
+  status        TrainerSessionScheduleStatus @default(SCHEDULED)
+  createdAt     DateTime                     @default(now())
+  updatedAt     DateTime                     @updatedAt
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  trainer User    @relation("TrainerSessionScheduleTrainerTenant", fields: [trainerUserId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  athlete Athlete @relation("TrainerSessionScheduleAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([id, tenantId], map: "TrainerSessionSchedule_id_tenantId_key")
+  @@index([tenantId, trainerUserId, startsAt])
+  @@index([tenantId, athleteId, startsAt])
+}
+
+enum TrainerSessionScheduleStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
 }
 
 model WorkoutProgramme {

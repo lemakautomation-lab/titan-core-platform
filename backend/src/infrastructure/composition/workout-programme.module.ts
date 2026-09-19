@@ -35,6 +35,10 @@ import { PrismaWorkoutProgrammeGenerationTransaction } from "../transactions/wor
 import { GenerateWorkoutProgrammeUseCase } from "../../application/use-cases/generate-workout-programme.use-case";
 import { GetGeneratedWorkoutProgrammeUseCase } from "../../application/use-cases/get-generated-workout-programme.use-case";
 import { PrismaGeneratedWorkoutProgrammeReadRepository } from "../repositories/generated-workout-programme-read.repository";
+import { PrismaTrainerSessionScheduleRepository } from "../repositories/trainer-session-schedule.repository";
+import { CreateTrainerSessionScheduleUseCase } from "../../application/use-cases/create-trainer-session-schedule.use-case";
+import { ListTrainerSessionSchedulesUseCase } from "../../application/use-cases/list-trainer-session-schedules.use-case";
+import { UpdateTrainerSessionScheduleUseCase } from "../../application/use-cases/update-trainer-session-schedule.use-case";
 
 const databaseService =
     new DatabaseService();
@@ -102,6 +106,10 @@ const generationTransaction =
 const generatedWorkoutProgrammeReadRepository =
     new PrismaGeneratedWorkoutProgrammeReadRepository(databaseService);
 
+const trainerSessionScheduleRepository =
+    new PrismaTrainerSessionScheduleRepository(
+        databaseService,
+    );
 const createWorkoutProgrammeUseCase =
     new CreateWorkoutProgrammeUseCase(
         workoutProgrammeRepository,
@@ -113,6 +121,40 @@ export const workoutProgrammeModule = {
 
     createWorkoutProgrammeUseCase,
 
+    createTrainerSessionScheduleUseCase:
+        new CreateTrainerSessionScheduleUseCase(
+            trainerSessionScheduleRepository,
+            athleteRepository,
+            athleteRelationshipRepository,
+            new GetMyTrainerAccessUseCase(
+                userRepository,
+                userTypeEntitlementRepository,
+                paymentRepository,
+            ),
+        ),
+
+    listTrainerSessionSchedulesUseCase:
+        new ListTrainerSessionSchedulesUseCase(
+            trainerSessionScheduleRepository,
+            athleteRepository,
+            athleteRelationshipRepository,
+            new GetMyTrainerAccessUseCase(
+                userRepository,
+                userTypeEntitlementRepository,
+                paymentRepository,
+            ),
+        ),
+
+    updateTrainerSessionScheduleUseCase:
+        new UpdateTrainerSessionScheduleUseCase(
+            trainerSessionScheduleRepository,
+            athleteRelationshipRepository,
+            new GetMyTrainerAccessUseCase(
+                userRepository,
+                userTypeEntitlementRepository,
+                paymentRepository,
+            ),
+        ),
     createTrainerWorkoutProgrammeUseCase:
         new CreateTrainerWorkoutProgrammeUseCase(
             athleteRelationshipRepository,
