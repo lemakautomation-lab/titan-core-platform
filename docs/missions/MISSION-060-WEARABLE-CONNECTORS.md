@@ -89,6 +89,97 @@ Detailed endpoints, schemas, credentials, scopes, delivery semantics, rate limit
 - https://developer.garmin.com/gc-developer-program/health-api/
 - https://developer.garmin.com/gc-developer-program/program-faq/
 
+## Control 060.0A — Provider Expansion Governance
+
+**Status:** IMPLEMENTED / PENDING VERIFICATION
+
+### Decision
+
+Mission 060 is expanded from a single-provider delivery sequence to a
+provider-progressive wearable integration programme while preserving the
+provider-independent Mission 059 domain boundaries.
+
+The authorized provider targets are:
+
+1. Garmin Health — cloud-to-cloud provider integration.
+2. Apple HealthKit — Apple-platform health-data integration.
+3. Samsung Health — Android/Samsung Health data integration.
+
+Garmin remains an authorized provider and its existing Control 060.1 is not
+reclassified as implemented. Garmin-specific implementation remains blocked
+where authoritative programme documentation, approval, credentials, schemas,
+or provider-controlled access are required.
+
+Apple HealthKit and Samsung Health may progress only through separately
+authorized controls supported by authoritative provider documentation.
+
+### Architectural Boundary
+
+All provider implementations must adapt to the existing Mission 059 contracts:
+
+- `WearableDevicePort`
+- `DeviceIngestionPort`
+- `DeviceNormalizationPort`
+- `DeviceIntegrationFailurePort`
+- `DeviceAthleteAssociationService`
+- `Device`
+
+Provider-specific concepts must not leak into the provider-independent domain
+layer.
+
+### Security Boundary
+
+- Health and wearable payloads are untrusted external input.
+- Explicit user authorization and consent requirements must be preserved.
+- Only the minimum required health-data permissions may be requested.
+- Provider identity must never substitute for TITAN tenant and athlete
+  authorization.
+- Secrets, tokens, signing material, credentials, and private keys must never
+  be committed to source control.
+- Production credentials must use TITAN environment/configuration boundaries.
+- Provider failures must use the Mission 059 integration-failure boundary.
+- Tests must not depend on live provider credentials or external network access.
+- Tenant isolation, RBAC, authentication, session security, and audit controls
+  must not be weakened.
+
+### Delivery Boundary
+
+This governance control does not authorize:
+
+- provider payload schemas not supported by authoritative documentation;
+- fabricated endpoints, scopes, callbacks, or error contracts;
+- database persistence;
+- Prisma schema changes or migrations;
+- public API exposure;
+- frontend implementation;
+- scheduled synchronization;
+- retry orchestration;
+- production credential provisioning.
+
+Those changes require a separately authorized Mission 060 control.
+
+### External Dependencies
+
+Provider-controlled approval, registration, licensing, production credentials,
+application verification, and commercial access are external release
+dependencies where required by the provider.
+
+External dependencies must be recorded explicitly and must not be represented
+as verified TITAN functionality until evidence exists.
+
+### Acceptance Criteria
+
+- Garmin remains an authorized Mission 060 provider.
+- Apple HealthKit is authorized as an additional provider target.
+- Samsung Health is authorized as an additional provider target.
+- Mission 059 contracts remain unchanged.
+- Existing Garmin Control 060.1 blocker remains truthful.
+- No runtime behaviour is introduced by this control.
+- No database or migration change is introduced.
+- No frontend behaviour is introduced.
+- No provider credentials or secrets are introduced.
+- Existing unrelated working-tree changes remain untouched.
+
 ## Control 060.1 — Garmin Health Connector Contract
 
 **Status:** BLOCKED / NOT STARTED
