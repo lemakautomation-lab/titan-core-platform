@@ -736,3 +736,104 @@ Mission 064 remains **ACTIVE** because Controls 64.8 through 64.11 remain outsta
 Control 64.7 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**.
 
 Mission 064 remains **ACTIVE** because Controls 64.8 through 64.11 remain outstanding.
+
+## Control 64.8 - Reports
+
+### Status
+
+**COMPLETE / VERIFIED / COMMITTED / PUSHED**
+
+### Objective
+
+Control 64.8 provides an authorized Trainer-facing factual reporting boundary for an active Trainer client using existing TITAN Health monitoring data.
+
+Authorization boundary:
+
+Authenticated Trainer -> RBAC Permission -> Active Paid Trainer Access -> Existing Tenant Athlete -> Active Trainer/Client Relationship -> Existing Monitoring Boundary -> Factual Report
+
+### API Contract
+
+- Method: GET
+- Route: `/api/v1/workout-programmes/trainer/clients/:athleteId/report`
+- Permission: `workout-programmes.read`
+- Default limit: `25`
+- Maximum limit: `100`
+- Success: `200 OK`
+
+### Report Scope
+
+The Trainer report provides:
+
+- Athlete identifier and report generation timestamp;
+- factual summary counts;
+- client Performance Metrics;
+- latest effective Performance Measurement per metric;
+- previous effective Performance Measurement per metric;
+- bounded measurement count per metric;
+- recent Recovery Tracking observations;
+- recent Training Stress observations;
+- client Workout Programmes.
+
+The report does not infer whether metric changes are good or bad because Performance Metric does not currently define an authoritative improvement direction.
+
+### Security Boundary
+
+Reporting requires:
+
+- authenticated user context;
+- `workout-programmes.read` permission;
+- active paid Trainer access;
+- target Athlete in the authenticated tenant;
+- active `TRAINER` AthleteRelationship between Trainer and Athlete;
+- tenant-scoped repository reads;
+- bounded report limits.
+
+The reporting boundary reuses the verified Control 64.7 monitoring authorization and data-access boundary.
+
+No report persistence table, new health-data entity, Prisma schema change, or database migration was introduced.
+
+### Deterministic Reporting Boundary
+
+Control 64.8 reports factual existing data only.
+
+It does **not** introduce:
+
+- inferred higher-is-better or lower-is-better semantics;
+- percentage-improvement claims;
+- health or readiness scores;
+- AI-generated interpretation;
+- AI-generated recommendations.
+
+AI assistance remains Control 64.9 scope.
+
+### Verification Evidence
+
+- Focused unit/API regression: **2 files / 8 tests passed**
+- Mission 064 Trainer regression: **6 files / 31 tests passed**
+- Full backend regression: **154 files / 1128 tests passed**
+- TypeScript build: **GREEN**
+- Control 64.8 scoped ESLint: **GREEN**
+- `git diff --check`: **GREEN**
+- Implementation scope: **9 authorized files**
+- Unauthorized committed files: **NONE**
+- Implementation commit: `377b53e62826220de5231e8575401d0785258a10`
+- Implementation push: **VERIFIED**
+- HEAD/origin synchronization: **0 / 0**
+
+### Explicit Scope Boundary
+
+Control 64.8 covers **Reports only**.
+
+Controls 64.9 through 64.11 remain outside Control 64.8.
+
+TITAN product frontend production deployment is **NOT CLAIMED**.
+
+### Release State
+
+Control 64.8 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
+
+Implementation commit: `377b53e62826220de5231e8575401d0785258a10`
+
+Knowledge Base publication: **PENDING**
+
+Mission 064 remains **ACTIVE** because Controls 64.9 through 64.11 remain outstanding.
