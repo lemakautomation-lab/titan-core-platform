@@ -15,6 +15,7 @@ import { CreateWorkoutProgrammeUseCase } from "../../application/use-cases/creat
 import { CreateTrainerWorkoutProgrammeUseCase } from "../../application/use-cases/create-trainer-workout-programme.use-case";
 import { AssignTrainerWorkoutProgrammeUseCase } from "../../application/use-cases/assign-trainer-workout-programme.use-case";
 import { GetTrainerClientMonitoringUseCase } from "../../application/use-cases/get-trainer-client-monitoring.use-case";
+import { GetTrainerClientReportUseCase } from "../../application/use-cases/get-trainer-client-report.use-case";
 import { GetWorkoutProgrammeByIdUseCase } from "../../application/use-cases/get-workout-programme-by-id.use-case";
 import { ListWorkoutProgrammesUseCase } from "../../application/use-cases/list-workout-programmes.use-case";
 import { ListWorkoutProgrammesByAthleteUseCase } from "../../application/use-cases/list-workout-programmes-by-athlete.use-case";
@@ -39,6 +40,7 @@ export class WorkoutProgrammeController {
         private readonly createTrainerWorkoutProgrammeUseCase: CreateTrainerWorkoutProgrammeUseCase,
         private readonly assignTrainerWorkoutProgrammeUseCase: AssignTrainerWorkoutProgrammeUseCase,
         private readonly getTrainerClientMonitoringUseCase: GetTrainerClientMonitoringUseCase,
+        private readonly getTrainerClientReportUseCase: GetTrainerClientReportUseCase,
         private readonly getWorkoutProgrammeByIdUseCase: GetWorkoutProgrammeByIdUseCase,
         private readonly listWorkoutProgrammesUseCase: ListWorkoutProgrammesUseCase,
         private readonly listWorkoutProgrammesByAthleteUseCase: ListWorkoutProgrammesByAthleteUseCase,
@@ -194,6 +196,45 @@ export class WorkoutProgrammeController {
 
         const result =
             await this.getTrainerClientMonitoringUseCase.execute({
+                tenantId: authUser.tenantId,
+                userId: authUser.userId,
+                athleteId: String(req.params.athleteId),
+                limit,
+            });
+
+        if (!result.isSuccess) {
+            const status =
+                result.error === "Athlete not found."
+                    ? 404
+                    : 400;
+
+            res.status(status).json({
+                error: result.error,
+            });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
+    async getTrainerClientReport(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const rawLimit = req.query.limit;
+        const limit =
+            rawLimit === undefined
+                ? 25
+                : Number(rawLimit);
+
+        const result =
+            await this.getTrainerClientReportUseCase.execute({
                 tenantId: authUser.tenantId,
                 userId: authUser.userId,
                 athleteId: String(req.params.athleteId),
