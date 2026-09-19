@@ -17,6 +17,11 @@ export function createWorkoutProgrammeRoutes(
         requirePermission("workout-programmes.create"),
         controller.createTrainer.bind(controller),
     );
+    router.get(
+        "/trainer/clients/:athleteId/monitoring",
+        requirePermission("workout-programmes.read"),
+        controller.getTrainerClientMonitoring.bind(controller),
+    );
     router.patch(
         "/trainer/:id/assignment",
         requirePermission("workout-programmes.update"),
