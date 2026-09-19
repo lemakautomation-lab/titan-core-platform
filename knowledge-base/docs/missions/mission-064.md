@@ -944,6 +944,22 @@ Control 64.9 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
 
 Implementation commit: `b86e79fc3b5a075f26152a406d6929514ae23a4f`
 
-Knowledge Base publication: **PENDING**
+Knowledge Base publication: **VERIFIED**
+
+### Publication Verification
+
+- Knowledge Base publication: **VERIFIED**
+- Implementation commit: `b86e79fc3b5a075f26152a406d6929514ae23a4f`
+- Publication source commit: `65cf5cef42ffc3503976baf22da7f4c241b96bf0`
+- Cloudflare Pages deployment ID: `a88a1303`
+- Immutable deployment: `https://a88a1303.titan-core-platform.pages.dev/docs/missions/064/`
+- Canonical deployment: `https://titan-core-platform.pages.dev/docs/missions/064/`
+- Immutable Cloudflare Access interception: **302 / VERIFIED**
+- Canonical Cloudflare Access interception: **302 / VERIFIED**
+- Docusaurus production build: **GREEN**
+- Full backend regression: **156 files / 1135 tests passed**
+- TITAN product frontend production deployment: **NOT CLAIMED**
+
+Control 64.9 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**.
 
 Mission 064 remains **ACTIVE** because Controls 64.10 and 64.11 remain outstanding.
