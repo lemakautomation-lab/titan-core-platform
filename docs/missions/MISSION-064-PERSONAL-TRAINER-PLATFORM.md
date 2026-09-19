@@ -735,7 +735,7 @@ Control 64.5 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
 
 Implementation commit: `603954f0a2ceeaffe6668879068b142713a5ed03`
 
-Knowledge Base publication: **PENDING**
+Knowledge Base publication: **VERIFIED**
 
 TITAN product frontend production deployment is **NOT CLAIMED**.
 
@@ -951,6 +951,22 @@ Control 64.7 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
 
 Implementation commit: `2d44fb9982a70b542bf17adf3f4bc0b2ab415919`
 
-Knowledge Base publication: **PENDING**
+Knowledge Base publication: **VERIFIED**
+
+Mission 064 remains **ACTIVE** because Controls 64.8 through 64.11 remain outstanding.
+
+### Publication Verification
+
+- Knowledge Base publication: **VERIFIED**
+- Implementation commit: `2d44fb9982a70b542bf17adf3f4bc0b2ab415919`
+- Publication source commit: `ce7c6c5d4992237335e78ebce3cfa84c7c85f5c7`
+- Cloudflare Pages deployment ID: `55c4e929`
+- Immutable Cloudflare Access interception: **302 / VERIFIED**
+- Canonical Cloudflare Access interception: **302 / VERIFIED**
+- Docusaurus production build: **GREEN**
+- Full backend regression: **152 files / 1120 tests passed**
+- TITAN product frontend production deployment: **NOT CLAIMED**
+
+Control 64.7 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**.
 
 Mission 064 remains **ACTIVE** because Controls 64.8 through 64.11 remain outstanding.
