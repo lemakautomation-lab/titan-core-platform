@@ -855,3 +855,95 @@ Mission 064 remains **ACTIVE** because Controls 64.9 through 64.11 remain outsta
 Control 64.8 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**.
 
 Mission 064 remains **ACTIVE** because Controls 64.9 through 64.11 remain outstanding.
+
+---
+
+## Control 64.9 - AI Assistance
+
+### Status
+
+**COMPLETE / VERIFIED / COMMITTED / PUSHED**
+
+### Objective
+
+Control 64.9 establishes a provider-independent Trainer AI Assistance boundary for an authorized active Trainer client.
+
+AI assistance consumes the existing secured Control 64.8 factual Trainer Client Report. It does not independently bypass or duplicate TITAN authorization, tenant isolation, Trainer entitlement, or Trainer/client relationship controls.
+
+### Architecture
+
+Authorization and data flow:
+
+Authenticated Trainer -> RBAC Permission -> Active Paid Trainer Access -> Existing Tenant Athlete -> Active Trainer/Client Relationship -> Control 64.8 Factual Client Report -> AI Assistance Port
+
+The AI provider is isolated behind the `TrainerAiAssistancePort` application contract.
+
+No external AI provider is claimed as configured by this control. The current infrastructure adapter fails closed when AI assistance is unavailable.
+
+### API Contract
+
+- Method: GET
+- Route: `/api/v1/workout-programmes/trainer/clients/:athleteId/ai-assistance`
+- Permission: `workout-programmes.read`
+- Default report limit: `25`
+- Maximum report limit: `100`
+- Unauthenticated access: rejected
+- Missing RBAC permission: rejected
+- Missing active Trainer/client relationship: rejected
+- Cross-tenant Athlete access: protected by the existing secured report boundary
+- Unavailable AI provider: controlled failure
+
+### Security and Safety Boundary
+
+Control 64.9:
+
+- reuses the existing Control 64.8 authorization and tenant boundary;
+- passes only the secured factual Trainer Client Report to the AI provider port;
+- does not introduce direct AI-provider access to TITAN repositories;
+- does not introduce new database persistence;
+- does not introduce Prisma schema changes or migrations;
+- does not autonomously modify Workout Programmes;
+- does not prescribe medical or clinical treatment;
+- does not fabricate Performance Metric improvement direction;
+- does not claim improvement or decline where authoritative semantics do not exist;
+- fails closed when the AI provider is unavailable.
+
+### Provider Independence
+
+No OpenAI, Anthropic, Gemini, or other external AI provider is hard-coded into the application boundary.
+
+The provider-independent port allows a future approved AI implementation to be introduced behind the existing TITAN security boundary without changing the Trainer-facing application contract.
+
+The current `UnavailableTrainerAiAssistance` adapter intentionally returns a controlled unavailable state rather than presenting deterministic logic as external AI output.
+
+### Verification Evidence
+
+- Focused unit/API regression: **2 files / 7 tests passed**
+- Mission 064 Trainer regression: **6 files / 28 tests passed**
+- Full backend regression: **156 files / 1135 tests passed**
+- TypeScript build: **GREEN**
+- Control 64.9 scoped ESLint: **GREEN**
+- `git diff --check`: **GREEN**
+- Implementation scope: **11 authorized files**
+- Unauthorized committed files: **NONE**
+- Implementation commit: `b86e79fc3b5a075f26152a406d6929514ae23a4f`
+- Implementation push: **VERIFIED**
+- HEAD/origin synchronization: **0 / 0**
+
+### Explicit Scope Boundary
+
+Control 64.9 covers **AI Assistance only**.
+
+Controls 64.10 and 64.11 remain outside Control 64.9.
+
+TITAN product frontend production deployment is **NOT CLAIMED**.
+
+### Release State
+
+Control 64.9 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
+
+Implementation commit: `b86e79fc3b5a075f26152a406d6929514ae23a4f`
+
+Knowledge Base publication: **PENDING**
+
+Mission 064 remains **ACTIVE** because Controls 64.10 and 64.11 remain outstanding.
