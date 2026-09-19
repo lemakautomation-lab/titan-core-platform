@@ -39,6 +39,7 @@ import { PrismaTrainerSessionScheduleRepository } from "../repositories/trainer-
 import { CreateTrainerSessionScheduleUseCase } from "../../application/use-cases/create-trainer-session-schedule.use-case";
 import { ListTrainerSessionSchedulesUseCase } from "../../application/use-cases/list-trainer-session-schedules.use-case";
 import { UpdateTrainerSessionScheduleUseCase } from "../../application/use-cases/update-trainer-session-schedule.use-case";
+import { UpdateTrainerSessionWorkflowUseCase } from "../../application/use-cases/update-trainer-session-workflow.use-case";
 
 const databaseService =
     new DatabaseService();
@@ -147,6 +148,16 @@ export const workoutProgrammeModule = {
 
     updateTrainerSessionScheduleUseCase:
         new UpdateTrainerSessionScheduleUseCase(
+            trainerSessionScheduleRepository,
+            athleteRelationshipRepository,
+            new GetMyTrainerAccessUseCase(
+                userRepository,
+                userTypeEntitlementRepository,
+                paymentRepository,
+            ),
+        ),
+    updateTrainerSessionWorkflowUseCase:
+        new UpdateTrainerSessionWorkflowUseCase(
             trainerSessionScheduleRepository,
             athleteRelationshipRepository,
             new GetMyTrainerAccessUseCase(

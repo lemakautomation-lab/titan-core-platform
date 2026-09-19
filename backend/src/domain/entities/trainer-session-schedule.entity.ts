@@ -61,6 +61,10 @@ export class TrainerSessionSchedule {
         now: Date = new Date(),
     ): void {
 
+        if (this.status !== TrainerSessionScheduleStatus.SCHEDULED) {
+            throw new Error("Only a scheduled session can be updated.");
+        }
+
         const cleanedTitle = title.trim();
 
         if (
@@ -102,4 +106,22 @@ export class TrainerSessionSchedule {
         this.updatedAt = new Date(now);
     }
 
+
+    complete(now: Date = new Date()): void {
+        if (this.status !== TrainerSessionScheduleStatus.SCHEDULED) {
+            throw new Error("Only a scheduled session can be completed.");
+        }
+
+        this.status = TrainerSessionScheduleStatus.COMPLETED;
+        this.updatedAt = new Date(now);
+    }
+
+    cancel(now: Date = new Date()): void {
+        if (this.status !== TrainerSessionScheduleStatus.SCHEDULED) {
+            throw new Error("Only a scheduled session can be cancelled.");
+        }
+
+        this.status = TrainerSessionScheduleStatus.CANCELLED;
+        this.updatedAt = new Date(now);
+    }
 }

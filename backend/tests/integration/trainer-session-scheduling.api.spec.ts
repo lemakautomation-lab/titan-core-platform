@@ -381,6 +381,54 @@ describe(
                         .toBe(
                             "Updated Strength Session",
                         );
+
+                    const completeResponse =
+                        await request(app)
+                            .patch(
+                                `/api/v1/workout-programmes/trainer/sessions/${scheduleId}/status`,
+                            )
+                            .set(
+                                "Authorization",
+                                `Bearer ${token}`,
+                            )
+                            .send({
+                                status: "COMPLETED",
+                            });
+
+                    expect(completeResponse.status)
+                        .toBe(200);
+                    expect(completeResponse.body.status)
+                        .toBe("COMPLETED");
+
+                    const completed =
+                        await testPrisma
+                            .trainerSessionSchedule
+                            .findFirst({
+                                where: {
+                                    id: scheduleId,
+                                    tenantId:
+                                        user.tenantId,
+                                },
+                            });
+
+                    expect(completed?.status)
+                        .toBe("COMPLETED");
+
+                    const cancelCompletedResponse =
+                        await request(app)
+                            .patch(
+                                `/api/v1/workout-programmes/trainer/sessions/${scheduleId}/status`,
+                            )
+                            .set(
+                                "Authorization",
+                                `Bearer ${token}`,
+                            )
+                            .send({
+                                status: "CANCELLED",
+                            });
+
+                    expect(cancelCompletedResponse.status)
+                        .toBe(400);
                 }
                 finally {
                     await testPrisma

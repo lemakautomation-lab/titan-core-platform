@@ -29,6 +29,11 @@ export function createWorkoutProgrammeRoutes(
         requirePermission("workout-programmes.update"),
         controller.updateTrainerSession.bind(controller),
     );
+    router.patch(
+        "/trainer/sessions/:id/status",
+        requirePermission("workout-programmes.update"),
+        controller.updateTrainerSessionWorkflow.bind(controller),
+    );
     router.post(
         "/trainer",
         requirePermission("workout-programmes.create"),

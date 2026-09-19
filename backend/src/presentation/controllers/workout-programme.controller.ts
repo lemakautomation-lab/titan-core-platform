@@ -8,10 +8,13 @@ import { AdaptWorkoutProgrammeFromPerformanceCommand } from "../../application/c
 import { AssignTrainerWorkoutProgrammeCommand } from "../../application/commands/assign-trainer-workout-programme.command";
 import { CreateTrainerSessionScheduleCommand } from "../../application/commands/create-trainer-session-schedule.command";
 import { UpdateTrainerSessionScheduleCommand } from "../../application/commands/update-trainer-session-schedule.command";
+import { UpdateTrainerSessionWorkflowCommand } from "../../application/commands/update-trainer-session-workflow.command";
+import { TrainerSessionScheduleStatus } from "../../domain/enums/trainer-session-schedule-status.enum";
 import { ListTrainerSessionSchedulesQuery } from "../../application/queries/trainer/list-trainer-session-schedules.query";
 import { CreateTrainerSessionScheduleUseCase } from "../../application/use-cases/create-trainer-session-schedule.use-case";
 import { ListTrainerSessionSchedulesUseCase } from "../../application/use-cases/list-trainer-session-schedules.use-case";
 import { UpdateTrainerSessionScheduleUseCase } from "../../application/use-cases/update-trainer-session-schedule.use-case";
+import { UpdateTrainerSessionWorkflowUseCase } from "../../application/use-cases/update-trainer-session-workflow.use-case";
 
 import { GetWorkoutProgrammeByIdQuery } from "../../application/queries/workout-programme/get-workout-programme-by-id.query";
 import { ListWorkoutProgrammesQuery } from "../../application/queries/workout-programme/list-workout-programmes.query";
@@ -52,6 +55,7 @@ export class WorkoutProgrammeController {
         private readonly createTrainerSessionScheduleUseCase: CreateTrainerSessionScheduleUseCase,
         private readonly listTrainerSessionSchedulesUseCase: ListTrainerSessionSchedulesUseCase,
         private readonly updateTrainerSessionScheduleUseCase: UpdateTrainerSessionScheduleUseCase,
+        private readonly updateTrainerSessionWorkflowUseCase: UpdateTrainerSessionWorkflowUseCase,
         private readonly getWorkoutProgrammeByIdUseCase: GetWorkoutProgrammeByIdUseCase,
         private readonly listWorkoutProgrammesUseCase: ListWorkoutProgrammesUseCase,
         private readonly listWorkoutProgrammesByAthleteUseCase: ListWorkoutProgrammesByAthleteUseCase,
@@ -398,6 +402,40 @@ export class WorkoutProgrammeController {
                     req.body.notes ?? null,
                     new Date(req.body.startsAt),
                     new Date(req.body.endsAt),
+                ),
+            );
+
+        if (!result.isSuccess) {
+            const status =
+                result.error ===
+                    "Trainer session schedule not found."
+                    ? 404
+                    : 400;
+
+            res.status(status).json({ error: result.error });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
+    async updateTrainerSessionWorkflow(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const result =
+            await this.updateTrainerSessionWorkflowUseCase.execute(
+                new UpdateTrainerSessionWorkflowCommand(
+                    String(req.params.id),
+                    authUser.tenantId,
+                    authUser.userId,
+                    req.body.status as TrainerSessionScheduleStatus,
                 ),
             );
 

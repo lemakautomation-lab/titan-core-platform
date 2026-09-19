@@ -176,6 +176,7 @@ const workoutProgrammeController =
         workoutProgrammeModule.createTrainerSessionScheduleUseCase,
         workoutProgrammeModule.listTrainerSessionSchedulesUseCase,
         workoutProgrammeModule.updateTrainerSessionScheduleUseCase,
+        workoutProgrammeModule.updateTrainerSessionWorkflowUseCase,
         workoutProgrammeModule.getWorkoutProgrammeByIdUseCase,
         workoutProgrammeModule.listWorkoutProgrammesUseCase,
         workoutProgrammeModule.listWorkoutProgrammesByAthleteUseCase,
