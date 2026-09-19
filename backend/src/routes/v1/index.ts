@@ -172,6 +172,7 @@ const workoutProgrammeController =
         workoutProgrammeModule.assignTrainerWorkoutProgrammeUseCase,
         workoutProgrammeModule.getTrainerClientMonitoringUseCase,
         workoutProgrammeModule.getTrainerClientReportUseCase,
+        workoutProgrammeModule.getTrainerClientAiAssistanceUseCase,
         workoutProgrammeModule.getWorkoutProgrammeByIdUseCase,
         workoutProgrammeModule.listWorkoutProgrammesUseCase,
         workoutProgrammeModule.listWorkoutProgrammesByAthleteUseCase,

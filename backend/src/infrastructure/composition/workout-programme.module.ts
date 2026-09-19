@@ -18,6 +18,8 @@ import { AssignTrainerWorkoutProgrammeUseCase } from "../../application/use-case
 import { GetMyTrainerAccessUseCase } from "../../application/use-cases/get-my-trainer-access.use-case";
 import { GetTrainerClientMonitoringUseCase } from "../../application/use-cases/get-trainer-client-monitoring.use-case";
 import { GetTrainerClientReportUseCase } from "../../application/use-cases/get-trainer-client-report.use-case";
+import { GetTrainerClientAiAssistanceUseCase } from "../../application/use-cases/get-trainer-client-ai-assistance.use-case";
+import { UnavailableTrainerAiAssistance } from "../ai/unavailable-trainer-ai-assistance";
 import { GetWorkoutProgrammeByIdUseCase } from "../../application/use-cases/get-workout-programme-by-id.use-case";
 import { ListWorkoutProgrammesUseCase } from "../../application/use-cases/list-workout-programmes.use-case";
 import { ListWorkoutProgrammesByAthleteUseCase } from "../../application/use-cases/list-workout-programmes-by-athlete.use-case";
@@ -149,6 +151,26 @@ export const workoutProgrammeModule = {
             ),
         ),
 
+    getTrainerClientAiAssistanceUseCase:
+        new GetTrainerClientAiAssistanceUseCase(
+            new GetTrainerClientReportUseCase(
+                new GetTrainerClientMonitoringUseCase(
+                    athleteRepository,
+                    athleteRelationshipRepository,
+                    performanceMetricRepository,
+                    performanceMeasurementRepository,
+                    recoveryTrackingRepository,
+                    trainingStressRepository,
+                    workoutProgrammeRepository,
+                    new GetMyTrainerAccessUseCase(
+                        userRepository,
+                        userTypeEntitlementRepository,
+                        paymentRepository,
+                    ),
+                ),
+            ),
+            new UnavailableTrainerAiAssistance(),
+        ),
     getTrainerClientReportUseCase:
         new GetTrainerClientReportUseCase(
             new GetTrainerClientMonitoringUseCase(

@@ -18,6 +18,11 @@ export function createWorkoutProgrammeRoutes(
         controller.createTrainer.bind(controller),
     );
     router.get(
+        "/trainer/clients/:athleteId/ai-assistance",
+        requirePermission("workout-programmes.read"),
+        controller.getTrainerClientAiAssistance.bind(controller),
+    );
+    router.get(
         "/trainer/clients/:athleteId/report",
         requirePermission("workout-programmes.read"),
         controller.getTrainerClientReport.bind(controller),
