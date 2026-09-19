@@ -464,6 +464,175 @@ describe("Trainer client management API", () => {
     );
 
     it(
+        "returns the bounded profile for an active Trainer client",
+        async () => {
+            const {
+                user,
+                password,
+            } = await createTestUser();
+
+            const evidence =
+                await createTrainerCommercialEvidence(
+                    user,
+                );
+
+            const athlete =
+                await createAthlete(
+                    user.tenantId,
+                    "Profile",
+                    "Client",
+                );
+
+            try {
+                const token =
+                    await login(
+                        user.tenantId,
+                        user.email,
+                        password,
+                    );
+
+                const addResponse =
+                    await request(app)
+                        .post(
+                            `/api/v1/auth/me/trainer-clients/${athlete.id}`,
+                        )
+                        .set(
+                            "Authorization",
+                            `Bearer ${token}`,
+                        );
+
+                expect(addResponse.status).toBe(201);
+
+                const response =
+                    await request(app)
+                        .get(
+                            `/api/v1/auth/me/trainer-clients/${athlete.id}/profile`,
+                        )
+                        .set(
+                            "Authorization",
+                            `Bearer ${token}`,
+                        );
+
+                expect(response.status).toBe(200);
+
+                expect(response.body).toEqual({
+                    athleteId: athlete.id,
+                    firstName: "Profile",
+                    lastName: "Client",
+                    countryCode: "ZA",
+                    status: "ACTIVE",
+                    relationshipId:
+                        addResponse.body.relationshipId,
+                    relationshipStatus: "ACTIVE",
+                    relationshipStartsAt:
+                        expect.any(String),
+                });
+
+                const serialized =
+                    JSON.stringify(response.body);
+
+                expect(serialized).not.toContain(
+                    user.tenantId,
+                );
+
+                expect(serialized).not.toContain(
+                    user.id,
+                );
+            }
+            finally {
+                await cleanupAthlete(
+                    athlete.id,
+                );
+
+                await cleanupCommercialEvidence(
+                    evidence,
+                );
+            }
+        },
+    );
+
+    it(
+        "denies another Trainer access to a client profile",
+        async () => {
+            const trainerA =
+                await createTestUser();
+
+            const trainerB =
+                await createTestUser({
+                    tenantId:
+                        trainerA.user.tenantId,
+                });
+
+            const evidenceA =
+                await createTrainerCommercialEvidence(
+                    trainerA.user,
+                );
+
+            const evidenceB =
+                await createTrainerCommercialEvidence(
+                    trainerB.user,
+                );
+
+            const athlete =
+                await createAthlete(
+                    trainerA.user.tenantId,
+                );
+
+            try {
+                const tokenA =
+                    await login(
+                        trainerA.user.tenantId,
+                        trainerA.user.email,
+                        trainerA.password,
+                    );
+
+                const tokenB =
+                    await login(
+                        trainerB.user.tenantId,
+                        trainerB.user.email,
+                        trainerB.password,
+                    );
+
+                const addResponse =
+                    await request(app)
+                        .post(
+                            `/api/v1/auth/me/trainer-clients/${athlete.id}`,
+                        )
+                        .set(
+                            "Authorization",
+                            `Bearer ${tokenA}`,
+                        );
+
+                expect(addResponse.status).toBe(201);
+
+                const response =
+                    await request(app)
+                        .get(
+                            `/api/v1/auth/me/trainer-clients/${athlete.id}/profile`,
+                        )
+                        .set(
+                            "Authorization",
+                            `Bearer ${tokenB}`,
+                        );
+
+                expect(response.status).toBe(403);
+            }
+            finally {
+                await cleanupAthlete(
+                    athlete.id,
+                );
+
+                await cleanupCommercialEvidence(
+                    evidenceB,
+                );
+
+                await cleanupCommercialEvidence(
+                    evidenceA,
+                );
+            }
+        },
+    );
+    it(
         "rejects duplicate active client association",
         async () => {
             const {

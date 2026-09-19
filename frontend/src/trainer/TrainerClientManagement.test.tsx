@@ -61,6 +61,80 @@ describe("TrainerClientManagement", () => {
     ).toBeTruthy();
   });
 
+  it("loads the bounded client profile", async () => {
+    vi.spyOn(
+      clientApi,
+      "getMyTrainerClients",
+    ).mockResolvedValue([
+      client,
+    ]);
+
+    const getProfile =
+      vi.spyOn(
+        clientApi,
+        "getMyTrainerClientProfile",
+      )
+        .mockResolvedValue({
+          athleteId: "athlete-1",
+          firstName: "Alice",
+          lastName: "Athlete",
+          countryCode: "ZA",
+          status: "ACTIVE",
+          relationshipId:
+            "relationship-1",
+          relationshipStatus:
+            "ACTIVE",
+          relationshipStartsAt:
+            "2026-09-18T00:00:00.000Z",
+        });
+
+    render(<TrainerClientManagement />);
+
+    await screen.findByText(
+      "Alice Athlete",
+    );
+
+    fireEvent.click(
+      screen.getByRole(
+        "button",
+        {
+          name: "View profile",
+        },
+      ),
+    );
+
+    await waitFor(() => {
+      expect(
+        getProfile,
+      ).toHaveBeenCalledWith(
+        "athlete-1",
+      );
+    });
+
+    expect(
+      await screen.findByRole(
+        "region",
+        {
+          name: "Client profile",
+        },
+      ),
+    ).toBeTruthy();
+
+    expect(
+      screen.getByText(
+        "Relationship: ACTIVE",
+      ),
+    ).toBeTruthy();
+
+    expect(
+      screen.getByRole(
+        "button",
+        {
+          name: "Close profile",
+        },
+      ),
+    ).toBeTruthy();
+  });
   it("shows the empty roster state", async () => {
     vi.spyOn(
       clientApi,

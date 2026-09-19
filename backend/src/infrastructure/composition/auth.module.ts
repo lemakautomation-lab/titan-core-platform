@@ -1,5 +1,6 @@
 import { GetMyTrainerAccessUseCase } from "../../application/use-cases/get-my-trainer-access.use-case";
 import { ListMyTrainerClientsUseCase } from "../../application/use-cases/list-my-trainer-clients.use-case";
+import { GetTrainerClientProfileUseCase } from "../../application/use-cases/get-trainer-client-profile.use-case";
 import { AddMyTrainerClientUseCase } from "../../application/use-cases/add-my-trainer-client.use-case";
 import { RemoveMyTrainerClientUseCase } from "../../application/use-cases/remove-my-trainer-client.use-case";
 import { GetMyTrainerProfileUseCase } from "../../application/use-cases/get-my-trainer-profile.use-case";
@@ -246,6 +247,16 @@ export const authModule = {
         new ListMyTrainerClientsUseCase(
             athleteRelationshipRepository,
             athleteRepository,
+            new GetMyTrainerAccessUseCase(
+                userRepository,
+                userTypeEntitlementRepository,
+                paymentRepository,
+            ),
+        ),
+    getTrainerClientProfileUseCase:
+        new GetTrainerClientProfileUseCase(
+            athleteRepository,
+            athleteRelationshipRepository,
             new GetMyTrainerAccessUseCase(
                 userRepository,
                 userTypeEntitlementRepository,

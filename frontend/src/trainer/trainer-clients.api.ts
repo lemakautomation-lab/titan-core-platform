@@ -51,3 +51,36 @@ export function removeMyTrainerClient(
     },
   );
 }
+
+export interface TrainerClientProfileDto {
+  athleteId: string;
+  firstName: string;
+  lastName: string;
+  countryCode: string | null;
+  status: string;
+  relationshipId: string;
+  relationshipStatus: string;
+  relationshipStartsAt: string | null;
+}
+
+export async function getMyTrainerClientProfile(
+  athleteId: string,
+): Promise<TrainerClientProfileDto> {
+  const response = await fetch(
+    `/api/v1/auth/me/trainer-clients/${encodeURIComponent(athleteId)}/profile`,
+    {
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Trainer client profile could not be loaded.",
+    );
+  }
+
+  return response.json();
+}

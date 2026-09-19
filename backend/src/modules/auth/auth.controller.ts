@@ -14,6 +14,7 @@ import { UpdateMyTrainerProfileCommand } from "../../application/commands/update
 import { AddMyTrainerClientCommand } from "../../application/commands/add-my-trainer-client.command";
 import { RemoveMyTrainerClientCommand } from "../../application/commands/remove-my-trainer-client.command";
 import { ListMyTrainerClientsQuery } from "../../application/queries/trainer/list-my-trainer-clients.query";
+import { GetTrainerClientProfileQuery } from "../../application/queries/trainer/get-trainer-client-profile.query";
 
 import {
     REFRESH_TOKEN_COOKIE_NAME,
@@ -52,6 +53,64 @@ export class AuthController {
         if (!result.isSuccess) {
             res.status(403).json({
                 error: result.error,
+            });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
+
+    async getTrainerClientProfile(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+
+        res.set("Cache-Control", "no-store");
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const athleteId =
+            String(req.params.athleteId ?? "").trim();
+
+        if (!athleteId) {
+            res.status(400).json({
+                error: "Athlete id is required.",
+            });
+            return;
+        }
+
+        const result =
+            await authModule
+                .getTrainerClientProfileUseCase
+                .execute(
+                    new GetTrainerClientProfileQuery(
+                        authUser.userId,
+                        authUser.tenantId,
+                        athleteId,
+                    ),
+                );
+
+        if (!result.isSuccess) {
+            const error =
+                result.error ??
+                "Trainer client profile could not be loaded.";
+
+            res.status(
+                error === "Athlete not found."
+                    ? 404
+                    : error ===
+                        "Active Trainer client relationship is required."
+                        ? 403
+                        : 403,
+            ).json({
+                error,
             });
             return;
         }

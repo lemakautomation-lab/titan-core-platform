@@ -7,8 +7,10 @@ import {
 import {
   addMyTrainerClient,
   getMyTrainerClients,
+  getMyTrainerClientProfile,
   removeMyTrainerClient,
   type TrainerClientDto,
+  type TrainerClientProfileDto,
 } from "./trainer-clients.api";
 
 export default function TrainerClientManagement() {
@@ -32,6 +34,12 @@ export default function TrainerClientManagement() {
 
   const [removingId, setRemovingId] =
     useState<string | null>(null);
+  const [profile, setProfile] =
+    useState<TrainerClientProfileDto | null>(null);
+
+  const [profileLoadingId, setProfileLoadingId] =
+    useState<string | null>(null);
+
 
   async function loadClients() {
     const result =
@@ -94,6 +102,30 @@ export default function TrainerClientManagement() {
     }
     finally {
       setAdding(false);
+    }
+  }
+
+  async function viewClientProfile(
+    client: TrainerClientDto,
+  ) {
+    setProfileLoadingId(client.athleteId);
+    setActionError(null);
+
+    try {
+      const result =
+        await getMyTrainerClientProfile(
+          client.athleteId,
+        );
+
+      setProfile(result);
+    }
+    catch {
+      setActionError(
+        "The client profile could not be loaded.",
+      );
+    }
+    finally {
+      setProfileLoadingId(null);
     }
   }
 
@@ -195,6 +227,45 @@ export default function TrainerClientManagement() {
           </p>
         )}
 
+      {profile && (
+        <section
+          className="titan-client-profile"
+          aria-label="Client profile"
+        >
+          <span className="titan-eyebrow">
+            CLIENT PROFILE
+          </span>
+
+          <h3>
+            {profile.firstName}{" "}
+            {profile.lastName}
+          </h3>
+
+          <p>
+            Athlete ID:{" "}
+            <strong>{profile.athleteId}</strong>
+          </p>
+
+          {profile.countryCode && (
+            <p>
+              Country: {profile.countryCode}
+            </p>
+          )}
+
+          <p>Status: {profile.status}</p>
+          <p>
+            Relationship:{" "}
+            {profile.relationshipStatus}
+          </p>
+
+          <button
+            type="button"
+            onClick={() => setProfile(null)}
+          >
+            Close profile
+          </button>
+        </section>
+      )}
       {!loading &&
         !loadError &&
         clients.length > 0 && (
@@ -229,6 +300,24 @@ export default function TrainerClientManagement() {
                     {client.countryCode}
                   </p>
                 )}
+
+                <button
+                  type="button"
+                  disabled={
+                    profileLoadingId ===
+                    client.athleteId
+                  }
+                  onClick={() => {
+                    void viewClientProfile(
+                      client,
+                    );
+                  }}
+                >
+                  {profileLoadingId ===
+                  client.athleteId
+                    ? "Loading profile..."
+                    : "View profile"}
+                </button>
 
                 <button
                   type="button"

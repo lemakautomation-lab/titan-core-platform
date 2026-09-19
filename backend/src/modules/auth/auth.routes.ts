@@ -151,6 +151,13 @@ export function createAuthRoutes(
             .bind(authController),
     );
 
+    router.get(
+        "/me/trainer-clients/:athleteId/profile",
+        authMiddleware,
+        authController
+            .getTrainerClientProfile
+            .bind(authController),
+    );
     router.post(
         "/me/trainer-clients/:athleteId",
         authMiddleware,
