@@ -1090,3 +1090,107 @@ Mission 064 remains **ACTIVE** because Controls 64.9 through 64.11 remain outsta
 Control 64.8 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**.
 
 Mission 064 remains **ACTIVE** because Controls 64.9 through 64.11 remain outstanding.
+
+---
+
+## Control 64.10 - Session Scheduling
+
+### Status
+
+**COMPLETE / VERIFIED / COMMITTED / PUSHED**
+
+### Objective
+
+Control 64.10 provides an authorized Trainer-facing session scheduling boundary for active Trainer clients.
+
+It introduces a dedicated `TrainerSessionSchedule` aggregate for calendar scheduling and does not repurpose authentication sessions or Workout Programme session structures.
+
+### API Contract
+
+- `POST /api/v1/workout-programmes/trainer/sessions`
+  - Permission: `workout-programmes.create`
+  - Creates an authorized future Trainer/client session.
+- `GET /api/v1/workout-programmes/trainer/sessions`
+  - Permission: `workout-programmes.read`
+  - Lists the authenticated Trainer's tenant-scoped sessions within the requested date window.
+- `PATCH /api/v1/workout-programmes/trainer/sessions/:id`
+  - Permission: `workout-programmes.update`
+  - Reschedules or updates the authenticated Trainer's existing session.
+
+### Security Boundary
+
+Session scheduling requires:
+
+- authenticated user context;
+- appropriate `workout-programmes` RBAC permission;
+- active paid Trainer access;
+- target Athlete in the authenticated tenant;
+- active `TRAINER` AthleteRelationship;
+- tenant-scoped repository access;
+- Trainer ownership for session updates;
+- validated session date ranges;
+- future-dated creation and rescheduling;
+- conflict detection for active Trainer and Athlete sessions.
+
+Cross-tenant access is constrained through application authorization, tenant-scoped repository contracts, and composite database foreign keys.
+
+### Scheduling Integrity
+
+The dedicated `TrainerSessionSchedule` model records:
+
+- tenant;
+- Trainer user;
+- Athlete;
+- title;
+- optional notes;
+- start and end timestamps;
+- scheduling status;
+- creation and update timestamps.
+
+Supported status values are:
+
+- `SCHEDULED`
+- `COMPLETED`
+- `CANCELLED`
+
+Scheduling uses half-open overlap semantics, allowing back-to-back sessions while rejecting overlapping non-cancelled sessions for either the Trainer or Athlete.
+
+Cancelled sessions do not block scheduling conflicts.
+
+### Explicit Scope Boundary
+
+Control 64.10 does **not**:
+
+- repurpose the authentication `Session` model;
+- repurpose `WorkoutProgrammeSession`;
+- automatically modify Workout Programmes;
+- introduce Trainer/Athlete authority outside the existing active `TRAINER` relationship;
+- introduce product frontend production deployment.
+
+TITAN product frontend production deployment is **NOT CLAIMED**.
+
+### Verification Evidence
+
+- Focused unit/API regression: **4 files / 24 tests passed**
+- Mission 064 Trainer regression: **19 files / 110 tests passed**
+- Full backend regression: **160 files / 1159 tests passed**
+- TypeScript build: **GREEN**
+- Control 64.10 scoped ESLint: **GREEN**
+- Global ESLint: **1 pre-existing error / 29 warnings**
+- Pre-existing ESLint error: `tests/integration/auth/actionable-insights.spec.ts:75:91` unused `aA`
+- Control 64.10 lint errors: **NONE**
+- `git diff --check`: **GREEN**
+- Unauthorized committed files: **NONE**
+- Implementation commit: `7f671f73037ef1d0178c5c0d80019781c9cd082b`
+- Implementation push: **VERIFIED**
+- HEAD/origin synchronization: **0 / 0**
+
+### Release State
+
+Control 64.10 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
+
+Implementation commit: `7f671f73037ef1d0178c5c0d80019781c9cd082b`
+
+Knowledge Base publication: **PENDING**
+
+Mission 064 remains **ACTIVE** because Control 64.11 remains outstanding.
