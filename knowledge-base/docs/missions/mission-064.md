@@ -376,7 +376,7 @@ Security boundary verified:
 
 This security hardening does not alter the implementation or closure state of Controls 64.1 through 64.4.
 
-Mission 064 remains **ACTIVE**. Control 64.5 remains **NOT STARTED**.
+Mission 064 remains **ACTIVE**. Control 64.5 was subsequently implemented and verified; see the Control 64.5 evidence below.
 ### Control 64.5 - Programme creation
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
@@ -408,3 +408,103 @@ Mission 064 remains **ACTIVE**. Control 64.5 remains **NOT STARTED**.
 ## Mission Exit Gate
 
 all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
+
+---
+
+## Control 64.5 - Programme Creation
+
+### Status
+
+**COMPLETE / VERIFIED / COMMITTED / PUSHED**
+
+### Objective
+
+Control 64.5 introduces a dedicated Trainer programme-creation boundary while reusing the existing TITAN workout-programme architecture delivered by the programme engine.
+
+The control does not introduce a duplicate Trainer programme aggregate and does not weaken or repurpose the existing generic workout-programme creation contract.
+
+### Architecture
+
+Trainer programme creation follows this authorization chain:
+
+Authenticated User -> RBAC Permission -> Active Paid Trainer Access -> Active Trainer/Client Relationship -> Existing Workout Programme Creation
+
+The dedicated Trainer endpoint is:
+
+POST /api/v1/workout-programmes/trainer
+
+The existing generic workout-programme endpoint remains available for its existing RBAC-governed purpose and was not converted into a Trainer-only boundary.
+
+### Security Boundary
+
+Programme creation through the Trainer boundary requires:
+
+- authenticated user context;
+- workout-programmes.create permission;
+- active paid Trainer access;
+- an active TRAINER AthleteRelationship between the authenticated Trainer and target Athlete;
+- matching tenant ownership;
+- all existing WorkoutProgramme validation and persistence rules.
+
+The Trainer cannot create a programme for an Athlete without an active Trainer/client relationship.
+
+Inactive Trainer/client relationships are rejected.
+
+Cross-tenant programme creation remains prohibited by the existing tenant-aware Athlete and Sport boundaries.
+
+### Implementation
+
+Control 64.5 added:
+
+- CreateTrainerWorkoutProgrammeUseCase;
+- Trainer commercial-access enforcement through GetMyTrainerAccessUseCase;
+- active Trainer/client relationship enforcement;
+- dedicated Trainer programme creation controller boundary;
+- dedicated /workout-programmes/trainer route;
+- composition-root wiring;
+- focused unit security tests;
+- dedicated API security/integration tests.
+
+The existing CreateWorkoutProgrammeUseCase remains the authoritative generic programme-creation implementation and is delegated to only after the Trainer-specific authorization boundary succeeds.
+
+No Prisma schema change or database migration was required.
+
+### Explicit Scope Boundary
+
+Control 64.5 covers **programme creation only**.
+
+Control 64.6 - Client Workout Assignment remains outside this control and is **NOT STARTED**.
+
+No client workout assignment, client monitoring, reports, AI assistance, session scheduling or business workflow controls are claimed by Control 64.5.
+
+### Verification Evidence
+
+- Trainer wrapper unit regression: **1 file / 4 tests passed**
+- Trainer programme API security/integration regression: **6 tests passed**
+- Existing generic Mission 055 workout-programme API regression: **1 file / 6 tests passed**
+- Full backend regression: **148 files / 1098 tests passed**
+- TypeScript build: **GREEN**
+- Control 64.5 scoped ESLint: **GREEN**
+- git diff --check: **GREEN**
+- Implementation scope: **7 authorized files**
+- Unauthorized committed files: **NONE**
+- Protected Mission 001-145 closure register: **UNTRACKED / UNTOUCHED**
+- Implementation commit: `603954f0a2ceeaffe6668879068b142713a5ed03`
+- Implementation push: **VERIFIED**
+- Implementation HEAD/origin synchronization: **0 / 0**
+
+Repository-wide ESLint currently reports one pre-existing unrelated error in `tests/integration/auth/actionable-insights.spec.ts`. Repository HEAD evidence confirmed that defect predates Control 64.5. Control 64.5's seven implementation files pass scoped ESLint.
+
+### Release State
+
+Control 64.5 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
+
+Implementation commit: `603954f0a2ceeaffe6668879068b142713a5ed03`
+
+Knowledge Base publication: **PENDING**
+
+TITAN product frontend production deployment is **NOT CLAIMED**.
+
+Mission 064 remains **ACTIVE**.
+
+Control 64.6 - Client Workout Assignment remains **NOT STARTED**.
