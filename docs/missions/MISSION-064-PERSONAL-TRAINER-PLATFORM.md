@@ -872,3 +872,85 @@ Knowledge Base publication: **VERIFIED**
 Control 64.6 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**.
 
 Mission 064 remains **ACTIVE** because Controls 64.7 through 64.11 remain outstanding.
+---
+
+## Control 64.7 - Client Monitoring
+
+### Status
+
+**COMPLETE / VERIFIED / COMMITTED / PUSHED**
+
+### Objective
+
+Control 64.7 provides an authorized Trainer-facing monitoring boundary for an active Trainer client using existing TITAN Health monitoring data.
+
+Authorization boundary:
+
+Authenticated Trainer -> RBAC Permission -> Active Paid Trainer Access -> Existing Tenant Athlete -> Active Trainer/Client Relationship -> Bounded Monitoring Reads
+
+### API Contract
+
+- Method: GET
+- Route: `/api/v1/workout-programmes/trainer/clients/:athleteId/monitoring`
+- Permission: `workout-programmes.read`
+- Default limit: `25`
+- Maximum limit: `100`
+- Success: `200 OK`
+
+### Monitoring Scope
+
+The Trainer monitoring response aggregates:
+
+- client Performance Metrics;
+- recent effective Performance Measurements per metric;
+- recent Recovery Tracking;
+- recent Training Stress;
+- client Workout Programmes.
+
+Performance measurement correction history is not exposed by default. The monitoring boundary reads the effective measurement view.
+
+### Security Boundary
+
+Monitoring requires:
+
+- authenticated user context;
+- `workout-programmes.read` permission;
+- active paid Trainer access;
+- target Athlete in the authenticated tenant;
+- active `TRAINER` AthleteRelationship between Trainer and Athlete;
+- tenant-scoped repository reads;
+- bounded monitoring limits.
+
+No new monitoring tables, duplicate health-data entities, or database migrations were introduced.
+
+### Verification Evidence
+
+- Focused unit/API regression: **2 files / 13 tests passed**
+- Mission 064 Trainer regression: **6 files / 32 tests passed**
+- Full backend regression: **152 files / 1120 tests passed**
+- TypeScript build: **GREEN**
+- Control 64.7 scoped ESLint: **GREEN**
+- `git diff --check`: **GREEN**
+- Implementation scope: **9 authorized files**
+- Unauthorized committed files: **NONE**
+- Implementation commit: `2d44fb9982a70b542bf17adf3f4bc0b2ab415919`
+- Implementation push: **VERIFIED**
+- HEAD/origin synchronization: **0 / 0**
+
+### Explicit Scope Boundary
+
+Control 64.7 covers **Client Monitoring only**.
+
+Controls 64.8 through 64.11 remain outside Control 64.7.
+
+TITAN product frontend production deployment is **NOT CLAIMED**.
+
+### Release State
+
+Control 64.7 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
+
+Implementation commit: `2d44fb9982a70b542bf17adf3f4bc0b2ab415919`
+
+Knowledge Base publication: **PENDING**
+
+Mission 064 remains **ACTIVE** because Controls 64.8 through 64.11 remain outstanding.
