@@ -3,10 +3,16 @@ import { DatabaseService } from "../database/database.service";
 import { PrismaAthleteRepository } from "../repositories/athlete.repository";
 import { PrismaSportRepository } from "../repositories/sport.repository";
 import { PrismaWorkoutProgrammeRepository } from "../repositories/workout-programme.repository";
+import { PrismaAthleteRelationshipRepository } from "../repositories/athlete-relationship.repository";
+import { PrismaUserRepository } from "../repositories/user.repository";
+import { PrismaUserTypeEntitlementRepository } from "../repositories/user-type-entitlement.repository";
+import { PrismaPaymentRepository } from "../repositories/payment.repository";
 import { PrismaPerformanceMetricRepository } from "../repositories/performance-metric.repository";
 import { PrismaPerformanceMeasurementRepository } from "../repositories/performance-measurement/performance-measurement.repository";
 
 import { CreateWorkoutProgrammeUseCase } from "../../application/use-cases/create-workout-programme.use-case";
+import { CreateTrainerWorkoutProgrammeUseCase } from "../../application/use-cases/create-trainer-workout-programme.use-case";
+import { GetMyTrainerAccessUseCase } from "../../application/use-cases/get-my-trainer-access.use-case";
 import { GetWorkoutProgrammeByIdUseCase } from "../../application/use-cases/get-workout-programme-by-id.use-case";
 import { ListWorkoutProgrammesUseCase } from "../../application/use-cases/list-workout-programmes.use-case";
 import { ListWorkoutProgrammesByAthleteUseCase } from "../../application/use-cases/list-workout-programmes-by-athlete.use-case";
@@ -30,6 +36,18 @@ const workoutProgrammeRepository =
     new PrismaWorkoutProgrammeRepository(
         databaseService,
     );
+
+const athleteRelationshipRepository =
+    new PrismaAthleteRelationshipRepository(databaseService);
+
+const userRepository =
+    new PrismaUserRepository(databaseService);
+
+const userTypeEntitlementRepository =
+    new PrismaUserTypeEntitlementRepository(databaseService);
+
+const paymentRepository =
+    new PrismaPaymentRepository(databaseService);
 
 const athleteRepository =
     new PrismaAthleteRepository(
@@ -67,13 +85,26 @@ const generationTransaction =
 const generatedWorkoutProgrammeReadRepository =
     new PrismaGeneratedWorkoutProgrammeReadRepository(databaseService);
 
+const createWorkoutProgrammeUseCase =
+    new CreateWorkoutProgrammeUseCase(
+        workoutProgrammeRepository,
+        athleteRepository,
+        sportRepository,
+    );
+
 export const workoutProgrammeModule = {
 
-    createWorkoutProgrammeUseCase:
-        new CreateWorkoutProgrammeUseCase(
-            workoutProgrammeRepository,
-            athleteRepository,
-            sportRepository,
+    createWorkoutProgrammeUseCase,
+
+    createTrainerWorkoutProgrammeUseCase:
+        new CreateTrainerWorkoutProgrammeUseCase(
+            athleteRelationshipRepository,
+            new GetMyTrainerAccessUseCase(
+                userRepository,
+                userTypeEntitlementRepository,
+                paymentRepository,
+            ),
+            createWorkoutProgrammeUseCase,
         ),
 
     getWorkoutProgrammeByIdUseCase:

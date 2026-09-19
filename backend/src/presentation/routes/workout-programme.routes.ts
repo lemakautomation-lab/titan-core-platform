@@ -12,6 +12,11 @@ export function createWorkoutProgrammeRoutes(
     const router = Router();
 
     router.use(authMiddleware);
+    router.post(
+        "/trainer",
+        requirePermission("workout-programmes.create"),
+        controller.createTrainer.bind(controller),
+    );
 
     router.post(
         "/",

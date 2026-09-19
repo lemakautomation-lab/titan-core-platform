@@ -168,6 +168,7 @@ const exerciseController =
 const workoutProgrammeController =
     new WorkoutProgrammeController(
         workoutProgrammeModule.createWorkoutProgrammeUseCase,
+        workoutProgrammeModule.createTrainerWorkoutProgrammeUseCase,
         workoutProgrammeModule.getWorkoutProgrammeByIdUseCase,
         workoutProgrammeModule.listWorkoutProgrammesUseCase,
         workoutProgrammeModule.listWorkoutProgrammesByAthleteUseCase,

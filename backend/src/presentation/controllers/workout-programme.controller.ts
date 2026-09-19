@@ -11,6 +11,7 @@ import { ListWorkoutProgrammesQuery } from "../../application/queries/workout-pr
 import { ListWorkoutProgrammesByAthleteQuery } from "../../application/queries/workout-programme/list-workout-programmes-by-athlete.query";
 
 import { CreateWorkoutProgrammeUseCase } from "../../application/use-cases/create-workout-programme.use-case";
+import { CreateTrainerWorkoutProgrammeUseCase } from "../../application/use-cases/create-trainer-workout-programme.use-case";
 import { GetWorkoutProgrammeByIdUseCase } from "../../application/use-cases/get-workout-programme-by-id.use-case";
 import { ListWorkoutProgrammesUseCase } from "../../application/use-cases/list-workout-programmes.use-case";
 import { ListWorkoutProgrammesByAthleteUseCase } from "../../application/use-cases/list-workout-programmes-by-athlete.use-case";
@@ -32,6 +33,7 @@ import { HttpException } from "../../shared/exceptions/http.exception";
 export class WorkoutProgrammeController {
     constructor(
         private readonly createWorkoutProgrammeUseCase: CreateWorkoutProgrammeUseCase,
+        private readonly createTrainerWorkoutProgrammeUseCase: CreateTrainerWorkoutProgrammeUseCase,
         private readonly getWorkoutProgrammeByIdUseCase: GetWorkoutProgrammeByIdUseCase,
         private readonly listWorkoutProgrammesUseCase: ListWorkoutProgrammesUseCase,
         private readonly listWorkoutProgrammesByAthleteUseCase: ListWorkoutProgrammesByAthleteUseCase,
@@ -168,6 +170,43 @@ export class WorkoutProgrammeController {
         res.status(200).json(result.value);
     }
 
+    async createTrainer(req: AuthRequest, res: Response): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const result =
+            await this.createTrainerWorkoutProgrammeUseCase.execute(
+                new CreateWorkoutProgrammeCommand(
+                    authUser.tenantId,
+                    authUser.userId,
+                    String(req.body.athleteId),
+                    String(req.body.name),
+                    req.body.description ?? null,
+                    String(req.body.goal),
+                    String(req.body.experience),
+                    Number(req.body.trainingFrequency),
+                    Number(req.body.sessionDurationMinutes),
+                    req.body.sportId ?? null,
+                ),
+            );
+
+        if (!result.isSuccess) {
+            const status =
+                result.error === "Athlete not found." ||
+                result.error === "Sport not found."
+                    ? 404
+                    : 400;
+
+            res.status(status).json({ error: result.error });
+            return;
+        }
+
+        res.status(201).json(result.value);
+    }
     async create(req: AuthRequest, res: Response): Promise<void> {
         const authUser = req.user;
 
