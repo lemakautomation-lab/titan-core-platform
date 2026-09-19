@@ -1,4 +1,4 @@
-﻿import { randomUUID } from "crypto";
+import { randomUUID } from "crypto";
 
 import { RecordStatus } from "../enums/record-status.enum";
 
@@ -7,7 +7,7 @@ export class WorkoutProgramme {
     constructor(
         public readonly id: string,
         public readonly tenantId: string,
-        public readonly athleteId: string,
+        public athleteId: string,
         public name: string,
         public description: string | null,
         public goal: string,
@@ -76,6 +76,24 @@ export class WorkoutProgramme {
         );
     }
 
+    assignToAthlete(
+        athleteId: string,
+    ): void {
+
+        this.ensureMutable();
+
+        if (
+            typeof athleteId !== "string" ||
+            athleteId.trim().length === 0
+        ) {
+            throw new Error(
+                "Athlete ID is required.",
+            );
+        }
+
+        this.athleteId = athleteId.trim();
+        this.updatedAt = new Date();
+    }
     updateDetails(
         name: string,
         description: string | null,

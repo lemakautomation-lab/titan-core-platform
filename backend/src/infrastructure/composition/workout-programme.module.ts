@@ -12,6 +12,7 @@ import { PrismaPerformanceMeasurementRepository } from "../repositories/performa
 
 import { CreateWorkoutProgrammeUseCase } from "../../application/use-cases/create-workout-programme.use-case";
 import { CreateTrainerWorkoutProgrammeUseCase } from "../../application/use-cases/create-trainer-workout-programme.use-case";
+import { AssignTrainerWorkoutProgrammeUseCase } from "../../application/use-cases/assign-trainer-workout-programme.use-case";
 import { GetMyTrainerAccessUseCase } from "../../application/use-cases/get-my-trainer-access.use-case";
 import { GetWorkoutProgrammeByIdUseCase } from "../../application/use-cases/get-workout-programme-by-id.use-case";
 import { ListWorkoutProgrammesUseCase } from "../../application/use-cases/list-workout-programmes.use-case";
@@ -105,6 +106,17 @@ export const workoutProgrammeModule = {
                 paymentRepository,
             ),
             createWorkoutProgrammeUseCase,
+        ),
+    assignTrainerWorkoutProgrammeUseCase:
+        new AssignTrainerWorkoutProgrammeUseCase(
+            workoutProgrammeRepository,
+            athleteRepository,
+            athleteRelationshipRepository,
+            new GetMyTrainerAccessUseCase(
+                userRepository,
+                userTypeEntitlementRepository,
+                paymentRepository,
+            ),
         ),
 
     getWorkoutProgrammeByIdUseCase:

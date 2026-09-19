@@ -5,6 +5,7 @@ import { UpdateWorkoutProgrammeCommand } from "../../application/commands/update
 import { DeleteWorkoutProgrammeCommand } from "../../application/commands/delete-workout-programme.command";
 import { UpdateWorkoutProgrammeStatusCommand } from "../../application/commands/update-workout-programme-status.command";
 import { AdaptWorkoutProgrammeFromPerformanceCommand } from "../../application/commands/adapt-workout-programme-from-performance.command";
+import { AssignTrainerWorkoutProgrammeCommand } from "../../application/commands/assign-trainer-workout-programme.command";
 
 import { GetWorkoutProgrammeByIdQuery } from "../../application/queries/workout-programme/get-workout-programme-by-id.query";
 import { ListWorkoutProgrammesQuery } from "../../application/queries/workout-programme/list-workout-programmes.query";
@@ -12,6 +13,7 @@ import { ListWorkoutProgrammesByAthleteQuery } from "../../application/queries/w
 
 import { CreateWorkoutProgrammeUseCase } from "../../application/use-cases/create-workout-programme.use-case";
 import { CreateTrainerWorkoutProgrammeUseCase } from "../../application/use-cases/create-trainer-workout-programme.use-case";
+import { AssignTrainerWorkoutProgrammeUseCase } from "../../application/use-cases/assign-trainer-workout-programme.use-case";
 import { GetWorkoutProgrammeByIdUseCase } from "../../application/use-cases/get-workout-programme-by-id.use-case";
 import { ListWorkoutProgrammesUseCase } from "../../application/use-cases/list-workout-programmes.use-case";
 import { ListWorkoutProgrammesByAthleteUseCase } from "../../application/use-cases/list-workout-programmes-by-athlete.use-case";
@@ -34,6 +36,7 @@ export class WorkoutProgrammeController {
     constructor(
         private readonly createWorkoutProgrammeUseCase: CreateWorkoutProgrammeUseCase,
         private readonly createTrainerWorkoutProgrammeUseCase: CreateTrainerWorkoutProgrammeUseCase,
+        private readonly assignTrainerWorkoutProgrammeUseCase: AssignTrainerWorkoutProgrammeUseCase,
         private readonly getWorkoutProgrammeByIdUseCase: GetWorkoutProgrammeByIdUseCase,
         private readonly listWorkoutProgrammesUseCase: ListWorkoutProgrammesUseCase,
         private readonly listWorkoutProgrammesByAthleteUseCase: ListWorkoutProgrammesByAthleteUseCase,
@@ -170,6 +173,42 @@ export class WorkoutProgrammeController {
         res.status(200).json(result.value);
     }
 
+    async assignTrainer(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const result =
+            await this.assignTrainerWorkoutProgrammeUseCase.execute(
+                new AssignTrainerWorkoutProgrammeCommand(
+                    String(req.params.id),
+                    authUser.tenantId,
+                    authUser.userId,
+                    typeof req.body.athleteId === "string"
+                        ? req.body.athleteId
+                        : "",
+                ),
+            );
+
+        if (!result.isSuccess) {
+            const status =
+                result.error === "Workout Programme not found." ||
+                result.error === "Athlete not found."
+                    ? 404
+                    : 400;
+
+            res.status(status).json({ error: result.error });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
     async createTrainer(req: AuthRequest, res: Response): Promise<void> {
         const authUser = req.user;
 

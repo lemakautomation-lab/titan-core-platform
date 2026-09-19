@@ -17,6 +17,11 @@ export function createWorkoutProgrammeRoutes(
         requirePermission("workout-programmes.create"),
         controller.createTrainer.bind(controller),
     );
+    router.patch(
+        "/trainer/:id/assignment",
+        requirePermission("workout-programmes.update"),
+        controller.assignTrainer.bind(controller),
+    );
 
     router.post(
         "/",
