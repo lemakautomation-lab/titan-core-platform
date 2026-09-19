@@ -508,3 +508,19 @@ TITAN product frontend production deployment is **NOT CLAIMED**.
 Mission 064 remains **ACTIVE**.
 
 Control 64.6 - Client Workout Assignment remains **NOT STARTED**.
+
+
+### Publication Verification
+
+- Knowledge Base publication: **VERIFIED**
+- Publication source commit: `901e71376c99f610938d75895c4b5a61827c47ab`
+- Cloudflare Pages deployment ID: `02984925-5ba7-4d7b-bdad-d8047e8dbae9`
+- Immutable deployment: `https://02984925.titan-core-platform.pages.dev/docs/missions/064/`
+- Canonical deployment: `https://titan-core-platform.pages.dev/docs/missions/064/`
+- Protected custom hostname: `https://docs.titan-tech.co.za/docs/missions/064/`
+- Cloudflare deployment state: **Production / main / Active**
+- Cloudflare Access protection: **VERIFIED** on immutable, canonical, and custom-hostname routes by HTTP 302 authentication interception.
+- Local Docusaurus production artifact verified to contain Control 64.5, Programme Creation, implementation commit `603954f0a2ceeaffe6668879068b142713a5ed03`, 1098-test evidence, Trainer programme endpoint, and Control 64.6 NOT STARTED.
+- Product frontend production deployment: **NOT CLAIMED**
+- Mission 064 remains **ACTIVE**.
+- Control 64.6 - Client Workout Assignment remains **NOT STARTED**.
