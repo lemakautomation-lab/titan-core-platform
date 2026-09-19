@@ -758,3 +758,96 @@ Control 64.6 - Client Workout Assignment remains **NOT STARTED**.
 - Product frontend production deployment: **NOT CLAIMED**
 - Mission 064 remains **ACTIVE**.
 - Control 64.6 - Client Workout Assignment remains **NOT STARTED**.
+
+---
+
+## Control 64.6 - Client Workout Assignment
+
+### Status
+
+**COMPLETE / VERIFIED / COMMITTED / PUSHED**
+
+### Objective
+
+Control 64.6 adds an explicit Trainer-authorized boundary for assigning an existing Workout Programme to an active Trainer client.
+
+Authorization boundary:
+
+Authenticated Trainer -> RBAC Permission -> Active Paid Trainer Access -> Existing Tenant Workout Programme -> Existing Tenant Athlete -> Active Trainer/Client Relationship -> Domain Assignment -> Transactional Persistence
+
+### API Contract
+
+- Method: PATCH
+- Route: `/api/v1/workout-programmes/trainer/:id/assignment`
+- Body: `{"athleteId":"<client-athlete-id>"}`
+- Permission: `workout-programmes.update`
+- Success: `200 OK`
+
+### Security Boundary
+
+Assignment requires:
+
+- authenticated user context;
+- `workout-programmes.update` permission;
+- active paid Trainer access;
+- existing Workout Programme in the authenticated tenant;
+- existing target Athlete in the authenticated tenant;
+- active `TRAINER` AthleteRelationship between Trainer and Athlete;
+- mutable WorkoutProgramme domain state;
+- tenant-aware transactional persistence.
+
+No Trainer ownership/provenance model was invented because WorkoutProgramme does not currently contain a Trainer ownership field.
+
+### Implementation
+
+Control 64.6 added:
+
+- `AssignTrainerWorkoutProgrammeCommand`;
+- `AssignTrainerWorkoutProgrammeUseCase`;
+- `WorkoutProgramme.assignToAthlete()`;
+- Trainer commercial-access enforcement;
+- target-Athlete validation;
+- active Trainer/client relationship enforcement;
+- Trainer assignment controller and route;
+- composition-root wiring;
+- unit and API integration tests.
+
+No Prisma schema change was required.
+
+No database migration was required.
+
+No separate workout-assignment aggregate was introduced.
+
+### Verification Evidence
+
+- Unit regression: **1 file / 6 tests passed**
+- API security/integration regression: **1 file / 3 tests passed**
+- Combined focused regression: **2 files / 9 tests passed**
+- Mission 064 Trainer regression: **4 files / 19 tests passed**
+- Full backend regression: **150 files / 1107 tests passed**
+- TypeScript build: **GREEN**
+- Control 64.6 scoped ESLint: **GREEN**
+- `git diff --check`: **GREEN**
+- Implementation scope: **9 authorized files**
+- Unauthorized committed files: **NONE**
+- Implementation commit: `ac44da891531c5fbb3e991fef6d1f1f03bf450ac`
+- Implementation push: **VERIFIED**
+- HEAD/origin synchronization: **0 / 0**
+
+### Explicit Scope Boundary
+
+Control 64.6 covers **Client Workout Assignment only**.
+
+Controls 64.7 through 64.11 remain outside Control 64.6.
+
+TITAN product frontend production deployment is **NOT CLAIMED**.
+
+### Release State
+
+Control 64.6 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
+
+Implementation commit: `ac44da891531c5fbb3e991fef6d1f1f03bf450ac`
+
+Knowledge Base publication: **PENDING**
+
+Mission 064 remains **ACTIVE** because Controls 64.7 through 64.11 remain outstanding.
