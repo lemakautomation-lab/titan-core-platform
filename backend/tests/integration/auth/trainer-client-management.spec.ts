@@ -13,6 +13,18 @@ import { rateLimitModule } from "../../../src/infrastructure/composition/rate-li
 import { createTestUser } from "../../factories/user.factory";
 import { testPrisma } from "../../helpers/prisma-test.client";
 
+async function createAuthorizedTrainerUser(
+    options: { tenantId?: string } = {},
+) {
+    return createTestUser({
+        ...options,
+        permissions: [
+            "workout-programmes.read",
+            "workout-programmes.update",
+        ],
+    });
+}
+
 async function login(
     tenantId: string,
     email: string,
@@ -332,12 +344,128 @@ describe("Trainer client management API", () => {
     );
 
     it(
+        "denies client roster access without workout-programmes.read",
+        async () => {
+            const {
+                user,
+                password,
+            } = await createTestUser({
+                permissions: [
+                    "workout-programmes.update",
+                ],
+            });
+
+            const evidence =
+                await createTrainerCommercialEvidence(
+                    user,
+                );
+
+            try {
+                const token =
+                    await login(
+                        user.tenantId,
+                        user.email,
+                        password,
+                    );
+
+                const response =
+                    await request(app)
+                        .get(
+                            "/api/v1/auth/me/trainer-clients",
+                        )
+                        .set(
+                            "Authorization",
+                            `Bearer ${token}`,
+                        );
+
+                expect(response.status).toBe(403);
+            }
+            finally {
+                await cleanupCommercialEvidence(
+                    evidence,
+                );
+            }
+        },
+    );
+
+    it(
+        "denies client association without workout-programmes.update",
+        async () => {
+            const {
+                user,
+                password,
+            } = await createTestUser({
+                permissions: [
+                    "workout-programmes.read",
+                ],
+            });
+
+            const evidence =
+                await createTrainerCommercialEvidence(
+                    user,
+                );
+
+            const athlete =
+                await createAthlete(
+                    user.tenantId,
+                );
+
+            try {
+                const token =
+                    await login(
+                        user.tenantId,
+                        user.email,
+                        password,
+                    );
+
+                const response =
+                    await request(app)
+                        .post(
+                            `/api/v1/auth/me/trainer-clients/${athlete.id}`,
+                        )
+                        .set(
+                            "Authorization",
+                            `Bearer ${token}`,
+                        );
+
+                expect(response.status).toBe(403);
+
+                const relationship =
+                    await testPrisma
+                        .athleteRelationship
+                        .findFirst({
+                            where: {
+                                tenantId:
+                                    user.tenantId,
+                                athleteId:
+                                    athlete.id,
+                                relatedEntityId:
+                                    user.id,
+                                relationshipType:
+                                    "TRAINER",
+                            },
+                        });
+
+                expect(relationship).toBeNull();
+            }
+            finally {
+                await cleanupAthlete(
+                    athlete.id,
+                );
+
+                await cleanupCommercialEvidence(
+                    evidence,
+                );
+            }
+        },
+    );
+    it(
         "adds and lists a client with server-derived ownership",
         async () => {
             const {
                 user,
                 password,
-            } = await createTestUser();
+            } = await createAuthorizedTrainerUser();
 
             const evidence =
                 await createTrainerCommercialEvidence(
@@ -469,7 +597,7 @@ describe("Trainer client management API", () => {
             const {
                 user,
                 password,
-            } = await createTestUser();
+            } = await createAuthorizedTrainerUser();
 
             const evidence =
                 await createTrainerCommercialEvidence(
@@ -555,10 +683,10 @@ describe("Trainer client management API", () => {
         "denies another Trainer access to a client profile",
         async () => {
             const trainerA =
-                await createTestUser();
+                await createAuthorizedTrainerUser();
 
             const trainerB =
-                await createTestUser({
+                await createAuthorizedTrainerUser({
                     tenantId:
                         trainerA.user.tenantId,
                 });
@@ -638,7 +766,7 @@ describe("Trainer client management API", () => {
             const {
                 user,
                 password,
-            } = await createTestUser();
+            } = await createAuthorizedTrainerUser();
 
             const evidence =
                 await createTrainerCommercialEvidence(
@@ -715,7 +843,7 @@ describe("Trainer client management API", () => {
         "rejects a cross-tenant athlete",
         async () => {
             const trainer =
-                await createTestUser();
+                await createAuthorizedTrainerUser();
 
             const other =
                 await createTestUser();
@@ -780,10 +908,10 @@ describe("Trainer client management API", () => {
         "isolates client rosters between Trainers",
         async () => {
             const trainerA =
-                await createTestUser();
+                await createAuthorizedTrainerUser();
 
             const trainerB =
-                await createTestUser({
+                await createAuthorizedTrainerUser({
                     tenantId:
                         trainerA.user.tenantId,
                 });
@@ -865,7 +993,7 @@ describe("Trainer client management API", () => {
             const {
                 user,
                 password,
-            } = await createTestUser();
+            } = await createAuthorizedTrainerUser();
 
             const evidence =
                 await createTrainerCommercialEvidence(
@@ -960,7 +1088,7 @@ describe("Trainer client management API", () => {
             const {
                 user,
                 password,
-            } = await createTestUser();
+            } = await createAuthorizedTrainerUser();
 
             const evidence =
                 await createTrainerCommercialEvidence(

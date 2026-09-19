@@ -9,6 +9,7 @@ import {
 } from "./password-reset.controller";
 
 import { authMiddleware } from "../../middleware/auth.middleware";
+import { requirePermission } from "../../middleware/authorization.middleware";
 import {
     authRateLimiter,
 } from "../../infrastructure/composition/rate-limit.module";
@@ -146,6 +147,7 @@ export function createAuthRoutes(
     );    router.get(
         "/me/trainer-clients",
         authMiddleware,
+        requirePermission("workout-programmes.read"),
         authController
             .listMyTrainerClients
             .bind(authController),
@@ -154,6 +156,7 @@ export function createAuthRoutes(
     router.get(
         "/me/trainer-clients/:athleteId/profile",
         authMiddleware,
+        requirePermission("workout-programmes.read"),
         authController
             .getTrainerClientProfile
             .bind(authController),
@@ -161,6 +164,7 @@ export function createAuthRoutes(
     router.post(
         "/me/trainer-clients/:athleteId",
         authMiddleware,
+        requirePermission("workout-programmes.update"),
         authController
             .addMyTrainerClient
             .bind(authController),
@@ -169,6 +173,7 @@ export function createAuthRoutes(
     router.delete(
         "/me/trainer-clients/:athleteId",
         authMiddleware,
+        requirePermission("workout-programmes.update"),
         authController
             .removeMyTrainerClient
             .bind(authController),
