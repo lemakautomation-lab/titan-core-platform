@@ -1085,3 +1085,78 @@ Mission 064 remains **ACTIVE** because Control 64.11 remains outstanding.
 Control 64.10 is **COMPLETE / VERIFIED / COMMITTED / PUSHED / KNOWLEDGE BASE PUBLISHED**.
 
 Mission 064 remains **ACTIVE** because Control 64.11 remains outstanding.
+
+---
+
+## Control 64.11 - Business Workflow Controls
+
+### Status
+
+**COMPLETE / VERIFIED / COMMITTED / PUSHED**
+
+### Objective
+
+Control 64.11 introduces explicit Trainer session lifecycle controls within the existing Trainer session scheduling boundary.
+
+The control does not introduce a generic workflow engine or unrelated business process framework.
+
+### Workflow Contract
+
+Supported transitions are:
+
+- `SCHEDULED -> COMPLETED`
+- `SCHEDULED -> CANCELLED`
+
+`COMPLETED` and `CANCELLED` are terminal states. Terminal sessions cannot be reopened or have their scheduling details modified.
+
+### API Contract
+
+`PATCH /api/v1/workout-programmes/trainer/sessions/:id/status`
+
+Required permission:
+
+`workout-programmes.update`
+
+The workflow endpoint accepts only the supported terminal workflow actions.
+
+### Security Boundary
+
+Workflow mutation requires:
+
+- authenticated user context;
+- `workout-programmes.update` RBAC permission;
+- active paid Trainer access;
+- tenant-scoped session lookup;
+- Trainer ownership of the session;
+- active `TRAINER` AthleteRelationship;
+- valid lifecycle transition;
+- tenant-scoped persistence.
+
+Sessions owned by another Trainer are not exposed through the workflow boundary.
+
+### Verification Evidence
+
+- Control 64.11 focused regression: **3 files / 14 tests passed**
+- Mission 064 Trainer regression: **21 files / 121 tests passed**
+- Full backend regression: **162 files / 1170 tests passed**
+- TypeScript build: **GREEN**
+- Control 64.11 scoped ESLint: **GREEN**
+- `git diff --check`: **GREEN**
+- Database migration required: **NO**
+- Unauthorized committed files: **NONE**
+- Implementation commit: `550daf2840e117b65fc137787c056a0cb1ac006d`
+- Implementation push: **VERIFIED**
+- HEAD/origin synchronization: **0 / 0**
+- TITAN product frontend production deployment: **NOT CLAIMED**
+
+### Release State
+
+Control 64.11 implementation is **COMPLETE / VERIFIED / COMMITTED / PUSHED**.
+
+Knowledge Base publication: **PENDING**
+
+All Mission 064 implementation controls are now technically complete.
+
+Mission 064 status: **TECHNICALLY COMPLETE / KNOWLEDGE BASE PUBLICATION PENDING**.
+
+Mission 064 will be classified **CLOSED** only after final Knowledge Base publication and deployment verification.
