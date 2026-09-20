@@ -43,6 +43,7 @@ model Tenant {
   trainerProfiles           TrainerProfile[]
   trainerSessionSchedules   TrainerSessionSchedule[]
   coachSquads               CoachSquad[]
+  coachTeams                CoachTeam[]
 }
 
 model Sport {
@@ -110,6 +111,8 @@ model User {
   trainerProfile           TrainerProfile?
   trainerSessionSchedules  TrainerSessionSchedule[] @relation("TrainerSessionScheduleTrainerTenant")
   coachSquads              CoachSquad[]             @relation("CoachSquadCoachTenant")
+
+  coachTeams CoachTeam[] @relation("CoachTeamCoachTenant")
 
   @@unique([tenantId, email])
   @@unique([id, tenantId], map: "User_id_tenantId_key")
@@ -981,4 +984,22 @@ model AccountAssistanceRequest {
   @@index([tenantId, status])
   @@index([expiresAt])
   @@index([createdAt])
+}
+
+model CoachTeam {
+  id          String       @id @default(uuid())
+  tenantId    String
+  coachUserId String
+  name        String
+  description String?
+  status      RecordStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  coach  User   @relation("CoachTeamCoachTenant", fields: [coachUserId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([id, tenantId], map: "CoachTeam_id_tenantId_key")
+  @@index([tenantId, coachUserId], map: "CoachTeam_tenantId_coachUserId_idx")
+  @@index([tenantId, coachUserId, status], map: "CoachTeam_tenantId_coachUserId_status_idx")
 }

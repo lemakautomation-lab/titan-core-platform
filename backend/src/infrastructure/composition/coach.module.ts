@@ -1,12 +1,18 @@
 import { DatabaseService } from "../database/database.service";
 import { PrismaCoachSquadRepository } from "../repositories/coach-squad.repository";
+import { PrismaCoachTeamRepository } from "../repositories/coach-team.repository";
 
 import { CreateCoachSquadUseCase } from "../../application/use-cases/create-coach-squad.use-case";
 import { ListCoachSquadsUseCase } from "../../application/use-cases/list-coach-squads.use-case";
 import { UpdateCoachSquadUseCase } from "../../application/use-cases/update-coach-squad.use-case";
+import { CreateCoachTeamUseCase } from "../../application/use-cases/create-coach-team.use-case";
+import { ListCoachTeamsUseCase } from "../../application/use-cases/list-coach-teams.use-case";
+import { UpdateCoachTeamUseCase } from "../../application/use-cases/update-coach-team.use-case";
 
 const databaseService =
     new DatabaseService();
+
+const coachTeamRepository = new PrismaCoachTeamRepository(databaseService);
 
 const coachSquadRepository =
     new PrismaCoachSquadRepository(
@@ -27,5 +33,19 @@ export const coachModule = {
     updateCoachSquadUseCase:
         new UpdateCoachSquadUseCase(
             coachSquadRepository,
+        ),
+    createCoachTeamUseCase:
+        new CreateCoachTeamUseCase(
+            coachTeamRepository,
+        ),
+
+    listCoachTeamsUseCase:
+        new ListCoachTeamsUseCase(
+            coachTeamRepository,
+        ),
+
+    updateCoachTeamUseCase:
+        new UpdateCoachTeamUseCase(
+            coachTeamRepository,
         ),
 };
