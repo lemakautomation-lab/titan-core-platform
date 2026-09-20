@@ -217,6 +217,10 @@ const coachSquadController =
         coachModule.createCoachSquadUseCase,
         coachModule.listCoachSquadsUseCase,
         coachModule.updateCoachSquadUseCase,
+        coachModule.addCoachSquadAthleteUseCase,
+        coachModule.listCoachSquadAthletesUseCase,
+        coachModule.removeCoachSquadAthleteUseCase,
+        coachModule.getCoachSquadPerformanceDashboardUseCase,
     );
 
 const coachTeamController = new CoachTeamController(

@@ -44,6 +44,7 @@ model Tenant {
   trainerSessionSchedules   TrainerSessionSchedule[]
   coachSquads               CoachSquad[]
   coachTeams                CoachTeam[]
+  coachSquadAthletes CoachSquadAthlete[]
 }
 
 model Sport {
@@ -156,6 +157,7 @@ model CoachSquad {
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   coach  User   @relation("CoachSquadCoachTenant", fields: [coachUserId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  athletes CoachSquadAthlete[]
 
   @@unique([id, tenantId], map: "CoachSquad_id_tenantId_key")
   @@index([tenantId, coachUserId], map: "CoachSquad_tenantId_coachUserId_idx")
@@ -179,6 +181,7 @@ model Athlete {
   organisation            Organisation?             @relation(fields: [organisationId], references: [id])
   user                    User?                     @relation(fields: [userId], references: [id])
   relationships           AthleteRelationship[]
+  coachSquadMemberships    CoachSquadAthlete[]
   athleteDigitalTwins     AthleteDigitalTwin[]
   performanceMetrics      PerformanceMetric[]       @relation("PerformanceMetricAthleteTenant")
   performanceMeasurements PerformanceMeasurement[]  @relation("PerformanceMeasurementAthleteTenant")
@@ -382,6 +385,21 @@ model AthleteRelationship {
   @@index([relatedEntityId])
 }
 
+model CoachSquadAthlete {
+  id        String   @id @default(uuid())
+  tenantId  String
+  squadId   String
+  athleteId String
+  createdAt DateTime @default(now())
+
+  tenant  Tenant     @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  squad   CoachSquad @relation(fields: [squadId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: Cascade)
+  athlete Athlete    @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([tenantId, squadId, athleteId])
+  @@index([tenantId, squadId])
+  @@index([tenantId, athleteId])
+}
 model AthleteDigitalTwin {
   id        String       @id @default(uuid())
   tenantId  String

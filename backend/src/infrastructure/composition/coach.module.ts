@@ -1,5 +1,6 @@
 import { DatabaseService } from "../database/database.service";
 import { PrismaCoachSquadRepository } from "../repositories/coach-squad.repository";
+import { PrismaCoachSquadAthleteRepository } from "../repositories/coach-squad-athlete.repository";
 import { PrismaCoachTeamRepository } from "../repositories/coach-team.repository";
 import { PrismaAthleteRepository } from "../repositories/athlete.repository";
 import { PrismaAthleteRelationshipRepository } from "../repositories/athlete-relationship.repository";
@@ -13,6 +14,10 @@ import { PrismaTrainingStressRepository } from "../repositories/training-stress/
 import { CreateCoachSquadUseCase } from "../../application/use-cases/create-coach-squad.use-case";
 import { ListCoachSquadsUseCase } from "../../application/use-cases/list-coach-squads.use-case";
 import { UpdateCoachSquadUseCase } from "../../application/use-cases/update-coach-squad.use-case";
+import { AddCoachSquadAthleteUseCase } from "../../application/use-cases/add-coach-squad-athlete.use-case";
+import { ListCoachSquadAthletesUseCase } from "../../application/use-cases/list-coach-squad-athletes.use-case";
+import { RemoveCoachSquadAthleteUseCase } from "../../application/use-cases/remove-coach-squad-athlete.use-case";
+import { GetCoachSquadPerformanceDashboardUseCase } from "../../application/use-cases/get-coach-squad-performance-dashboard.use-case";
 import { CreateCoachTeamUseCase } from "../../application/use-cases/create-coach-team.use-case";
 import { ListCoachTeamsUseCase } from "../../application/use-cases/list-coach-teams.use-case";
 import { UpdateCoachTeamUseCase } from "../../application/use-cases/update-coach-team.use-case";
@@ -59,6 +64,11 @@ const coachSquadRepository =
         databaseService,
     );
 
+const coachSquadAthleteRepository =
+    new PrismaCoachSquadAthleteRepository(
+        databaseService,
+    );
+
 export const coachModule = {
     createCoachSquadUseCase:
         new CreateCoachSquadUseCase(
@@ -73,6 +83,38 @@ export const coachModule = {
     updateCoachSquadUseCase:
         new UpdateCoachSquadUseCase(
             coachSquadRepository,
+        ),
+    addCoachSquadAthleteUseCase:
+        new AddCoachSquadAthleteUseCase(
+            coachSquadRepository,
+            coachSquadAthleteRepository,
+            athleteRepository,
+            athleteRelationshipRepository,
+        ),
+
+    listCoachSquadAthletesUseCase:
+        new ListCoachSquadAthletesUseCase(
+            coachSquadRepository,
+            coachSquadAthleteRepository,
+            athleteRepository,
+        ),
+
+    removeCoachSquadAthleteUseCase:
+        new RemoveCoachSquadAthleteUseCase(
+            coachSquadRepository,
+            coachSquadAthleteRepository,
+        ),
+    getCoachSquadPerformanceDashboardUseCase:
+        new GetCoachSquadPerformanceDashboardUseCase(
+            coachSquadRepository,
+            coachSquadAthleteRepository,
+            athleteRepository,
+            athleteRelationshipRepository,
+            performanceMetricRepository,
+            performanceMeasurementRepository,
+            recoveryTrackingRepository,
+            trainingStressRepository,
+            workoutProgrammeRepository,
         ),
     createCoachTeamUseCase:
         new CreateCoachTeamUseCase(

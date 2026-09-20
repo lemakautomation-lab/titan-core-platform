@@ -36,6 +36,29 @@ export function createCoachRoutes(
     );
 
     router.post(
+        "/squads/:id/athletes",
+        requirePermission("coach-squads.update"),
+        controller.addAthlete.bind(controller),
+    );
+
+    router.get(
+        "/squads/:id/athletes",
+        requirePermission("coach-squads.read"),
+        controller.listAthletes.bind(controller),
+    );
+
+    router.get(
+        "/squads/:id/performance-dashboard",
+        requirePermission("coach-squads.read"),
+        requirePermission("performance-measurements.read"),
+        controller.performanceDashboard.bind(controller),
+    );
+    router.delete(
+        "/squads/:id/athletes/:athleteId",
+        requirePermission("coach-squads.update"),
+        controller.removeAthlete.bind(controller),
+    );
+    router.post(
         "/teams",
         requirePermission("coach-teams.create"),
         teamController.create.bind(teamController),
