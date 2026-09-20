@@ -3,6 +3,7 @@ import { Router } from "express";
 import { CoachSquadController } from "../controllers/coach-squad.controller";
 import { CoachTeamController } from "../controllers/coach-team.controller";
 import { CoachAthleteController } from "../controllers/coach-athlete.controller";
+import { CoachTrainingController } from "../controllers/coach-training.controller";
 import { authMiddleware } from "../../middleware/auth.middleware";
 import { requirePermission } from "../../middleware/authorization.middleware";
 
@@ -10,6 +11,7 @@ export function createCoachRoutes(
     controller: CoachSquadController,
     teamController: CoachTeamController,
     athleteController: CoachAthleteController,
+    trainingController: CoachTrainingController,
 ): Router {
     const router = Router();
 
@@ -67,5 +69,17 @@ export function createCoachRoutes(
         requirePermission("coach-athletes.update"),
         athleteController.remove.bind(athleteController),
     );
+    router.post(
+        "/training/programmes",
+        requirePermission("workout-programmes.create"),
+        trainingController.create.bind(trainingController),
+    );
+
+    router.patch(
+        "/training/programmes/:id/assignment",
+        requirePermission("workout-programmes.update"),
+        trainingController.assign.bind(trainingController),
+    );
+
     return router;
 }
