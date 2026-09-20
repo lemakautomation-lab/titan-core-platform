@@ -16,9 +16,7 @@ Build secure Coach operations within TITAN Health.
 
 ## Mission Status
 
-**COMPLETE / VERIFIED / COMMITTED / PUSHED**
-
-Knowledge Base publication verification remains pending.
+**COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED / CLOSED**
 
 ## Control 66.1 - Squad Management
 
@@ -240,6 +238,21 @@ Implementation commits:
 
 ## Mission Closure
 
-All Mission 066 controls are technically complete and verified.
+All Mission 066 controls are complete and verified.
 
-Knowledge Base publication and canonical/immutable publication verification remain the final release actions before Mission 066 is formally classified as **CLOSED**.
+Knowledge Base publication source commit:
+
+`3d8fcc72347786b8f77904494d817ad47e58cf35`
+
+Cloudflare Pages deployment:
+
+`2ab04221`
+
+Publication verification:
+
+- Immutable Mission 066 route: HTTP 302 Cloudflare Access redirect - VERIFIED
+- Canonical Mission 066 route: HTTP 302 Cloudflare Access redirect - VERIFIED
+- Cloudflare Access protection remains operational
+- Frontend production deployment is **NOT CLAIMED**
+
+**MISSION 066 - COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED / CLOSED**
