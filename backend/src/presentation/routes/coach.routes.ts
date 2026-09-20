@@ -2,12 +2,14 @@ import { Router } from "express";
 
 import { CoachSquadController } from "../controllers/coach-squad.controller";
 import { CoachTeamController } from "../controllers/coach-team.controller";
+import { CoachAthleteController } from "../controllers/coach-athlete.controller";
 import { authMiddleware } from "../../middleware/auth.middleware";
 import { requirePermission } from "../../middleware/authorization.middleware";
 
 export function createCoachRoutes(
     controller: CoachSquadController,
     teamController: CoachTeamController,
+    athleteController: CoachAthleteController,
 ): Router {
     const router = Router();
 
@@ -47,6 +49,23 @@ export function createCoachRoutes(
         "/teams/:id",
         requirePermission("coach-teams.update"),
         teamController.update.bind(teamController),
+    );
+    router.post(
+        "/athletes",
+        requirePermission("coach-athletes.update"),
+        athleteController.add.bind(athleteController),
+    );
+
+    router.get(
+        "/athletes",
+        requirePermission("coach-athletes.read"),
+        athleteController.list.bind(athleteController),
+    );
+
+    router.delete(
+        "/athletes/:athleteId",
+        requirePermission("coach-athletes.update"),
+        athleteController.remove.bind(athleteController),
     );
     return router;
 }

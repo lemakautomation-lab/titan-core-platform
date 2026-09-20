@@ -40,6 +40,7 @@ import { PerformanceMeasurementController } from "../../presentation/controllers
 import { NutritionPlanController } from "../../presentation/controllers/nutrition-plan.controller";
 import { CoachSquadController } from "../../presentation/controllers/coach-squad.controller";
 import { CoachTeamController } from "../../presentation/controllers/coach-team.controller";
+import { CoachAthleteController } from "../../presentation/controllers/coach-athlete.controller";
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
@@ -222,6 +223,12 @@ const coachTeamController = new CoachTeamController(
     coachModule.listCoachTeamsUseCase,
     coachModule.updateCoachTeamUseCase,
 );
+const coachAthleteController =
+    new CoachAthleteController(
+        coachModule.addMyCoachAthleteUseCase,
+        coachModule.listMyCoachAthletesUseCase,
+        coachModule.removeMyCoachAthleteUseCase,
+    );
 
 const permissionController =
     new PermissionController(
@@ -351,7 +358,7 @@ router.use(
 );
 router.use(
     "/coach",
-    createCoachRoutes(coachSquadController, coachTeamController),
+    createCoachRoutes(coachSquadController, coachTeamController, coachAthleteController),
 );
 
 export default router;
