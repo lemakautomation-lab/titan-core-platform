@@ -234,6 +234,7 @@ const coachTrainingController =
     new CoachTrainingController(
         coachModule.createCoachWorkoutProgrammeUseCase,
         coachModule.assignCoachWorkoutProgrammeUseCase,
+        coachModule.getCoachAthleteMonitoringUseCase,
     );
 
 const permissionController =

@@ -81,5 +81,10 @@ export function createCoachRoutes(
         trainingController.assign.bind(trainingController),
     );
 
+    router.get(
+        "/athletes/:athleteId/performance-monitoring",
+        requirePermission("performance-measurements.read"),
+        trainingController.monitoring.bind(trainingController),
+    );
     return router;
 }

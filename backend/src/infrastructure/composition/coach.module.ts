@@ -5,6 +5,10 @@ import { PrismaAthleteRepository } from "../repositories/athlete.repository";
 import { PrismaAthleteRelationshipRepository } from "../repositories/athlete-relationship.repository";
 import { PrismaWorkoutProgrammeRepository } from "../repositories/workout-programme.repository";
 import { PrismaSportRepository } from "../repositories/sport.repository";
+import { PrismaPerformanceMetricRepository } from "../repositories/performance-metric.repository";
+import { PrismaPerformanceMeasurementRepository } from "../repositories/performance-measurement/performance-measurement.repository";
+import { PrismaRecoveryTrackingRepository } from "../repositories/recovery-tracking/recovery-tracking.repository";
+import { PrismaTrainingStressRepository } from "../repositories/training-stress/training-stress.repository";
 
 import { CreateCoachSquadUseCase } from "../../application/use-cases/create-coach-squad.use-case";
 import { ListCoachSquadsUseCase } from "../../application/use-cases/list-coach-squads.use-case";
@@ -18,6 +22,7 @@ import { RemoveMyCoachAthleteUseCase } from "../../application/use-cases/remove-
 import { CreateWorkoutProgrammeUseCase } from "../../application/use-cases/create-workout-programme.use-case";
 import { CreateCoachWorkoutProgrammeUseCase } from "../../application/use-cases/create-coach-workout-programme.use-case";
 import { AssignCoachWorkoutProgrammeUseCase } from "../../application/use-cases/assign-coach-workout-programme.use-case";
+import { GetCoachAthleteMonitoringUseCase } from "../../application/use-cases/get-coach-athlete-monitoring.use-case";
 
 const databaseService =
     new DatabaseService();
@@ -30,6 +35,17 @@ const workoutProgrammeRepository =
 
 const sportRepository =
     new PrismaSportRepository(databaseService);
+const performanceMetricRepository =
+    new PrismaPerformanceMetricRepository(databaseService);
+
+const performanceMeasurementRepository =
+    new PrismaPerformanceMeasurementRepository(databaseService);
+
+const recoveryTrackingRepository =
+    new PrismaRecoveryTrackingRepository(databaseService);
+
+const trainingStressRepository =
+    new PrismaTrainingStressRepository(databaseService);
 
 const createWorkoutProgrammeUseCase =
     new CreateWorkoutProgrammeUseCase(
@@ -99,5 +115,15 @@ export const coachModule = {
             workoutProgrammeRepository,
             athleteRepository,
             athleteRelationshipRepository,
+        ),
+    getCoachAthleteMonitoringUseCase:
+        new GetCoachAthleteMonitoringUseCase(
+            athleteRepository,
+            athleteRelationshipRepository,
+            performanceMetricRepository,
+            performanceMeasurementRepository,
+            recoveryTrackingRepository,
+            trainingStressRepository,
+            workoutProgrammeRepository,
         ),
 };

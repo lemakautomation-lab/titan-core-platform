@@ -5,6 +5,7 @@ import { CreateWorkoutProgrammeCommand } from "../../application/commands/create
 import { AssignTrainerWorkoutProgrammeCommand } from "../../application/commands/assign-trainer-workout-programme.command";
 import { CreateCoachWorkoutProgrammeUseCase } from "../../application/use-cases/create-coach-workout-programme.use-case";
 import { AssignCoachWorkoutProgrammeUseCase } from "../../application/use-cases/assign-coach-workout-programme.use-case";
+import { GetCoachAthleteMonitoringUseCase } from "../../application/use-cases/get-coach-athlete-monitoring.use-case";
 
 export class CoachTrainingController {
     constructor(
@@ -12,6 +13,8 @@ export class CoachTrainingController {
             CreateCoachWorkoutProgrammeUseCase,
         private readonly assignCoachWorkoutProgrammeUseCase:
             AssignCoachWorkoutProgrammeUseCase,
+        private readonly getCoachAthleteMonitoringUseCase:
+            GetCoachAthleteMonitoringUseCase,
     ) {}
 
     async create(
@@ -91,4 +94,41 @@ export class CoachTrainingController {
 
         res.status(200).json(result.value);
     }
-}
+
+    async monitoring(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const rawLimit = req.query.limit;
+        const limit =
+            rawLimit === undefined
+                ? 25
+                : Number(rawLimit);
+
+        const result =
+            await this.getCoachAthleteMonitoringUseCase.execute({
+                tenantId: authUser.tenantId,
+                userId: authUser.userId,
+                athleteId: String(req.params.athleteId),
+                limit,
+            });
+
+        if (!result.isSuccess) {
+            const status =
+                result.error === "Athlete not found."
+                    ? 404
+                    : 400;
+
+            res.status(status).json({ error: result.error });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }}
