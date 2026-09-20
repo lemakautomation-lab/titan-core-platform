@@ -18,6 +18,7 @@ import { createWorkoutProgrammeRoutes } from "../../presentation/routes/workout-
 import { createProductRoutes } from "../../presentation/routes/product.routes";
 import { createPerformanceMeasurementRoutes } from "../../presentation/routes/performance-measurement.routes";
 import { createNutritionPlanRoutes } from "../../presentation/routes/nutrition-plan.routes";
+import { createCoachRoutes } from "../../presentation/routes/coach.routes";
 
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
@@ -37,6 +38,7 @@ import { WorkoutProgrammeController } from "../../presentation/controllers/worko
 import { ProductController } from "../../presentation/controllers/product.controller";
 import { PerformanceMeasurementController } from "../../presentation/controllers/performance-measurement.controller";
 import { NutritionPlanController } from "../../presentation/controllers/nutrition-plan.controller";
+import { CoachSquadController } from "../../presentation/controllers/coach-squad.controller";
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
@@ -58,6 +60,7 @@ import { workoutProgrammeModule } from "../../infrastructure/composition/workout
 import { productModule } from "../../infrastructure/composition/product.module";
 import { performanceMeasurementModule } from "../../infrastructure/composition/performance-measurement.module";
 import { nutritionPlanModule } from "../../infrastructure/composition/nutrition-plan.module";
+import { coachModule } from "../../infrastructure/composition/coach.module";
 
 const router = Router();
 
@@ -206,6 +209,12 @@ const nutritionPlanController =
     new NutritionPlanController(
         nutritionPlanModule.generateNutritionPlanUseCase,
     );
+const coachSquadController =
+    new CoachSquadController(
+        coachModule.createCoachSquadUseCase,
+        coachModule.listCoachSquadsUseCase,
+        coachModule.updateCoachSquadUseCase,
+    );
 
 const permissionController =
     new PermissionController(
@@ -331,6 +340,12 @@ router.use(
     "/workout-programmes",
     createWorkoutProgrammeRoutes(
         workoutProgrammeController,
+    ),
+);
+router.use(
+    "/coach",
+    createCoachRoutes(
+        coachSquadController,
     ),
 );
 
