@@ -75,8 +75,44 @@ Mission 067 remains **ACTIVE** because Controls 67.2-67.6 remain incomplete.
 
 ### Control 67.2 - Individual comparisons
 
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / RELEASE PENDING
+
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Implementation evidence**
+
+- Implementation commit: `e63ece12524024f554aef5b4f0a044c72aa27b46` - `Mission 067.2: Add individual performance comparisons`.
+- Added `GET /api/v1/coach/squads/:squadId/individual-comparison`.
+- Comparison is restricted to the authenticated Coach's owned squad.
+- Authorization requires `coach-squads.read` and `performance-measurements.read`.
+- Both athletes must be explicitly enrolled in the selected squad.
+- Both athletes are resolved within the authenticated tenant.
+- Both athletes require an exact active `COACH` relationship with the authenticated Coach before performance information is exposed.
+- Athlete identities must be distinct.
+- Request limit is bounded from 1 to 100.
+- Comparable metrics are matched by normalized metric slug, normalized unit and data type.
+- Metrics with incompatible units or data types are excluded.
+- Latest effective performance measurements are used for each compatible metric.
+- No winner, ranking, score or subjective better/worse assessment is generated.
+- Same-tenant Coach ownership and cross-tenant isolation are enforced.
+- No new persistence model or database migration was required.
+
+**Verification evidence**
+
+- Focused Mission 067.2 integration: 1/1 file GREEN; 7/7 tests GREEN.
+- Broader Coach regression: 3/3 files GREEN; 20/20 tests GREEN.
+- Full backend regression: 170/170 files GREEN; 1228/1228 tests GREEN.
+- TypeScript backend build: GREEN.
+- `git diff --check`: GREEN.
+- Automated coverage verifies authentication, dual-permission RBAC, explicit squad membership, active Coach relationship enforcement, metric compatibility, latest effective measurements, Coach ownership isolation, cross-tenant isolation, distinct-athlete validation and bounded input validation.
+- Unauthorized files committed: none.
+- Protected closure-register file remained outside the Mission 067.2 commit boundary.
+
+**Release state**
+
+Backend implementation is verified, committed and pushed. Knowledge Base publication verification is pending.
+
+Mission 067 remains **ACTIVE** because Controls 67.3-67.6 remain incomplete.
 ### Control 67.3 - Team trends
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
