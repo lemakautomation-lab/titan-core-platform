@@ -19,6 +19,7 @@ import { createProductRoutes } from "../../presentation/routes/product.routes";
 import { createPerformanceMeasurementRoutes } from "../../presentation/routes/performance-measurement.routes";
 import { createNutritionPlanRoutes } from "../../presentation/routes/nutrition-plan.routes";
 import { createCoachRoutes } from "../../presentation/routes/coach.routes";
+import { createPerformanceProfessionalRoutes } from "../../presentation/routes/performance-professional.routes";
 
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
@@ -42,6 +43,7 @@ import { CoachSquadController } from "../../presentation/controllers/coach-squad
 import { CoachTeamController } from "../../presentation/controllers/coach-team.controller";
 import { CoachAthleteController } from "../../presentation/controllers/coach-athlete.controller";
 import { CoachTrainingController } from "../../presentation/controllers/coach-training.controller";
+import { PerformanceProfessionalController } from "../../presentation/controllers/performance-professional.controller";
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
@@ -64,6 +66,7 @@ import { productModule } from "../../infrastructure/composition/product.module";
 import { performanceMeasurementModule } from "../../infrastructure/composition/performance-measurement.module";
 import { nutritionPlanModule } from "../../infrastructure/composition/nutrition-plan.module";
 import { coachModule } from "../../infrastructure/composition/coach.module";
+import { performanceProfessionalModule } from "../../infrastructure/composition/performance-professional.module";
 
 const router = Router();
 
@@ -245,6 +248,11 @@ const coachTrainingController =
         coachModule.getCoachAthleteMonitoringUseCase,
     );
 
+
+const performanceProfessionalController =
+    new PerformanceProfessionalController(
+        performanceProfessionalModule.getWorkflowUseCase,
+    );
 const permissionController =
     new PermissionController(
         permissionModule.createPermissionUseCase,
@@ -376,4 +384,11 @@ router.use(
     createCoachRoutes(coachSquadController, coachTeamController, coachAthleteController, coachTrainingController),
 );
 
+
+router.use(
+    "/performance-professional",
+    createPerformanceProfessionalRoutes(
+        performanceProfessionalController,
+    ),
+);
 export default router;

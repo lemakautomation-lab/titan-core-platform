@@ -290,6 +290,52 @@ describe("AppRouter", () => {
   });
 
 
+  it("renders the Performance Professional route with both required permissions", () => {
+    renderRouter(
+      "/performance-professional",
+      true,
+      [
+        "performance-measurements.read",
+        "workout-programmes.read",
+      ],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Sports Scientist Workflow",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("denies Performance Professional access without performance-measurements.read", () => {
+    renderRouter(
+      "/performance-professional",
+      true,
+      ["workout-programmes.read"],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Access denied",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("denies Performance Professional access without workout-programmes.read", () => {
+    renderRouter(
+      "/performance-professional",
+      true,
+      ["performance-measurements.read"],
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Access denied",
+      }),
+    ).toBeInTheDocument();
+  });
+
   it("renders public Athlete signup without a tenant field", () => {
     renderRouter(
       "/signup/athlete",
