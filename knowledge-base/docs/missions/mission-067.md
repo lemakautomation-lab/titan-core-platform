@@ -222,8 +222,50 @@ Backend implementation is verified, committed and pushed. Knowledge Base publica
 Mission 067 remains **ACTIVE** because Controls 67.5-67.6 remain incomplete.
 ### Control 67.5 - Athlete development
 
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB RELEASE PENDING
+
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Implementation evidence**
+
+- Implementation commit: `6f7b6392bee49fa2c3d0fcb8f6ff71fcf5c7d84a` - `Mission 067.5: Add athlete development history`.
+- Added `GET /api/v1/coach/squads/:id/athlete-development`.
+- Restricted to the authenticated Coach's owned squad.
+- Requires `coach-squads.read` and `performance-measurements.read`.
+- Athletes must be explicitly enrolled in the selected squad.
+- Athletes are resolved within the authenticated tenant.
+- Each included athlete requires an exact active `COACH` relationship with the authenticated Coach.
+- Non-members and stale/inactive Coach relationships are excluded.
+- Athlete development uses existing authoritative `PerformanceMetric` and effective `PerformanceMeasurement` boundaries.
+- Metrics are resolved through `PerformanceMetricRepository.findAllByAthleteId(...)`.
+- Historical observations use `PerformanceMeasurementRepository.listRecentEffectiveForMetric(...)`.
+- Measurement history is bounded from 1 to 100 observations per athlete metric.
+- Effective measurement history is returned in deterministic chronological order.
+- Eligible squad athletes remain represented when no performance metrics currently exist.
+- Same-tenant Coach ownership and cross-tenant isolation are enforced.
+- No development score, ranking, winner, potential rating, prediction, readiness score, medical interpretation, arbitrary threshold or fabricated improvement percentage is generated.
+- No Prisma schema change or database migration was required.
+- Authorized implementation scope: exactly 6 files.
+
+**Verification evidence**
+
+- Focused Mission 067.5 integration: 1/1 file GREEN; 7/7 tests GREEN.
+- Broader Coach regression: 6/6 files GREEN; 40/40 tests GREEN.
+- Full backend regression: 173/173 files GREEN; 1249/1249 tests GREEN.
+- Production TypeScript backend build: GREEN.
+- `git diff --check`: GREEN.
+- Authentication and dual-permission RBAC verified.
+- Explicit squad membership and active Coach relationship enforcement verified.
+- Coach ownership and cross-tenant isolation verified.
+- Effective-history retrieval, bounded input and deterministic chronological output verified.
+- Unauthorized implementation files committed: none.
+- Protected closure-register file remained outside the implementation commit.
+
+**Release state**
+
+Backend implementation is verified, committed and pushed. Knowledge Base publication is pending.
+
+Mission 067 remains **ACTIVE** because Control 67.6 remains incomplete.
 ### Control 67.6 - Role/tenant-scoped comparisons
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
