@@ -222,6 +222,7 @@ const coachSquadController =
         coachModule.removeCoachSquadAthleteUseCase,
         coachModule.getCoachSquadPerformanceDashboardUseCase,
         coachModule.getCoachSquadIndividualComparisonUseCase,
+        coachModule.getCoachSquadTeamTrendsUseCase,
     );
 
 const coachTeamController = new CoachTeamController(

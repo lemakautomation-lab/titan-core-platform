@@ -19,6 +19,7 @@ import { ListCoachSquadAthletesUseCase } from "../../application/use-cases/list-
 import { RemoveCoachSquadAthleteUseCase } from "../../application/use-cases/remove-coach-squad-athlete.use-case";
 import { GetCoachSquadPerformanceDashboardUseCase } from "../../application/use-cases/get-coach-squad-performance-dashboard.use-case";
 import { GetCoachSquadIndividualComparisonUseCase } from "../../application/use-cases/get-coach-squad-individual-comparison.use-case";
+import { GetCoachSquadTeamTrendsUseCase } from "../../application/use-cases/get-coach-squad-team-trends.use-case";
 import { CreateCoachTeamUseCase } from "../../application/use-cases/create-coach-team.use-case";
 import { ListCoachTeamsUseCase } from "../../application/use-cases/list-coach-teams.use-case";
 import { UpdateCoachTeamUseCase } from "../../application/use-cases/update-coach-team.use-case";
@@ -119,6 +120,15 @@ export const coachModule = {
         ),
     getCoachSquadIndividualComparisonUseCase:
         new GetCoachSquadIndividualComparisonUseCase(
+            coachSquadRepository,
+            coachSquadAthleteRepository,
+            athleteRepository,
+            athleteRelationshipRepository,
+            performanceMetricRepository,
+            performanceMeasurementRepository,
+        ),
+    getCoachSquadTeamTrendsUseCase:
+        new GetCoachSquadTeamTrendsUseCase(
             coachSquadRepository,
             coachSquadAthleteRepository,
             athleteRepository,
