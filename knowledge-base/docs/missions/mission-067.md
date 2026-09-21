@@ -121,7 +121,7 @@ Backend implementation is verified, committed and pushed. Knowledge Base publica
 Mission 067 remains **ACTIVE** because Controls 67.3-67.6 remain incomplete.
 ### Control 67.3 - Team trends
 
-**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / RELEASE PENDING
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
@@ -161,7 +161,12 @@ Mission 067 remains **ACTIVE** because Controls 67.3-67.6 remain incomplete.
 
 **Release state**
 
-Backend implementation is verified, committed and pushed. Knowledge Base publication is pending.
+Backend implementation is verified, committed and pushed. Knowledge Base publication is verified.
+
+- Knowledge Base source commit: `a702b15d06c56033e8cd842db08849fae772cf5c`.
+- Cloudflare production deployment: `476acbc0-4f55-4249-8c4a-6ec51b34a79d`.
+- Immutable deployment: `https://476acbc0.titan-core-platform.pages.dev/docs/missions/067/`.
+- Publication visually verified through authenticated Cloudflare Access on 21 September 2026.
 
 Mission 067 remains **ACTIVE** because Controls 67.4-67.6 remain incomplete.
 
