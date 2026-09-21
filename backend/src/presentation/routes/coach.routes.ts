@@ -59,6 +59,13 @@ export function createCoachRoutes(
         requirePermission("performance-measurements.read"),
         controller.teamTrends.bind(controller),
     );
+
+    router.get(
+        "/squads/:id/training-load",
+        requirePermission("coach-squads.read"),
+        requirePermission("performance-measurements.read"),
+        controller.trainingLoad.bind(controller),
+    );
     router.get(
         "/squads/:id/individual-comparison",
         requirePermission("coach-squads.read"),

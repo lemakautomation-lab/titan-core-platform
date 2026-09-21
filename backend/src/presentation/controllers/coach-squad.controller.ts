@@ -13,6 +13,7 @@ import { RemoveCoachSquadAthleteUseCase } from "../../application/use-cases/remo
 import { GetCoachSquadPerformanceDashboardUseCase } from "../../application/use-cases/get-coach-squad-performance-dashboard.use-case";
 import { GetCoachSquadIndividualComparisonUseCase } from "../../application/use-cases/get-coach-squad-individual-comparison.use-case";
 import { GetCoachSquadTeamTrendsUseCase } from "../../application/use-cases/get-coach-squad-team-trends.use-case";
+import { GetCoachSquadTrainingLoadUseCase } from "../../application/use-cases/get-coach-squad-training-load.use-case";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
 
@@ -35,7 +36,8 @@ export class CoachSquadController {
         private readonly getCoachSquadIndividualComparisonUseCase:
             GetCoachSquadIndividualComparisonUseCase,
         private readonly getCoachSquadTeamTrendsUseCase:
-            GetCoachSquadTeamTrendsUseCase,
+            GetCoachSquadTeamTrendsUseCase,        private readonly getCoachSquadTrainingLoadUseCase:
+            GetCoachSquadTrainingLoadUseCase,
     ) {}
 
     async create(
@@ -294,6 +296,44 @@ export class CoachSquadController {
 
         const result =
             await this.getCoachSquadTeamTrendsUseCase.execute({
+                tenantId: authUser.tenantId,
+                userId: authUser.userId,
+                squadId: String(req.params.id),
+                limit,
+            });
+
+        if (!result.isSuccess) {
+            const status =
+                result.error === "Coach squad not found."
+                    ? 404
+                    : 400;
+
+            res.status(status).json({ error: result.error });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
+
+    async trainingLoad(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const rawLimit = req.query.limit;
+        const limit =
+            rawLimit === undefined
+                ? 25
+                : Number(rawLimit);
+
+        const result =
+            await this.getCoachSquadTrainingLoadUseCase.execute({
                 tenantId: authUser.tenantId,
                 userId: authUser.userId,
                 squadId: String(req.params.id),
