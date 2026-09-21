@@ -21,7 +21,7 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 68.1 - Sports scientist workflows
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
@@ -66,7 +66,20 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 #### Release state
 
-Implementation and technical verification are complete. Commit, push and Knowledge Base publication verification remain pending. Control 68.1 must not be classified as published until those release gates are complete.
+Implementation, technical verification, commit, push and Knowledge Base publication verification are complete. Control 68.1 is released and published.
+
+#### Publication evidence
+
+- Implementation commit: `9d67566b76a5248214eb3f7226de2ce6f6a8912a`
+- Cloudflare Pages deployment: `1ce7e34a-8eea-4c4f-83a8-9afdf8a66b65`
+- Deployment environment: `Production`
+- Deployment branch: `main`
+- Cloudflare source: `9d67566`
+- Immutable deployment host: `1ce7e34a.titan-core-platform.pages.dev`
+- Generated Mission 068 deployment artifact verified with all Control 68.1 release markers.
+- Authenticated Cloudflare deployment evidence verified.
+- Repository release state verified with `HEAD == origin/main` and ahead/behind `0/0`.
+
 ### Control 68.2 - Strength & conditioning workflows
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
