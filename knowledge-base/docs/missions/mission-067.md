@@ -273,7 +273,7 @@ Backend implementation is verified, committed and pushed. Knowledge Base publica
 Mission 067 remains **ACTIVE** because Control 67.6 remains incomplete.
 ### Control 67.6 - Role/tenant-scoped comparisons
 
-**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB RELEASE PENDING
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED
 
 **Implementation commit:** `549aff2aeefc5370055e859cf72d370f810a0e23`
 
@@ -305,11 +305,14 @@ Mission 067 remains **ACTIVE** because Control 67.6 remains incomplete.
 **Release state:**
 
 - Implementation verified, committed and pushed.
-- Knowledge Base publication verification remains pending.
+- Knowledge Base publication verified on 21 September 2026.
+- Publication source commit: `67246a9bb1fed83be046e5614688b1e47ad4b903`.
+- Cloudflare production deployment: `cb2e90e8-3644-4672-a5d0-b0eb9f1ab5d1`.
+- Immutable and canonical Mission 067 pages visually verified.
 
 ## Mission Exit Gate
 
-**Mission 067 implementation status:** COMPLETE / VERIFIED / RELEASE PENDING
+**Mission 067 status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED
 
 All Mission 067 controls are implemented and verified:
 
@@ -318,7 +321,7 @@ All Mission 067 controls are implemented and verified:
 - 67.3 - Team trends: COMPLETE / VERIFIED / KB PUBLISHED.
 - 67.4 - Training load: COMPLETE / VERIFIED / KB PUBLISHED.
 - 67.5 - Athlete development: COMPLETE / VERIFIED / KB PUBLISHED.
-- 67.6 - Role/tenant-scoped comparisons: COMPLETE / VERIFIED / COMMITTED / PUSHED / KB RELEASE PENDING.
+- 67.6 - Role/tenant-scoped comparisons: COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED.
 
 **Mission-level verification:**
 
@@ -329,4 +332,6 @@ All Mission 067 controls are implemented and verified:
 - Latest full backend serial regression: 174/174 test files GREEN; 1251/1251 tests GREEN.
 - Production TypeScript build: GREEN.
 - Database/API integrity preserved.
-- Mission closure requires final Knowledge Base publication verification.
+- Knowledge Base publication verified on 21 September 2026.
+- Mission 067 exit gate satisfied.
+- Mission 067 is CLOSED.
