@@ -21,7 +21,7 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 67.1 - Squad dashboards
 
-**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / RELEASE PENDING
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
@@ -63,7 +63,13 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Release state**
 
-Backend implementation is verified, committed and pushed. Knowledge Base publication remains pending.
+Backend implementation is verified, committed and pushed. Knowledge Base publication is verified through Cloudflare Pages deployment 19f9ddef.
+
+- Publication source commit: `a0a3f69d76ad52e9eaf24085d3f4ab710d172bad`
+- Immutable Mission 067 URL: https://19f9ddef.titan-core-platform.pages.dev/docs/missions/067/
+- Canonical Mission 067 URL: https://titan-core-platform.pages.dev/docs/missions/067/
+- Immutable verification: HTTP 302 to Cloudflare Access - VERIFIED.
+- Canonical verification: HTTP 302 to Cloudflare Access - VERIFIED.
 
 Mission 067 remains **ACTIVE** because Controls 67.2-67.6 remain incomplete.
 
