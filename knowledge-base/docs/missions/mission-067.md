@@ -172,8 +172,49 @@ Mission 067 remains **ACTIVE** because Controls 67.4-67.6 remain incomplete.
 
 ### Control 67.4 - Training load
 
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB RELEASE PENDING
+
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Implementation evidence**
+
+- Implementation commit: `bc9c653956b0643dcf8700a5f1d6592167b6f453` - `Mission 067.4: Add squad training load`.
+- Added `GET /api/v1/coach/squads/:squadId/training-load`.
+- Restricted to the authenticated Coach's owned squad.
+- Requires `coach-squads.read` and `performance-measurements.read`.
+- Athletes must be explicitly enrolled in the selected squad.
+- Athletes are resolved within the authenticated tenant.
+- Each included athlete requires an exact active `COACH` relationship with the authenticated Coach.
+- Non-members and stale/inactive Coach relationships are excluded.
+- Training load uses the existing authoritative `TrainingStress` domain and repository boundary.
+- Historical training-stress observations are returned per eligible squad athlete.
+- Observations are returned in deterministic chronological order.
+- Retrieval is bounded from 1 to 100 observations per athlete.
+- Empty owned squads return a valid empty athlete set.
+- Same-tenant Coach ownership and cross-tenant isolation are enforced.
+- No ACWR, readiness score, threshold, medical interpretation, aggregate average or other unsupported derived analytics are generated.
+- No Prisma schema change or database migration was required.
+- Authorized implementation scope: exactly 6 files.
+
+**Verification evidence**
+
+- Focused Mission 067.4 integration: 1/1 file GREEN; 7/7 tests GREEN.
+- Broader Coach regression: 6/6 files GREEN; 40/40 tests GREEN.
+- Full backend regression: 172/172 files GREEN; 1242/1242 tests GREEN.
+- Production TypeScript backend build: GREEN.
+- `git diff --check`: GREEN.
+- Authentication and dual-permission RBAC verified.
+- Explicit squad membership and active Coach relationship enforcement verified.
+- Coach ownership and cross-tenant isolation verified.
+- Bounded retrieval and deterministic chronological output verified.
+- Unauthorized implementation files committed: none.
+- Protected closure-register file remained outside the implementation commit.
+
+**Release state**
+
+Backend implementation is verified, committed and pushed. Knowledge Base publication is pending verification.
+
+Mission 067 remains **ACTIVE** because Controls 67.5-67.6 remain incomplete.
 ### Control 67.5 - Athlete development
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
