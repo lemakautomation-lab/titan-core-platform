@@ -172,7 +172,7 @@ Mission 067 remains **ACTIVE** because Controls 67.4-67.6 remain incomplete.
 
 ### Control 67.4 - Training load
 
-**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB RELEASE PENDING
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
@@ -212,7 +212,12 @@ Mission 067 remains **ACTIVE** because Controls 67.4-67.6 remain incomplete.
 
 **Release state**
 
-Backend implementation is verified, committed and pushed. Knowledge Base publication is pending verification.
+Backend implementation is verified, committed and pushed. Knowledge Base publication is verified.
+
+- Knowledge Base source commit: `528b31a2527a948f79ff145a9ff491eb5f583150`.
+- Cloudflare production deployment: `da7e0eac-6505-4532-b05d-ce5b4420e67e`.
+- Immutable deployment: `https://da7e0eac.titan-core-platform.pages.dev/docs/missions/067/`.
+- Publication visually verified through authenticated Cloudflare Access on 21 September 2026.
 
 Mission 067 remains **ACTIVE** because Controls 67.5-67.6 remain incomplete.
 ### Control 67.5 - Athlete development
