@@ -11,6 +11,7 @@ import { AddCoachSquadAthleteUseCase } from "../../application/use-cases/add-coa
 import { ListCoachSquadAthletesUseCase } from "../../application/use-cases/list-coach-squad-athletes.use-case";
 import { RemoveCoachSquadAthleteUseCase } from "../../application/use-cases/remove-coach-squad-athlete.use-case";
 import { GetCoachSquadPerformanceDashboardUseCase } from "../../application/use-cases/get-coach-squad-performance-dashboard.use-case";
+import { GetCoachSquadIndividualComparisonUseCase } from "../../application/use-cases/get-coach-squad-individual-comparison.use-case";
 
 import { AuthRequest } from "../../middleware/auth.middleware";
 
@@ -30,6 +31,8 @@ export class CoachSquadController {
             RemoveCoachSquadAthleteUseCase,
         private readonly getCoachSquadPerformanceDashboardUseCase:
             GetCoachSquadPerformanceDashboardUseCase,
+        private readonly getCoachSquadIndividualComparisonUseCase:
+            GetCoachSquadIndividualComparisonUseCase,
     ) {}
 
     async create(
@@ -268,4 +271,52 @@ export class CoachSquadController {
         }
 
         res.status(200).json(result.value);
-    }}
+    }
+    async individualComparison(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const rawLimit = req.query.limit;
+        const limit =
+            rawLimit === undefined
+                ? 25
+                : Number(rawLimit);
+
+        const result =
+            await this.getCoachSquadIndividualComparisonUseCase.execute({
+                tenantId: authUser.tenantId,
+                userId: authUser.userId,
+                squadId: String(req.params.id),
+                athleteAId:
+                    typeof req.query.athleteAId === "string"
+                        ? req.query.athleteAId
+                        : "",
+                athleteBId:
+                    typeof req.query.athleteBId === "string"
+                        ? req.query.athleteBId
+                        : "",
+                limit,
+            });
+
+        if (!result.isSuccess) {
+            const status =
+                result.error === "Coach squad not found." ||
+                result.error ===
+                    "Comparison athlete not found in squad."
+                    ? 404
+                    : 400;
+
+            res.status(status).json({ error: result.error });
+            return;
+        }
+
+        res.status(200).json(result.value);
+        }
+}

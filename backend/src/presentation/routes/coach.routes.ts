@@ -53,6 +53,12 @@ export function createCoachRoutes(
         requirePermission("performance-measurements.read"),
         controller.performanceDashboard.bind(controller),
     );
+    router.get(
+        "/squads/:id/individual-comparison",
+        requirePermission("coach-squads.read"),
+        requirePermission("performance-measurements.read"),
+        controller.individualComparison.bind(controller),
+    );
     router.delete(
         "/squads/:id/athletes/:athleteId",
         requirePermission("coach-squads.update"),
