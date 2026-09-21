@@ -121,7 +121,49 @@ Backend implementation is verified, committed and pushed. Knowledge Base publica
 Mission 067 remains **ACTIVE** because Controls 67.3-67.6 remain incomplete.
 ### Control 67.3 - Team trends
 
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / RELEASE PENDING
+
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+
+**Implementation evidence**
+
+- Implementation commit: `73cf225edd8e7df128dca3b0d95d9141b9baf7e1` - `Mission 067.3: Add team performance trends`.
+- Added `GET /api/v1/coach/squads/:squadId/team-trends`.
+- Restricted to the authenticated Coach's owned squad.
+- Requires `coach-squads.read` and `performance-measurements.read`.
+- Athletes must be explicitly enrolled in the selected squad.
+- Athletes are resolved within the authenticated tenant.
+- Each included athlete requires an exact active `COACH` relationship with the authenticated Coach.
+- Non-members and stale/inactive Coach relationships are excluded.
+- Trends use effective performance measurements.
+- Compatible metrics are grouped by normalized slug, normalized unit and data type.
+- Trend points are returned in deterministic chronological order.
+- Output includes athlete identity, metric identity, measurement value and recorded timestamp.
+- No rankings, winners or subjective better/worse assessments are generated.
+- Measurement history is bounded from 1 to 100 records per athlete metric.
+- Same-tenant Coach ownership and cross-tenant isolation are enforced.
+- Empty owned squads return a valid empty trend result.
+- No Prisma schema change or database migration was required.
+
+**Verification evidence**
+
+- Focused Mission 067.3 integration: 1/1 file GREEN; 7/7 tests GREEN.
+- Full backend regression: 171/171 files GREEN; 1235/1235 tests GREEN.
+- TypeScript backend build: GREEN.
+- `git diff --check`: GREEN.
+- Authentication and dual-permission RBAC verified.
+- Squad membership and active Coach relationship enforcement verified.
+- Coach ownership and cross-tenant isolation verified.
+- Chronological trend generation and bounded-input validation verified.
+- Authorized implementation scope: exactly 6 files.
+- Unauthorized implementation files committed: none.
+- Protected closure-register file remained outside the implementation commit.
+
+**Release state**
+
+Backend implementation is verified, committed and pushed. Knowledge Base publication is pending.
+
+Mission 067 remains **ACTIVE** because Controls 67.4-67.6 remain incomplete.
 
 ### Control 67.4 - Training load
 
