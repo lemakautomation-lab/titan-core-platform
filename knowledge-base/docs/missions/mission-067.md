@@ -273,8 +273,60 @@ Backend implementation is verified, committed and pushed. Knowledge Base publica
 Mission 067 remains **ACTIVE** because Control 67.6 remains incomplete.
 ### Control 67.6 - Role/tenant-scoped comparisons
 
-**Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB RELEASE PENDING
+
+**Implementation commit:** `549aff2aeefc5370055e859cf72d370f810a0e23`
+
+**Verified boundary:**
+
+- Reuses the established individual-comparison API: `GET /api/v1/coach/squads/:id/individual-comparison`.
+- No duplicate comparison endpoint, role model, persistence model, or database migration was introduced.
+- Authentication derives `userId` and `tenantId` from the verified access token.
+- Comparison access requires both `coach-squads.read` and `performance-measurements.read`.
+- Permissions are resolved through tenant-scoped RBAC roles and permissions.
+- The comparison remains restricted to the authenticated Coach's owned squad.
+- Explicit squad membership is required.
+- Exact active `COACH` athlete relationships remain required.
+- Another Coach's squad is not disclosed.
+- Cross-tenant squad comparison access is not disclosed.
+- Existing comparison validation and compatible-metric semantics remain unchanged.
+
+**067.6 regression evidence:**
+
+- Dedicated role/tenant comparison regression: 1/1 test file GREEN; 2/2 tests GREEN.
+- Broader Coach regression: 7/7 test files GREEN; 43/43 tests GREEN.
+- Full backend serial regression: 174/174 test files GREEN; 1251/1251 tests GREEN.
+- Production TypeScript build: GREEN.
+- `git diff --check`: GREEN.
+- Implementation scope: one dedicated integration regression file only.
+- Unauthorized production changes: none.
+- Database migration: none.
+
+**Release state:**
+
+- Implementation verified, committed and pushed.
+- Knowledge Base publication verification remains pending.
 
 ## Mission Exit Gate
 
-all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
+**Mission 067 implementation status:** COMPLETE / VERIFIED / RELEASE PENDING
+
+All Mission 067 controls are implemented and verified:
+
+- 67.1 - Squad dashboards: COMPLETE / VERIFIED / KB PUBLISHED.
+- 67.2 - Individual comparisons: COMPLETE / VERIFIED / KB PUBLISHED.
+- 67.3 - Team trends: COMPLETE / VERIFIED / KB PUBLISHED.
+- 67.4 - Training load: COMPLETE / VERIFIED / KB PUBLISHED.
+- 67.5 - Athlete development: COMPLETE / VERIFIED / KB PUBLISHED.
+- 67.6 - Role/tenant-scoped comparisons: COMPLETE / VERIFIED / COMMITTED / PUSHED / KB RELEASE PENDING.
+
+**Mission-level verification:**
+
+- Required Team Performance controls 67.1 through 67.6 are implemented.
+- Authentication, RBAC, Coach ownership, explicit squad membership, active Coach relationships and tenant isolation are enforced at the applicable boundaries.
+- Comparison capabilities do not introduce winner rankings, subjective scoring, predictions, or fabricated performance conclusions.
+- Control 67.6 required no production API or persistence duplication; the established comparison boundary was explicitly verified through dedicated security regression coverage.
+- Latest full backend serial regression: 174/174 test files GREEN; 1251/1251 tests GREEN.
+- Production TypeScript build: GREEN.
+- Database/API integrity preserved.
+- Mission closure requires final Knowledge Base publication verification.
