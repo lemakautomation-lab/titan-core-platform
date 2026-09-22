@@ -7,9 +7,11 @@ import {
   getSportsScientistWorkflow,
   getStrengthConditioningWorkflow,
   getNutritionProfessionalWorkflow,
+  getRehabilitationProfessionalWorkflow,
   type PerformanceProfessionalWorkflowDto,
   type StrengthConditioningWorkflowDto,
   type NutritionProfessionalWorkflowDto,
+  type RehabilitationProfessionalWorkflowDto,
 } from "./performance-professional.api";
 
 export default function PerformanceProfessionalPage() {
@@ -26,6 +28,11 @@ export default function PerformanceProfessionalPage() {
     setNutritionWorkflow,
   ] =
     useState<NutritionProfessionalWorkflowDto | null>(null);
+  const [
+    rehabilitationWorkflow,
+    setRehabilitationWorkflow,
+  ] =
+    useState<RehabilitationProfessionalWorkflowDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] =
     useState<string | null>(null);
@@ -49,16 +56,19 @@ export default function PerformanceProfessionalPage() {
     setWorkflow(null);
     setStrengthConditioningWorkflow(null);
     setNutritionWorkflow(null);
+    setRehabilitationWorkflow(null);
 
     try {
       const [
         sportsScientistResult,
         strengthConditioningResult,
         nutritionResult,
+        rehabilitationResult,
       ] = await Promise.all([
         getSportsScientistWorkflow(id),
         getStrengthConditioningWorkflow(id),
         getNutritionProfessionalWorkflow(id),
+        getRehabilitationProfessionalWorkflow(id),
       ]);
 
       setWorkflow(sportsScientistResult);
@@ -66,6 +76,9 @@ export default function PerformanceProfessionalPage() {
         strengthConditioningResult,
       );
       setNutritionWorkflow(nutritionResult);
+      setRehabilitationWorkflow(
+        rehabilitationResult,
+      );
     }
     catch {
       setError(
@@ -272,6 +285,37 @@ export default function PerformanceProfessionalPage() {
                 No nutrition plan is currently available.
               </p>
             )}
+          </section>
+        )}
+
+        {rehabilitationWorkflow && (
+          <section
+            aria-label="Rehabilitation Professional workflow"
+          >
+            <span className="titan-eyebrow">
+              REHABILITATION PROFESSIONAL
+            </span>
+
+            <h3>Rehabilitation Professional Workflow</h3>
+
+            <p>
+              Review authorised, non-clinical recovery
+              observations for the selected Athlete.
+            </p>
+
+            <p>
+              Athlete ID:{" "}
+              <strong>
+                {rehabilitationWorkflow.athleteId}
+              </strong>
+            </p>
+
+            <dl>
+              <dt>Rehabilitation recovery observations</dt>
+              <dd>
+                {rehabilitationWorkflow.recovery.length}
+              </dd>
+            </dl>
           </section>
         )}
       </section>

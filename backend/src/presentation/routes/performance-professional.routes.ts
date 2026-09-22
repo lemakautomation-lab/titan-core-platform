@@ -29,5 +29,11 @@ export function createPerformanceProfessionalRoutes(
         controller.getNutritionProfessionalWorkflow.bind(controller),
     );
 
+    router.get(
+        "/athletes/:athleteId/rehabilitation",
+        requirePermission("performance-measurements.read"),
+        controller.getRehabilitationProfessionalWorkflow.bind(controller),
+    );
+
     return router;
 }

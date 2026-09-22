@@ -12,6 +12,7 @@ import { PrismaNutritionPlanRepository } from "../repositories/nutrition-plan/nu
 import { GetPerformanceProfessionalWorkflowUseCase } from "../../application/use-cases/get-performance-professional-workflow.use-case";
 import { GetStrengthConditioningWorkflowUseCase } from "../../application/use-cases/get-strength-conditioning-workflow.use-case";
 import { GetNutritionProfessionalWorkflowUseCase } from "../../application/use-cases/get-nutrition-professional-workflow.use-case";
+import { GetRehabilitationProfessionalWorkflowUseCase } from "../../application/use-cases/get-rehabilitation-professional-workflow.use-case";
 
 const databaseService =
     new DatabaseService();
@@ -65,5 +66,12 @@ export const performanceProfessionalModule = {
             athleteRepository,
             athleteRelationshipRepository,
             nutritionPlanRepository,
+        ),
+
+    getRehabilitationProfessionalWorkflowUseCase:
+        new GetRehabilitationProfessionalWorkflowUseCase(
+            athleteRepository,
+            athleteRelationshipRepository,
+            recoveryTrackingRepository,
         ),
 };

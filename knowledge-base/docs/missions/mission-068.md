@@ -208,6 +208,48 @@ Implementation, technical verification, commit, push and Knowledge Base publicat
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+#### Implementation
+
+- Added authenticated Rehabilitation Professional workflow endpoint: `GET /api/v1/performance-professional/athletes/:athleteId/rehabilitation`.
+- Added a dedicated application query, response DTO and use-case boundary.
+- Reused the existing tenant-aware Athlete, Athlete Relationship and Recovery Tracking repositories.
+- Added bounded recovery-observation retrieval with a validated limit from 1 to 100.
+- Added the Rehabilitation Professional workflow to the existing Performance Professional frontend.
+- Displays the authorised Athlete identifier and bounded recovery-observation count.
+- No Prisma schema or migration change was required.
+
+#### Security and professional boundaries
+
+- Authentication is mandatory.
+- API access requires the established `performance-measurements.read` permission.
+- Athlete lookup is scoped to the authenticated tenant.
+- Access requires an active `PERFORMANCE_PROFESSIONAL` relationship between the authenticated user and Athlete.
+- Cross-tenant Athlete access returns the bounded not-found response.
+- The workflow is read-only and exposes existing recovery observations only.
+- The workflow explicitly remains non-clinical and does not provide diagnosis, treatment, prescriptions or medical claims.
+- Dedicated role-specific permission refinement remains within Control 68.5.
+
+#### Verification evidence
+
+- Focused backend unit and HTTP/RBAC tests: 2/2 files, 11/11 tests GREEN.
+- Complete Mission 068 backend regression: 8/8 files, 43/43 tests GREEN.
+- Full backend serial regression: 182/182 test files, 1294/1294 tests GREEN.
+- Backend TypeScript build: GREEN.
+- Mission 068.4-owned backend lint: GREEN.
+- Focused frontend and router regression: 2/2 files, 29/29 tests GREEN.
+- Full frontend regression: 40/40 test files, 216/216 tests GREEN.
+- Frontend production build: GREEN.
+- Frontend lint: 106 files checked with no errors.
+- `git diff --check`: GREEN.
+- Prisma scope: CLEAN.
+- Protected closure register: UNTOUCHED.
+- Existing unrelated Dashboard test `act(...)` warnings remain non-blocking; all tests passed.
+
+#### Release state
+
+Implementation and technical verification are complete. Commit, push and Knowledge Base publication verification remain pending. Control 68.4 must not be classified as published until those release gates are complete.
 ### Control 68.5 - Role-specific permissions
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

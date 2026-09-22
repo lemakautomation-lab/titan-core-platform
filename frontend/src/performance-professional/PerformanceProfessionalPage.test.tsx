@@ -16,6 +16,16 @@ import {
 import PerformanceProfessionalPage from "./PerformanceProfessionalPage";
 import * as professionalApi from "./performance-professional.api";
 
+function mockRehabilitationWorkflow() {
+  return vi.spyOn(
+    professionalApi,
+    "getRehabilitationProfessionalWorkflow",
+  ).mockResolvedValue({
+    athleteId: "athlete-1",
+    recovery: [],
+  });
+}
+
 function mockNutritionWorkflow() {
   return vi.spyOn(
     professionalApi,
@@ -38,6 +48,8 @@ describe("PerformanceProfessionalPage", () => {
     );
 
     mockNutritionWorkflow();
+
+    mockRehabilitationWorkflow();
 
     render(<PerformanceProfessionalPage />);
 
@@ -88,6 +100,8 @@ describe("PerformanceProfessionalPage", () => {
     });
 
     mockNutritionWorkflow();
+
+    mockRehabilitationWorkflow();
 
     render(<PerformanceProfessionalPage />);
 
@@ -171,6 +185,8 @@ describe("PerformanceProfessionalPage", () => {
 
     mockNutritionWorkflow();
 
+    mockRehabilitationWorkflow();
+
     render(<PerformanceProfessionalPage />);
 
     fireEvent.change(
@@ -223,6 +239,8 @@ describe("PerformanceProfessionalPage", () => {
       });
 
     mockNutritionWorkflow();
+
+    mockRehabilitationWorkflow();
 
     render(<PerformanceProfessionalPage />);
 
@@ -324,6 +342,8 @@ describe("PerformanceProfessionalPage", () => {
       },
     });
 
+    mockRehabilitationWorkflow();
+
     render(<PerformanceProfessionalPage />);
 
     fireEvent.change(
@@ -361,5 +381,79 @@ describe("PerformanceProfessionalPage", () => {
     expect(
       screen.getByText("3 L"),
     ).toBeInTheDocument();
+  });
+
+  it("loads the bounded Rehabilitation Professional workflow", async () => {
+    vi.spyOn(
+      professionalApi,
+      "getSportsScientistWorkflow",
+    ).mockResolvedValue({
+      athleteId: "athlete-1",
+      performance: [],
+      recovery: [],
+      trainingStress: [],
+      workoutProgrammes: [],
+    });
+
+    vi.spyOn(
+      professionalApi,
+      "getStrengthConditioningWorkflow",
+    ).mockResolvedValue({
+      athleteId: "athlete-1",
+      trainingStress: [],
+      workoutProgrammes: [],
+    });
+
+    mockNutritionWorkflow();
+
+    const getRehabilitation = vi.spyOn(
+      professionalApi,
+      "getRehabilitationProfessionalWorkflow",
+    ).mockResolvedValue({
+      athleteId: "athlete-1",
+      recovery: [
+        { id: "recovery-1" },
+        { id: "recovery-2" },
+      ],
+    });
+
+    render(<PerformanceProfessionalPage />);
+
+    fireEvent.change(
+      screen.getByLabelText("Athlete ID"),
+      {
+        target: { value: "athlete-1" },
+      },
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Load workflow",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(getRehabilitation)
+        .toHaveBeenCalledWith("athlete-1");
+    });
+
+    expect(
+      await screen.findByRole("region", {
+        name: "Rehabilitation Professional workflow",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        level: 3,
+        name: "Rehabilitation Professional Workflow",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Rehabilitation recovery observations",
+      ).nextElementSibling,
+    ).toHaveTextContent("2");
   });
 });

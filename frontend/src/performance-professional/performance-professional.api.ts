@@ -74,3 +74,20 @@ export function getNutritionProfessionalWorkflow(
     )}/nutrition`,
   );
 }
+
+
+export interface RehabilitationProfessionalWorkflowDto {
+  athleteId: string;
+  recovery: unknown[];
+}
+
+export function getRehabilitationProfessionalWorkflow(
+  athleteId: string,
+  limit = 25,
+): Promise<RehabilitationProfessionalWorkflowDto> {
+  return apiRequest<RehabilitationProfessionalWorkflowDto>(
+    `/performance-professional/athletes/${encodeURIComponent(
+      athleteId,
+    )}/rehabilitation?limit=${limit}`,
+  );
+}

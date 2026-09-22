@@ -3,6 +3,7 @@ import { AuthRequest } from "../../middleware/auth.middleware";
 import { GetPerformanceProfessionalWorkflowUseCase } from "../../application/use-cases/get-performance-professional-workflow.use-case";
 import { GetStrengthConditioningWorkflowUseCase } from "../../application/use-cases/get-strength-conditioning-workflow.use-case";
 import { GetNutritionProfessionalWorkflowUseCase } from "../../application/use-cases/get-nutrition-professional-workflow.use-case";
+import { GetRehabilitationProfessionalWorkflowUseCase } from "../../application/use-cases/get-rehabilitation-professional-workflow.use-case";
 
 export class PerformanceProfessionalController {
     constructor(
@@ -12,6 +13,8 @@ export class PerformanceProfessionalController {
             GetStrengthConditioningWorkflowUseCase,
         private readonly getNutritionProfessionalWorkflowUseCase:
             GetNutritionProfessionalWorkflowUseCase,
+        private readonly getRehabilitationProfessionalWorkflowUseCase:
+            GetRehabilitationProfessionalWorkflowUseCase,
     ) {}
 
     async getAthleteWorkflow(
@@ -109,6 +112,44 @@ export class PerformanceProfessionalController {
                 tenantId: authUser.tenantId,
                 userId: authUser.userId,
                 athleteId: String(req.params.athleteId),
+            });
+
+        if (!result.isSuccess) {
+            const status =
+                result.error === "Athlete not found."
+                    ? 404
+                    : 400;
+
+            res.status(status).json({ error: result.error });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
+
+    async getRehabilitationProfessionalWorkflow(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const rawLimit = req.query.limit;
+        const limit =
+            rawLimit === undefined
+                ? 25
+                : Number(rawLimit);
+
+        const result =
+            await this.getRehabilitationProfessionalWorkflowUseCase.execute({
+                tenantId: authUser.tenantId,
+                userId: authUser.userId,
+                athleteId: String(req.params.athleteId),
+                limit,
             });
 
         if (!result.isSuccess) {
