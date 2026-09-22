@@ -23,5 +23,11 @@ export function createPerformanceProfessionalRoutes(
         controller.getStrengthConditioningWorkflow.bind(controller),
     );
 
+    router.get(
+        "/athletes/:athleteId/nutrition",
+        requirePermission("nutrition-plans.generate"),
+        controller.getNutritionProfessionalWorkflow.bind(controller),
+    );
+
     return router;
 }

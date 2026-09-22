@@ -7,9 +7,11 @@ import { PrismaPerformanceMeasurementRepository } from "../repositories/performa
 import { PrismaRecoveryTrackingRepository } from "../repositories/recovery-tracking/recovery-tracking.repository";
 import { PrismaTrainingStressRepository } from "../repositories/training-stress/training-stress.repository";
 import { PrismaWorkoutProgrammeRepository } from "../repositories/workout-programme.repository";
+import { PrismaNutritionPlanRepository } from "../repositories/nutrition-plan/nutrition-plan.repository";
 
 import { GetPerformanceProfessionalWorkflowUseCase } from "../../application/use-cases/get-performance-professional-workflow.use-case";
 import { GetStrengthConditioningWorkflowUseCase } from "../../application/use-cases/get-strength-conditioning-workflow.use-case";
+import { GetNutritionProfessionalWorkflowUseCase } from "../../application/use-cases/get-nutrition-professional-workflow.use-case";
 
 const databaseService =
     new DatabaseService();
@@ -35,6 +37,9 @@ const trainingStressRepository =
 const workoutProgrammeRepository =
     new PrismaWorkoutProgrammeRepository(databaseService);
 
+const nutritionPlanRepository =
+    new PrismaNutritionPlanRepository(databaseService);
+
 export const performanceProfessionalModule = {
     getWorkflowUseCase:
         new GetPerformanceProfessionalWorkflowUseCase(
@@ -53,5 +58,12 @@ export const performanceProfessionalModule = {
             athleteRelationshipRepository,
             trainingStressRepository,
             workoutProgrammeRepository,
+        ),
+
+    getNutritionProfessionalWorkflowUseCase:
+        new GetNutritionProfessionalWorkflowUseCase(
+            athleteRepository,
+            athleteRelationshipRepository,
+            nutritionPlanRepository,
         ),
 };

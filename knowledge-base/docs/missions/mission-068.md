@@ -148,6 +148,49 @@ Control 68.2 is released and published.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+#### Implementation
+
+- Added authenticated Nutrition Professional workflow endpoint: `GET /api/v1/performance-professional/athletes/:athleteId/nutrition`.
+- Added a dedicated application query, response DTO and use-case boundary.
+- Reused the existing tenant-aware Athlete, Athlete Relationship and Nutrition Plan repositories.
+- Returns the latest authorised Nutrition Plan or a safe empty state when no plan exists.
+- Added the Nutrition Professional workflow to the existing Performance Professional frontend.
+- Displays the Athlete identifier, goal classification, daily calorie target and hydration guidance.
+- No Prisma schema or migration change was required.
+
+#### Security and data boundaries
+
+- Authentication is mandatory.
+- API access requires the established `nutrition-plans.generate` permission.
+- Athlete lookup is scoped to the authenticated tenant.
+- Access requires an active `PERFORMANCE_PROFESSIONAL` relationship between the authenticated user and Athlete.
+- Cross-tenant Athlete access returns the bounded not-found response.
+- The response excludes tenant ID, idempotency key, request fingerprint and nutrition-generation input snapshot.
+- Existing non-clinical nutrition guidance and domain boundaries remain unchanged.
+
+#### Verification evidence
+
+- Focused backend unit and HTTP/RBAC tests: 2/2 files, 9/9 tests GREEN.
+- Relevant Performance Professional backend regression: 5/5 files, 27/27 tests GREEN before the dedicated 068.3 API suite was added.
+- Full backend serial regression: 180/180 test files, 1283/1283 tests GREEN.
+- Backend TypeScript build: GREEN.
+- Mission 068.3-owned backend lint: GREEN.
+- Global backend lint remains blocked only by the pre-existing unrelated unused `aA` variable in `tests/integration/auth/actionable-insights.spec.ts`; provenance confirmed that file is unchanged.
+- Focused frontend and router regression: 2/2 files, 28/28 tests GREEN.
+- Full frontend regression: 40/40 test files, 215/215 tests GREEN.
+- Frontend production build: GREEN.
+- Frontend lint: 106 files checked with no errors.
+- `git diff --check`: GREEN.
+- Prisma scope: CLEAN.
+- Protected closure register: UNTOUCHED.
+
+#### Release state
+
+Implementation and technical verification are complete. Commit, push and Knowledge Base publication verification remain pending. Control 68.3 must not be classified as published until those release gates are complete.
+
 ### Control 68.4 - Rehabilitation professional workflows
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

@@ -253,6 +253,7 @@ const performanceProfessionalController =
     new PerformanceProfessionalController(
         performanceProfessionalModule.getWorkflowUseCase,
         performanceProfessionalModule.getStrengthConditioningWorkflowUseCase,
+        performanceProfessionalModule.getNutritionProfessionalWorkflowUseCase,
     );
 const permissionController =
     new PermissionController(

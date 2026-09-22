@@ -6,8 +6,10 @@ import {
 import {
   getSportsScientistWorkflow,
   getStrengthConditioningWorkflow,
+  getNutritionProfessionalWorkflow,
   type PerformanceProfessionalWorkflowDto,
   type StrengthConditioningWorkflowDto,
+  type NutritionProfessionalWorkflowDto,
 } from "./performance-professional.api";
 
 export default function PerformanceProfessionalPage() {
@@ -19,6 +21,11 @@ export default function PerformanceProfessionalPage() {
     setStrengthConditioningWorkflow,
   ] =
     useState<StrengthConditioningWorkflowDto | null>(null);
+  const [
+    nutritionWorkflow,
+    setNutritionWorkflow,
+  ] =
+    useState<NutritionProfessionalWorkflowDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] =
     useState<string | null>(null);
@@ -41,20 +48,24 @@ export default function PerformanceProfessionalPage() {
     setError(null);
     setWorkflow(null);
     setStrengthConditioningWorkflow(null);
+    setNutritionWorkflow(null);
 
     try {
       const [
         sportsScientistResult,
         strengthConditioningResult,
+        nutritionResult,
       ] = await Promise.all([
         getSportsScientistWorkflow(id),
         getStrengthConditioningWorkflow(id),
+        getNutritionProfessionalWorkflow(id),
       ]);
 
       setWorkflow(sportsScientistResult);
       setStrengthConditioningWorkflow(
         strengthConditioningResult,
       );
+      setNutritionWorkflow(nutritionResult);
     }
     catch {
       setError(
@@ -197,6 +208,70 @@ export default function PerformanceProfessionalPage() {
                 }
               </dd>
             </dl>
+          </section>
+        )}
+        {nutritionWorkflow && (
+          <section
+            aria-label="Nutrition Professional workflow"
+          >
+            <span className="titan-eyebrow">
+              NUTRITION PROFESSIONAL
+            </span>
+
+            <h3>Nutrition Professional Workflow</h3>
+
+            <p>
+              Review the selected Athlete's latest
+              authorised nutrition plan.
+            </p>
+
+            <p>
+              Athlete ID:{" "}
+              <strong>
+                {nutritionWorkflow.athleteId}
+              </strong>
+            </p>
+
+            {nutritionWorkflow.latestNutritionPlan ? (
+              <dl>
+                <dt>Goal classification</dt>
+                <dd>
+                  {
+                    nutritionWorkflow
+                      .latestNutritionPlan
+                      .planSnapshot
+                      .goalClassification ??
+                    "General nutrition"
+                  }
+                </dd>
+
+                <dt>Daily calories</dt>
+                <dd>
+                  {
+                    nutritionWorkflow
+                      .latestNutritionPlan
+                      .planSnapshot
+                      .macroTargets
+                      .caloriesKcal
+                  } kcal
+                </dd>
+
+                <dt>Daily hydration</dt>
+                <dd>
+                  {
+                    nutritionWorkflow
+                      .latestNutritionPlan
+                      .planSnapshot
+                      .hydrationGuidance
+                      .dailyWaterLitres
+                  } L
+                </dd>
+              </dl>
+            ) : (
+              <p role="status">
+                No nutrition plan is currently available.
+              </p>
+            )}
           </section>
         )}
       </section>
