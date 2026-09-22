@@ -82,7 +82,7 @@ Implementation, technical verification, commit, push and Knowledge Base publicat
 
 ### Control 68.2 - Strength & conditioning workflows
 
-**Status:** COMPLETE / VERIFIED / RELEASE PENDING
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
@@ -133,7 +133,16 @@ Implementation, technical verification, commit, push and Knowledge Base publicat
 
 #### Release state
 
-Technical implementation and verification are complete. Git commit, push and Knowledge Base publication verification remain pending. Control 68.2 is therefore not yet classified as published/released.
+Technical implementation, verification, commit, push and Knowledge Base publication are complete.
+
+- Implementation commit: `bc48a94555589b7025e5252c83c95968a75c7dd7`.
+- Cloudflare production deployment: `c1fec466-84db-4a67-94c1-08b521521382`.
+- Deployment source: `bc48a94` on `main`.
+- Immutable deployment host: `https://c1fec466.titan-core-platform.pages.dev`.
+- Generated Docusaurus Mission 068 artifact verified before deployment.
+- Cloudflare production deployment verified through the authenticated deployment list.
+
+Control 68.2 is released and published.
 
 ### Control 68.3 - Nutrition professional workflows
 
