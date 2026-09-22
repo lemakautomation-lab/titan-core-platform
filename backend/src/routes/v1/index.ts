@@ -252,6 +252,7 @@ const coachTrainingController =
 const performanceProfessionalController =
     new PerformanceProfessionalController(
         performanceProfessionalModule.getWorkflowUseCase,
+        performanceProfessionalModule.getStrengthConditioningWorkflowUseCase,
     );
 const permissionController =
     new PermissionController(

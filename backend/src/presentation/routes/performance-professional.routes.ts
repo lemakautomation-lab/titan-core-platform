@@ -17,5 +17,11 @@ export function createPerformanceProfessionalRoutes(
         controller.getAthleteWorkflow.bind(controller),
     );
 
+    router.get(
+        "/athletes/:athleteId/strength-conditioning",
+        requirePermission("workout-programmes.read"),
+        controller.getStrengthConditioningWorkflow.bind(controller),
+    );
+
     return router;
 }

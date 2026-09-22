@@ -82,7 +82,58 @@ Implementation, technical verification, commit, push and Knowledge Base publicat
 
 ### Control 68.2 - Strength & conditioning workflows
 
+**Status:** COMPLETE / VERIFIED / RELEASE PENDING
+
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+
+#### Implementation
+
+- Added a dedicated read-only Strength & Conditioning workflow under the existing Performance Professional boundary.
+- Endpoint: `GET /api/v1/performance-professional/athletes/:athleteId/strength-conditioning`.
+- Route requires the established `workout-programmes.read` permission.
+- Access requires an authenticated user and authenticated tenant.
+- Athlete lookup is tenant-scoped.
+- Access requires an active `PERFORMANCE_PROFESSIONAL` relationship between the authenticated user and Athlete.
+- Returns authorised training-stress and workout-programme information through existing tenant-aware repositories.
+- Workflow limit is validated as an integer from 1 through 100.
+- Trainer commercial and Trainer-client authorization semantics were not reused or weakened.
+- No new relationship type or permission code was introduced.
+- No Prisma schema change or migration was required.
+- No write, update, assignment or generation authority was granted.
+- No fabricated recommendation, diagnosis, prediction, readiness score or ranking was introduced.
+
+#### Frontend
+
+- Extended the existing Performance Professional workflow surface.
+- Added bounded Strength & Conditioning API retrieval.
+- Added a visible `Strength & Conditioning Workflow` section.
+- Displays authorised training-stress and workout-programme counts.
+- Existing Performance Professional page authorization remains unchanged.
+
+#### Verification evidence
+
+- Application/unit tests: 5/5 GREEN.
+- HTTP/RBAC integration tests: 6/6 GREEN.
+- Focused backend verification: 2/2 files, 11/11 tests GREEN.
+- Full backend serial regression: GREEN.
+- Backend TypeScript build: GREEN.
+- Frontend focused regression: 2/2 files, 27/27 tests GREEN.
+- Frontend full regression: 40/40 files, 214/214 tests GREEN.
+- Frontend production build: GREEN.
+- Frontend lint: GREEN across 106 files.
+- `git diff --check`: GREEN.
+- Prisma scope: CLEAN / NO MIGRATION.
+- Protected closure register: UNTOUCHED.
+- Authentication enforcement verified.
+- `workout-programmes.read` RBAC enforcement verified.
+- Active Performance Professional relationship enforcement verified.
+- Cross-tenant Athlete isolation verified.
+- Invalid workflow-limit rejection verified.
+- Authorised same-tenant workflow retrieval verified.
+
+#### Release state
+
+Technical implementation and verification are complete. Git commit, push and Knowledge Base publication verification remain pending. Control 68.2 is therefore not yet classified as published/released.
 
 ### Control 68.3 - Nutrition professional workflows
 

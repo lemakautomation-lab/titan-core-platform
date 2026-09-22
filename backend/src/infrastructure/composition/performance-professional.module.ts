@@ -9,6 +9,7 @@ import { PrismaTrainingStressRepository } from "../repositories/training-stress/
 import { PrismaWorkoutProgrammeRepository } from "../repositories/workout-programme.repository";
 
 import { GetPerformanceProfessionalWorkflowUseCase } from "../../application/use-cases/get-performance-professional-workflow.use-case";
+import { GetStrengthConditioningWorkflowUseCase } from "../../application/use-cases/get-strength-conditioning-workflow.use-case";
 
 const databaseService =
     new DatabaseService();
@@ -42,6 +43,14 @@ export const performanceProfessionalModule = {
             performanceMetricRepository,
             performanceMeasurementRepository,
             recoveryTrackingRepository,
+            trainingStressRepository,
+            workoutProgrammeRepository,
+        ),
+
+    getStrengthConditioningWorkflowUseCase:
+        new GetStrengthConditioningWorkflowUseCase(
+            athleteRepository,
+            athleteRelationshipRepository,
             trainingStressRepository,
             workoutProgrammeRepository,
         ),

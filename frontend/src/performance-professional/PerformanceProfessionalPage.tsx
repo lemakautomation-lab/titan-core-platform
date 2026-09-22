@@ -1,17 +1,24 @@
-﻿import {
+import {
   type FormEvent,
   useState,
 } from "react";
 
 import {
   getSportsScientistWorkflow,
+  getStrengthConditioningWorkflow,
   type PerformanceProfessionalWorkflowDto,
+  type StrengthConditioningWorkflowDto,
 } from "./performance-professional.api";
 
 export default function PerformanceProfessionalPage() {
   const [athleteId, setAthleteId] = useState("");
   const [workflow, setWorkflow] =
     useState<PerformanceProfessionalWorkflowDto | null>(null);
+  const [
+    strengthConditioningWorkflow,
+    setStrengthConditioningWorkflow,
+  ] =
+    useState<StrengthConditioningWorkflowDto | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] =
     useState<string | null>(null);
@@ -33,16 +40,25 @@ export default function PerformanceProfessionalPage() {
     setLoading(true);
     setError(null);
     setWorkflow(null);
+    setStrengthConditioningWorkflow(null);
 
     try {
-      const result =
-        await getSportsScientistWorkflow(id);
+      const [
+        sportsScientistResult,
+        strengthConditioningResult,
+      ] = await Promise.all([
+        getSportsScientistWorkflow(id),
+        getStrengthConditioningWorkflow(id),
+      ]);
 
-      setWorkflow(result);
+      setWorkflow(sportsScientistResult);
+      setStrengthConditioningWorkflow(
+        strengthConditioningResult,
+      );
     }
     catch {
       setError(
-        "The Sports Scientist workflow is temporarily unavailable.",
+        "The Performance Professional workflow is temporarily unavailable.",
       );
     }
     finally {
@@ -104,7 +120,7 @@ export default function PerformanceProfessionalPage() {
               AUTHORISED ATHLETE
             </span>
 
-            <h3>Workflow overview</h3>
+            <h3>Sports Scientist overview</h3>
 
             <p>
               Athlete ID:{" "}
@@ -132,6 +148,53 @@ export default function PerformanceProfessionalPage() {
               <dt>Workout programmes</dt>
               <dd>
                 {workflow.workoutProgrammes.length}
+              </dd>
+            </dl>
+          </section>
+        )}
+
+        {strengthConditioningWorkflow && (
+          <section
+            aria-label="Strength and Conditioning workflow"
+          >
+            <span className="titan-eyebrow">
+              STRENGTH & CONDITIONING
+            </span>
+
+            <h3>Strength & Conditioning Workflow</h3>
+
+            <p>
+              Review authorised training stress and
+              workout programme information for the
+              selected Athlete.
+            </p>
+
+            <p>
+              Athlete ID:{" "}
+              <strong>
+                {strengthConditioningWorkflow.athleteId}
+              </strong>
+            </p>
+
+            <dl>
+              <dt>
+                Strength & Conditioning training stress observations
+              </dt>
+              <dd>
+                {
+                  strengthConditioningWorkflow
+                    .trainingStress.length
+                }
+              </dd>
+
+              <dt>
+                Strength & Conditioning workout programmes
+              </dt>
+              <dd>
+                {
+                  strengthConditioningWorkflow
+                    .workoutProgrammes.length
+                }
               </dd>
             </dl>
           </section>

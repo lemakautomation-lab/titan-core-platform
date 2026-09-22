@@ -1,4 +1,4 @@
-﻿import { apiRequest } from "../api/client";
+import { apiRequest } from "../api/client";
 
 export interface PerformanceProfessionalWorkflowDto {
   athleteId: string;
@@ -19,5 +19,21 @@ export function getSportsScientistWorkflow(
     `/performance-professional/athletes/${encodeURIComponent(
       athleteId,
     )}/workflow?limit=${limit}`,
+  );
+}
+export interface StrengthConditioningWorkflowDto {
+  athleteId: string;
+  trainingStress: unknown[];
+  workoutProgrammes: unknown[];
+}
+
+export function getStrengthConditioningWorkflow(
+  athleteId: string,
+  limit = 25,
+): Promise<StrengthConditioningWorkflowDto> {
+  return apiRequest<StrengthConditioningWorkflowDto>(
+    `/performance-professional/athletes/${encodeURIComponent(
+      athleteId,
+    )}/strength-conditioning?limit=${limit}`,
   );
 }
