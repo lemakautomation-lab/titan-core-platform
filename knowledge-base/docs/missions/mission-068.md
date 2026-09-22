@@ -149,7 +149,7 @@ Control 68.2 is released and published.
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED
 
 #### Implementation
 
@@ -189,7 +189,20 @@ Control 68.2 is released and published.
 
 #### Release state
 
-Implementation and technical verification are complete. Commit, push and Knowledge Base publication verification remain pending. Control 68.3 must not be classified as published until those release gates are complete.
+Implementation, technical verification, commit, push and Knowledge Base publication verification are complete. Control 68.3 is released and published.
+
+#### Publication evidence
+
+- Implementation commit: `b4f6579beb057fabce82f4793dd603dc209cc180`
+- Cloudflare Pages deployment: `54797c60-8aac-43b3-a0a7-7fe1e75e2b8f`
+- Deployment environment: `Production`
+- Deployment branch: `main`
+- Cloudflare source: `b4f6579`
+- Immutable deployment host: `54797c60.titan-core-platform.pages.dev`
+- Immutable Mission 068 page: authenticated browser verification complete.
+- Canonical Mission 068 page: authenticated browser verification complete.
+- Publication verified: 22 September 2026 SAST.
+- Repository release state verified with `HEAD == origin/main` and ahead/behind `0/0`.
 
 ### Control 68.4 - Rehabilitation professional workflows
 
