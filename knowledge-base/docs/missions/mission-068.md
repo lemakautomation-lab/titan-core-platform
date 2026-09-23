@@ -208,7 +208,7 @@ Implementation, technical verification, commit, push and Knowledge Base publicat
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED
 
 #### Implementation
 
@@ -249,12 +249,18 @@ Implementation, technical verification, commit, push and Knowledge Base publicat
 
 #### Release state
 
-Implementation and technical verification are complete. Implementation commit `a2c0c7c97a339308d90f245b620b1719c238fd36` is pushed to `origin/main`. Cloudflare Access redirects unauthenticated page checks to its sign-in screen; authenticated Knowledge Base publication verification remains pending. Control 68.4 must not be classified as published until that check is complete.
+Implementation and technical verification are complete. Implementation commit `a2c0c7c97a339308d90f245b620b1719c238fd36` is pushed to `origin/main`. Knowledge Base publication is verified. The route permission was subsequently refined under Control 68.5.
+#### Knowledge Base publication evidence
+
+- Implementation commit: `a2c0c7c97a339308d90f245b620b1719c238fd36`.
+- Cloudflare Pages production deployment: `d5f739f7-b4e8-4de8-aea8-3da234f09812` on `main`.
+- Mission 068 content was supplied from the authenticated page; deployment source matches the implementation commit.
+
 ### Control 68.5 - Role-specific permissions
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED
 
 - Rehabilitation workflow requires `performance-professional.rehabilitation.read` at the route. Athlete lookup still requires the authenticated tenant and an active `PERFORMANCE_PROFESSIONAL` relationship.
 - The tenant-scoped migration creates this permission and grants it to existing `ADMIN` roles and existing roles already granted `performance-measurements.read`. This preserves existing authorised access during rollout while allowing subsequent independent revocation or assignment.
@@ -262,16 +268,27 @@ Implementation and technical verification are complete. Implementation commit `a
 - The migration was applied to protected local `titan_core_test`; focused rehabilitation API tests passed; full backend serial regression passed (182/182 files, 1295/1295 tests). TypeScript build, changed-file lint, `git diff --check` and Knowledge Base build passed. New-tenant provisioning passed its protected test-database gate: dry run made no change, tenant mismatch was rejected, repeated application produced one grant and two audit records, and disposable test data was removed.
 - For new tenants, an authorised database operator can run `src/scripts/provision-rehabilitation-permission.ts` with an explicit tenant UUID, existing target role UUID and change reference. It is read-only by default; `--apply` performs a tenant-scoped transaction with an audit record. The operator identity is established by database access controls and the change process, not inferred from a user ID supplied on the command line. Do not run the historical `backend/authorization-seed.ts`: it uses a hard-coded user and an obsolete `RolePermission` write.
 - Deploy the database migration before the API route change. Verify affected tenant roles and authenticated access before release. No production permission data was changed by this repository edit.
+#### Knowledge Base publication evidence
+
+- Implementation commit: `7901dcc17b1178a578e459650be52137ec5d901c`.
+- Cloudflare Pages production deployment: `f73bdcbd-9d58-4d66-9ea5-8d002b850998` on `main`.
+- Mission 068 content was supplied from the authenticated page; deployment source matches the implementation commit.
+- Production database migration and backend rollout remain separately pending.
 
 ### Control 68.6 - Professional data access boundaries
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
-**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+**Status:** COMPLETE / VERIFIED / COMMITTED / PUSHED / KB PUBLISHED
 
 - All four professional workflows return the same bounded `404 Athlete not found.` response for a missing Athlete or an Athlete in the authenticated tenant without an active `PERFORMANCE_PROFESSIONAL` relationship. This prevents probing same-tenant Athlete identifiers through different error responses.
 - Existing tenant-scoped repository calls and route permission checks remain in place. A focused API case compares responses for an unlinked Athlete and a missing Athlete identifier.
-- Focused unit tests passed (4/4 files, 19/19 tests), backend TypeScript build and changed-file lint passed, and `git diff --check` passed. Focused authenticated API tests passed; full backend serial regression passed (182/182 files, 1296/1296 tests); Knowledge Base build passed. Commit, push and authenticated publication verification remain pending.
+- Focused unit tests passed (4/4 files, 19/19 tests), backend TypeScript build and changed-file lint passed, and `git diff --check` passed. Focused authenticated API tests passed; full backend serial regression passed (182/182 files, 1296/1296 tests); Knowledge Base build passed. Commit, push and Knowledge Base publication are verified.
+#### Knowledge Base publication evidence
+
+- Implementation commit: `8a05ad455c20e483fd3c6fc46988f99e36e7dfb8`.
+- Cloudflare Pages production deployment: `dc4f1a3d-5134-40c0-9708-c978435f569f` on `main`.
+- Mission 068 content was supplied from the authenticated page; deployment source matches the implementation commit.
 
 ## Mission Exit Gate
 
