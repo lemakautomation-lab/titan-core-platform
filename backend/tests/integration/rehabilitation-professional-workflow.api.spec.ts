@@ -83,7 +83,7 @@ describe(
             expect(response.status).toBe(401);
         });
 
-        it("requires performance-measurements.read", async () => {
+        it("requires the rehabilitation workflow permission", async () => {
             const user = await createTestUser({
                 permissions: [],
             });
@@ -106,10 +106,29 @@ describe(
             expect(response.status).toBe(403);
         });
 
+        it("does not accept the broad measurement permission alone", async () => {
+            const user = await createTestUser({
+                permissions: ["performance-measurements.read"],
+            });
+            const token = await login(
+                user.user.tenantId,
+                user.user.email,
+                user.password,
+            );
+
+            const response = await request(app)
+                .get(
+                    "/api/v1/performance-professional/athletes/athlete-id/rehabilitation",
+                )
+                .set("Authorization", `Bearer ${token}`);
+
+            expect(response.status).toBe(403);
+        });
+
         it("requires an active Performance Professional relationship", async () => {
             const user = await createTestUser({
                 permissions: [
-                    "performance-measurements.read",
+                    "performance-professional.rehabilitation.read",
                 ],
             });
 
@@ -147,7 +166,7 @@ describe(
             const professional =
                 await createTestUser({
                     permissions: [
-                        "performance-measurements.read",
+                        "performance-professional.rehabilitation.read",
                     ],
                 });
 
@@ -186,7 +205,7 @@ describe(
         it("rejects an invalid workflow limit", async () => {
             const user = await createTestUser({
                 permissions: [
-                    "performance-measurements.read",
+                    "performance-professional.rehabilitation.read",
                 ],
             });
 
@@ -229,7 +248,7 @@ describe(
         it("returns bounded tenant-scoped recovery observations", async () => {
             const user = await createTestUser({
                 permissions: [
-                    "performance-measurements.read",
+                    "performance-professional.rehabilitation.read",
                 ],
             });
 

@@ -31,7 +31,7 @@ export function createPerformanceProfessionalRoutes(
 
     router.get(
         "/athletes/:athleteId/rehabilitation",
-        requirePermission("performance-measurements.read"),
+        requirePermission("performance-professional.rehabilitation.read"),
         controller.getRehabilitationProfessionalWorkflow.bind(controller),
     );
 
