@@ -15,6 +15,7 @@ interface AuthAppProps {
 type NavigationItem =
   | "Onboarding"
   | "Dashboard"
+  | "Director"
   | "Training"
   | "Performance"
   | "Users";
@@ -30,6 +31,11 @@ const navigation: NavigationDefinition[] = [
     label: "Dashboard",
     route: "/dashboard",
     permission: [],
+  },
+  {
+    label: "Director",
+    route: "/performance-director",
+    permission: "performance-director.command-centre.read",
   },
   {
     label: "Training",
@@ -95,6 +101,9 @@ function getNavigationRoute(
 function getActiveSection(
   pathname: string,
 ): NavigationItem {
+  if (pathname === "/performance-director") {
+    return "Director";
+  }
   if (pathname === "/onboarding") {
     return "Onboarding";
   }

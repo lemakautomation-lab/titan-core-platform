@@ -21,6 +21,7 @@ import AthleteDigitalTwinPage from "../athlete-digital-twin/AthleteDigitalTwinPa
 import TrainerAccessPage from "../trainer/TrainerAccessPage";
 import CoachPlatformPage from "../coach/CoachPlatformPage";
 import PerformanceProfessionalPage from "../performance-professional/PerformanceProfessionalPage";
+import PerformanceDirectorPage from "../performance-director/PerformanceDirectorPage";
 import type { AuthUser } from "../auth/auth.types";
 
 type AppRouterProps = {
@@ -266,6 +267,18 @@ export default function AppRouter({
               >
                 <PerformanceProfessionalPage />
               </RequirePermission>
+            </RequirePermission>
+          }
+        />
+
+        <Route
+          path="/performance-director"
+          element={
+            <RequirePermission
+              user={user}
+              permission="performance-director.command-centre.read"
+            >
+              <PerformanceDirectorPage />
             </RequirePermission>
           }
         />
