@@ -88,7 +88,7 @@ describe("Nutrition Professional workflow", () => {
 
         expect(result.isSuccess).toBe(false);
         expect(result.error).toBe(
-            "Active Performance Professional athlete relationship is required.",
+            "Athlete not found.",
         );
         expect(
             harness.nutritionPlanRepository

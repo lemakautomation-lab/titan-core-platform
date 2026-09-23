@@ -1,4 +1,4 @@
-﻿import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { GetStrengthConditioningWorkflowUseCase } from "../../src/application/use-cases/get-strength-conditioning-workflow.use-case";
 import { AthleteRelationshipType } from "../../src/domain/enums/athlete-relationship-type.enum";
@@ -97,7 +97,7 @@ describe("Mission 068.2 - Strength & Conditioning workflow", () => {
 
         expect(result.isSuccess).toBe(false);
         expect(result.error).toBe(
-            "Active Performance Professional athlete relationship is required.",
+            "Athlete not found.",
         );
 
         expect(
@@ -137,7 +137,7 @@ describe("Mission 068.2 - Strength & Conditioning workflow", () => {
 
         expect(result.isSuccess).toBe(false);
         expect(result.error).toBe(
-            "Active Performance Professional athlete relationship is required.",
+            "Athlete not found.",
         );
 
         expect(

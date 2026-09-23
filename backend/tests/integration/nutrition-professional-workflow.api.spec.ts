@@ -133,9 +133,9 @@ describe(
                         `Bearer ${token}`,
                     );
 
-                expect(response.status).toBe(400);
+                expect(response.status).toBe(404);
                 expect(response.body.error).toBe(
-                    "Active Performance Professional athlete relationship is required.",
+                    "Athlete not found.",
                 );
             }
             finally {

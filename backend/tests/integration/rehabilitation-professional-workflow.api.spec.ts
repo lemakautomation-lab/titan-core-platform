@@ -152,10 +152,39 @@ describe(
                         `Bearer ${token}`,
                     );
 
-                expect(response.status).toBe(400);
+                expect(response.status).toBe(404);
                 expect(response.body.error).toBe(
-                    "Active Performance Professional athlete relationship is required.",
+                    "Athlete not found.",
                 );
+            }
+            finally {
+                await cleanupAthlete(athlete.id);
+            }
+        });
+
+        it("does not disclose whether an unlinked Athlete exists in the tenant", async () => {
+            const professional = await createTestUser({
+                permissions: ["performance-professional.rehabilitation.read"],
+            });
+            const athlete = await createAthlete(professional.user.tenantId);
+
+            try {
+                const token = await login(
+                    professional.user.tenantId,
+                    professional.user.email,
+                    professional.password,
+                );
+                const uri = "/api/v1/performance-professional/athletes";
+                const existing = await request(app)
+                    .get(`${uri}/${athlete.id}/rehabilitation`)
+                    .set("Authorization", `Bearer ${token}`);
+                const missing = await request(app)
+                    .get(`${uri}/missing-athlete/rehabilitation`)
+                    .set("Authorization", `Bearer ${token}`);
+
+                expect(existing.status).toBe(404);
+                expect(existing.body).toEqual(missing.body);
+                expect(missing.status).toBe(404);
             }
             finally {
                 await cleanupAthlete(athlete.id);

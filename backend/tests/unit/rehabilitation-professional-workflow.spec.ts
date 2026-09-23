@@ -91,7 +91,7 @@ describe("Mission 068.4 - Rehabilitation Professional workflow", () => {
 
         expect(result.isSuccess).toBe(false);
         expect(result.error).toBe(
-            "Active Performance Professional athlete relationship is required.",
+            "Athlete not found.",
         );
 
         expect(
@@ -127,7 +127,7 @@ describe("Mission 068.4 - Rehabilitation Professional workflow", () => {
 
         expect(result.isSuccess).toBe(false);
         expect(result.error).toBe(
-            "Active Performance Professional athlete relationship is required.",
+            "Athlete not found.",
         );
 
         expect(

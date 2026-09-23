@@ -46,7 +46,7 @@ export class GetRehabilitationProfessionalWorkflowUseCase {
 
         if (!relationship || !relationship.isActive()) {
             return Result.failure(
-                "Active Performance Professional athlete relationship is required.",
+                "Athlete not found.",
             );
         }
 
