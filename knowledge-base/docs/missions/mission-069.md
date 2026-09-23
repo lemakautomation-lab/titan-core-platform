@@ -48,6 +48,14 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Added read-only `GET /api/v1/performance-director/teams` with an integer limit from 1 to 100 (default 25) and a validated opaque UUID cursor. It lists only active Coach Team identifiers and names owned by active coaches in the director's active assigned organisation and authenticated tenant. An out-of-scope cursor receives the same bounded 404 as a missing department.
+- A separately revocable `performance-director.teams.read` permission protects the route. A tenant-scoped migration grants existing `ADMIN` roles only; an audited, dry-run-first operator command supports new tenants. The frontend displays the team list and bounded next-page action only when that permission is present.
+- Coach Team has no organisation or Athlete membership field. Scope derives from its coach's current organisation. This control does not infer Coach Squad membership, cross-organisation visibility, athlete data, or department-wide Coach Team ownership from names.
+- Targeted API/RBAC, cross-organisation, inactive-record, cursor, pagination, provisioning and frontend tests have been added. The migration applied to protected local titan_core_test. Focused backend tests passed (2/2 files, 4/4 tests), including authorization, scope, pagination and provisioning; focused frontend tests passed (6/6). Full backend serial regression passed on rerun (188/188 files, 1308/1308 tests); full frontend regression passed (41/41 files, 222/222 tests). Backend and frontend builds, focused backend lint, frontend lint, Knowledge Base build and git diff --check passed. The first full backend run had a 5-second timeout in an unchanged Mission 068.1 test; the complete rerun passed.
+- Production database migration, application rollout and Knowledge Base publication verification remain pending.
+
 ### Control 69.4 - Role-specific reporting
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

@@ -59,4 +59,39 @@ describe("Performance Director command centre", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Measurement activity is unavailable.");
     expect(screen.queryByText(/Effective measurements:/)).toBeNull();
   });
+
+  it("pages across authorised teams only when the teams grant is present", async () => {
+    vi.spyOn(api, "getDepartmentCommandCentre").mockResolvedValue({
+      organisationId: "department-1", organisationName: "Department",
+      staffCount: 2, athleteCount: 3,
+    });
+    const loadTeams = vi.spyOn(api, "getDepartmentTeams")
+      .mockImplementation(async (cursor) => cursor ? {
+        organisationId: "department-1",
+        teams: [{ id: "team-2", name: "Team B" }], nextCursor: null,
+      } : {
+        organisationId: "department-1",
+        teams: [{ id: "team-1", name: "Team A" }], nextCursor: "team-1",
+      });
+
+    const view = render(<PerformanceDirectorPage />);
+    expect(await screen.findByRole("heading", { name: "Department" })).toBeTruthy();
+    expect(loadTeams).not.toHaveBeenCalled();
+    view.rerender(<PerformanceDirectorPage canReadTeams />);
+    expect(await screen.findByText("Team A")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Load more teams" }));
+    expect(await screen.findByText("Team B")).toBeTruthy();
+    expect(loadTeams).toHaveBeenCalledWith("team-1");
+  });
+
+  it("shows a safe failure when team retrieval is unavailable", async () => {
+    vi.spyOn(api, "getDepartmentCommandCentre").mockResolvedValue({
+      organisationId: "department-1", organisationName: "Department",
+      staffCount: 1, athleteCount: 0,
+    });
+    vi.spyOn(api, "getDepartmentTeams").mockRejectedValue(new Error("Unavailable"));
+    render(<PerformanceDirectorPage canReadTeams />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Department teams are unavailable.");
+    expect(screen.queryByText("Team A")).toBeNull();
+  });
 });

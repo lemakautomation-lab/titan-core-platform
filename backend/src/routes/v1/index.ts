@@ -25,6 +25,8 @@ import { GetDepartmentCommandCentreUseCase } from "../../application/use-cases/g
 import { PrismaDepartmentCommandCentreReader } from "../../infrastructure/queries/department-command-centre.query";
 import { GetDepartmentPerformanceIntelligenceUseCase } from "../../application/use-cases/get-department-performance-intelligence.use-case";
 import { PrismaDepartmentPerformanceIntelligenceReader } from "../../infrastructure/queries/department-performance-intelligence.query";
+import { ListDepartmentTeamsUseCase } from "../../application/use-cases/list-department-teams.use-case";
+import { PrismaDepartmentTeamsReader } from "../../infrastructure/queries/department-teams.query";
 
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
@@ -407,6 +409,9 @@ router.use(
         ),
         new GetDepartmentPerformanceIntelligenceUseCase(
             new PrismaDepartmentPerformanceIntelligenceReader(new DatabaseService()),
+        ),
+        new ListDepartmentTeamsUseCase(
+            new PrismaDepartmentTeamsReader(new DatabaseService()),
         ),
     ),
 );

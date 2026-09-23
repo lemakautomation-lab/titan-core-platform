@@ -27,3 +27,15 @@ export function getDepartmentPerformanceIntelligence(days: IntelligenceWindow) {
     `/performance-director/intelligence?days=${days}`,
   );
 }
+
+export interface DepartmentTeamsPage {
+  organisationId: string;
+  teams: Array<{ id: string; name: string }>;
+  nextCursor: string | null;
+}
+
+export function getDepartmentTeams(cursor?: string): Promise<DepartmentTeamsPage> {
+  return apiRequest<DepartmentTeamsPage>(
+    `/performance-director/teams?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+  );
+}

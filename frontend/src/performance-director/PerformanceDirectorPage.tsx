@@ -2,19 +2,25 @@ import { useEffect, useState } from "react";
 import {
   getDepartmentCommandCentre,
   getDepartmentPerformanceIntelligence,
+  getDepartmentTeams,
   type DepartmentCommandCentre,
   type DepartmentPerformanceIntelligence,
   type IntelligenceWindow,
+  type DepartmentTeamsPage,
 } from "./performance-director.api";
 
-export default function PerformanceDirectorPage({ canReadIntelligence = false }: {
+export default function PerformanceDirectorPage({ canReadIntelligence = false, canReadTeams = false }: {
   canReadIntelligence?: boolean;
+  canReadTeams?: boolean;
 }) {
   const [summary, setSummary] = useState<DepartmentCommandCentre | null>(null);
   const [error, setError] = useState(false);
   const [days, setDays] = useState<IntelligenceWindow>(30);
   const [intelligence, setIntelligence] = useState<DepartmentPerformanceIntelligence | null>(null);
   const [intelligenceError, setIntelligenceError] = useState(false);
+  const [teamsPage, setTeamsPage] = useState<DepartmentTeamsPage | null>(null);
+  const [teamsError, setTeamsError] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -34,6 +40,33 @@ export default function PerformanceDirectorPage({ canReadIntelligence = false }:
       .catch(() => { if (active) setIntelligenceError(true); });
     return () => { active = false; };
   }, [canReadIntelligence, days]);
+
+  useEffect(() => {
+    if (!canReadTeams) return;
+    let active = true;
+    getDepartmentTeams()
+      .then((page) => { if (active) setTeamsPage(page); })
+      .catch(() => { if (active) setTeamsError(true); });
+    return () => { active = false; };
+  }, [canReadTeams]);
+
+  async function loadMoreTeams() {
+    if (!teamsPage?.nextCursor || loadingMore) return;
+    setLoadingMore(true);
+    setTeamsError(false);
+    try {
+      const next = await getDepartmentTeams(teamsPage.nextCursor);
+      if (next.organisationId !== teamsPage.organisationId) throw new Error("Department changed");
+      setTeamsPage({
+        ...next,
+        teams: [...teamsPage.teams, ...next.teams],
+      });
+    } catch {
+      setTeamsError(true);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   return (
     <main>
@@ -69,6 +102,24 @@ export default function PerformanceDirectorPage({ canReadIntelligence = false }:
               <p>Effective measurements: {intelligence.effectiveMeasurementCount}</p>
               <p>Latest measurement: {intelligence.latestMeasurementAt ?? "None in this window"}</p>
             </div>
+          )}
+        </section>
+      )}
+      {canReadTeams && (
+        <section aria-label="Department teams">
+          <h2>Department teams</h2>
+          {!teamsPage && !teamsError && <p>Loading teams...</p>}
+          {teamsError && <p role="alert">Department teams are unavailable.</p>}
+          {teamsPage && (
+            <>
+              {teamsPage.teams.length === 0 && <p>No active teams in this department.</p>}
+              <ul>{teamsPage.teams.map((team) => <li key={team.id}>{team.name}</li>)}</ul>
+              {teamsPage.nextCursor && (
+                <button type="button" disabled={loadingMore} onClick={loadMoreTeams}>
+                  Load more teams
+                </button>
+              )}
+            </>
           )}
         </section>
       )}
