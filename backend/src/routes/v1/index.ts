@@ -23,6 +23,8 @@ import { createPerformanceProfessionalRoutes } from "../../presentation/routes/p
 import { createPerformanceDirectorRoutes } from "../../presentation/routes/performance-director.routes";
 import { GetDepartmentCommandCentreUseCase } from "../../application/use-cases/get-department-command-centre.use-case";
 import { PrismaDepartmentCommandCentreReader } from "../../infrastructure/queries/department-command-centre.query";
+import { GetDepartmentPerformanceIntelligenceUseCase } from "../../application/use-cases/get-department-performance-intelligence.use-case";
+import { PrismaDepartmentPerformanceIntelligenceReader } from "../../infrastructure/queries/department-performance-intelligence.query";
 
 import { RoleController } from "../../presentation/controllers/role.controller";
 import { UserController } from "../../presentation/controllers/user.controller";
@@ -402,6 +404,9 @@ router.use(
     createPerformanceDirectorRoutes(
         new GetDepartmentCommandCentreUseCase(
             new PrismaDepartmentCommandCentreReader(new DatabaseService()),
+        ),
+        new GetDepartmentPerformanceIntelligenceUseCase(
+            new PrismaDepartmentPerformanceIntelligenceReader(new DatabaseService()),
         ),
     ),
 );

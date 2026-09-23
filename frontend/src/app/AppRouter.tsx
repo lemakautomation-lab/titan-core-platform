@@ -278,7 +278,11 @@ export default function AppRouter({
               user={user}
               permission="performance-director.command-centre.read"
             >
-              <PerformanceDirectorPage />
+              <PerformanceDirectorPage
+                canReadIntelligence={Boolean(
+                  user?.permissions.includes("performance-director.intelligence.read"),
+                )}
+              />
             </RequirePermission>
           }
         />

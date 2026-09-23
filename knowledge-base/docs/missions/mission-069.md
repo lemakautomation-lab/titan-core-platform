@@ -36,6 +36,14 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Added read-only `GET /api/v1/performance-director/intelligence?days=7|30|90`. The default is 30 days; unsupported values fail validation. The response returns the director's own organisation identifier, active Athlete count, Athletes with effective measurements, effective measurement count and most recent recorded timestamp within the window. No individual values, Athlete identifiers or invented performance scores are returned.
+- Measurement activity uses the existing effective-record rule: an observation with a correction is excluded in favour of its terminal correction. Both the reporting window and authenticated tenant/active assigned organisation are enforced in database queries. Inactive Athletes and other organisations are excluded.
+- The API requires `performance-director.intelligence.read`, separate from broad `performance-measurements.read`. A tenant-scoped migration grants existing `ADMIN` roles only; an audited dry-run-first operator command supports new tenants. The frontend shows the optional intelligence section only to users with the dedicated permission and offers 7, 30 and 90-day windows.
+- Focused authenticated API, correction and scope tests and frontend success, failure and permission tests have been added. The migration applied to protected local titan_core_test. Focused backend tests passed (2/2 files, 4/4 tests), including scope, correction handling and new-tenant provisioning; focused frontend tests passed (4/4). Full backend serial regression passed (186/186 files, 1304/1304 tests); full frontend regression passed (41/41 files, 220/220 tests). Backend and frontend builds, focused backend lint, frontend lint, Knowledge Base build and git diff --check passed.
+- Production database migration, backend and frontend rollout, and Knowledge Base publication verification remain pending.
+
 ### Control 69.3 - Cross-team visibility within authorised scope
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
