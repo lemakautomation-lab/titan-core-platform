@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getClubExecutives, getClubDirectors, getClubCoaches, getClubScientists, getClubConditioning, getClubNutrition, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage, type ClubScientistPage, type ClubConditioningPage, type ClubNutritionPage } from "./club.api";
+import { getClubExecutives, getClubDirectors, getClubCoaches, getClubScientists, getClubConditioning, getClubNutrition, getClubRehabilitation, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage, type ClubScientistPage, type ClubConditioningPage, type ClubNutritionPage, type ClubRehabilitationPage } from "./club.api";
 
-export default function ClubPage({ canReadDirectors = false, canReadCoaches = false, canReadScientists = false, canReadConditioning = false, canReadNutrition = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean; canReadScientists?: boolean; canReadConditioning?: boolean; canReadNutrition?: boolean }) {
+export default function ClubPage({ canReadDirectors = false, canReadCoaches = false, canReadScientists = false, canReadConditioning = false, canReadNutrition = false, canReadRehabilitation = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean; canReadScientists?: boolean; canReadConditioning?: boolean; canReadNutrition?: boolean; canReadRehabilitation?: boolean }) {
   const [page, setPage] = useState<ClubExecutivePage | null>(null);
   const [error, setError] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -20,6 +20,9 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
   const [nutritionPage, setNutritionPage] = useState<ClubNutritionPage | null>(null);
   const [nutritionError, setNutritionError] = useState(false);
   const [loadingMoreNutrition, setLoadingMoreNutrition] = useState(false);
+  const [rehabilitationPage, setRehabilitationPage] = useState<ClubRehabilitationPage | null>(null);
+  const [rehabilitationError, setRehabilitationError] = useState(false);
+  const [loadingMoreRehabilitation, setLoadingMoreRehabilitation] = useState(false);
   const organisationId = page?.organisationId;
 
   useEffect(() => {
@@ -122,6 +125,37 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
       setNutritionError(true);
     } finally {
       setLoadingMoreNutrition(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!canReadRehabilitation || !organisationId) return;
+    let active = true;
+    getClubRehabilitation()
+      .then((result) => {
+        if (!active) return;
+        if (result.organisationId !== organisationId) {
+          setRehabilitationError(true);
+          return;
+        }
+        setRehabilitationPage(result);
+      })
+      .catch(() => { if (active) setRehabilitationError(true); });
+    return () => { active = false; };
+  }, [canReadRehabilitation, organisationId]);
+
+  async function loadMoreRehabilitation() {
+    if (!rehabilitationPage?.nextCursor || loadingMoreRehabilitation) return;
+    setLoadingMoreRehabilitation(true);
+    setRehabilitationError(false);
+    try {
+      const next = await getClubRehabilitation(rehabilitationPage.nextCursor);
+      if (next.organisationId !== organisationId) throw new Error("Club changed");
+      setRehabilitationPage({ ...next, rehabilitation: [...rehabilitationPage.rehabilitation, ...next.rehabilitation] });
+    } catch {
+      setRehabilitationError(true);
+    } finally {
+      setLoadingMoreRehabilitation(false);
     }
   }
 
@@ -270,6 +304,18 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
         <ul>{nutritionPage.nutrition.map((professional) => <li key={professional.id}>{professional.name}</li>)}</ul>
         {nutritionPage.nextCursor && <button type="button" disabled={loadingMoreNutrition} onClick={loadMoreNutrition}>
           Load more nutrition staff
+        </button>}
+      </>}
+    </section>}
+    {canReadRehabilitation && page && <section aria-label="Club rehabilitation">
+      <h2>Rehabilitation Professionals</h2>
+      {rehabilitationError && <p role="alert">Club rehabilitation staff are unavailable.</p>}
+      {!rehabilitationPage && !rehabilitationError && <p>Loading rehabilitation staff...</p>}
+      {rehabilitationPage && <>
+        {rehabilitationPage.rehabilitation.length === 0 && <p>No active Rehabilitation Professionals assigned to this club.</p>}
+        <ul>{rehabilitationPage.rehabilitation.map((professional) => <li key={professional.id}>{professional.name}</li>)}</ul>
+        {rehabilitationPage.nextCursor && <button type="button" disabled={loadingMoreRehabilitation} onClick={loadMoreRehabilitation}>
+          Load more rehabilitation staff
         </button>}
       </>}
     </section>}

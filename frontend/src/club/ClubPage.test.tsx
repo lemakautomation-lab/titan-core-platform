@@ -6,6 +6,37 @@ import * as api from "./club.api";
 describe("Mission 070 club structure", () => {
   afterEach(() => vi.restoreAllMocks());
 
+  it("loads rehabilitation staff only with the independent permission", async () => {
+    vi.spyOn(api, "getClubExecutives").mockResolvedValue({
+      organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
+      executives: [], nextCursor: null,
+    });
+    const rehabilitation = vi.spyOn(api, "getClubRehabilitation")
+      .mockResolvedValueOnce({ organisationId: "club-1", rehabilitation: [{ id: "one", name: "First Rehabilitation Professional" }], nextCursor: "one" })
+      .mockResolvedValueOnce({ organisationId: "club-1", rehabilitation: [{ id: "two", name: "Second Rehabilitation Professional" }], nextCursor: null });
+    const view = render(<ClubPage />);
+    expect(await screen.findByText("No active executives assigned to this club.")).toBeTruthy();
+    expect(rehabilitation).not.toHaveBeenCalled();
+    view.rerender(<ClubPage canReadRehabilitation />);
+    expect(await screen.findByText("First Rehabilitation Professional")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Load more rehabilitation staff" }));
+    await waitFor(() => expect(screen.getByText("Second Rehabilitation Professional")).toBeTruthy());
+    expect(rehabilitation).toHaveBeenCalledWith("one");
+  });
+
+  it("hides rehabilitation staff returned from another club", async () => {
+    vi.spyOn(api, "getClubExecutives").mockResolvedValue({
+      organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
+      executives: [], nextCursor: null,
+    });
+    vi.spyOn(api, "getClubRehabilitation").mockResolvedValue({
+      organisationId: "other", rehabilitation: [{ id: "one", name: "Foreign Rehabilitation Professional" }], nextCursor: null,
+    });
+    render(<ClubPage canReadRehabilitation />);
+    expect(await screen.findByText("Club rehabilitation staff are unavailable.")).toBeTruthy();
+    expect(screen.queryByText("Foreign Rehabilitation Professional")).toBeNull();
+  });
+
   it("loads nutrition staff only with the independent permission", async () => {
     vi.spyOn(api, "getClubExecutives").mockResolvedValue({
       organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,

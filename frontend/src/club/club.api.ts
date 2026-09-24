@@ -73,3 +73,15 @@ export function getClubNutrition(cursor?: string): Promise<ClubNutritionPage> {
     `/club/nutrition?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
   );
 }
+
+export interface ClubRehabilitationPage {
+  organisationId: string;
+  rehabilitation: Array<{ id: string; name: string }>;
+  nextCursor: string | null;
+}
+
+export function getClubRehabilitation(cursor?: string): Promise<ClubRehabilitationPage> {
+  return apiRequest<ClubRehabilitationPage>(
+    `/club/rehabilitation?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+  );
+}
