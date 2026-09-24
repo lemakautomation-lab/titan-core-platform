@@ -64,6 +64,15 @@ function renderRouter(
 }
 
 describe("AppRouter", () => {
+  it("requires the club executive permission for direct club access", () => {
+    renderRouter("/club", true, []);
+    expect(screen.getByRole("heading", { name: "Access denied" })).toBeInTheDocument();
+  });
+
+  it("renders the club executive page with the dedicated permission", () => {
+    renderRouter("/club", true, ["club.executives.read"]);
+    expect(screen.getByRole("heading", { name: "Club executive structure" })).toBeInTheDocument();
+  });
   it("renders the authenticated users route", () => {
     renderRouter(
       "/users",

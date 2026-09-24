@@ -22,6 +22,7 @@ import TrainerAccessPage from "../trainer/TrainerAccessPage";
 import CoachPlatformPage from "../coach/CoachPlatformPage";
 import PerformanceProfessionalPage from "../performance-professional/PerformanceProfessionalPage";
 import PerformanceDirectorPage from "../performance-director/PerformanceDirectorPage";
+import ClubPage from "../club/ClubPage";
 import type { AuthUser } from "../auth/auth.types";
 
 type AppRouterProps = {
@@ -267,6 +268,15 @@ export default function AppRouter({
               >
                 <PerformanceProfessionalPage />
               </RequirePermission>
+            </RequirePermission>
+          }
+        />
+
+        <Route
+          path="/club"
+          element={
+            <RequirePermission user={user} permission="club.executives.read">
+              <ClubPage />
             </RequirePermission>
           }
         />

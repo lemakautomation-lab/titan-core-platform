@@ -16,6 +16,7 @@ type NavigationItem =
   | "Onboarding"
   | "Dashboard"
   | "Director"
+  | "Club"
   | "Training"
   | "Performance"
   | "Users";
@@ -31,6 +32,11 @@ const navigation: NavigationDefinition[] = [
     label: "Dashboard",
     route: "/dashboard",
     permission: [],
+  },
+  {
+    label: "Club",
+    route: "/club",
+    permission: "club.executives.read",
   },
   {
     label: "Director",
@@ -101,6 +107,7 @@ function getNavigationRoute(
 function getActiveSection(
   pathname: string,
 ): NavigationItem {
+  if (pathname === "/club") return "Club";
   if (pathname === "/performance-director") {
     return "Director";
   }

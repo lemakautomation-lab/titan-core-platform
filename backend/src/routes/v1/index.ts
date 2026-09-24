@@ -21,6 +21,9 @@ import { createNutritionPlanRoutes } from "../../presentation/routes/nutrition-p
 import { createCoachRoutes } from "../../presentation/routes/coach.routes";
 import { createPerformanceProfessionalRoutes } from "../../presentation/routes/performance-professional.routes";
 import { createPerformanceDirectorRoutes } from "../../presentation/routes/performance-director.routes";
+import { createClubRoutes } from "../../presentation/routes/club.routes";
+import { ListClubExecutivesUseCase } from "../../application/use-cases/list-club-executives.use-case";
+import { PrismaClubExecutiveReader } from "../../infrastructure/queries/club-executive.query";
 import { GetDepartmentCommandCentreUseCase } from "../../application/use-cases/get-department-command-centre.use-case";
 import { PrismaDepartmentCommandCentreReader } from "../../infrastructure/queries/department-command-centre.query";
 import { GetDepartmentPerformanceIntelligenceUseCase } from "../../application/use-cases/get-department-performance-intelligence.use-case";
@@ -403,6 +406,9 @@ router.use(
         performanceProfessionalController,
     ),
 );
+router.use("/club", createClubRoutes(
+    new ListClubExecutivesUseCase(new PrismaClubExecutiveReader(new DatabaseService())),
+));
 router.use(
     "/performance-director",
     createPerformanceDirectorRoutes(
