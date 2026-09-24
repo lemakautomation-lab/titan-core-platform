@@ -283,6 +283,7 @@ export default function AppRouter({
                 canReadConditioning={Boolean(user?.permissions.includes("club.conditioning.read"))}
                 canReadNutrition={Boolean(user?.permissions.includes("club.nutrition.read"))}
                 canReadRehabilitation={Boolean(user?.permissions.includes("club.rehabilitation.read"))}
+                canReadTeams={Boolean(user?.permissions.includes("club.teams.read"))}
               />
             </RequirePermission>
           }

@@ -95,6 +95,12 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Added read-only `GET /api/v1/club/teams` with bounded cursor pagination and the dedicated `club.teams.read` permission. The existing team reader resolves the authenticated actor's directly assigned active club and returns active teams owned by active coaches assigned to the same tenant and club. It validates cursors within that scope, hides missing clubs and returns only team names and opaque IDs. It does not expose rosters or Athlete records.
+- A tenant-scoped migration grants the permission to existing `ADMIN` roles; an audited dry-run-first operator command supports new tenants. Apply the migration before deploying the route. The club page loads teams only with the independent grant, checks the returned organisation against the authorised club and fails safely on errors. Director team visibility remains behind its separate permission.
+- Added targeted API authentication, permission, input, pagination, tenant and active-coach scope cases; new-tenant provisioning and frontend permission, pagination and mismatch cases. The migration applied to protected local titan_core_test. Focused backend tests passed (2/2 files, 4/4 tests); focused frontend and router tests passed (2/2 files, 41/41 tests). Full backend serial regression passed (209/209 files, 1353/1353 tests); full frontend regression passed (42/42 files, 244/244 tests). Backend and frontend builds, changed-file backend lint, frontend lint, Knowledge Base build and git diff --check passed. Commit, production rollout and Knowledge Base publication verification remain pending.
+
 ### Control 70.9 - Athletes
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

@@ -85,3 +85,15 @@ export function getClubRehabilitation(cursor?: string): Promise<ClubRehabilitati
     `/club/rehabilitation?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
   );
 }
+
+export interface ClubTeamsPage {
+  organisationId: string;
+  teams: Array<{ id: string; name: string }>;
+  nextCursor: string | null;
+}
+
+export function getClubTeams(cursor?: string): Promise<ClubTeamsPage> {
+  return apiRequest<ClubTeamsPage>(
+    `/club/teams?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+  );
+}

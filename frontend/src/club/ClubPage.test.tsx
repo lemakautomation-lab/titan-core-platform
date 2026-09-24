@@ -6,6 +6,37 @@ import * as api from "./club.api";
 describe("Mission 070 club structure", () => {
   afterEach(() => vi.restoreAllMocks());
 
+  it("loads teams only with the independent permission", async () => {
+    vi.spyOn(api, "getClubExecutives").mockResolvedValue({
+      organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
+      executives: [], nextCursor: null,
+    });
+    const teams = vi.spyOn(api, "getClubTeams")
+      .mockResolvedValueOnce({ organisationId: "club-1", teams: [{ id: "one", name: "First Team" }], nextCursor: "one" })
+      .mockResolvedValueOnce({ organisationId: "club-1", teams: [{ id: "two", name: "Second Team" }], nextCursor: null });
+    const view = render(<ClubPage />);
+    expect(await screen.findByText("No active executives assigned to this club.")).toBeTruthy();
+    expect(teams).not.toHaveBeenCalled();
+    view.rerender(<ClubPage canReadTeams />);
+    expect(await screen.findByText("First Team")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Load more teams" }));
+    await waitFor(() => expect(screen.getByText("Second Team")).toBeTruthy());
+    expect(teams).toHaveBeenCalledWith("one");
+  });
+
+  it("hides teams returned from another club", async () => {
+    vi.spyOn(api, "getClubExecutives").mockResolvedValue({
+      organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
+      executives: [], nextCursor: null,
+    });
+    vi.spyOn(api, "getClubTeams").mockResolvedValue({
+      organisationId: "other", teams: [{ id: "one", name: "Foreign Team" }], nextCursor: null,
+    });
+    render(<ClubPage canReadTeams />);
+    expect(await screen.findByText("Club teams are unavailable.")).toBeTruthy();
+    expect(screen.queryByText("Foreign Team")).toBeNull();
+  });
+
   it("loads rehabilitation staff only with the independent permission", async () => {
     vi.spyOn(api, "getClubExecutives").mockResolvedValue({
       organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,

@@ -426,6 +426,7 @@ router.use("/club", createClubRoutes(
     new ListClubConditioningUseCase(new PrismaClubConditioningReader(new DatabaseService())),
     new ListClubNutritionUseCase(new PrismaClubNutritionReader(new DatabaseService())),
     new ListClubRehabilitationUseCase(new PrismaClubRehabilitationReader(new DatabaseService())),
+    new ListDepartmentTeamsUseCase(new PrismaDepartmentTeamsReader(new DatabaseService())),
 ));
 router.use(
     "/performance-director",

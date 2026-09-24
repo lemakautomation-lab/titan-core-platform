@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getClubExecutives, getClubDirectors, getClubCoaches, getClubScientists, getClubConditioning, getClubNutrition, getClubRehabilitation, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage, type ClubScientistPage, type ClubConditioningPage, type ClubNutritionPage, type ClubRehabilitationPage } from "./club.api";
+import { getClubExecutives, getClubDirectors, getClubCoaches, getClubScientists, getClubConditioning, getClubNutrition, getClubRehabilitation, getClubTeams, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage, type ClubScientistPage, type ClubConditioningPage, type ClubNutritionPage, type ClubRehabilitationPage, type ClubTeamsPage } from "./club.api";
 
-export default function ClubPage({ canReadDirectors = false, canReadCoaches = false, canReadScientists = false, canReadConditioning = false, canReadNutrition = false, canReadRehabilitation = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean; canReadScientists?: boolean; canReadConditioning?: boolean; canReadNutrition?: boolean; canReadRehabilitation?: boolean }) {
+export default function ClubPage({ canReadDirectors = false, canReadCoaches = false, canReadScientists = false, canReadConditioning = false, canReadNutrition = false, canReadRehabilitation = false, canReadTeams = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean; canReadScientists?: boolean; canReadConditioning?: boolean; canReadNutrition?: boolean; canReadRehabilitation?: boolean; canReadTeams?: boolean }) {
   const [page, setPage] = useState<ClubExecutivePage | null>(null);
   const [error, setError] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -23,6 +23,9 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
   const [rehabilitationPage, setRehabilitationPage] = useState<ClubRehabilitationPage | null>(null);
   const [rehabilitationError, setRehabilitationError] = useState(false);
   const [loadingMoreRehabilitation, setLoadingMoreRehabilitation] = useState(false);
+  const [teamsPage, setTeamsPage] = useState<ClubTeamsPage | null>(null);
+  const [teamsError, setTeamsError] = useState(false);
+  const [loadingMoreTeams, setLoadingMoreTeams] = useState(false);
   const organisationId = page?.organisationId;
 
   useEffect(() => {
@@ -156,6 +159,37 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
       setRehabilitationError(true);
     } finally {
       setLoadingMoreRehabilitation(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!canReadTeams || !organisationId) return;
+    let active = true;
+    getClubTeams()
+      .then((result) => {
+        if (!active) return;
+        if (result.organisationId !== organisationId) {
+          setTeamsError(true);
+          return;
+        }
+        setTeamsPage(result);
+      })
+      .catch(() => { if (active) setTeamsError(true); });
+    return () => { active = false; };
+  }, [canReadTeams, organisationId]);
+
+  async function loadMoreTeams() {
+    if (!teamsPage?.nextCursor || loadingMoreTeams) return;
+    setLoadingMoreTeams(true);
+    setTeamsError(false);
+    try {
+      const next = await getClubTeams(teamsPage.nextCursor);
+      if (next.organisationId !== organisationId) throw new Error("Club changed");
+      setTeamsPage({ ...next, teams: [...teamsPage.teams, ...next.teams] });
+    } catch {
+      setTeamsError(true);
+    } finally {
+      setLoadingMoreTeams(false);
     }
   }
 
@@ -316,6 +350,18 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
         <ul>{rehabilitationPage.rehabilitation.map((professional) => <li key={professional.id}>{professional.name}</li>)}</ul>
         {rehabilitationPage.nextCursor && <button type="button" disabled={loadingMoreRehabilitation} onClick={loadMoreRehabilitation}>
           Load more rehabilitation staff
+        </button>}
+      </>}
+    </section>}
+    {canReadTeams && page && <section aria-label="Club teams">
+      <h2>Teams</h2>
+      {teamsError && <p role="alert">Club teams are unavailable.</p>}
+      {!teamsPage && !teamsError && <p>Loading teams...</p>}
+      {teamsPage && <>
+        {teamsPage.teams.length === 0 && <p>No active teams assigned to this club.</p>}
+        <ul>{teamsPage.teams.map((team) => <li key={team.id}>{team.name}</li>)}</ul>
+        {teamsPage.nextCursor && <button type="button" disabled={loadingMoreTeams} onClick={loadMoreTeams}>
+          Load more teams
         </button>}
       </>}
     </section>}
