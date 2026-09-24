@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getClubExecutives, getClubDirectors, getClubCoaches, getClubScientists, getClubConditioning, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage, type ClubScientistPage, type ClubConditioningPage } from "./club.api";
+import { getClubExecutives, getClubDirectors, getClubCoaches, getClubScientists, getClubConditioning, getClubNutrition, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage, type ClubScientistPage, type ClubConditioningPage, type ClubNutritionPage } from "./club.api";
 
-export default function ClubPage({ canReadDirectors = false, canReadCoaches = false, canReadScientists = false, canReadConditioning = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean; canReadScientists?: boolean; canReadConditioning?: boolean }) {
+export default function ClubPage({ canReadDirectors = false, canReadCoaches = false, canReadScientists = false, canReadConditioning = false, canReadNutrition = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean; canReadScientists?: boolean; canReadConditioning?: boolean; canReadNutrition?: boolean }) {
   const [page, setPage] = useState<ClubExecutivePage | null>(null);
   const [error, setError] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -17,6 +17,9 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
   const [conditioningPage, setConditioningPage] = useState<ClubConditioningPage | null>(null);
   const [conditioningError, setConditioningError] = useState(false);
   const [loadingMoreConditioning, setLoadingMoreConditioning] = useState(false);
+  const [nutritionPage, setNutritionPage] = useState<ClubNutritionPage | null>(null);
+  const [nutritionError, setNutritionError] = useState(false);
+  const [loadingMoreNutrition, setLoadingMoreNutrition] = useState(false);
   const organisationId = page?.organisationId;
 
   useEffect(() => {
@@ -90,6 +93,37 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
       .catch(() => { if (active) setConditioningError(true); });
     return () => { active = false; };
   }, [canReadConditioning, organisationId]);
+
+  useEffect(() => {
+    if (!canReadNutrition || !organisationId) return;
+    let active = true;
+    getClubNutrition()
+      .then((result) => {
+        if (!active) return;
+        if (result.organisationId !== organisationId) {
+          setNutritionError(true);
+          return;
+        }
+        setNutritionPage(result);
+      })
+      .catch(() => { if (active) setNutritionError(true); });
+    return () => { active = false; };
+  }, [canReadNutrition, organisationId]);
+
+  async function loadMoreNutrition() {
+    if (!nutritionPage?.nextCursor || loadingMoreNutrition) return;
+    setLoadingMoreNutrition(true);
+    setNutritionError(false);
+    try {
+      const next = await getClubNutrition(nutritionPage.nextCursor);
+      if (next.organisationId !== organisationId) throw new Error("Club changed");
+      setNutritionPage({ ...next, nutrition: [...nutritionPage.nutrition, ...next.nutrition] });
+    } catch {
+      setNutritionError(true);
+    } finally {
+      setLoadingMoreNutrition(false);
+    }
+  }
 
   async function loadMoreConditioning() {
     if (!conditioningPage?.nextCursor || loadingMoreConditioning) return;
@@ -224,6 +258,18 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
         <ul>{conditioningPage.conditioning.map((professional) => <li key={professional.id}>{professional.name}</li>)}</ul>
         {conditioningPage.nextCursor && <button type="button" disabled={loadingMoreConditioning} onClick={loadMoreConditioning}>
           Load more conditioning staff
+        </button>}
+      </>}
+    </section>}
+    {canReadNutrition && page && <section aria-label="Club nutrition">
+      <h2>Nutrition Professionals</h2>
+      {nutritionError && <p role="alert">Club nutrition staff are unavailable.</p>}
+      {!nutritionPage && !nutritionError && <p>Loading nutrition staff...</p>}
+      {nutritionPage && <>
+        {nutritionPage.nutrition.length === 0 && <p>No active Nutrition Professionals assigned to this club.</p>}
+        <ul>{nutritionPage.nutrition.map((professional) => <li key={professional.id}>{professional.name}</li>)}</ul>
+        {nutritionPage.nextCursor && <button type="button" disabled={loadingMoreNutrition} onClick={loadMoreNutrition}>
+          Load more nutrition staff
         </button>}
       </>}
     </section>}
