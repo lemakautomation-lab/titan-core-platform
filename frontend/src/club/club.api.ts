@@ -97,3 +97,15 @@ export function getClubTeams(cursor?: string): Promise<ClubTeamsPage> {
     `/club/teams?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
   );
 }
+
+export interface ClubAthletesPage {
+  organisationId: string;
+  athletes: Array<{ id: string; name: string }>;
+  nextCursor: string | null;
+}
+
+export function getClubAthletes(cursor?: string): Promise<ClubAthletesPage> {
+  return apiRequest<ClubAthletesPage>(
+    `/club/athletes?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+  );
+}

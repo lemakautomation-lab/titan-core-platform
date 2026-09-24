@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getClubExecutives, getClubDirectors, getClubCoaches, getClubScientists, getClubConditioning, getClubNutrition, getClubRehabilitation, getClubTeams, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage, type ClubScientistPage, type ClubConditioningPage, type ClubNutritionPage, type ClubRehabilitationPage, type ClubTeamsPage } from "./club.api";
+import { getClubExecutives, getClubDirectors, getClubCoaches, getClubScientists, getClubConditioning, getClubNutrition, getClubRehabilitation, getClubTeams, getClubAthletes, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage, type ClubScientistPage, type ClubConditioningPage, type ClubNutritionPage, type ClubRehabilitationPage, type ClubTeamsPage, type ClubAthletesPage } from "./club.api";
 
-export default function ClubPage({ canReadDirectors = false, canReadCoaches = false, canReadScientists = false, canReadConditioning = false, canReadNutrition = false, canReadRehabilitation = false, canReadTeams = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean; canReadScientists?: boolean; canReadConditioning?: boolean; canReadNutrition?: boolean; canReadRehabilitation?: boolean; canReadTeams?: boolean }) {
+export default function ClubPage({ canReadDirectors = false, canReadCoaches = false, canReadScientists = false, canReadConditioning = false, canReadNutrition = false, canReadRehabilitation = false, canReadTeams = false, canReadAthletes = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean; canReadScientists?: boolean; canReadConditioning?: boolean; canReadNutrition?: boolean; canReadRehabilitation?: boolean; canReadTeams?: boolean; canReadAthletes?: boolean }) {
   const [page, setPage] = useState<ClubExecutivePage | null>(null);
   const [error, setError] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -26,6 +26,9 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
   const [teamsPage, setTeamsPage] = useState<ClubTeamsPage | null>(null);
   const [teamsError, setTeamsError] = useState(false);
   const [loadingMoreTeams, setLoadingMoreTeams] = useState(false);
+  const [athletesPage, setAthletesPage] = useState<ClubAthletesPage | null>(null);
+  const [athletesError, setAthletesError] = useState(false);
+  const [loadingMoreAthletes, setLoadingMoreAthletes] = useState(false);
   const organisationId = page?.organisationId;
 
   useEffect(() => {
@@ -190,6 +193,37 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
       setTeamsError(true);
     } finally {
       setLoadingMoreTeams(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!canReadAthletes || !organisationId) return;
+    let active = true;
+    getClubAthletes()
+      .then((result) => {
+        if (!active) return;
+        if (result.organisationId !== organisationId) {
+          setAthletesError(true);
+          return;
+        }
+        setAthletesPage(result);
+      })
+      .catch(() => { if (active) setAthletesError(true); });
+    return () => { active = false; };
+  }, [canReadAthletes, organisationId]);
+
+  async function loadMoreAthletes() {
+    if (!athletesPage?.nextCursor || loadingMoreAthletes) return;
+    setLoadingMoreAthletes(true);
+    setAthletesError(false);
+    try {
+      const next = await getClubAthletes(athletesPage.nextCursor);
+      if (next.organisationId !== organisationId) throw new Error("Club changed");
+      setAthletesPage({ ...next, athletes: [...athletesPage.athletes, ...next.athletes] });
+    } catch {
+      setAthletesError(true);
+    } finally {
+      setLoadingMoreAthletes(false);
     }
   }
 
@@ -362,6 +396,18 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
         <ul>{teamsPage.teams.map((team) => <li key={team.id}>{team.name}</li>)}</ul>
         {teamsPage.nextCursor && <button type="button" disabled={loadingMoreTeams} onClick={loadMoreTeams}>
           Load more teams
+        </button>}
+      </>}
+    </section>}
+    {canReadAthletes && page && <section aria-label="Club athletes">
+      <h2>Athletes</h2>
+      {athletesError && <p role="alert">Club athletes are unavailable.</p>}
+      {!athletesPage && !athletesError && <p>Loading athletes...</p>}
+      {athletesPage && <>
+        {athletesPage.athletes.length === 0 && <p>No active athletes assigned to this club.</p>}
+        <ul>{athletesPage.athletes.map((athlete) => <li key={athlete.id}>{athlete.name}</li>)}</ul>
+        {athletesPage.nextCursor && <button type="button" disabled={loadingMoreAthletes} onClick={loadMoreAthletes}>
+          Load more athletes
         </button>}
       </>}
     </section>}

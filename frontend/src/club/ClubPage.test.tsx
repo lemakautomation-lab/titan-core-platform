@@ -6,6 +6,37 @@ import * as api from "./club.api";
 describe("Mission 070 club structure", () => {
   afterEach(() => vi.restoreAllMocks());
 
+  it("loads athletes only with the independent permission", async () => {
+    vi.spyOn(api, "getClubExecutives").mockResolvedValue({
+      organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
+      executives: [], nextCursor: null,
+    });
+    const athletes = vi.spyOn(api, "getClubAthletes")
+      .mockResolvedValueOnce({ organisationId: "club-1", athletes: [{ id: "one", name: "First Athlete" }], nextCursor: "one" })
+      .mockResolvedValueOnce({ organisationId: "club-1", athletes: [{ id: "two", name: "Second Athlete" }], nextCursor: null });
+    const view = render(<ClubPage />);
+    expect(await screen.findByText("No active executives assigned to this club.")).toBeTruthy();
+    expect(athletes).not.toHaveBeenCalled();
+    view.rerender(<ClubPage canReadAthletes />);
+    expect(await screen.findByText("First Athlete")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Load more athletes" }));
+    await waitFor(() => expect(screen.getByText("Second Athlete")).toBeTruthy());
+    expect(athletes).toHaveBeenCalledWith("one");
+  });
+
+  it("hides athletes returned from another club", async () => {
+    vi.spyOn(api, "getClubExecutives").mockResolvedValue({
+      organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
+      executives: [], nextCursor: null,
+    });
+    vi.spyOn(api, "getClubAthletes").mockResolvedValue({
+      organisationId: "other", athletes: [{ id: "one", name: "Foreign Athlete" }], nextCursor: null,
+    });
+    render(<ClubPage canReadAthletes />);
+    expect(await screen.findByText("Club athletes are unavailable.")).toBeTruthy();
+    expect(screen.queryByText("Foreign Athlete")).toBeNull();
+  });
+
   it("loads teams only with the independent permission", async () => {
     vi.spyOn(api, "getClubExecutives").mockResolvedValue({
       organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
