@@ -26,6 +26,8 @@ import { ListClubExecutivesUseCase } from "../../application/use-cases/list-club
 import { PrismaClubExecutiveReader } from "../../infrastructure/queries/club-executive.query";
 import { ListClubDirectorsUseCase } from "../../application/use-cases/list-club-directors.use-case";
 import { PrismaClubDirectorReader } from "../../infrastructure/queries/club-directors.query";
+import { ListClubCoachesUseCase } from "../../application/use-cases/list-club-coaches.use-case";
+import { PrismaClubCoachReader } from "../../infrastructure/queries/club-coaches.query";
 import { GetDepartmentCommandCentreUseCase } from "../../application/use-cases/get-department-command-centre.use-case";
 import { PrismaDepartmentCommandCentreReader } from "../../infrastructure/queries/department-command-centre.query";
 import { GetDepartmentPerformanceIntelligenceUseCase } from "../../application/use-cases/get-department-performance-intelligence.use-case";
@@ -411,6 +413,7 @@ router.use(
 router.use("/club", createClubRoutes(
     new ListClubExecutivesUseCase(new PrismaClubExecutiveReader(new DatabaseService())),
     new ListClubDirectorsUseCase(new PrismaClubDirectorReader(new DatabaseService())),
+    new ListClubCoachesUseCase(new PrismaClubCoachReader(new DatabaseService())),
 ));
 router.use(
     "/performance-director",

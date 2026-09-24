@@ -25,3 +25,15 @@ export function getClubDirectors(cursor?: string): Promise<ClubDirectorPage> {
     `/club/directors?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
   );
 }
+
+export interface ClubCoachPage {
+  organisationId: string;
+  coaches: Array<{ id: string; name: string }>;
+  nextCursor: string | null;
+}
+
+export function getClubCoaches(cursor?: string): Promise<ClubCoachPage> {
+  return apiRequest<ClubCoachPage>(
+    `/club/coaches?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+  );
+}

@@ -45,6 +45,12 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Added read-only `GET /api/v1/club/coaches?limit=1..100&cursor=uuid` with a default limit of 25. The query resolves the authenticated user's directly assigned active organisation and tenant and pages active users in that organisation who explicitly hold a tenant `COACH` role. Missing or out-of-scope cursors receive the same bounded 404 as an unassigned club.
+- A dedicated tenant-scoped `club.coaches.read` permission protects the API and the optional Club page coaches section. The existing Club page still requires `club.executives.read` to enter. A migration grants existing tenant `ADMIN` roles the new read permission; an audited dry-run-first operator command supports new tenants. This permission does not appoint coaches or expose coach–Athlete relationships.
+- The page loads the coaches section only when permitted, verifies that its organisation matches the authorised executive view and supports bounded pagination. Authentication, input validation, role and tenant scope, active status, cursor scope, provisioning and frontend failure cases are covered by targeted tests. The migration applied to protected local titan_core_test. Focused backend tests passed (2/2 files, 4/4 tests); focused frontend and router tests passed (2/2 files, 31/31 tests). Full backend serial regression passed (199/199 files, 1333/1333 tests); full frontend regression passed (42/42 files, 234/234 tests). Backend and frontend builds, changed-file backend lint, frontend lint, Knowledge Base build and git diff --check passed. Commit, production rollout and Knowledge Base publication verification remain pending.
+
 ### Control 70.4 - Sports scientists
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

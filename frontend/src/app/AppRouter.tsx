@@ -276,7 +276,10 @@ export default function AppRouter({
           path="/club"
           element={
             <RequirePermission user={user} permission="club.executives.read">
-              <ClubPage canReadDirectors={Boolean(user?.permissions.includes("club.directors.read"))} />
+              <ClubPage
+                canReadDirectors={Boolean(user?.permissions.includes("club.directors.read"))}
+                canReadCoaches={Boolean(user?.permissions.includes("club.coaches.read"))}
+              />
             </RequirePermission>
           }
         />

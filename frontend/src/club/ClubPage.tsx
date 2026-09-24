@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { getClubExecutives, getClubDirectors, type ClubDirectorPage, type ClubExecutivePage } from "./club.api";
+import { getClubExecutives, getClubDirectors, getClubCoaches, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage } from "./club.api";
 
-export default function ClubPage({ canReadDirectors = false }: { canReadDirectors?: boolean }) {
+export default function ClubPage({ canReadDirectors = false, canReadCoaches = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean }) {
   const [page, setPage] = useState<ClubExecutivePage | null>(null);
   const [error, setError] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [directorPage, setDirectorPage] = useState<ClubDirectorPage | null>(null);
   const [directorError, setDirectorError] = useState(false);
   const [loadingMoreDirectors, setLoadingMoreDirectors] = useState(false);
+  const [coachPage, setCoachPage] = useState<ClubCoachPage | null>(null);
+  const [coachError, setCoachError] = useState(false);
+  const [loadingMoreCoaches, setLoadingMoreCoaches] = useState(false);
   const organisationId = page?.organisationId;
 
   useEffect(() => {
@@ -33,6 +36,37 @@ export default function ClubPage({ canReadDirectors = false }: { canReadDirector
       .catch(() => { if (active) setDirectorError(true); });
     return () => { active = false; };
   }, [canReadDirectors, organisationId]);
+
+  useEffect(() => {
+    if (!canReadCoaches || !organisationId) return;
+    let active = true;
+    getClubCoaches()
+      .then((result) => {
+        if (!active) return;
+        if (result.organisationId !== organisationId) {
+          setCoachError(true);
+          return;
+        }
+        setCoachPage(result);
+      })
+      .catch(() => { if (active) setCoachError(true); });
+    return () => { active = false; };
+  }, [canReadCoaches, organisationId]);
+
+  async function loadMoreCoaches() {
+    if (!coachPage?.nextCursor || loadingMoreCoaches) return;
+    setLoadingMoreCoaches(true);
+    setCoachError(false);
+    try {
+      const next = await getClubCoaches(coachPage.nextCursor);
+      if (next.organisationId !== coachPage.organisationId) throw new Error("Club changed");
+      setCoachPage({ ...next, coaches: [...coachPage.coaches, ...next.coaches] });
+    } catch {
+      setCoachError(true);
+    } finally {
+      setLoadingMoreCoaches(false);
+    }
+  }
 
   async function loadMoreDirectors() {
     if (!directorPage?.nextCursor || loadingMoreDirectors) return;
@@ -86,6 +120,18 @@ export default function ClubPage({ canReadDirectors = false }: { canReadDirector
         <ul>{directorPage.directors.map((director) => <li key={director.id}>{director.name}</li>)}</ul>
         {directorPage.nextCursor && <button type="button" disabled={loadingMoreDirectors} onClick={loadMoreDirectors}>
           Load more directors
+        </button>}
+      </>}
+    </section>}
+    {canReadCoaches && page && <section aria-label="Club coaches">
+      <h2>Coaches</h2>
+      {coachError && <p role="alert">Club coaches are unavailable.</p>}
+      {!coachPage && !coachError && <p>Loading coaches...</p>}
+      {coachPage && <>
+        {coachPage.coaches.length === 0 && <p>No active coaches assigned to this club.</p>}
+        <ul>{coachPage.coaches.map((coach) => <li key={coach.id}>{coach.name}</li>)}</ul>
+        {coachPage.nextCursor && <button type="button" disabled={loadingMoreCoaches} onClick={loadMoreCoaches}>
+          Load more coaches
         </button>}
       </>}
     </section>}
