@@ -6,6 +6,34 @@ import * as api from "./performance-director.api";
 describe("Performance Director command centre", () => {
   afterEach(() => vi.restoreAllMocks());
 
+  it("loads bounded review guidance only with the decision grant", async () => {
+    vi.spyOn(api, "getDepartmentCommandCentre").mockResolvedValue({
+      organisationId: "department-1", organisationName: "Department", staffCount: 2, athleteCount: 3,
+    });
+    const load = vi.spyOn(api, "getDepartmentDecisionSupport").mockResolvedValue({
+      organisationId: "department-1", days: 30, activeAthleteCount: 3,
+      measuredAthleteCount: 1, effectiveMeasurementCount: 2,
+      action: "REVIEW_MEASUREMENT_COVERAGE",
+    });
+    const view = render(<PerformanceDirectorPage />);
+    expect(await screen.findByRole("heading", { name: "Department" })).toBeTruthy();
+    expect(load).not.toHaveBeenCalled();
+    view.rerender(<PerformanceDirectorPage canReadDecisions />);
+    expect(await screen.findByText("Review action: Review which athletes have measurements.")).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Review window"), { target: { value: "7" } });
+    await waitFor(() => expect(load).toHaveBeenCalledWith(7));
+  });
+
+  it("fails safely when decision support is unavailable", async () => {
+    vi.spyOn(api, "getDepartmentCommandCentre").mockResolvedValue({
+      organisationId: "department-1", organisationName: "Department", staffCount: 2, athleteCount: 3,
+    });
+    vi.spyOn(api, "getDepartmentDecisionSupport").mockRejectedValue(new Error("Unavailable"));
+    render(<PerformanceDirectorPage canReadDecisions />);
+    expect(await screen.findByText("Measurement review is unavailable.")).toBeTruthy();
+    expect(screen.queryByText(/Review action:/)).toBeNull();
+  });
+
   it("loads the aggregate report only with the reporting permission", async () => {
     vi.spyOn(api, "getDepartmentCommandCentre").mockResolvedValue({
       organisationId: "department-1", organisationName: "Department", staffCount: 2, athleteCount: 3,

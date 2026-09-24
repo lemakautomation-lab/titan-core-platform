@@ -71,6 +71,13 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Added read-only `GET /api/v1/performance-director/decision-support?days=7|30|90` (default 30) guarded by independent `performance-director.decisions.read` permission. The optional department-page section is visible only with that grant; page entry still requires command-centre access.
+- Reuses the tenant- and active-organisation-scoped intelligence query, including its terminal-correction measurement rule and bounded time window. The response exposes aggregate athlete and effective measurement counts and one deterministic review action: no active athletes, collect measurements, review coverage, or review activity. It does not prescribe interventions, produce rankings, predict outcomes, or disclose individual records.
+- Existing tenant `ADMIN` roles receive the permission through a tenant-scoped migration; a dry-run-first audited command grants new-tenant roles explicitly. Production migration and application rollout are pending.
+- Added focused API/RBAC, tenant/organisation-scope, window-validation, provisioning, action-branch and frontend permission/failure cases. The migration applied to protected local titan_core_test. Focused backend tests passed (3/3 files, 9/9 tests), including permission, scope, action rules and provisioning; focused frontend tests passed (10/10). Full backend serial regression passed (193/193 files, 1321/1321 tests); full frontend regression passed (41/41 files, 226/226 tests). Backend and frontend builds, changed-file backend lint, frontend lint, Knowledge Base build and git diff --check passed. Production rollout and publication verification remain pending.
+
 ## Mission Exit Gate
 
 all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.

@@ -54,3 +54,22 @@ export interface DepartmentRoleReport {
 export function getDepartmentRoleReport(days: IntelligenceWindow): Promise<DepartmentRoleReport> {
   return apiRequest<DepartmentRoleReport>(`/performance-director/report?days=${days}`);
 }
+
+export type DepartmentDecisionAction =
+  | "NO_ACTIVE_ATHLETES"
+  | "COLLECT_MEASUREMENTS"
+  | "REVIEW_MEASUREMENT_COVERAGE"
+  | "REVIEW_MEASUREMENT_ACTIVITY";
+
+export interface DepartmentDecisionSupport {
+  organisationId: string;
+  days: IntelligenceWindow;
+  activeAthleteCount: number;
+  measuredAthleteCount: number;
+  effectiveMeasurementCount: number;
+  action: DepartmentDecisionAction;
+}
+
+export function getDepartmentDecisionSupport(days: IntelligenceWindow): Promise<DepartmentDecisionSupport> {
+  return apiRequest<DepartmentDecisionSupport>(`/performance-director/decision-support?days=${days}`);
+}

@@ -4,17 +4,20 @@ import {
   getDepartmentPerformanceIntelligence,
   getDepartmentTeams,
   getDepartmentRoleReport,
+  getDepartmentDecisionSupport,
   type DepartmentCommandCentre,
   type DepartmentPerformanceIntelligence,
   type IntelligenceWindow,
   type DepartmentTeamsPage,
   type DepartmentRoleReport,
+  type DepartmentDecisionSupport,
 } from "./performance-director.api";
 
-export default function PerformanceDirectorPage({ canReadIntelligence = false, canReadTeams = false, canReadReport = false }: {
+export default function PerformanceDirectorPage({ canReadIntelligence = false, canReadTeams = false, canReadReport = false, canReadDecisions = false }: {
   canReadIntelligence?: boolean;
   canReadTeams?: boolean;
   canReadReport?: boolean;
+  canReadDecisions?: boolean;
 }) {
   const [summary, setSummary] = useState<DepartmentCommandCentre | null>(null);
   const [error, setError] = useState(false);
@@ -27,6 +30,9 @@ export default function PerformanceDirectorPage({ canReadIntelligence = false, c
   const [reportDays, setReportDays] = useState<IntelligenceWindow>(30);
   const [report, setReport] = useState<DepartmentRoleReport | null>(null);
   const [reportError, setReportError] = useState(false);
+  const [decisionDays, setDecisionDays] = useState<IntelligenceWindow>(30);
+  const [decisions, setDecisions] = useState<DepartmentDecisionSupport | null>(null);
+  const [decisionError, setDecisionError] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -66,6 +72,17 @@ export default function PerformanceDirectorPage({ canReadIntelligence = false, c
       .catch(() => { if (active) setReportError(true); });
     return () => { active = false; };
   }, [canReadReport, reportDays]);
+
+  useEffect(() => {
+    if (!canReadDecisions) return;
+    let active = true;
+    setDecisions(null);
+    setDecisionError(false);
+    getDepartmentDecisionSupport(decisionDays)
+      .then((value) => { if (active) setDecisions(value); })
+      .catch(() => { if (active) setDecisionError(true); });
+    return () => { active = false; };
+  }, [canReadDecisions, decisionDays]);
 
   async function loadMoreTeams() {
     if (!teamsPage?.nextCursor || loadingMore) return;
@@ -159,6 +176,31 @@ export default function PerformanceDirectorPage({ canReadIntelligence = false, c
             <p>Athletes with measurements: {report.measuredAthleteCount}</p>
             <p>Effective measurements: {report.effectiveMeasurementCount}</p>
             <p>Latest measurement: {report.latestMeasurementAt ?? "None in this window"}</p>
+          </div>}
+        </section>
+      )}
+      {canReadDecisions && (
+        <section aria-label="Department decision support">
+          <h2>Measurement review</h2>
+          <label htmlFor="decision-days">Review window</label>
+          <select id="decision-days" value={decisionDays}
+            onChange={(event) => setDecisionDays(Number(event.target.value) as IntelligenceWindow)}>
+            <option value={7}>7 days</option>
+            <option value={30}>30 days</option>
+            <option value={90}>90 days</option>
+          </select>
+          {decisionError && <p role="alert">Measurement review is unavailable.</p>}
+          {!decisions && !decisionError && <p>Loading measurement review...</p>}
+          {decisions && <div>
+            <p>Active athletes: {decisions.activeAthleteCount}</p>
+            <p>Athletes with measurements: {decisions.measuredAthleteCount}</p>
+            <p>Effective measurements: {decisions.effectiveMeasurementCount}</p>
+            <p>Review action: {{
+              NO_ACTIVE_ATHLETES: "No active athletes in this department.",
+              COLLECT_MEASUREMENTS: "No measurements recorded in this window.",
+              REVIEW_MEASUREMENT_COVERAGE: "Review which athletes have measurements.",
+              REVIEW_MEASUREMENT_ACTIVITY: "Review department measurement activity.",
+            }[decisions.action]}</p>
           </div>}
         </section>
       )}

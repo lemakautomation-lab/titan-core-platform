@@ -288,6 +288,9 @@ export default function AppRouter({
                 canReadReport={Boolean(
                   user?.permissions.includes("performance-director.reports.read"),
                 )}
+                canReadDecisions={Boolean(
+                  user?.permissions.includes("performance-director.decisions.read"),
+                )}
               />
             </RequirePermission>
           }
