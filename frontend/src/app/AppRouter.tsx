@@ -279,6 +279,7 @@ export default function AppRouter({
               <ClubPage
                 canReadDirectors={Boolean(user?.permissions.includes("club.directors.read"))}
                 canReadCoaches={Boolean(user?.permissions.includes("club.coaches.read"))}
+                canReadScientists={Boolean(user?.permissions.includes("club.scientists.read"))}
               />
             </RequirePermission>
           }

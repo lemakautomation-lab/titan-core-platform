@@ -37,3 +37,15 @@ export function getClubCoaches(cursor?: string): Promise<ClubCoachPage> {
     `/club/coaches?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
   );
 }
+
+export interface ClubScientistPage {
+  organisationId: string;
+  scientists: Array<{ id: string; name: string }>;
+  nextCursor: string | null;
+}
+
+export function getClubScientists(cursor?: string): Promise<ClubScientistPage> {
+  return apiRequest<ClubScientistPage>(
+    `/club/scientists?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+  );
+}

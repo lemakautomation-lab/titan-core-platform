@@ -6,6 +6,37 @@ import * as api from "./club.api";
 describe("Mission 070 club structure", () => {
   afterEach(() => vi.restoreAllMocks());
 
+  it("pages scientists only when the scientist permission is present", async () => {
+    vi.spyOn(api, "getClubExecutives").mockResolvedValue({
+      organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
+      executives: [], nextCursor: null,
+    });
+    const scientists = vi.spyOn(api, "getClubScientists")
+      .mockResolvedValueOnce({ organisationId: "club-1", scientists: [{ id: "one", name: "First Scientist" }], nextCursor: "one" })
+      .mockResolvedValueOnce({ organisationId: "club-1", scientists: [{ id: "two", name: "Second Scientist" }], nextCursor: null });
+    const view = render(<ClubPage />);
+    expect(await screen.findByText("No active executives assigned to this club.")).toBeTruthy();
+    expect(scientists).not.toHaveBeenCalled();
+    view.rerender(<ClubPage canReadScientists />);
+    expect(await screen.findByText("First Scientist")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Load more scientists" }));
+    await waitFor(() => expect(screen.getByText("Second Scientist")).toBeTruthy());
+    expect(scientists).toHaveBeenCalledWith("one");
+  });
+
+  it("hides scientists returned from another club", async () => {
+    vi.spyOn(api, "getClubExecutives").mockResolvedValue({
+      organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
+      executives: [], nextCursor: null,
+    });
+    vi.spyOn(api, "getClubScientists").mockResolvedValue({
+      organisationId: "other", scientists: [{ id: "one", name: "Foreign Scientist" }], nextCursor: null,
+    });
+    render(<ClubPage canReadScientists />);
+    expect(await screen.findByText("Club scientists are unavailable.")).toBeTruthy();
+    expect(screen.queryByText("Foreign Scientist")).toBeNull();
+  });
+
   it("pages coaches only when their independent permission is present", async () => {
     vi.spyOn(api, "getClubExecutives").mockResolvedValue({
       organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,

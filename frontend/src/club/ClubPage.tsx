@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getClubExecutives, getClubDirectors, getClubCoaches, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage } from "./club.api";
+import { getClubExecutives, getClubDirectors, getClubCoaches, getClubScientists, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage, type ClubScientistPage } from "./club.api";
 
-export default function ClubPage({ canReadDirectors = false, canReadCoaches = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean }) {
+export default function ClubPage({ canReadDirectors = false, canReadCoaches = false, canReadScientists = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean; canReadScientists?: boolean }) {
   const [page, setPage] = useState<ClubExecutivePage | null>(null);
   const [error, setError] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -11,6 +11,9 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
   const [coachPage, setCoachPage] = useState<ClubCoachPage | null>(null);
   const [coachError, setCoachError] = useState(false);
   const [loadingMoreCoaches, setLoadingMoreCoaches] = useState(false);
+  const [scientistPage, setScientistPage] = useState<ClubScientistPage | null>(null);
+  const [scientistError, setScientistError] = useState(false);
+  const [loadingMoreScientists, setLoadingMoreScientists] = useState(false);
   const organisationId = page?.organisationId;
 
   useEffect(() => {
@@ -52,6 +55,37 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
       .catch(() => { if (active) setCoachError(true); });
     return () => { active = false; };
   }, [canReadCoaches, organisationId]);
+
+  useEffect(() => {
+    if (!canReadScientists || !organisationId) return;
+    let active = true;
+    getClubScientists()
+      .then((result) => {
+        if (!active) return;
+        if (result.organisationId !== organisationId) {
+          setScientistError(true);
+          return;
+        }
+        setScientistPage(result);
+      })
+      .catch(() => { if (active) setScientistError(true); });
+    return () => { active = false; };
+  }, [canReadScientists, organisationId]);
+
+  async function loadMoreScientists() {
+    if (!scientistPage?.nextCursor || loadingMoreScientists) return;
+    setLoadingMoreScientists(true);
+    setScientistError(false);
+    try {
+      const next = await getClubScientists(scientistPage.nextCursor);
+      if (next.organisationId !== scientistPage.organisationId) throw new Error("Club changed");
+      setScientistPage({ ...next, scientists: [...scientistPage.scientists, ...next.scientists] });
+    } catch {
+      setScientistError(true);
+    } finally {
+      setLoadingMoreScientists(false);
+    }
+  }
 
   async function loadMoreCoaches() {
     if (!coachPage?.nextCursor || loadingMoreCoaches) return;
@@ -132,6 +166,18 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
         <ul>{coachPage.coaches.map((coach) => <li key={coach.id}>{coach.name}</li>)}</ul>
         {coachPage.nextCursor && <button type="button" disabled={loadingMoreCoaches} onClick={loadMoreCoaches}>
           Load more coaches
+        </button>}
+      </>}
+    </section>}
+    {canReadScientists && page && <section aria-label="Club sports scientists">
+      <h2>Sports Scientists</h2>
+      {scientistError && <p role="alert">Club scientists are unavailable.</p>}
+      {!scientistPage && !scientistError && <p>Loading scientists...</p>}
+      {scientistPage && <>
+        {scientistPage.scientists.length === 0 && <p>No active Sports Scientists assigned to this club.</p>}
+        <ul>{scientistPage.scientists.map((scientist) => <li key={scientist.id}>{scientist.name}</li>)}</ul>
+        {scientistPage.nextCursor && <button type="button" disabled={loadingMoreScientists} onClick={loadMoreScientists}>
+          Load more scientists
         </button>}
       </>}
     </section>}

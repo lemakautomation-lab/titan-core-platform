@@ -55,6 +55,12 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Added read-only `GET /api/v1/club/scientists?limit=1..100&cursor=uuid` with default limit 25. The query resolves the authenticated user's directly assigned active organisation and tenant, and pages only active users in that organisation with an explicit tenant `SPORTS_SCIENTIST` role. An unassigned club or cursor outside the scope receives a bounded 404.
+- The new tenant-scoped `club.scientists.read` permission protects the endpoint and optional Club page section; Club page entry still requires `club.executives.read`. A migration grants existing tenant `ADMIN` roles the new read permission and an audited dry-run-first operator command supports new tenants. This does not appoint Sports Scientists or grant access to athlete observations.
+- The frontend verifies the returned organisation against its authorised executive view, supports bounded pagination and hides failures. The existing `PERFORMANCE_PROFESSIONAL` Athlete relationship remains the separate Athlete workflow boundary and does not establish a club Sports Scientist appointment. Targeted RBAC, scope, validation, provisioning and frontend tests are added. The migration applied to protected local titan_core_test. Focused backend tests passed (2/2 files, 4/4 tests); focused frontend and router tests passed (2/2 files, 33/33 tests). Full backend serial regression passed (201/201 files, 1337/1337 tests); full frontend regression passed (42/42 files, 236/236 tests). Backend and frontend builds, changed-file backend lint, frontend lint, Knowledge Base build and git diff --check passed. Commit, production rollout and Knowledge Base publication verification remain pending.
+
 ### Control 70.5 - Strength & conditioning
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
