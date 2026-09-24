@@ -60,6 +60,13 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Added read-only `GET /api/v1/performance-director/report?days=7|30|90` with 30 days as default. A dedicated `performance-director.reports.read` grant controls report access independently of intelligence and team visibility. The visible department page shows the report only to users with this grant; page entry continues to require command-centre access.
+- The report combines the existing tenant-scoped command-centre and terminal-correction measurement readers. Both independently resolve the authenticated director's directly assigned active organisation; the combined result fails closed if organisation identifiers differ. Only the organisation name and aggregate staff, athlete and measurement activity counts are returned. No athlete or staff identifiers, values, clinical conclusions or predictions are exposed.
+- A tenant-scoped migration grants the new permission to existing `ADMIN` roles; an audited dry-run-first operator command supports new tenants. Apply the migration before deploying the route. Neither the production database nor the hosted application has been changed.
+- Added HTTP permission, input, active-organisation and aggregate-scope cases, provisioning coverage and frontend permission, window and failure cases. The migration applied to protected local titan_core_test. Focused backend tests passed (2/2 files, 4/4 tests), including report authorization, scope and new-tenant provisioning; focused frontend tests passed (8/8). Full backend serial regression passed (190/190 files, 1312/1312 tests); full frontend regression passed (41/41 files, 224/224 tests). Backend and frontend builds, changed-file backend lint, frontend lint, Knowledge Base build and git diff --check passed.
+
 ### Control 69.5 - Decision-support controls
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

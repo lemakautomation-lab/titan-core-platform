@@ -39,3 +39,18 @@ export function getDepartmentTeams(cursor?: string): Promise<DepartmentTeamsPage
     `/performance-director/teams?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
   );
 }
+
+export interface DepartmentRoleReport {
+  organisationId: string;
+  organisationName: string;
+  days: IntelligenceWindow;
+  staffCount: number;
+  activeAthleteCount: number;
+  measuredAthleteCount: number;
+  effectiveMeasurementCount: number;
+  latestMeasurementAt: string | null;
+}
+
+export function getDepartmentRoleReport(days: IntelligenceWindow): Promise<DepartmentRoleReport> {
+  return apiRequest<DepartmentRoleReport>(`/performance-director/report?days=${days}`);
+}

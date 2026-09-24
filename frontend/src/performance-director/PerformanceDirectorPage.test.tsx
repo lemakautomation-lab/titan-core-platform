@@ -6,6 +6,34 @@ import * as api from "./performance-director.api";
 describe("Performance Director command centre", () => {
   afterEach(() => vi.restoreAllMocks());
 
+  it("loads the aggregate report only with the reporting permission", async () => {
+    vi.spyOn(api, "getDepartmentCommandCentre").mockResolvedValue({
+      organisationId: "department-1", organisationName: "Department", staffCount: 2, athleteCount: 3,
+    });
+    const load = vi.spyOn(api, "getDepartmentRoleReport").mockResolvedValue({
+      organisationId: "department-1", organisationName: "Department", days: 30,
+      staffCount: 2, activeAthleteCount: 3, measuredAthleteCount: 1,
+      effectiveMeasurementCount: 2, latestMeasurementAt: null,
+    });
+    const view = render(<PerformanceDirectorPage />);
+    expect(await screen.findByRole("heading", { name: "Department" })).toBeTruthy();
+    expect(load).not.toHaveBeenCalled();
+    view.rerender(<PerformanceDirectorPage canReadReport />);
+    expect(await screen.findByRole("region", { name: "Director role report" })).toHaveTextContent("Effective measurements: 2");
+    fireEvent.change(screen.getByLabelText("Report window"), { target: { value: "7" } });
+    await waitFor(() => expect(load).toHaveBeenCalledWith(7));
+  });
+
+  it("hides report values if report retrieval fails", async () => {
+    vi.spyOn(api, "getDepartmentCommandCentre").mockResolvedValue({
+      organisationId: "department-1", organisationName: "Department", staffCount: 2, athleteCount: 3,
+    });
+    vi.spyOn(api, "getDepartmentRoleReport").mockRejectedValue(new Error("Unavailable"));
+    render(<PerformanceDirectorPage canReadReport />);
+    expect(await screen.findByText("Department report is unavailable.")).toBeTruthy();
+    expect(screen.queryByText("Effective measurements: 2")).toBeNull();
+  });
+
   it("shows only the department summary returned by the API", async () => {
     vi.spyOn(api, "getDepartmentCommandCentre").mockResolvedValue({
       organisationId: "department-1",

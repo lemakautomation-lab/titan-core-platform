@@ -4,11 +4,13 @@ import { requirePermission } from "../../middleware/authorization.middleware";
 import { GetDepartmentCommandCentreUseCase } from "../../application/use-cases/get-department-command-centre.use-case";
 import { GetDepartmentPerformanceIntelligenceUseCase } from "../../application/use-cases/get-department-performance-intelligence.use-case";
 import { ListDepartmentTeamsUseCase } from "../../application/use-cases/list-department-teams.use-case";
+import { GetDepartmentRoleReportUseCase } from "../../application/use-cases/get-department-role-report.use-case";
 
 export function createPerformanceDirectorRoutes(
     query: GetDepartmentCommandCentreUseCase,
     intelligence: GetDepartmentPerformanceIntelligenceUseCase,
     teams: ListDepartmentTeamsUseCase,
+    report: GetDepartmentRoleReportUseCase,
 ): Router {
     const router = Router();
     router.use(authMiddleware);
@@ -43,6 +45,27 @@ export function createPerformanceDirectorRoutes(
             }
             const days = Number(input) as 7 | 30 | 90;
             const result = await intelligence.execute(req.user.tenantId, req.user.userId, days);
+            if (!result) {
+                res.status(404).json({ error: "Department not found." });
+                return;
+            }
+            res.status(200).json(result);
+        },
+    );
+    router.get(
+        "/report",
+        requirePermission("performance-director.reports.read"),
+        async (req: AuthRequest, res: Response) => {
+            if (!req.user) {
+                res.status(401).json({ error: "Unauthorized" });
+                return;
+            }
+            const input = req.query.days === undefined ? "30" : req.query.days;
+            if (input !== "7" && input !== "30" && input !== "90") {
+                res.status(400).json({ error: "days must be 7, 30 or 90." });
+                return;
+            }
+            const result = await report.execute(req.user.tenantId, req.user.userId, Number(input) as 7 | 30 | 90);
             if (!result) {
                 res.status(404).json({ error: "Department not found." });
                 return;

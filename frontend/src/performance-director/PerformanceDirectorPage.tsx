@@ -3,15 +3,18 @@ import {
   getDepartmentCommandCentre,
   getDepartmentPerformanceIntelligence,
   getDepartmentTeams,
+  getDepartmentRoleReport,
   type DepartmentCommandCentre,
   type DepartmentPerformanceIntelligence,
   type IntelligenceWindow,
   type DepartmentTeamsPage,
+  type DepartmentRoleReport,
 } from "./performance-director.api";
 
-export default function PerformanceDirectorPage({ canReadIntelligence = false, canReadTeams = false }: {
+export default function PerformanceDirectorPage({ canReadIntelligence = false, canReadTeams = false, canReadReport = false }: {
   canReadIntelligence?: boolean;
   canReadTeams?: boolean;
+  canReadReport?: boolean;
 }) {
   const [summary, setSummary] = useState<DepartmentCommandCentre | null>(null);
   const [error, setError] = useState(false);
@@ -21,6 +24,9 @@ export default function PerformanceDirectorPage({ canReadIntelligence = false, c
   const [teamsPage, setTeamsPage] = useState<DepartmentTeamsPage | null>(null);
   const [teamsError, setTeamsError] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [reportDays, setReportDays] = useState<IntelligenceWindow>(30);
+  const [report, setReport] = useState<DepartmentRoleReport | null>(null);
+  const [reportError, setReportError] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -49,6 +55,17 @@ export default function PerformanceDirectorPage({ canReadIntelligence = false, c
       .catch(() => { if (active) setTeamsError(true); });
     return () => { active = false; };
   }, [canReadTeams]);
+
+  useEffect(() => {
+    if (!canReadReport) return;
+    let active = true;
+    setReport(null);
+    setReportError(false);
+    getDepartmentRoleReport(reportDays)
+      .then((value) => { if (active) setReport(value); })
+      .catch(() => { if (active) setReportError(true); });
+    return () => { active = false; };
+  }, [canReadReport, reportDays]);
 
   async function loadMoreTeams() {
     if (!teamsPage?.nextCursor || loadingMore) return;
@@ -121,6 +138,28 @@ export default function PerformanceDirectorPage({ canReadIntelligence = false, c
               )}
             </>
           )}
+        </section>
+      )}
+      {canReadReport && (
+        <section aria-label="Director role report">
+          <h2>Department report</h2>
+          <label htmlFor="report-days">Report window</label>
+          <select id="report-days" value={reportDays}
+            onChange={(event) => setReportDays(Number(event.target.value) as IntelligenceWindow)}>
+            <option value={7}>7 days</option>
+            <option value={30}>30 days</option>
+            <option value={90}>90 days</option>
+          </select>
+          {reportError && <p role="alert">Department report is unavailable.</p>}
+          {!report && !reportError && <p>Loading department report...</p>}
+          {report && <div>
+            <p>Department: {report.organisationName}</p>
+            <p>Staff: {report.staffCount}</p>
+            <p>Active athletes: {report.activeAthleteCount}</p>
+            <p>Athletes with measurements: {report.measuredAthleteCount}</p>
+            <p>Effective measurements: {report.effectiveMeasurementCount}</p>
+            <p>Latest measurement: {report.latestMeasurementAt ?? "None in this window"}</p>
+          </div>}
         </section>
       )}
     </main>
