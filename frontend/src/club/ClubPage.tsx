@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getClubExecutives, getClubDirectors, getClubCoaches, getClubScientists, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage, type ClubScientistPage } from "./club.api";
+import { getClubExecutives, getClubDirectors, getClubCoaches, getClubScientists, getClubConditioning, type ClubDirectorPage, type ClubExecutivePage, type ClubCoachPage, type ClubScientistPage, type ClubConditioningPage } from "./club.api";
 
-export default function ClubPage({ canReadDirectors = false, canReadCoaches = false, canReadScientists = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean; canReadScientists?: boolean }) {
+export default function ClubPage({ canReadDirectors = false, canReadCoaches = false, canReadScientists = false, canReadConditioning = false }: { canReadDirectors?: boolean; canReadCoaches?: boolean; canReadScientists?: boolean; canReadConditioning?: boolean }) {
   const [page, setPage] = useState<ClubExecutivePage | null>(null);
   const [error, setError] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -14,6 +14,9 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
   const [scientistPage, setScientistPage] = useState<ClubScientistPage | null>(null);
   const [scientistError, setScientistError] = useState(false);
   const [loadingMoreScientists, setLoadingMoreScientists] = useState(false);
+  const [conditioningPage, setConditioningPage] = useState<ClubConditioningPage | null>(null);
+  const [conditioningError, setConditioningError] = useState(false);
+  const [loadingMoreConditioning, setLoadingMoreConditioning] = useState(false);
   const organisationId = page?.organisationId;
 
   useEffect(() => {
@@ -71,6 +74,37 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
       .catch(() => { if (active) setScientistError(true); });
     return () => { active = false; };
   }, [canReadScientists, organisationId]);
+
+  useEffect(() => {
+    if (!canReadConditioning || !organisationId) return;
+    let active = true;
+    getClubConditioning()
+      .then((result) => {
+        if (!active) return;
+        if (result.organisationId !== organisationId) {
+          setConditioningError(true);
+          return;
+        }
+        setConditioningPage(result);
+      })
+      .catch(() => { if (active) setConditioningError(true); });
+    return () => { active = false; };
+  }, [canReadConditioning, organisationId]);
+
+  async function loadMoreConditioning() {
+    if (!conditioningPage?.nextCursor || loadingMoreConditioning) return;
+    setLoadingMoreConditioning(true);
+    setConditioningError(false);
+    try {
+      const next = await getClubConditioning(conditioningPage.nextCursor);
+      if (next.organisationId !== conditioningPage.organisationId) throw new Error("Club changed");
+      setConditioningPage({ ...next, conditioning: [...conditioningPage.conditioning, ...next.conditioning] });
+    } catch {
+      setConditioningError(true);
+    } finally {
+      setLoadingMoreConditioning(false);
+    }
+  }
 
   async function loadMoreScientists() {
     if (!scientistPage?.nextCursor || loadingMoreScientists) return;
@@ -178,6 +212,18 @@ export default function ClubPage({ canReadDirectors = false, canReadCoaches = fa
         <ul>{scientistPage.scientists.map((scientist) => <li key={scientist.id}>{scientist.name}</li>)}</ul>
         {scientistPage.nextCursor && <button type="button" disabled={loadingMoreScientists} onClick={loadMoreScientists}>
           Load more scientists
+        </button>}
+      </>}
+    </section>}
+    {canReadConditioning && page && <section aria-label="Club strength and conditioning">
+      <h2>Strength &amp; Conditioning</h2>
+      {conditioningError && <p role="alert">Club conditioning staff are unavailable.</p>}
+      {!conditioningPage && !conditioningError && <p>Loading conditioning staff...</p>}
+      {conditioningPage && <>
+        {conditioningPage.conditioning.length === 0 && <p>No active strength and conditioning professionals assigned to this club.</p>}
+        <ul>{conditioningPage.conditioning.map((professional) => <li key={professional.id}>{professional.name}</li>)}</ul>
+        {conditioningPage.nextCursor && <button type="button" disabled={loadingMoreConditioning} onClick={loadMoreConditioning}>
+          Load more conditioning staff
         </button>}
       </>}
     </section>}

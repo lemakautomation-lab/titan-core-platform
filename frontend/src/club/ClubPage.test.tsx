@@ -6,6 +6,37 @@ import * as api from "./club.api";
 describe("Mission 070 club structure", () => {
   afterEach(() => vi.restoreAllMocks());
 
+  it("loads conditioning staff only with the independent permission", async () => {
+    vi.spyOn(api, "getClubExecutives").mockResolvedValue({
+      organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
+      executives: [], nextCursor: null,
+    });
+    const conditioning = vi.spyOn(api, "getClubConditioning")
+      .mockResolvedValueOnce({ organisationId: "club-1", conditioning: [{ id: "one", name: "First Professional" }], nextCursor: "one" })
+      .mockResolvedValueOnce({ organisationId: "club-1", conditioning: [{ id: "two", name: "Second Professional" }], nextCursor: null });
+    const view = render(<ClubPage />);
+    expect(await screen.findByText("No active executives assigned to this club.")).toBeTruthy();
+    expect(conditioning).not.toHaveBeenCalled();
+    view.rerender(<ClubPage canReadConditioning />);
+    expect(await screen.findByText("First Professional")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Load more conditioning staff" }));
+    await waitFor(() => expect(screen.getByText("Second Professional")).toBeTruthy());
+    expect(conditioning).toHaveBeenCalledWith("one");
+  });
+
+  it("hides conditioning staff returned from another club", async () => {
+    vi.spyOn(api, "getClubExecutives").mockResolvedValue({
+      organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
+      executives: [], nextCursor: null,
+    });
+    vi.spyOn(api, "getClubConditioning").mockResolvedValue({
+      organisationId: "other", conditioning: [{ id: "one", name: "Foreign Professional" }], nextCursor: null,
+    });
+    render(<ClubPage canReadConditioning />);
+    expect(await screen.findByText("Club conditioning staff are unavailable.")).toBeTruthy();
+    expect(screen.queryByText("Foreign Professional")).toBeNull();
+  });
+
   it("pages scientists only when the scientist permission is present", async () => {
     vi.spyOn(api, "getClubExecutives").mockResolvedValue({
       organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,

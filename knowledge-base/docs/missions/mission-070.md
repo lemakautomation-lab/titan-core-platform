@@ -65,6 +65,12 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Added read-only `GET /api/v1/club/conditioning?limit=1..100&cursor=uuid` with default limit 25. It resolves the authenticated user's directly assigned active organisation and tenant, returning only active users in that organisation with an explicit tenant `STRENGTH_CONDITIONING` role. Missing or out-of-scope cursors return the bounded 404 used for an unassigned club.
+- Dedicated tenant-scoped `club.conditioning.read` protects the API and optional Club page section; page entry continues to require `club.executives.read`. A tenant-scoped migration grants existing `ADMIN` roles the new read permission, and an audited dry-run-first operator command supports new-tenant grants. It does not appoint practitioners or grant access to Athlete training observations.
+- The frontend checks the organisation against its authorised executive view, pages staff and hides failed results. The existing Strength & Conditioning Athlete workflow under Mission 068 remains a separate relationship-scoped boundary. Targeted authentication, permission, pagination, input, scope, provisioning and frontend cases were added. The migration applied to protected local titan_core_test. Focused backend tests passed (2/2 files, 4/4 tests); focused frontend and router tests passed (2/2 files, 35/35 tests). Full backend serial regression passed (203/203 files, 1341/1341 tests); full frontend regression passed (42/42 files, 238/238 tests). Backend and frontend builds, changed-file backend lint, frontend lint, Knowledge Base build and git diff --check passed. Commit, production rollout and Knowledge Base publication verification remain pending.
+
 ### Control 70.6 - Nutrition
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

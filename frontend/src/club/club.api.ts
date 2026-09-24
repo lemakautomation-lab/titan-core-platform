@@ -49,3 +49,15 @@ export function getClubScientists(cursor?: string): Promise<ClubScientistPage> {
     `/club/scientists?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
   );
 }
+
+export interface ClubConditioningPage {
+  organisationId: string;
+  conditioning: Array<{ id: string; name: string }>;
+  nextCursor: string | null;
+}
+
+export function getClubConditioning(cursor?: string): Promise<ClubConditioningPage> {
+  return apiRequest<ClubConditioningPage>(
+    `/club/conditioning?limit=25${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+  );
+}

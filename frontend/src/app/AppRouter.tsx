@@ -280,6 +280,7 @@ export default function AppRouter({
                 canReadDirectors={Boolean(user?.permissions.includes("club.directors.read"))}
                 canReadCoaches={Boolean(user?.permissions.includes("club.coaches.read"))}
                 canReadScientists={Boolean(user?.permissions.includes("club.scientists.read"))}
+                canReadConditioning={Boolean(user?.permissions.includes("club.conditioning.read"))}
               />
             </RequirePermission>
           }
