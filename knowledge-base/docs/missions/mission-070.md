@@ -34,6 +34,13 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Added authenticated `GET /api/v1/club/directors?limit=1..100&cursor=uuid` with default limit 25. It pages only active users in the authenticated user's directly assigned active organisation and tenant who have an explicit tenant `PERFORMANCE_DIRECTOR` role. A cursor outside that scope receives a bounded 404. The Club page presents this section only with `club.directors.read` and checks that the returned club matches its executive view.
+- The dedicated `club.directors.read` grant is tenant-scoped. A migration grants existing tenant `ADMIN` roles read access, while an audited dry-run-first command supports new-tenant grants. The permission never assigns a director role; established tenant role management handles appointments. The standalone Mission 069 Performance Director command centre and its separate permissions remain the reporting workflow.
+- The query does not infer director status from ADMIN, a coaching relationship, organisation name or possession of a Mission 069 reporting permission. No child-organisation traversal, personnel mutation, athlete data or cross-tenant roster is introduced.
+- Added focused API, validation, inactive-user, pagination, cursor-scope, provisioning and frontend permission/scope cases. The migration applied to protected local titan_core_test. Focused backend tests passed (2/2 files, 4/4 tests); focused frontend and router tests passed (2/2 files, 29/29 tests). Full backend serial regression and changed-file backend lint passed. Full frontend regression passed (42/42 files, 232/232 tests). After correcting an effect dependency, frontend lint, focused Club page tests (4/4), frontend build, Knowledge Base build and git diff --check passed. Commit, production rollout and Knowledge Base publication verification remain pending. Production migration and application rollout remain pending.
+
 ### Control 70.3 - Coaches
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

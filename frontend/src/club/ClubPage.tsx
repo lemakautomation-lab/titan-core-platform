@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
-import { getClubExecutives, type ClubExecutivePage } from "./club.api";
+import { getClubExecutives, getClubDirectors, type ClubDirectorPage, type ClubExecutivePage } from "./club.api";
 
-export default function ClubPage() {
+export default function ClubPage({ canReadDirectors = false }: { canReadDirectors?: boolean }) {
   const [page, setPage] = useState<ClubExecutivePage | null>(null);
   const [error, setError] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [directorPage, setDirectorPage] = useState<ClubDirectorPage | null>(null);
+  const [directorError, setDirectorError] = useState(false);
+  const [loadingMoreDirectors, setLoadingMoreDirectors] = useState(false);
+  const organisationId = page?.organisationId;
 
   useEffect(() => {
     let active = true;
@@ -13,6 +17,37 @@ export default function ClubPage() {
       .catch(() => { if (active) setError(true); });
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    if (!canReadDirectors || !organisationId) return;
+    let active = true;
+    getClubDirectors()
+      .then((result) => {
+        if (!active) return;
+        if (result.organisationId !== organisationId) {
+          setDirectorError(true);
+          return;
+        }
+        setDirectorPage(result);
+      })
+      .catch(() => { if (active) setDirectorError(true); });
+    return () => { active = false; };
+  }, [canReadDirectors, organisationId]);
+
+  async function loadMoreDirectors() {
+    if (!directorPage?.nextCursor || loadingMoreDirectors) return;
+    setLoadingMoreDirectors(true);
+    setDirectorError(false);
+    try {
+      const next = await getClubDirectors(directorPage.nextCursor);
+      if (next.organisationId !== directorPage.organisationId) throw new Error("Club changed");
+      setDirectorPage({ ...next, directors: [...directorPage.directors, ...next.directors] });
+    } catch {
+      setDirectorError(true);
+    } finally {
+      setLoadingMoreDirectors(false);
+    }
+  }
 
   async function loadMore() {
     if (!page?.nextCursor || loadingMore) return;
@@ -41,6 +76,18 @@ export default function ClubPage() {
       {page.nextCursor && <button type="button" disabled={loadingMore} onClick={loadMore}>
         Load more executives
       </button>}
+    </section>}
+    {canReadDirectors && <section aria-label="Club performance directors">
+      <h2>Performance Directors</h2>
+      {directorError && <p role="alert">Club directors are unavailable.</p>}
+      {!directorPage && !directorError && <p>Loading directors...</p>}
+      {directorPage && <>
+        {directorPage.directors.length === 0 && <p>No active Performance Directors assigned to this club.</p>}
+        <ul>{directorPage.directors.map((director) => <li key={director.id}>{director.name}</li>)}</ul>
+        {directorPage.nextCursor && <button type="button" disabled={loadingMoreDirectors} onClick={loadMoreDirectors}>
+          Load more directors
+        </button>}
+      </>}
     </section>}
   </main>;
 }

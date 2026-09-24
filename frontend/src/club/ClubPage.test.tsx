@@ -6,6 +6,37 @@ import * as api from "./club.api";
 describe("Mission 070.1 club executive structure", () => {
   afterEach(() => vi.restoreAllMocks());
 
+  it("loads only authorised Performance Directors and their next page", async () => {
+    vi.spyOn(api, "getClubExecutives").mockResolvedValue({
+      organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
+      executives: [], nextCursor: null,
+    });
+    const directors = vi.spyOn(api, "getClubDirectors")
+      .mockResolvedValueOnce({ organisationId: "club-1", directors: [{ id: "one", name: "First Director" }], nextCursor: "one" })
+      .mockResolvedValueOnce({ organisationId: "club-1", directors: [{ id: "two", name: "Second Director" }], nextCursor: null });
+    const view = render(<ClubPage />);
+    expect(await screen.findByText("No active executives assigned to this club.")).toBeTruthy();
+    expect(directors).not.toHaveBeenCalled();
+    view.rerender(<ClubPage canReadDirectors />);
+    expect(await screen.findByText("First Director")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Load more directors" }));
+    await waitFor(() => expect(screen.getByText("Second Director")).toBeTruthy());
+    expect(directors).toHaveBeenCalledWith("one");
+  });
+
+  it("hides a director page from a different club", async () => {
+    vi.spyOn(api, "getClubExecutives").mockResolvedValue({
+      organisationId: "club-1", organisationName: "Club", activeChildOrganisationCount: 0,
+      executives: [], nextCursor: null,
+    });
+    vi.spyOn(api, "getClubDirectors").mockResolvedValue({
+      organisationId: "other-club", directors: [{ id: "other", name: "Other Director" }], nextCursor: null,
+    });
+    render(<ClubPage canReadDirectors />);
+    expect(await screen.findByText("Club directors are unavailable.")).toBeTruthy();
+    expect(screen.queryByText("Other Director")).toBeNull();
+  });
+
   it("shows an authorised page and retrieves only its next page", async () => {
     const fetchPage = vi.spyOn(api, "getClubExecutives")
       .mockResolvedValueOnce({
