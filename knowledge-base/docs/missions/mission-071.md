@@ -83,6 +83,12 @@ Combine platform performance data into intelligence.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Introduced an independent tenant `athlete-goals.read` permission for internal goal intelligence. The migration grants it to existing tenant ADMIN roles; other roles require explicit tenant-scoped assignment. The reader also requires the active Athlete ownership or current Performance Professional relationship established in Control 71.1.
+- The read-only snapshot exposes only the governed primary and secondary goal classifications for the resolved Athlete, capped by the nine-classification database constraint. It returns null for denied or missing Athlete contexts and an empty selection when an authorised Athlete has no goals. No personal details, inferred goals, public route or database mutation are added.
+- Targeted protected test-database coverage checks independent permission, relationship and tenant boundaries, primary and ordered secondary classifications, and isolation from another Athlete. The permission migration applied to protected local titan_core_test. Focused integration tests passed (1/1 file, 2/2 tests). Full serial backend regression passed (217/217 files, 1369/1369 tests). Backend build, changed-file backend lint, Knowledge Base build and git diff --check passed. Commit, production rollout and Knowledge Base publication verification remain pending.
+
 ### Control 71.8 - Sport-requirement integration
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
