@@ -43,6 +43,12 @@ Combine platform performance data into intelligence.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Introduced an independent tenant permission, `nutrition-plans.read`, for the internal Athlete nutrition intelligence reader. The migration grants it to existing tenant ADMIN roles; other roles require explicit tenant-scoped provisioning. Generation and club roster permissions do not authorise nutrition intelligence access.
+- Access additionally requires the Control 71.1 active Athlete identity boundary: self ownership or a current active Performance Professional relationship. The read-only snapshot exposes only the newest generated Nutrition Plan identifier and creation time, plus at most 20 active Meal Plan identifiers, names and update times. It does not expose generator inputs, plan contents, archived/draft meals or shopping lists. Denied and absent contexts return null; no public API or inference is added.
+- Targeted protected test-database coverage checks independent permission, tenant and relationship boundaries, latest-plan selection, active-only filtering and the 20-record bound. The permission migration applied to protected local titan_core_test. Focused integration tests passed (1/1 file, 2/2 tests). Full serial backend regression passed (215/215 files, 1365/1365 tests). Backend build, changed-file backend lint, Knowledge Base build and git diff --check passed. Commit, production rollout and Knowledge Base publication verification remain pending.
+
 ### Control 71.4 - Recovery integration
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
