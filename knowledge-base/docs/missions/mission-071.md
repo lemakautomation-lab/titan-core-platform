@@ -33,6 +33,12 @@ Combine platform performance data into intelligence.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Added an internal, read-only training snapshot for the authorised Athlete intelligence context. Access requires both the Control 71.1 active Athlete ownership or current Performance Professional relationship and the actor's tenant-scoped `workout-programmes.read` permission. Denied and missing contexts return the same null result.
+- The reader selects at most 20 active workout programmes for the resolved Athlete and tenant, ordered newest first. It returns programme identifiers, names, training frequency and update timestamps. It does not include generated plan inputs, session prescriptions, inactive programmes, other Athletes' data or unbounded records. No public route, new grant, database change or inferred training result is added.
+- Targeted protected test-database coverage checks independent permission and relationship gates, cross-tenant denial, active-only filtering and the 20-record bound. Focused integration tests passed against protected local titan_core_test (1/1 file, 2/2 tests). Full serial backend regression passed (214/214 files, 1363/1363 tests). Backend build, changed-file backend lint, Knowledge Base build and git diff --check passed. Commit, production rollout and Knowledge Base publication verification remain pending.
+
 ### Control 71.3 - Nutrition integration
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
