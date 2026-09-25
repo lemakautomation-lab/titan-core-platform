@@ -73,6 +73,12 @@ Combine platform performance data into intelligence.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** BLOCKED / AUTHORITATIVE TEST CLASSIFICATION PENDING / RELEASE PENDING
+
+- Read-only design inspection found tenant- and Athlete-scoped `PerformanceMetric` and `PerformanceMeasurement` records. Metrics carry a name, slug, data type, optional unit and status; measurements carry a value, time and correction chain. Neither record identifies a prescribed performance test, test protocol, attempt or result classification.
+- A metric name, slug or free-form `sourceType` is not an authoritative performance-test designation. Existing measurement data must not be relabelled as test results, and corrected values must not be included without their correction semantics.
+- Completion requires a governed performance-test definition and recorded result boundary, including explicit Athlete/tenant assignment, input validation, correction semantics and permission checks. An intelligence reader can then expose a bounded, authorised test history. No performance-test records are claimed or exposed by this control; Control 71.6 remains open and blocks Mission 071 exit.
+
 ### Control 71.7 - Goal integration
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
