@@ -22,6 +22,8 @@ model Tenant {
   permissions             Permission[]
   athletes                Athlete[]
   athleteSportRequirements AthleteSportRequirement[]
+  performanceTestProtocols PerformanceTestProtocol[]
+  performanceTestResults AthletePerformanceTestResult[]
   mealPlans               MealPlan[]
   athleteRelationships    AthleteRelationship[]
   athleteDigitalTwins     AthleteDigitalTwin[]
@@ -61,6 +63,7 @@ model Sport {
   workoutProgrammes  WorkoutProgramme[]
   exercises          Exercise[]          @relation("ExerciseSportTenant")
   athleteRequirements AthleteSportRequirement[]
+  performanceTestProtocols PerformanceTestProtocol[]
 
   @@unique([tenantId, slug])
   @@unique([id, tenantId], map: "Sport_id_tenantId_key")
@@ -197,6 +200,7 @@ model Athlete {
   trainingStresses        TrainingStress[]
   goals                   AthleteGoal[]             @relation("AthleteGoalAthleteTenant")
   sportRequirements       AthleteSportRequirement[]
+  performanceTestResults  AthletePerformanceTestResult[]
   bodyMeasurements        AthleteBodyMeasurement[]  @relation("AthleteBodyMeasurementAthleteTenant")
   trainerSessionSchedules TrainerSessionSchedule[]  @relation("TrainerSessionScheduleAthleteTenant")
 
@@ -224,6 +228,44 @@ model AthleteSportRequirement {
 
   @@unique([tenantId, athleteId, sportId, code, version])
   @@index([tenantId, athleteId, status])
+}
+
+model PerformanceTestProtocol {
+  id          String       @id @default(uuid())
+  tenantId    String
+  sportId     String
+  code        String
+  name        String
+  unit        String
+  version     Int
+  status      RecordStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  sport       Sport        @relation(fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  results     AthletePerformanceTestResult[]
+
+  @@unique([id, tenantId])
+  @@unique([tenantId, sportId, code, version])
+  @@index([tenantId, status])
+}
+
+model AthletePerformanceTestResult {
+  id               String   @id @default(uuid())
+  tenantId         String
+  athleteId        String
+  protocolId       String
+  value            Decimal  @db.Decimal(20, 6)
+  recordedAt       DateTime
+  correctsResultId String?  @unique
+  createdAt        DateTime @default(now())
+  tenant           Tenant   @relation(fields: [tenantId], references: [id])
+  athlete          Athlete  @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  protocol         PerformanceTestProtocol @relation(fields: [protocolId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  corrects         AthletePerformanceTestResult? @relation("PerformanceTestCorrection", fields: [correctsResultId, tenantId, athleteId, protocolId], references: [id, tenantId, athleteId, protocolId], onDelete: Restrict, onUpdate: Cascade)
+  correctedBy      AthletePerformanceTestResult[] @relation("PerformanceTestCorrection")
+
+  @@unique([id, tenantId, athleteId, protocolId])
+  @@index([tenantId, athleteId, recordedAt])
 }
 
 model AthleteGoal {
