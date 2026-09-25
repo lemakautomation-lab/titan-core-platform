@@ -53,6 +53,12 @@ Combine platform performance data into intelligence.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Introduced an independent tenant permission, `recovery-tracking.read`, for internal Athlete recovery intelligence. The migration grants it to existing tenant ADMIN roles; other roles require explicit tenant-scoped assignment. Performance measurement and club roster grants do not authorise this reader.
+- Access also requires the active Athlete identity boundary from Control 71.1. The read-only snapshot contains at most 20 recorded recovery observations for the resolved Athlete and tenant, ordered newest first. Values remain precision-preserving decimal strings; no units, provenance, derived score, sleep/rest data or clinical interpretation is inferred. Denied and absent contexts return null; no public API or database mutation is added.
+- Targeted protected test-database coverage checks independent permission, relationship and tenant boundaries, fixed record bound, order and decimal precision. The permission migration applied to protected local titan_core_test. Focused integration tests passed (1/1 file, 2/2 tests). Full serial backend regression passed (216/216 files, 1367/1367 tests). Backend build, changed-file backend lint, Knowledge Base build and git diff --check passed. Commit, production rollout and Knowledge Base publication verification remain pending.
+
 ### Control 71.5 - Wearable integration
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
