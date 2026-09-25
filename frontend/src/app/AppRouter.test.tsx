@@ -69,6 +69,15 @@ describe("AppRouter", () => {
     expect(screen.getByRole("heading", { name: "Access denied" })).toBeInTheDocument();
   });
 
+  it.each([
+    "club.directors.read", "club.coaches.read", "club.scientists.read",
+    "club.conditioning.read", "club.nutrition.read", "club.rehabilitation.read",
+    "club.teams.read", "club.athletes.read",
+  ])("does not open the club page with only %s", (permission) => {
+    renderRouter("/club", true, [permission]);
+    expect(screen.getByRole("heading", { name: "Access denied" })).toBeInTheDocument();
+  });
+
   it("renders the club executive page with the dedicated permission", () => {
     renderRouter("/club", true, ["club.executives.read"]);
     expect(screen.getByRole("heading", { name: "Club executive structure" })).toBeInTheDocument();

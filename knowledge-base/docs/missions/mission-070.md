@@ -115,7 +115,16 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Existing club routes already enforce independent tenant role permissions for executives, directors, coaches, scientists, conditioning, nutrition, rehabilitation, teams and Athletes. Each route resolves the actor's active direct club; an unrelated section grant does not authorize another section. The frontend requires `club.executives.read` for Club page entry and checks each optional grant before fetching its section. Backend permissions remain authoritative; frontend checks govern presentation only.
+- Added a nine-by-nine HTTP access matrix that checks each single-grant actor against every club route and confirms missing club assignment still fails closed. Added direct-navigation checks that each optional grant alone cannot open the Club page. Existing scoped-roster, new-tenant provisioning and frontend mismatch tests remain the boundary evidence. No schema migration or new permission is needed for this control. The nine-by-nine backend permission matrix passed (1/1 test), as did focused frontend and router tests (2/2 files, 51/51 tests). The matrix test initially hit the login rate limit; resetting the test limiter between sign-ins resolved that test setup issue. Full backend serial regression passed (212/212 files, 1358/1358 tests); full frontend regression passed (42/42 files, 254/254 tests). Backend and frontend builds, changed-file backend lint, frontend lint, Knowledge Base build and git diff --check passed. Commit, production rollout and Knowledge Base publication verification remain pending.
+
 ## Mission Exit Gate
+
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+All ten controls have targeted verification and passing full regression. Production database migrations, application rollout and Knowledge Base publication verification remain pending.
 
 all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
 
