@@ -63,6 +63,12 @@ Combine platform performance data into intelligence.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** BLOCKED / UPSTREAM TRUST BOUNDARY PENDING / RELEASE PENDING
+
+- Read-only design inspection found the Mission 059 provider-independent device contracts and association service, but no persistent device-to-Athlete binding, verified provider observation record or operational Mission 060 connector. Mission 060 still records Garmin programme approval and authoritative API documentation as blockers; Apple HealthKit and Samsung Health also require their own authorised connectors.
+- Existing recovery, sleep, rest, training stress and performance measurement rows have free-form source identifiers. The performance-measurement API accepts `sourceType` from the request. Neither `sourceType = DEVICE` nor a source identifier proves wearable origin, Athlete consent or ownership. Those fields must not be promoted into a trusted wearable intelligence feed.
+- Completion requires an operational, consent-aware ingestion path that records verified provider identity and tenant/Athlete binding with revocation semantics, then a bounded reader gated by an independent permission and the Control 71.1 Athlete context. No wearable records are exposed or claimed as verified by this control. Control 71.5 remains open and blocks Mission 071 exit.
+
 ### Control 71.6 - Performance-test integration
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
