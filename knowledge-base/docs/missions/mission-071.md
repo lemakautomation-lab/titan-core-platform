@@ -93,6 +93,12 @@ Combine platform performance data into intelligence.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** TECHNICALLY COMPLETE / VERIFIED / RELEASE PENDING
+
+- Added an explicit `AthleteSportRequirement` assignment bound by composite tenant/Athlete and tenant/Sport foreign keys. Each record stores a validated requirement code, numeric target, unit, version and lifecycle status. Database checks constrain values and allow only one active version per Athlete, Sport and code. Existing programmes and exercises do not imply assignments.
+- An internal, audited assignment service requires the Control 71.1 active Athlete relationship and independent `sport-requirements.write` permission. A separate read service requires `sport-requirements.read`, returns at most 20 active requirements for active Sports, and preserves decimal precision. The migration grants both permissions to existing tenant ADMIN roles; other roles require explicit tenant-scoped assignment. No public route or inferred target is introduced.
+- Targeted protected test-database coverage checks independent read/write grants, tenant and relationship scope, foreign Sport denial, input validation, version replacement, audit records and the authorised snapshot. The schema and permission migration applied to protected local titan_core_test. Focused integration tests passed (1/1 file, 2/2 tests), covering grants, tenant isolation, assignment versioning and audit. Full serial backend regression passed (218/218 files, 1371/1371 tests). Prisma validation and generation, backend build, changed-file backend lint, Knowledge Base build and git diff --check passed. Commit, production rollout and Knowledge Base publication verification remain pending.
+
 ### Control 71.9 - Authorised data aggregation
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

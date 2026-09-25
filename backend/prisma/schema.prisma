@@ -21,6 +21,7 @@ model Tenant {
   roles                   Role[]
   permissions             Permission[]
   athletes                Athlete[]
+  athleteSportRequirements AthleteSportRequirement[]
   mealPlans               MealPlan[]
   athleteRelationships    AthleteRelationship[]
   athleteDigitalTwins     AthleteDigitalTwin[]
@@ -59,6 +60,7 @@ model Sport {
   performanceMetrics PerformanceMetric[] @relation("PerformanceMetricSportTenant")
   workoutProgrammes  WorkoutProgramme[]
   exercises          Exercise[]          @relation("ExerciseSportTenant")
+  athleteRequirements AthleteSportRequirement[]
 
   @@unique([tenantId, slug])
   @@unique([id, tenantId], map: "Sport_id_tenantId_key")
@@ -194,6 +196,7 @@ model Athlete {
   restTrackings           RestTracking[]
   trainingStresses        TrainingStress[]
   goals                   AthleteGoal[]             @relation("AthleteGoalAthleteTenant")
+  sportRequirements       AthleteSportRequirement[]
   bodyMeasurements        AthleteBodyMeasurement[]  @relation("AthleteBodyMeasurementAthleteTenant")
   trainerSessionSchedules TrainerSessionSchedule[]  @relation("TrainerSessionScheduleAthleteTenant")
 
@@ -201,6 +204,26 @@ model Athlete {
   @@index([tenantId])
   @@index([organisationId])
   @@index([userId])
+}
+
+/** Explicit, tenant-scoped assignment of a governed sport target to an Athlete. */
+model AthleteSportRequirement {
+  id              String       @id @default(uuid())
+  tenantId        String
+  athleteId       String
+  sportId         String
+  code            String
+  targetValue     Decimal      @db.Decimal(20, 6)
+  unit            String
+  version         Int
+  status          RecordStatus @default(ACTIVE)
+  createdAt       DateTime     @default(now())
+  tenant          Tenant       @relation(fields: [tenantId], references: [id])
+  athlete         Athlete      @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  sport           Sport        @relation(fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([tenantId, athleteId, sportId, code, version])
+  @@index([tenantId, athleteId, status])
 }
 
 model AthleteGoal {
