@@ -561,7 +561,7 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   display: flex;
   align-items: flex-end;
   overflow: hidden;
-  background: #06141d url('/titan-health-male-sprinter.png') center / cover no-repeat;
+  background: #06141d url('/titan-health-male-sprinter.png') right center / cover no-repeat;
 }
 .titan-login-hero::after {
   content: '';
