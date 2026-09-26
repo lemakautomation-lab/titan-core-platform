@@ -6,6 +6,8 @@ export interface AthleteBodyMeasurementDto {
     weightKg: number;
     bmi: number;
     bodyFatPercentage: number | null;
+    bodyFatMethod?: string | null;
+    bodyFatSource?: string | null;
     recordedAt: string;
     createdAt: string;
 }

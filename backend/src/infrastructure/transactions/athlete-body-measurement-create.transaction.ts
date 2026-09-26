@@ -65,6 +65,7 @@ implements AthleteBodyMeasurementCreateTransaction {
                         bodyFatPercentage:
                             input.bodyFatPercentage,
                         recordedAt: input.recordedAt,
+                        bodyFatMethod: input.bodyFatMethod,
                     });
 
                 const persisted =
@@ -85,6 +86,8 @@ implements AthleteBodyMeasurementCreateTransaction {
                                 bodyFatPercentage:
                                     measurement
                                         .bodyFatPercentage,
+                                bodyFatMethod: measurement.bodyFatMethod,
+                                bodyFatSource: measurement.bodyFatSource,
                                 recordedAt:
                                     measurement.recordedAt,
                                 createdAt:
@@ -104,6 +107,8 @@ implements AthleteBodyMeasurementCreateTransaction {
                     bodyFatPercentage:
                         persisted.bodyFatPercentage
                             ?.toNumber() ?? null,
+                    bodyFatMethod: persisted.bodyFatMethod,
+                    bodyFatSource: persisted.bodyFatSource,
                     recordedAt:
                         persisted.recordedAt
                             .toISOString(),

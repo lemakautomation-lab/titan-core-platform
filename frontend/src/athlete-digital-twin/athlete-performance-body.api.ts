@@ -10,6 +10,8 @@ export interface PerformanceBodyMeasurementDto {
   weightKg: number;
   bmi: number;
   bodyFatPercentage: number | null;
+  bodyFatMethod?: BodyFatMethod | null;
+  bodyFatSource?: "ATHLETE_MANUAL" | null;
   recordedAt: string;
 }
 
@@ -49,10 +51,17 @@ export function updateMyPerformanceBodyModel(
   );
 }
 
+export type BodyFatMethod =
+  | "BIOELECTRICAL_IMPEDANCE"
+  | "DEXA"
+  | "SKINFOLD_CALIPER"
+  | "CLINICAL_ASSESSMENT";
+
 export interface NewBodyMeasurement {
   heightCm: number;
   weightKg: number;
   bodyFatPercentage?: number;
+  bodyFatMethod?: BodyFatMethod;
 }
 
 export function recordMyBodyMeasurement(

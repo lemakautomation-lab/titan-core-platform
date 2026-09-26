@@ -518,6 +518,7 @@ export class AuthController {
             "heightCm",
             "weightKg",
             "bodyFatPercentage",
+            "bodyFatMethod",
             "recordedAt",
         ]);
 
@@ -534,6 +535,10 @@ export class AuthController {
                 body.bodyFatPercentage !== undefined &&
                 body.bodyFatPercentage !== null &&
                 typeof body.bodyFatPercentage !== "number"
+            ) ||
+            (
+                body.bodyFatMethod !== undefined &&
+                typeof body.bodyFatMethod !== "string"
             ) ||
             (
                 body.recordedAt !== undefined &&
@@ -558,6 +563,7 @@ export class AuthController {
                         body.weightKg,
                         body.bodyFatPercentage,
                         body.recordedAt,
+                        body.bodyFatMethod,
                     ),
                 );
 

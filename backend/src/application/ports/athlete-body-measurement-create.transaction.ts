@@ -7,6 +7,7 @@ export interface AthleteBodyMeasurementCreateInput {
     weightKg: unknown;
     bodyFatPercentage: unknown;
     recordedAt: unknown;
+    bodyFatMethod?: unknown;
 }
 
 export interface AthleteBodyMeasurementCreateTransaction {

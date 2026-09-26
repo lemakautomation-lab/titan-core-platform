@@ -164,7 +164,8 @@
   font-weight: 600;
 }
 
-.performance-body-measurement-form input {
+.performance-body-measurement-form input,
+.performance-body-measurement-form select {
   min-height: 2.75rem;
   padding: 0.6rem 0.8rem;
   border: 1px solid #40646a;
@@ -181,4 +182,51 @@
   color: #06191a;
   background: #5cebd8;
   font-weight: 700;
+}
+
+.titan-body-profile {
+  color: #e7f4f5;
+}
+
+.titan-body-profile__metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.titan-body-profile > .titan-body-profile__metrics > div {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #254a50;
+  border-radius: 0.75rem;
+  background: #0b1b22;
+}
+
+.titan-body-profile__metrics dt {
+  color: #9bbbc1;
+  font-size: 0.8rem;
+}
+
+.titan-body-profile__metrics dd {
+  margin: 0.45rem 0 0;
+  overflow-wrap: anywhere;
+  color: #65f0df;
+  font-weight: 700;
+}
+
+.performance-body-measurement-form input:focus-visible,
+.performance-body-measurement-form select:focus-visible,
+.performance-body-measurement-form button:focus-visible {
+  outline: 2px solid #65f0df;
+  outline-offset: 2px;
+}
+
+.performance-body-measurement-form button:hover:not(:disabled) {
+  background: #8af9ed;
+}
+
+.performance-body-measurement-form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }

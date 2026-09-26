@@ -24,6 +24,7 @@ export class CreateMyAthleteBodyMeasurementUseCase {
                         bodyFatPercentage:
                             command.bodyFatPercentage,
                         recordedAt: command.recordedAt,
+                        bodyFatMethod: command.bodyFatMethod,
                     }),
                 ),
             );

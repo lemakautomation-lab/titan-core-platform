@@ -108,6 +108,7 @@ describe(
                             heightCm: 180,
                             weightKg: 81,
                             bodyFatPercentage: 15,
+                            bodyFatMethod: "DEXA",
                             recordedAt:
                                 "2026-09-14T12:00:00.000Z",
                         });
@@ -122,9 +123,9 @@ describe(
                 expect(response.body.heightCm).toBe(180);
                 expect(response.body.weightKg).toBe(81);
                 expect(response.body.bmi).toBe(25);
-                expect(
-                    response.body.bodyFatPercentage,
-                ).toBe(15);
+                expect(response.body.bodyFatPercentage).toBe(15);
+                expect(response.body.bodyFatMethod).toBe("DEXA");
+                expect(response.body.bodyFatSource).toBe("ATHLETE_MANUAL");
 
                 const persisted =
                     await testPrisma
@@ -139,8 +140,28 @@ describe(
                     athlete.id,
                 );
                 expect(persisted.bmi.toNumber()).toBe(25);
+                expect(persisted.bodyFatMethod).toBe("DEXA");
             },
         );
+
+        it("keeps earlier observations when a new one is recorded", async () => {
+            const { user, password } = await createTestUser();
+            const athlete = await createAthlete(user);
+            const token = await login(user.tenantId, user.email, password);
+            for (const weightKg of [81, 79]) {
+                const response = await request(app)
+                    .post("/api/v1/auth/me/body-measurements")
+                    .set("Authorization", `Bearer ${token}`)
+                    .send({ heightCm: 180, weightKg });
+                expect(response.status).toBe(201);
+            }
+            const history = await testPrisma.athleteBodyMeasurement.findMany({
+                where: { tenantId: user.tenantId, athleteId: athlete.id },
+                orderBy: { createdAt: "asc" },
+            });
+            expect(history.map((entry) => entry.weightKg.toNumber()))
+                .toEqual([81, 79]);
+        });
 
         it(
             "supports an omitted body-fat percentage",
@@ -186,6 +207,9 @@ describe(
             [{ heightCm: 301, weightKg: 80 }],
             [{ heightCm: 180, weightKg: 0 }],
             [{ heightCm: 180, weightKg: 1001 }],
+            [{ heightCm: 180, weightKg: 80, bodyFatPercentage: 15 }],
+            [{ heightCm: 180, weightKg: 80, bodyFatPercentage: 15, bodyFatMethod: "INVALID" }],
+            [{ heightCm: 180, weightKg: 80, bodyFatMethod: "DEXA" }],
             [{
                 heightCm: 180,
                 weightKg: 80,

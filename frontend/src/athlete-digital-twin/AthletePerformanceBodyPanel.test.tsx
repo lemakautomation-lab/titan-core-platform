@@ -175,6 +175,9 @@ describe("AthletePerformanceBodyPanel", () => {
     fireEvent.change(screen.getByLabelText("Body fat (%) — optional, measured value"), {
       target: { value: "22" },
     });
+    fireEvent.change(screen.getByLabelText("Body-fat measurement method"), {
+      target: { value: "BIOELECTRICAL_IMPEDANCE" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Save measurement" }));
 
     await waitFor(() => {
@@ -182,6 +185,7 @@ describe("AthletePerformanceBodyPanel", () => {
         heightCm: 170,
         weightKg: 63,
         bodyFatPercentage: 22,
+        bodyFatMethod: "BIOELECTRICAL_IMPEDANCE",
       });
     });
     expect(await screen.findByText("21.8")).toBeInTheDocument();

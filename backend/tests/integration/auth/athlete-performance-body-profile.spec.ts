@@ -376,6 +376,8 @@ describe(
                     response.body.measurements[1]
                         .weightKg,
                 ).toBe(68);
+                expect(response.body.measurements[0].bodyFatMethod).toBeNull();
+                expect(response.body.measurements[0].bodyFatSource).toBeNull();
             },
         );
     },

@@ -20,6 +20,7 @@ describe(
                         heightCm: 180,
                         weightKg: 81,
                         bodyFatPercentage: 15,
+                        bodyFatMethod: "DEXA",
                         recordedAt:
                             "2026-09-14T12:00:00.000Z",
                     });

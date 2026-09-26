@@ -297,6 +297,8 @@ model AthleteBodyMeasurement {
   weightKg          Decimal  @db.Decimal(7, 3)
   bmi               Decimal  @db.Decimal(6, 2)
   bodyFatPercentage Decimal? @db.Decimal(5, 2)
+  bodyFatMethod     String?
+  bodyFatSource     String?
   recordedAt        DateTime @default(now())
   createdAt         DateTime @default(now())
   athlete           Athlete  @relation("AthleteBodyMeasurementAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: Cascade)

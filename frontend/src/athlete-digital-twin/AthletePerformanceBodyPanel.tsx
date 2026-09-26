@@ -13,6 +13,7 @@ import {
 } from "../performance-body/progress/body-progress";
 import {
   type AthletePerformanceBodyProfileDto,
+  type BodyFatMethod,
   getMyPerformanceBodyProfile,
   recordMyBodyMeasurement,
   type PerformanceBodyModelType,
@@ -36,6 +37,7 @@ export default function AthletePerformanceBodyPanel({
   const [heightCm, setHeightCm] = useState("");
   const [weightKg, setWeightKg] = useState("");
   const [bodyFatPercentage, setBodyFatPercentage] = useState("");
+  const [bodyFatMethod, setBodyFatMethod] = useState<BodyFatMethod | "">("");
   const [measurementMessage, setMeasurementMessage] =
     useState<string | null>(null);
   const [error, setError] =
@@ -127,7 +129,7 @@ export default function AthletePerformanceBodyPanel({
     if (!Number.isFinite(height) || height <= 0 || height > 300 ||
         !Number.isFinite(weight) || weight <= 0 || weight > 1000 ||
         (bodyFat !== undefined &&
-          (!Number.isFinite(bodyFat) || bodyFat < 0 || bodyFat > 100))) {
+          (!Number.isFinite(bodyFat) || bodyFat < 0 || bodyFat > 100 || !bodyFatMethod))) {
       setMeasurementMessage("Enter valid height, weight and optional body fat values.");
       return;
     }
@@ -138,7 +140,7 @@ export default function AthletePerformanceBodyPanel({
       await recordMyBodyMeasurement({
         heightCm: height,
         weightKg: weight,
-        ...(bodyFat === undefined ? {} : { bodyFatPercentage: bodyFat }),
+        ...(bodyFat === undefined ? {} : { bodyFatPercentage: bodyFat, bodyFatMethod: bodyFatMethod as BodyFatMethod }),
       });
       const refreshed = await getMyPerformanceBodyProfile();
       if (refreshed.athleteId !== athleteId) throw new Error("Athlete mismatch.");
@@ -146,6 +148,7 @@ export default function AthletePerformanceBodyPanel({
       setHeightCm("");
       setWeightKg("");
       setBodyFatPercentage("");
+      setBodyFatMethod("");
       setMeasurementMessage("Measurement recorded. BMI was calculated from height and weight.");
     } catch {
       setMeasurementMessage("Unable to record the measurement. Please try again.");
@@ -227,7 +230,7 @@ export default function AthletePerformanceBodyPanel({
     : [];
 
   return (
-    <section aria-label="Performance body">
+    <section className="titan-body-profile" aria-label="Performance body">
       <div className="titan-users-header">
         <div>
           <span className="titan-eyebrow">
@@ -239,7 +242,7 @@ export default function AthletePerformanceBodyPanel({
       </div>
 
       {latest && (
-        <dl aria-label="Current body metrics">
+        <dl className="titan-body-profile__metrics" aria-label="Current body metrics">
           <div>
             <dt>Weight</dt>
             <dd>{latest.weightKg} kg</dd>
@@ -259,6 +262,10 @@ export default function AthletePerformanceBodyPanel({
             </dd>
           </div>
 
+          {latest.bodyFatPercentage !== null && (
+            <div><dt>Body-fat method</dt><dd>{latest.bodyFatMethod ?? "Unknown (historical entry)"}</dd>
+              <dt>Source</dt><dd>{latest.bodyFatSource ?? "Unknown (historical entry)"}</dd></div>
+          )}
           <div>
             <dt>Recorded</dt>
             <dd>
@@ -287,6 +294,20 @@ export default function AthletePerformanceBodyPanel({
         <input id="body-fat" type="number" min="0" max="100"
           step="0.01" value={bodyFatPercentage}
           onChange={(event) => setBodyFatPercentage(event.target.value)} />
+        {bodyFatPercentage.trim() !== "" && (
+          <>
+            <label htmlFor="body-fat-method">Body-fat measurement method</label>
+            <select id="body-fat-method" required value={bodyFatMethod}
+              onChange={(event) => setBodyFatMethod(event.target.value as BodyFatMethod | "")}>
+              <option value="">Select method</option>
+              <option value="BIOELECTRICAL_IMPEDANCE">Bioelectrical impedance (BIA)</option>
+              <option value="DEXA">DEXA</option>
+              <option value="SKINFOLD_CALIPER">Skinfold caliper</option>
+              <option value="CLINICAL_ASSESSMENT">Clinical assessment</option>
+            </select>
+            <p>Source: Athlete reported. The selected method is not independently verified.</p>
+          </>
+        )}
         <button type="submit" disabled={savingMeasurement}>
           {savingMeasurement ? "Saving..." : "Save measurement"}
         </button>

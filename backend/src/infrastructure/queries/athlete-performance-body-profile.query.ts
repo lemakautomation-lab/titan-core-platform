@@ -117,6 +117,8 @@ implements AthletePerformanceBodyProfileQuery {
                                         .bodyFatPercentage
                                         ?.toNumber() ??
                                     null,
+                                bodyFatMethod: measurement.bodyFatMethod,
+                                bodyFatSource: measurement.bodyFatSource,
                                 recordedAt:
                                     measurement.recordedAt
                                         .toISOString(),

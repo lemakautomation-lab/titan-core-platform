@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { type BodyFatMethod, isBodyFatMethod } from "../enums/body-fat-method.enum";
 
 export interface AthleteBodyMeasurementInput {
     tenantId: string;
@@ -6,6 +7,7 @@ export interface AthleteBodyMeasurementInput {
     heightCm: unknown;
     weightKg: unknown;
     bodyFatPercentage?: unknown;
+    bodyFatMethod?: unknown;
     recordedAt?: unknown;
 }
 
@@ -19,6 +21,8 @@ export class AthleteBodyMeasurement {
         public readonly weightKg: number,
         public readonly bmi: number,
         public readonly bodyFatPercentage: number | null,
+        public readonly bodyFatMethod: BodyFatMethod | null,
+        public readonly bodyFatSource: "ATHLETE_MANUAL" | null,
         public readonly recordedAt: Date,
         public readonly createdAt: Date,
     ) {}
@@ -73,6 +77,15 @@ export class AthleteBodyMeasurement {
             }
         }
 
+        if (bodyFatPercentage !== null && !isBodyFatMethod(input.bodyFatMethod)) {
+            throw new Error("Select a valid body-fat measurement method.");
+        }
+        if (bodyFatPercentage === null && input.bodyFatMethod !== undefined) {
+            throw new Error("A body-fat method requires a body-fat value.");
+        }
+        const bodyFatMethod = bodyFatPercentage === null
+            ? null : input.bodyFatMethod as BodyFatMethod;
+
         const recordedAt =
             input.recordedAt === undefined
                 ? new Date()
@@ -112,6 +125,8 @@ export class AthleteBodyMeasurement {
             weightKg,
             bmi,
             bodyFatPercentage,
+            bodyFatMethod,
+            bodyFatMethod === null ? null : "ATHLETE_MANUAL",
             recordedAt,
             now,
         );

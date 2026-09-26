@@ -6,5 +6,6 @@ export class CreateMyAthleteBodyMeasurementCommand {
         public readonly weightKg: unknown,
         public readonly bodyFatPercentage: unknown,
         public readonly recordedAt: unknown,
+        public readonly bodyFatMethod?: unknown,
     ) {}
 }
