@@ -1,12 +1,15 @@
 export const REFRESH_TOKEN_COOKIE_NAME =
     "titan_refresh_token";
 
+const secureCookie =
+    process.env.NODE_ENV === "production" ||
+    process.env.NODE_ENV === "staging";
+
 export const refreshTokenCookieOptions = {
 
     httpOnly: true,
 
-    secure:
-        process.env.NODE_ENV === "production",
+    secure: secureCookie,
 
     sameSite: "strict" as const,
 
@@ -21,8 +24,7 @@ export const refreshTokenClearCookieOptions = {
 
     httpOnly: true,
 
-    secure:
-        process.env.NODE_ENV === "production",
+    secure: secureCookie,
 
     sameSite: "strict" as const,
 

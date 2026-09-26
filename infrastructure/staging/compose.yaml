@@ -1,0 +1,78 @@
+name: titan-staging
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: titan_migrator
+      POSTGRES_PASSWORD: ${POSTGRES_MIGRATOR_PASSWORD:?Set in staging secrets file}
+      POSTGRES_DB: titan_staging
+      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:?Set in staging secrets file}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-app-role.sh:/docker-entrypoint-initdb.d/10-app-role.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U titan_migrator -d titan_staging"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [internal]
+
+  migrate:
+    profiles: [migration]
+    image: titan-backend-staging:local
+    environment:
+      DATABASE_URL: postgresql://titan_migrator:${POSTGRES_MIGRATOR_PASSWORD:?Set in staging secrets file}@postgres:5432/titan_staging
+    command: ["npx", "prisma", "migrate", "deploy"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [internal]
+
+  backend:
+    image: titan-backend-staging:local
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile.staging
+    restart: unless-stopped
+    environment:
+      NODE_ENV: staging
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: "3000"
+      DATABASE_URL: postgresql://titan_app:${POSTGRES_APP_PASSWORD:?Set in staging secrets file}@postgres:5432/titan_staging
+      JWT_SECRET: ${JWT_SECRET:?Set in staging secrets file}
+      CORS_ALLOWED_ORIGINS: https://staging.titan-tech.co.za
+      TITAN_HEALTH_FRONTEND_URL: https://staging.titan-tech.co.za
+      TITAN_HEALTH_CONSUMER_TENANT_SLUG: titan-health-consumer-staging
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [internal]
+    security_opt: [no-new-privileges:true]
+
+  web:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile.staging
+    restart: unless-stopped
+    environment:
+      STAGING_ALLOWED_IP: ${STAGING_ALLOWED_IP:?Set in staging secrets file}
+    ports:
+      - "154.65.102.186:80:80"
+      - "154.65.102.186:443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [backend]
+    networks: [internal]
+    security_opt: [no-new-privileges:true]
+
+networks:
+  internal:
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

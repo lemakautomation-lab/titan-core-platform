@@ -15,6 +15,11 @@ import { environmentConfig } from "./config/environment.config";
 
 const app = express();
 
+// The staging API is only reachable through its trusted local reverse proxy.
+if (environmentConfig.nodeEnv === "staging") {
+    app.set("trust proxy", 1);
+}
+
 
 app.use(
     helmet(),

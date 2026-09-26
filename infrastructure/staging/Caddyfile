@@ -1,0 +1,16 @@
+staging.titan-tech.co.za {
+    encode zstd gzip
+
+    @outside not remote_ip {$STAGING_ALLOWED_IP}
+    respond @outside 403
+
+    handle /api/* {
+        reverse_proxy backend:3000
+    }
+
+    handle {
+        root * /srv
+        try_files {path} /index.html
+        file_server
+    }
+}
