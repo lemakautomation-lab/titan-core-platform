@@ -1312,6 +1312,21 @@ export class AuthController {
             return;
         }
 
+        const user = await authModule.userRepository.findById(
+            authUser.userId,
+        );
+
+        if (
+            !user ||
+            user.tenantId !== authUser.tenantId ||
+            user.status !== "ACTIVE"
+        ) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
         const permissions =
             await authorizationModule
                 .permissionResolutionService
@@ -1328,6 +1343,9 @@ export class AuthController {
             tenantId:
                 authUser.tenantId,
 
+            email:
+                user.email,
+
             roles:
                 authUser.roles,
 
@@ -1338,4 +1356,3 @@ export class AuthController {
     }
 
 }
-

@@ -134,6 +134,19 @@ describe("Public Athlete registration API", () => {
                 response.body.data.user.email,
             ).toBe(email);
 
+            const me = await request(app)
+                .get("/api/v1/auth/me")
+                .set(
+                    "Authorization",
+                    `Bearer ${response.body.data.accessToken}`,
+                );
+            expect(me.status).toBe(200);
+            expect(me.body).toMatchObject({
+                userId: response.body.data.registration.userId,
+                tenantId,
+                email,
+            });
+
             const user =
                 await testPrisma.user
                     .findUniqueOrThrow({

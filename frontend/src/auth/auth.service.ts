@@ -127,6 +127,27 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       getAuthUser();
 
     if (
+      !cachedUser &&
+      typeof response.userId === "string" &&
+      typeof response.tenantId === "string" &&
+      typeof response.email === "string" &&
+      response.userId.length > 0 &&
+      response.tenantId.length > 0 &&
+      response.email.length > 0
+    ) {
+      const restoredUser: AuthUser = {
+        id: response.userId,
+        tenantId: response.tenantId,
+        email: response.email,
+        roles: response.roles,
+        permissions: response.permissions,
+      };
+
+      setAuthUser(restoredUser);
+      return restoredUser;
+    }
+
+    if (
       cachedUser &&
       cachedUser.id === response.userId &&
       cachedUser.tenantId === response.tenantId

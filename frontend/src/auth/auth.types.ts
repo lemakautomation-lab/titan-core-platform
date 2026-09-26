@@ -35,6 +35,7 @@ export interface LogoutResponse {
 export interface MeResponse {
   userId: string;
   tenantId: string;
+  email: string;
   roles: string[];
   permissions: string[];
 }

@@ -157,6 +157,7 @@ describe("auth.service", () => {
     vi.mocked(meApi).mockResolvedValue({
       userId: "user-1",
       tenantId: "tenant-1",
+      email: "user@example.com",
       roles: [],
       permissions: [],
     });
@@ -174,7 +175,13 @@ describe("auth.service", () => {
 
     expect(
       restoredUser,
-    ).toBeNull();
+    ).toEqual({
+      id: "user-1",
+      tenantId: "tenant-1",
+      email: "user@example.com",
+      roles: [],
+      permissions: [],
+    });
 
   });
 
@@ -247,6 +254,7 @@ describe("auth.service", () => {
     vi.mocked(meApi).mockResolvedValue({
       userId: user.id,
       tenantId: user.tenantId,
+      email: user.email,
       roles: user.roles,
       permissions: user.permissions,
     });
