@@ -24,6 +24,8 @@ model Tenant {
   athleteSportRequirements AthleteSportRequirement[]
   performanceTestProtocols PerformanceTestProtocol[]
   performanceTestResults AthletePerformanceTestResult[]
+  wearableConnections WearableConnection[]
+  wearableObservations WearableObservation[]
   mealPlans               MealPlan[]
   athleteRelationships    AthleteRelationship[]
   athleteDigitalTwins     AthleteDigitalTwin[]
@@ -116,6 +118,7 @@ model User {
   passwordResetTokens      PasswordResetToken[]
   trainerProfile           TrainerProfile?
   trainerSessionSchedules  TrainerSessionSchedule[] @relation("TrainerSessionScheduleTrainerTenant")
+  wearableConsents         WearableConnection[] @relation("WearableConsentActor")
   coachSquads              CoachSquad[]             @relation("CoachSquadCoachTenant")
 
   coachTeams CoachTeam[] @relation("CoachTeamCoachTenant")
@@ -201,6 +204,8 @@ model Athlete {
   goals                   AthleteGoal[]             @relation("AthleteGoalAthleteTenant")
   sportRequirements       AthleteSportRequirement[]
   performanceTestResults  AthletePerformanceTestResult[]
+  wearableConnections     WearableConnection[]
+  wearableObservations    WearableObservation[]
   bodyMeasurements        AthleteBodyMeasurement[]  @relation("AthleteBodyMeasurementAthleteTenant")
   trainerSessionSchedules TrainerSessionSchedule[]  @relation("TrainerSessionScheduleAthleteTenant")
 
@@ -386,6 +391,46 @@ model Session {
   user         User          @relation(fields: [userId], references: [id])
 
   @@index([userId])
+}
+
+/** Consent and verified provider identity are separate from free-form source labels. */
+model WearableConnection {
+  id              String   @id @default(uuid())
+  tenantId        String
+  athleteId       String
+  provider        String
+  providerSubjectDigest String
+  consentedById   String
+  consentedAt     DateTime @default(now())
+  revokedAt       DateTime?
+  createdAt       DateTime @default(now())
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  athlete         Athlete  @relation(fields: [athleteId, tenantId], references: [id, tenantId])
+  consentedBy     User     @relation("WearableConsentActor", fields: [consentedById, tenantId], references: [id, tenantId])
+  observations    WearableObservation[]
+
+  @@unique([id, tenantId, athleteId])
+  @@index([tenantId, athleteId, revokedAt])
+}
+
+/** Immutable provider observations, retained for audit but hidden after revocation. */
+model WearableObservation {
+  id               String   @id @default(uuid())
+  tenantId         String
+  athleteId        String
+  connectionId     String
+  providerRecordId String
+  metricCode       String
+  value            Decimal  @db.Decimal(20, 6)
+  unit             String
+  observedAt       DateTime
+  ingestedAt       DateTime @default(now())
+  tenant           Tenant   @relation(fields: [tenantId], references: [id])
+  athlete          Athlete  @relation(fields: [athleteId, tenantId], references: [id, tenantId])
+  connection       WearableConnection @relation(fields: [connectionId, tenantId, athleteId], references: [id, tenantId, athleteId])
+
+  @@unique([connectionId, providerRecordId])
+  @@index([tenantId, athleteId, observedAt])
 }
 
 model AuditLog {
