@@ -298,7 +298,9 @@ export default function AuthApp({
                   safeActiveSection === "Dashboard"
                     ? "Performance Command Centre"
                     : safeActiveSection === "Onboarding"
-                      ? "Athlete Onboarding"
+                      ? user.selectedUserType === "TRAINER"
+                        ? "Trainer Onboarding"
+                        : "Athlete Onboarding"
                       : safeActiveSection
                 }
               </h2>

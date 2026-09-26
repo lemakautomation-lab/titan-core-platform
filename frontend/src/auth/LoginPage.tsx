@@ -114,7 +114,7 @@ export default function LoginPage({
             <Link to="/forgot-password">Forgot password?</Link>
           </div>
           <p className="titan-login-signup">
-            New Athlete? <Link to="/signup/athlete">Create an account</Link>
+            Ready to start your journey? <Link to="/signup">Create your account now!</Link>
           </p>
         </div>
       </section>

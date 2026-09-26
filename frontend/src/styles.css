@@ -779,7 +779,7 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   border-radius: 0 8px 8px 0;
   background: #102732;
 }
-#root div.titan-onboarding-next > strong { color: #79f4e6; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+#root div.titan-onboarding-next strong { color: #79f4e6; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
 #root div.titan-onboarding-next p { color: #cee0e5; line-height: 1.6; }
 @media (max-width: 900px) {
   #root > main:not(.titan-login-page) { padding: 290px 24px 56px; }
@@ -790,3 +790,16 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   .titan-onboarding-hero { min-height: 240px; background-position: 72% center; }
   .titan-onboarding-next { padding: 18px; }
 }
+
+/* Public account choice */
+#root > main.titan-signup-choice { max-width: 1050px; min-height: 100vh; margin: 0 auto; padding: clamp(32px, 7vw, 90px) 24px; background: #071018; }
+#root > main.titan-signup-choice h1 { font-size: clamp(30px, 4vw, 52px); }
+#root > main.titan-signup-choice p { color: #aac2cc; line-height: 1.6; }
+#root > main.titan-signup-choice a { color: #5cf0df; }
+#root > main.titan-signup-choice .titan-signup-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 30px 0; }
+#root > main.titan-signup-choice .titan-signup-options > * { display: flex; flex-direction: column; gap: 10px; min-height: 140px; padding: 24px; border: 1px solid #24525b; border-radius: 12px; background: #0b1d27; text-decoration: none; }
+#root > main.titan-signup-choice .titan-signup-options strong { color: #eaf8f8; font-size: 20px; }
+#root > main.titan-signup-choice .titan-signup-options span { color: #a9c1c9; line-height: 1.5; }
+#root > main.titan-signup-choice .titan-signup-options > a:hover, #root > main.titan-signup-choice .titan-signup-options > a:focus-visible { border-color: #5cf0df; box-shadow: 0 0 0 2px #5cf0df44; }
+#root > main.titan-signup-choice .titan-signup-options > div { opacity: .7; }
+@media (max-width: 700px) { #root > main.titan-signup-choice .titan-signup-options { grid-template-columns: 1fr; } }

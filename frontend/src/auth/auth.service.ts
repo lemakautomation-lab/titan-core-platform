@@ -33,11 +33,9 @@ export async function registerAthlete(
     response.data.accessToken,
   );
 
-  setAuthUser(
-    response.data.user,
-  );
-
-  return response.data.user;
+  const user = { ...response.data.user, selectedUserType: "ATHLETE" as const };
+  setAuthUser(user);
+  return user;
 }
 
 
@@ -51,11 +49,9 @@ export async function registerTrainer(
     response.data.accessToken,
   );
 
-  setAuthUser(
-    response.data.user,
-  );
-
-  return response.data.user;
+  const user = { ...response.data.user, selectedUserType: "TRAINER" as const };
+  setAuthUser(user);
+  return user;
 }
 export async function login(
   request: LoginRequest,
@@ -139,6 +135,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
         id: response.userId,
         tenantId: response.tenantId,
         email: response.email,
+        selectedUserType: response.selectedUserType ?? null,
         roles: response.roles,
         permissions: response.permissions,
       };
@@ -156,6 +153,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       const authoritativeUser: AuthUser = {
 
         ...cachedUser,
+        selectedUserType: response.selectedUserType ?? null,
 
         roles:
           response.roles,

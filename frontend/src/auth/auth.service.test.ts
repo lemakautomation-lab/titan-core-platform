@@ -179,6 +179,7 @@ describe("auth.service", () => {
       id: "user-1",
       tenantId: "tenant-1",
       email: "user@example.com",
+      selectedUserType: null,
       roles: [],
       permissions: [],
     });
@@ -268,7 +269,7 @@ describe("auth.service", () => {
 
     expect(
       currentUser,
-    ).toEqual(user);
+    ).toEqual({ ...user, selectedUserType: null });
 
   });
 
@@ -399,7 +400,7 @@ describe("auth.service", () => {
         dateOfBirth: "1995-01-01",
       });
 
-    expect(registeredUser).toEqual(user);
+    expect(registeredUser).toEqual({ ...user, selectedUserType: "ATHLETE" });
 
     expect(
       registerAthleteApi,
@@ -416,7 +417,7 @@ describe("auth.service", () => {
       "signup-access-token",
     );
 
-    expect(getAuthUser()).toEqual(user);
+    expect(getAuthUser()).toEqual({ ...user, selectedUserType: "ATHLETE" });
 
     expect(isAuthenticated()).toBe(true);
   });
@@ -453,7 +454,7 @@ describe("auth.service", () => {
         password: "Password123!",
       });
 
-    expect(registeredUser).toEqual(user);
+    expect(registeredUser).toEqual({ ...user, selectedUserType: "TRAINER" });
 
     expect(
       registerTrainerApi,
@@ -468,6 +469,6 @@ describe("auth.service", () => {
       "trainer-signup-access-token",
     );
 
-    expect(getAuthUser()).toEqual(user);
+    expect(getAuthUser()).toEqual({ ...user, selectedUserType: "TRAINER" });
     expect(isAuthenticated()).toBe(true);
   });});

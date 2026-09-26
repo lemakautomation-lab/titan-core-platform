@@ -141,6 +141,7 @@ describe("Public Athlete registration API", () => {
                     `Bearer ${response.body.data.accessToken}`,
                 );
             expect(me.status).toBe(200);
+            expect(me.body.selectedUserType).toBe("ATHLETE");
             expect(me.body).toMatchObject({
                 userId: response.body.data.registration.userId,
                 tenantId,

@@ -112,6 +112,13 @@ describe("Public Trainer registration API", () => {
             expect(
                 response.body.data.user.email,
             ).toBe(email);
+            expect(response.body.data.user.selectedUserType)
+                .toBe("TRAINER");
+            const me = await request(app)
+                .get("/api/v1/auth/me")
+                .set("Authorization", `Bearer ${response.body.data.accessToken}`);
+            expect(me.status).toBe(200);
+            expect(me.body.selectedUserType).toBe("TRAINER");
 
             const user =
                 await testPrisma.user

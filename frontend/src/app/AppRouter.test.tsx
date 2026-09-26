@@ -428,7 +428,7 @@ describe("AppRouter", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("links the sign-in page to Athlete signup", () => {
+  it("links the sign-in page to account choice", () => {
     renderRouter(
       "/login",
       false,
@@ -436,12 +436,34 @@ describe("AppRouter", () => {
 
     expect(
       screen.getByRole("link", {
-        name: "Create an account",
+        name: "Create your account now!",
       }),
     ).toHaveAttribute(
       "href",
-      "/signup/athlete",
+      "/signup",
     );
+  });
+
+  it("shows account choices without enabling unimplemented roles", () => {
+    renderRouter("/signup", false);
+    expect(screen.getByRole("link", { name: /Athlete/ })).toHaveAttribute("href", "/signup/athlete");
+    expect(screen.getByRole("link", { name: /Trainer/ })).toHaveAttribute("href", "/signup/trainer");
+    expect(screen.getByText("Coach registration and approval are being prepared.")).toBeInTheDocument();
+    expect(screen.getByText("Organisation registration and approval are being prepared.")).toBeInTheDocument();
+  });
+
+  it("shows Trainer onboarding for an unentitled Trainer", () => {
+    render(
+      <MemoryRouter initialEntries={["/onboarding"]}>
+        <AppRouter authState="authenticated" user={{
+          id: "trainer-1", tenantId: "tenant-1", email: "trainer@example.com",
+          selectedUserType: "TRAINER", roles: [], permissions: [],
+        }} onAuthenticated={vi.fn()} onLogout={async () => undefined} loggingOut={false} />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole("heading", { name: "Trainer Onboarding" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Your Trainer account is ready" })).toBeInTheDocument();
+    expect(screen.queryByText(/Digital Twin have been created/)).not.toBeInTheDocument();
   });
 
   it("redirects an authenticated onboarding-only Athlete away from signup", () => {

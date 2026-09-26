@@ -2,6 +2,7 @@ export interface AuthUser {
   id: string;
   tenantId: string;
   email: string;
+  selectedUserType?: "ATHLETE" | "TRAINER" | "ORGANISATION" | null;
   roles: string[];
   permissions: string[];
 }
@@ -36,6 +37,7 @@ export interface MeResponse {
   userId: string;
   tenantId: string;
   email: string;
+  selectedUserType?: "ATHLETE" | "TRAINER" | "ORGANISATION" | null;
   roles: string[];
   permissions: string[];
 }

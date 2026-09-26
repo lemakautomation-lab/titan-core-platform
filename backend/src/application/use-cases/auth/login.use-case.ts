@@ -407,6 +407,8 @@ export class LoginUseCase {
 
                 email: user.email,
 
+                selectedUserType: user.selectedUserType,
+
                 roles: roleNames,
 
                 permissions,

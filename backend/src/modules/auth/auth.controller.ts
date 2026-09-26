@@ -1346,6 +1346,9 @@ export class AuthController {
             email:
                 user.email,
 
+            selectedUserType:
+                user.selectedUserType,
+
             roles:
                 authUser.roles,
 
