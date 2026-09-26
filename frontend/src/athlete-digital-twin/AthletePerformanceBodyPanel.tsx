@@ -1,4 +1,5 @@
 import {
+  type FormEvent,
   useEffect,
   useState,
 } from "react";
@@ -13,6 +14,7 @@ import {
 import {
   type AthletePerformanceBodyProfileDto,
   getMyPerformanceBodyProfile,
+  recordMyBodyMeasurement,
   type PerformanceBodyModelType,
   updateMyPerformanceBodyModel,
 } from "./athlete-performance-body.api";
@@ -30,6 +32,12 @@ export default function AthletePerformanceBodyPanel({
     );
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [savingMeasurement, setSavingMeasurement] = useState(false);
+  const [heightCm, setHeightCm] = useState("");
+  const [weightKg, setWeightKg] = useState("");
+  const [bodyFatPercentage, setBodyFatPercentage] = useState("");
+  const [measurementMessage, setMeasurementMessage] =
+    useState<string | null>(null);
   const [error, setError] =
     useState<string | null>(null);
 
@@ -103,6 +111,46 @@ export default function AthletePerformanceBodyPanel({
       );
     } finally {
       setUpdating(false);
+    }
+  }
+
+  async function saveMeasurement(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!profile || savingMeasurement) return;
+
+    const height = Number(heightCm);
+    const weight = Number(weightKg);
+    const bodyFat = bodyFatPercentage.trim() === ""
+      ? undefined
+      : Number(bodyFatPercentage);
+
+    if (!Number.isFinite(height) || height <= 0 || height > 300 ||
+        !Number.isFinite(weight) || weight <= 0 || weight > 1000 ||
+        (bodyFat !== undefined &&
+          (!Number.isFinite(bodyFat) || bodyFat < 0 || bodyFat > 100))) {
+      setMeasurementMessage("Enter valid height, weight and optional body fat values.");
+      return;
+    }
+
+    setSavingMeasurement(true);
+    setMeasurementMessage(null);
+    try {
+      await recordMyBodyMeasurement({
+        heightCm: height,
+        weightKg: weight,
+        ...(bodyFat === undefined ? {} : { bodyFatPercentage: bodyFat }),
+      });
+      const refreshed = await getMyPerformanceBodyProfile();
+      if (refreshed.athleteId !== athleteId) throw new Error("Athlete mismatch.");
+      setProfile(refreshed);
+      setHeightCm("");
+      setWeightKg("");
+      setBodyFatPercentage("");
+      setMeasurementMessage("Measurement recorded. BMI was calculated from height and weight.");
+    } catch {
+      setMeasurementMessage("Unable to record the measurement. Please try again.");
+    } finally {
+      setSavingMeasurement(false);
     }
   }
 
@@ -221,6 +269,29 @@ export default function AthletePerformanceBodyPanel({
           </div>
         </dl>
       )}
+
+      <form className="performance-body-measurement-form"
+        onSubmit={(event) => void saveMeasurement(event)}
+        aria-label="Record body measurement">
+        <h4>Record your body measurement</h4>
+        <p>BMI is calculated from height and weight. It does not show muscle growth or where fat is stored.</p>
+        <label htmlFor="body-height">Height (cm)</label>
+        <input id="body-height" type="number" min="0.01" max="300"
+          step="0.01" required value={heightCm}
+          onChange={(event) => setHeightCm(event.target.value)} />
+        <label htmlFor="body-weight">Weight (kg)</label>
+        <input id="body-weight" type="number" min="0.001" max="1000"
+          step="0.001" required value={weightKg}
+          onChange={(event) => setWeightKg(event.target.value)} />
+        <label htmlFor="body-fat">Body fat (%) — optional, measured value</label>
+        <input id="body-fat" type="number" min="0" max="100"
+          step="0.01" value={bodyFatPercentage}
+          onChange={(event) => setBodyFatPercentage(event.target.value)} />
+        <button type="submit" disabled={savingMeasurement}>
+          {savingMeasurement ? "Saving..." : "Save measurement"}
+        </button>
+        {measurementMessage && <p role="status">{measurementMessage}</p>}
+      </form>
 
       <PerformanceBodyViewer
         modelType={profile.modelType}

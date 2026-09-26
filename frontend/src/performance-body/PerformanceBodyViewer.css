@@ -142,3 +142,43 @@
   color: #aeb9bd;
   font-size: 0.75rem;
 }
+
+.performance-body-measurement-form {
+  display: grid;
+  gap: 0.65rem;
+  max-width: 32rem;
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  border: 1px solid #254a50;
+  border-radius: 0.8rem;
+  background: #0b1b22;
+}
+
+.performance-body-measurement-form h4,
+.performance-body-measurement-form p {
+  margin: 0 0 0.4rem;
+}
+
+.performance-body-measurement-form label {
+  color: #d4eeee;
+  font-weight: 600;
+}
+
+.performance-body-measurement-form input {
+  min-height: 2.75rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #40646a;
+  border-radius: 0.5rem;
+  color: #f3ffff;
+  background: #09151c;
+}
+
+.performance-body-measurement-form button {
+  margin-top: 0.5rem;
+  padding: 0.7rem 1rem;
+  border: 0;
+  border-radius: 0.5rem;
+  color: #06191a;
+  background: #5cebd8;
+  font-weight: 700;
+}

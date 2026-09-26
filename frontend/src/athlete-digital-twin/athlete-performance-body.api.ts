@@ -48,3 +48,21 @@ export function updateMyPerformanceBodyModel(
     },
   );
 }
+
+export interface NewBodyMeasurement {
+  heightCm: number;
+  weightKg: number;
+  bodyFatPercentage?: number;
+}
+
+export function recordMyBodyMeasurement(
+  measurement: NewBodyMeasurement,
+): Promise<PerformanceBodyMeasurementDto> {
+  return apiRequest<PerformanceBodyMeasurementDto>(
+    "/auth/me/body-measurements",
+    {
+      method: "POST",
+      body: JSON.stringify(measurement),
+    },
+  );
+}

@@ -35,10 +35,12 @@ vi.mock(
 vi.mock("./athlete-performance-body.api", () => ({
   getMyPerformanceBodyProfile: vi.fn(),
   updateMyPerformanceBodyModel: vi.fn(),
+  recordMyBodyMeasurement: vi.fn(),
 }));
 
 import {
   getMyPerformanceBodyProfile,
+  recordMyBodyMeasurement,
   updateMyPerformanceBodyModel,
 } from "./athlete-performance-body.api";
 import AthletePerformanceBodyPanel from "./AthletePerformanceBodyPanel";
@@ -47,6 +49,8 @@ const getProfileMock =
   vi.mocked(getMyPerformanceBodyProfile);
 const updateModelMock =
   vi.mocked(updateMyPerformanceBodyModel);
+const recordMeasurementMock =
+  vi.mocked(recordMyBodyMeasurement);
 
 const profile = {
   athleteId: "athlete-1",
@@ -133,6 +137,55 @@ describe("AthletePerformanceBodyPanel", () => {
         "performance-body-viewer",
       ),
     ).toHaveTextContent("MALE:1:2");
+  });
+
+  it("records supplied measurements and displays the server-calculated BMI", async () => {
+    getProfileMock
+      .mockResolvedValueOnce(profile)
+      .mockResolvedValueOnce({
+        ...profile,
+        measurements: [
+          ...profile.measurements,
+          {
+            id: "measurement-3",
+            heightCm: 170,
+            weightKg: 63,
+            bmi: 21.8,
+            bodyFatPercentage: 22,
+            recordedAt: "2026-09-26T10:00:00.000Z",
+          },
+        ],
+      });
+    recordMeasurementMock.mockResolvedValue({
+      id: "measurement-3",
+      heightCm: 170,
+      weightKg: 63,
+      bmi: 21.8,
+      bodyFatPercentage: 22,
+      recordedAt: "2026-09-26T10:00:00.000Z",
+    });
+
+    render(<AthletePerformanceBodyPanel athleteId="athlete-1" />);
+    fireEvent.change(await screen.findByLabelText("Height (cm)"), {
+      target: { value: "170" },
+    });
+    fireEvent.change(screen.getByLabelText("Weight (kg)"), {
+      target: { value: "63" },
+    });
+    fireEvent.change(screen.getByLabelText("Body fat (%) — optional, measured value"), {
+      target: { value: "22" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save measurement" }));
+
+    await waitFor(() => {
+      expect(recordMeasurementMock).toHaveBeenCalledWith({
+        heightCm: 170,
+        weightKg: 63,
+        bodyFatPercentage: 22,
+      });
+    });
+    expect(await screen.findByText("21.8")).toBeInTheDocument();
+    expect(screen.getByText("63 kg")).toBeInTheDocument();
   });
 
   it("rejects mismatched Athlete ownership", async () => {
