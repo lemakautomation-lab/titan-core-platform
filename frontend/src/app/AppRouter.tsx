@@ -2,6 +2,7 @@ import {
   Navigate,
   Route,
   Routes,
+  useLocation,
 } from "react-router-dom";
 
 import LoginPage from "../auth/LoginPage";
@@ -45,8 +46,18 @@ function ProtectedRoute({
   onLogout: () => Promise<void>;
   loggingOut: boolean;
 }) {
+  const location = useLocation();
+
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (
+    user.roles.length === 0 &&
+    user.permissions.length === 0 &&
+    location.pathname !== "/onboarding"
+  ) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   return (

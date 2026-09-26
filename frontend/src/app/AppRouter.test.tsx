@@ -64,6 +64,36 @@ function renderRouter(
 }
 
 describe("AppRouter", () => {
+  it.each(["/", "/dashboard", "/club"])(
+    "keeps an onboarding-only Athlete on onboarding when visiting %s",
+    (path) => {
+      render(
+        <MemoryRouter initialEntries={[path]}>
+          <AppRouter
+            authState="authenticated"
+            user={{
+              id: "athlete-1",
+              tenantId: "tenant-1",
+              email: "athlete@example.com",
+              roles: [],
+              permissions: [],
+            }}
+            onAuthenticated={vi.fn()}
+            onLogout={async () => undefined}
+            loggingOut={false}
+          />
+        </MemoryRouter>,
+      );
+
+      expect(
+        screen.getByRole("heading", { name: "Athlete Onboarding" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: "Dashboard" }),
+      ).not.toBeInTheDocument();
+    },
+  );
+
   it("requires the club executive permission for direct club access", () => {
     renderRouter("/club", true, []);
     expect(screen.getByRole("heading", { name: "Access denied" })).toBeInTheDocument();
