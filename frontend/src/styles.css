@@ -542,3 +542,126 @@ button {
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+/* TITAN visual refresh 2026 */
+:root { color-scheme: dark; }
+button:focus-visible, input:focus-visible, a:focus-visible {
+  outline: 2px solid #37f4df;
+  outline-offset: 3px;
+}
+.titan-login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.18fr) minmax(390px, .82fr);
+  background: #050d14;
+}
+.titan-login-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background: #06141d url('/titan-health-male-sprinter.png') center / cover no-repeat;
+}
+.titan-login-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(2,10,17,.8), rgba(2,10,17,.18) 75%),
+    linear-gradient(0deg, rgba(2,10,17,.95), transparent 55%);
+}
+.titan-login-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 660px;
+  padding: clamp(32px, 6vw, 92px);
+}
+.titan-login-kicker, .titan-login-overline, .titan-login-hero-foot {
+  color: #41e6d5;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .22em;
+}
+.titan-login-hero h1 {
+  max-width: 540px;
+  margin: 20px 0 12px;
+  font-size: clamp(42px, 5.5vw, 78px);
+  line-height: 1.02;
+  letter-spacing: -.055em;
+}
+.titan-login-hero p { color: #d5e5eb; font-size: 18px; line-height: 1.5; }
+.titan-login-hero-rule { display: block; width: 76px; height: 2px; margin: 32px 0 20px; background: #37f4df; }
+.titan-login-hero-foot { color: #b1c8d0; font-size: 9px; }
+.titan-login-panel {
+  display: grid;
+  place-items: center;
+  padding: 48px clamp(24px, 5vw, 80px);
+  background: radial-gradient(circle at 95% 0%, rgba(31,169,166,.1), transparent 40%), #071018;
+}
+.titan-login-card { width: min(100%, 430px); }
+.titan-login-brand { display: flex; align-items: center; gap: 12px; margin-bottom: clamp(42px, 8vh, 90px); }
+.titan-login-brand-mark {
+  display: grid; place-items: center; width: 46px; height: 46px;
+  border: 1px solid #37f4df; border-radius: 8px;
+  color: #37f4df; font-size: 23px; font-weight: 900;
+  box-shadow: 0 0 25px rgba(55,244,223,.15);
+}
+.titan-login-brand > div > strong, .titan-login-brand > div > span { display: block; }
+.titan-login-brand > div > strong { font-size: 20px; letter-spacing: .2em; }
+.titan-login-brand > div > span { margin-top: 3px; color: #8aa8b5; font-size: 9px; letter-spacing: .2em; }
+.titan-login-card h2 { margin: 14px 0 6px; font-size: 38px; letter-spacing: -.04em; }
+.titan-login-description { margin: 0 0 32px; color: #9cb1bc; font-size: 14px; line-height: 1.5; }
+.titan-login-form { display: grid; gap: 20px; }
+.titan-login-form label { display: block; margin-bottom: 8px; color: #c9dbe0; font-size: 12px; font-weight: 650; }
+.titan-login-form input {
+  width: 100%; min-height: 48px; padding: 12px 14px;
+  border: 1px solid #2b4652; border-radius: 7px;
+  background: #0c1c27; color: #f1fbfd;
+}
+.titan-login-form input:hover { border-color: #4d7c87; }
+.titan-login-form input:focus { border-color: #37f4df; }
+.titan-login-form button {
+  min-height: 50px; margin-top: 8px; border: 0; border-radius: 7px;
+  background: #37e6d1; color: #062022; font-weight: 800;
+  transition: background .15s ease, transform .15s ease;
+}
+.titan-login-form button:hover { background: #77f6e8; transform: translateY(-1px); }
+.titan-login-form button:disabled { opacity: .65; cursor: wait; transform: none; }
+.titan-login-error {
+  margin: 0; padding: 12px 14px; border: 1px solid #b86c76; border-radius: 6px;
+  background: #3b1f28; color: #ffe2e4; font-size: 13px;
+}
+.titan-login-links { display: flex; justify-content: space-between; gap: 16px; margin-top: 24px; }
+.titan-login-links a, .titan-login-signup a { color: #5cf0df; font-size: 12px; text-underline-offset: 3px; }
+.titan-login-signup { margin-top: 34px; color: #9cb1bc; font-size: 12px; }
+.titan-dashboard-intro {
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: linear-gradient(90deg, #0a1922 0%, rgba(6,19,28,.95) 38%, rgba(6,19,28,.4) 100%),
+    url('/titan-health-male-sprinter.png') center 49% / cover no-repeat;
+  border-color: #236b70;
+}
+.titan-dashboard-intro .titan-eyebrow { color: #55e8d9; }
+.titan-dashboard-intro h3 { font-size: clamp(25px, 3vw, 36px); }
+.titan-dashboard-intro p { color: #d1e2e6; font-size: 14px; }
+.titan-nav-item-active { border-color: #1c7777; box-shadow: inset 3px 0 #37e6d1; }
+.titan-brand-mark { border-color: #328b8a; color: #54e8d7; }
+
+@media (max-width: 900px) {
+  .titan-login-page { grid-template-columns: 1fr; }
+  .titan-login-hero { min-height: 300px; background-position: center 46%; }
+  .titan-login-hero-content { padding: 34px; }
+  .titan-login-hero h1 { font-size: clamp(34px, 7vw, 56px); }
+  .titan-login-hero-rule, .titan-login-hero-foot { display: none; }
+  .titan-login-panel { padding: 48px 24px 64px; }
+  .titan-login-brand { margin-bottom: 40px; }
+}
+@media (max-width: 520px) {
+  .titan-login-hero { min-height: 250px; }
+  .titan-login-hero-content { padding: 26px; }
+  .titan-login-hero p { font-size: 14px; }
+  .titan-login-links { flex-wrap: wrap; }
+  .titan-dashboard-intro { min-height: 200px; background-position: 62% center; }
+}
