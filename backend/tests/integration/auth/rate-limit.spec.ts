@@ -11,6 +11,26 @@ import { rateLimitModule } from "../../../src/infrastructure/composition/rate-li
 
 describe("Authentication Rate Limiting", () => {
 
+    it("does not spend the login limit on refresh requests", async () => {
+        const { user, password } = await createTestUser();
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            const refresh = await request(app)
+                .post("/api/v1/auth/refresh");
+            expect(refresh.status).toBe(401);
+        }
+
+        const login = await request(app)
+            .post("/api/v1/auth/login")
+            .send({
+                tenantId: user.tenantId,
+                email: user.email,
+                password,
+            });
+
+        expect(login.status).toBe(200);
+    });
+
 
     it("returns HTTP 429 after the authentication rate-limit threshold is exceeded", async () => {
 
@@ -213,7 +233,7 @@ describe("Authentication Rate Limiting", () => {
 
 
 
-    it("applies the authentication rate limiter to refresh requests", async () => {
+    it("allows refresh requests beyond the authentication rate limit", async () => {
 
         const { user, password } =
             await createTestUser();
@@ -317,15 +337,13 @@ describe("Authentication Rate Limiting", () => {
 
 
         expect(limitedResponse.status)
-            .toBe(429);
+            .toBe(200);
 
 
 
     });
 
 });
-
-
 
 
 

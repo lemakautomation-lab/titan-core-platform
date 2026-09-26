@@ -78,7 +78,6 @@ export function createAuthRoutes(
 
     router.post(
         "/refresh",
-        authRateLimiter,
         authController.refresh.bind(authController),
     );
 

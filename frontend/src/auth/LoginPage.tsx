@@ -39,10 +39,13 @@ export default function LoginPage({
 
       onAuthenticated(user);
 
-    } catch {
+    } catch (cause) {
 
       setError(
-        "Unable to sign in. Please check your credentials and try again.",
+        cause instanceof Error &&
+        cause.message === "API request failed with status 429"
+          ? "Too many sign-in attempts. Please wait and try again."
+          : "Unable to sign in. Please check your credentials and try again.",
       );
 
     } finally {

@@ -402,6 +402,30 @@ describe("App", () => {
 
   });
 
+  it("explains when sign-in is rate limited", async () => {
+    loginMock.mockRejectedValue(
+      new Error("API request failed with status 429"),
+    );
+
+    render(<App />);
+
+    await screen.findByRole("heading", { name: "Sign in" });
+    fireEvent.change(screen.getByLabelText("Tenant ID"), {
+      target: { value: "tenant-1" },
+    });
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "athlete@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "TestPassword123!" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Too many sign-in attempts. Please wait and try again.",
+    );
+  });
+
   it("logs out and returns to the login screen", async () => {
 
     const user = {
