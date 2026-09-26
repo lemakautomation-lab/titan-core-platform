@@ -26,6 +26,7 @@ import {
 
 import { SecurityAnalyticsService } from "../../services/security-analytics.service";
 import { PermissionResolutionService } from "../../services/permission-resolution.service";
+import { getStagingTestGrant } from "../../../config/staging-test-access";
 
 export class LoginUseCase {
 
@@ -378,6 +379,15 @@ export class LoginUseCase {
             AuditLogStatus.SUCCESS,
 
         );
+
+        const stagingGrant = getStagingTestGrant(user);
+        if (stagingGrant) {
+            await this.auditLogService.log(
+                user.tenantId, user.id, "STAGING_TEST_ACCESS_USED", "AUTH",
+                session.id, AuditLogStatus.SUCCESS,
+                { userType: stagingGrant.userType, expiresAt: stagingGrant.expiresAt },
+            );
+        }
 
 
         await this.securityEventService.recordAuthenticationSuccess(

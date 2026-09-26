@@ -3,6 +3,7 @@ import { OnboardingUserType } from "../../domain/enums/onboarding-user-type.enum
 import { PaymentRepository } from "../../domain/repositories/payment.repository";
 import { UserRepository } from "../../domain/repositories/user.repository";
 import { UserTypeEntitlementRepository } from "../../domain/repositories/user-type-entitlement.repository";
+import { getStagingTestGrant } from "../../config/staging-test-access";
 
 export interface GetMyTrainerAccessQuery {
     userId: string;
@@ -13,6 +14,7 @@ export interface TrainerAccessDto {
     accessGranted: boolean;
     reason:
         | "GRANTED"
+        | "STAGING_TEST_GRANT"
         | "TRAINER_TYPE_REQUIRED"
         | "ACTIVE_TRAINER_ENTITLEMENT_REQUIRED";
 }
@@ -62,6 +64,10 @@ export class GetMyTrainerAccessUseCase {
                     reason:
                         "TRAINER_TYPE_REQUIRED",
                 });
+            }
+
+            if (getStagingTestGrant(user)?.userType === OnboardingUserType.TRAINER) {
+                return Result.success({ accessGranted: true, reason: "STAGING_TEST_GRANT" });
             }
 
             const now = new Date();

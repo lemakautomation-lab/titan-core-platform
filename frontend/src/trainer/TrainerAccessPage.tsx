@@ -73,12 +73,16 @@ export default function TrainerAccessPage() {
 
         {!loading &&
           !error &&
-          access?.accessGranted && (
+          access?.accessGranted && access.reason === "GRANTED" && (
             <p role="status">
               Your Trainer subscription is active.
               Trainer platform access is enabled.
             </p>
           )}
+
+        {!loading && !error && access?.reason === "STAGING_TEST_GRANT" && (
+          <p role="status">Staging synthetic access is enabled for testing. No payment has been recorded.</p>
+        )}
 
         {!loading &&
           !error &&

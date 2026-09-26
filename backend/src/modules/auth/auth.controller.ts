@@ -24,6 +24,34 @@ import {
 
 
 export class AuthController {
+    async getMyPersonalDetails(req: AuthRequest, res: Response): Promise<void> {
+        res.set("Cache-Control", "no-store");
+        const authUser = req.user;
+        if (!authUser) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+        const user = await authModule.userRepository.findById(authUser.userId);
+        const athlete = await authModule.athleteRepository.findByUserId(
+            authUser.userId, authUser.tenantId,
+        );
+        if (!user || user.tenantId !== authUser.tenantId ||
+            !user.isActive() || user.selectedUserType !== "ATHLETE" || !athlete) {
+            res.status(404).json({ error: "Athlete profile not found." });
+            return;
+        }
+        res.status(200).json({
+            userId: user.id,
+            athleteId: athlete.id,
+            tenantId: user.tenantId,
+            firstName: athlete.firstName,
+            lastName: athlete.lastName,
+            email: user.email,
+            contactNumber: user.contactNumber,
+            countryCode: athlete.countryCode,
+            dateOfBirth: athlete.dateOfBirth,
+        });
+    }
     async listMyTrainerClients(
         req: AuthRequest,
         res: Response,

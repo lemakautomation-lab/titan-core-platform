@@ -13,6 +13,8 @@ import AthleteSignupPage from "../auth/AthleteSignupPage";
 import SignupChoicePage from "../auth/SignupChoicePage";
 import TrainerSignupPage from "../auth/TrainerSignupPage";
 import AthleteOnboardingPage from "../auth/AthleteOnboardingPage";
+import AthleteProfilePage from "../auth/AthleteProfilePage";
+import MyPerformanceBodyPage from "../athlete-digital-twin/MyPerformanceBodyPage";
 import DashboardPage from "../dashboard/DashboardPage";
 import AuthApp from "../auth/AuthApp";
 import UsersPage from "../users/UsersPage";
@@ -56,7 +58,8 @@ function ProtectedRoute({
   if (
     user.roles.length === 0 &&
     user.permissions.length === 0 &&
-    location.pathname !== "/onboarding"
+    location.pathname !== "/onboarding" &&
+    !(location.pathname === "/profile" && user.selectedUserType === "ATHLETE")
   ) {
     return <Navigate to="/onboarding" replace />;
   }
@@ -254,6 +257,18 @@ export default function AppRouter({
         <Route
           path="/onboarding"
           element={<AthleteOnboardingPage selectedUserType={user?.selectedUserType} />}
+        />
+        <Route
+          path="/profile"
+          element={user?.selectedUserType === "ATHLETE"
+            ? <AthleteProfilePage />
+            : <Navigate to="/onboarding" replace />}
+        />
+        <Route
+          path="/my-body"
+          element={user?.selectedUserType === "ATHLETE"
+            ? <RequirePermission user={user} permission="athlete_digital_twins.read"><MyPerformanceBodyPage /></RequirePermission>
+            : <Navigate to="/onboarding" replace />}
         />
 
         <Route

@@ -1,5 +1,6 @@
 import { UserRepository } from "../../domain/repositories/user.repository";
 import { RoleRepository } from "../../domain/repositories/role.repository";
+import { getStagingTestGrant, stagingTestAccessConfigured } from "../../config/staging-test-access";
 
 export class PermissionResolutionService {
 
@@ -38,6 +39,15 @@ export class PermissionResolutionService {
                     permissions.add(
                         permission.code,
                     );
+                }
+            }
+        }
+
+        if (stagingTestAccessConfigured()) {
+            const user = await this.userRepository.findById(userId);
+            if (user && user.tenantId === tenantId && user.isActive()) {
+                for (const code of getStagingTestGrant(user)?.permissions ?? []) {
+                    permissions.add(code);
                 }
             }
         }

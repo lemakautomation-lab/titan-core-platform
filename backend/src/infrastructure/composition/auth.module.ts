@@ -165,6 +165,7 @@ const trainerProfileRepository =
         databaseService,
     );
 export const authModule = {
+    athleteRepository,
 
     userRepository,
 

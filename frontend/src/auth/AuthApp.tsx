@@ -14,6 +14,9 @@ interface AuthAppProps {
 
 type NavigationItem =
   | "Onboarding"
+  | "Profile"
+  | "3D Body"
+  | "Trainer"
   | "Dashboard"
   | "Director"
   | "Club"
@@ -28,6 +31,9 @@ type NavigationDefinition = {
 };
 
 const navigation: NavigationDefinition[] = [
+  { label: "Profile", route: "/profile", permission: [] },
+  { label: "3D Body", route: "/my-body", permission: "athlete_digital_twins.read" },
+  { label: "Trainer", route: "/trainer", permission: "workout-programmes.read" },
   {
     label: "Dashboard",
     route: "/dashboard",
@@ -107,6 +113,9 @@ function getNavigationRoute(
 function getActiveSection(
   pathname: string,
 ): NavigationItem {
+  if (pathname === "/profile") return "Profile";
+  if (pathname === "/my-body") return "3D Body";
+  if (pathname === "/trainer") return "Trainer";
   if (pathname === "/club") return "Club";
   if (pathname === "/performance-director") {
     return "Director";
@@ -157,9 +166,14 @@ export default function AuthApp({
           label: "Onboarding" as const,
           route: "/onboarding",
           permission: [],
-        }]
+        }, ...(user.selectedUserType === "ATHLETE"
+          ? [{ label: "Profile" as const, route: "/profile", permission: [] }]
+          : [])]
       : navigation.filter((item) =>
-          canAccess(item, permissions),
+          canAccess(item, permissions) &&
+          (item.label !== "Profile" && item.label !== "3D Body" ||
+            user.selectedUserType === "ATHLETE") &&
+          (item.label !== "Trainer" || user.selectedUserType === "TRAINER"),
         );
 
   const activeSection =
@@ -284,6 +298,12 @@ export default function AuthApp({
         </header>
 
         <main className="titan-content">
+
+          {user.permissions.includes("staging.synthetic-access") && (
+            <p role="status" className="titan-staging-grant">
+              Staging synthetic access for testing. No payment has been recorded.
+            </p>
+          )}
 
           <div className="titan-page-heading">
 

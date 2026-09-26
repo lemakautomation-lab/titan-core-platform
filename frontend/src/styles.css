@@ -803,3 +803,11 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 #root > main.titan-signup-choice .titan-signup-options > a:hover, #root > main.titan-signup-choice .titan-signup-options > a:focus-visible { border-color: #5cf0df; box-shadow: 0 0 0 2px #5cf0df44; }
 #root > main.titan-signup-choice .titan-signup-options > div { opacity: .7; }
 @media (max-width: 700px) { #root > main.titan-signup-choice .titan-signup-options { grid-template-columns: 1fr; } }
+/* Athlete self-service and explicit staging test state */
+#root .titan-staging-grant { margin: 0 0 20px; padding: 12px 16px; border: 1px solid #2e9b91; border-radius: 8px; color: #a5f7ec; background: #0b302e; }
+#root .titan-athlete-profile { max-width: 760px; }
+#root section.titan-athlete-profile form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+#root section.titan-athlete-profile form label { display: grid; gap: 7px; color: #c4dce0; }
+#root section.titan-athlete-profile form input { width: 100%; padding: 11px; border: 1px solid #31515b; border-radius: 6px; background: #091721; color: #efffff; }
+#root section.titan-athlete-profile form button { padding: 12px 16px; border: 0; border-radius: 6px; background: #51e8d7; color: #071018; font-weight: 700; }
+@media (max-width: 700px) { #root section.titan-athlete-profile form { grid-template-columns: 1fr; } }

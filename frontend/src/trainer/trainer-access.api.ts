@@ -1,7 +1,8 @@
 ﻿import { apiRequest } from "../api/client";
 
 export type TrainerAccessReason =
-  | "GRANTED"
+    | "GRANTED"
+    | "STAGING_TEST_GRANT"
   | "TRAINER_TYPE_REQUIRED"
   | "ACTIVE_TRAINER_ENTITLEMENT_REQUIRED";
 

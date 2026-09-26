@@ -616,9 +616,7 @@ describe("Authentication Login", () => {
 
 
         const securityEvent =
-            securityEvents[
-                securityEvents.length - 1
-            ];
+            securityEvents.find((event) => event.requestId === lockedRequestId);
 
 
         expect(securityEvent.userId)
