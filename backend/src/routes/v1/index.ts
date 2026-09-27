@@ -73,6 +73,7 @@ import { PerformanceProfessionalController } from "../../presentation/controller
 
 import { createAuthRoutes } from "../../modules/auth/auth.routes";
 import { AuthController } from "../../modules/auth/auth.controller";
+import { createOrganisationOnboardingRoutes } from "../../modules/organisation-onboarding/organisation-onboarding.routes";
 
 import { roleModule } from "../../infrastructure/composition/role.module";
 import { userModule } from "../../infrastructure/composition/user.module";
@@ -306,6 +307,12 @@ router.use(
     "/auth",
     createAuthRoutes(
         authController,
+    ),
+);
+router.use(
+    "/organisation-onboarding",
+    createOrganisationOnboardingRoutes(
+        new DatabaseService(),
     ),
 );
 
