@@ -23,6 +23,8 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Progress (27 September 2026):** Organisation slugs are now unique within each tenant, with a database migration and tenant-isolation regression test. This foundation passed Prisma validation, client generation, backend build and focused test. Registration remains pending: the existing tenant creation path activates immediately, and current product prices require an existing tenant. The onboarding flow must hold access inactive until verified payment and provision the tenant and initial administrator safely.
+
 ### Control 111.2 - Plan selection
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
@@ -50,6 +52,11 @@ Local frontend expectation: visible change is expected only where the listed mis
 ### Control 111.8 - Access activation only after required payment
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+
+## Implementation Evidence (27 September 2026)
+
+Tenant-scoped organisation slugs, an inactive-tenant JWT access gate, and an internal pending-registration boundary are implemented locally. Registration snapshots an active monthly or annual plan and creates no tenant or administrator. The schema migrations were applied to titan_core_test only. Prisma validation, client generation, backend build, and focused regression passed; adjacent organisation tests passed 6/6 and registration/access tests passed 4/4. Public signup, email ownership verification, provider checkout, verified organisation payment fulfillment, administrator setup, and staging release remain pending. Existing athlete/trainer entitlement fulfillment cannot activate an organisation application.
+**Regression verification (27 September 2026):** Full backend serial regression passed 237/237 files and 1425/1425 tests. Four provisioning tests initially reached the default five-second timeout under full-suite load; the provisioning tests now have explicit 30-second timeouts and the full suite passed. Mission 111 remains open pending public onboarding, verified payment activation, and staging verification.
 
 ## Mission Exit Gate
 

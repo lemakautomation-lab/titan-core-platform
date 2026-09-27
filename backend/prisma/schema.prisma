@@ -56,6 +56,47 @@ model Tenant {
   coachSquadAthletes        CoachSquadAthlete[]
 }
 
+enum OrganisationOnboardingStatus {
+  PENDING_VERIFICATION
+  PENDING_PAYMENT
+  PROVISIONED
+  CANCELLED
+  EXPIRED
+}
+
+model OrganisationOnboardingPlan {
+  id              String          @id @default(uuid())
+  code            String          @unique
+  name            String
+  amountMinor     Int
+  currency        String
+  billingInterval BillingInterval
+  status          ProductStatus   @default(ACTIVE)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  applications    OrganisationOnboardingApplication[]
+}
+
+model OrganisationOnboardingApplication {
+  id                 String                       @id @default(uuid())
+  requestId          String                       @unique
+  organisationName   String
+  organisationSlug   String
+  administratorEmail String
+  planId             String
+  amountMinor        Int
+  currency           String
+  billingInterval    BillingInterval
+  status             OrganisationOnboardingStatus @default(PENDING_VERIFICATION)
+  expiresAt          DateTime
+  createdAt          DateTime                     @default(now())
+  updatedAt          DateTime                     @updatedAt
+  plan               OrganisationOnboardingPlan   @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  @@index([administratorEmail, status])
+  @@index([expiresAt, status])
+}
+
 model Sport {
   id                       String                    @id @default(uuid())
   tenantId                 String
@@ -79,7 +120,7 @@ model Sport {
 model Organisation {
   id                   String         @id @default(uuid())
   name                 String
-  slug                 String         @unique
+  slug                 String
   status               RecordStatus   @default(ACTIVE)
   tenantId             String
   parentOrganisationId String?
@@ -91,6 +132,7 @@ model Organisation {
   users                User[]
   athletes             Athlete[]
 
+  @@unique([tenantId, slug], map: "Organisation_tenantId_slug_key")
   @@unique([id, tenantId], map: "Organisation_id_tenantId_key")
   @@index([tenantId, parentOrganisationId])
 }

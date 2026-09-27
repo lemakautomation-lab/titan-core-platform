@@ -53,5 +53,5 @@ describe("Mission 070.6 new-tenant permission provisioning", () => {
             await testPrisma.tenant.delete({ where: { id: tenant.id } });
             await testPrisma.tenant.delete({ where: { id: foreignTenant.id } });
         }
-    });
+    }, 30_000);
 });

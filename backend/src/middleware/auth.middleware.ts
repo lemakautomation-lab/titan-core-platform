@@ -5,6 +5,9 @@ import { requestContextService } from "../shared/context/request-context.service
 import { logger } from "../logging/logger";
 import { UnauthorizedException } from "../shared/exceptions/unauthorized.exception";
 import { auditLogModule } from "../infrastructure/composition/audit-log.module";
+import { DatabaseService } from "../infrastructure/database/database.service";
+
+const authDatabase = new DatabaseService();
 
 export interface AuthenticatedUser {
 
@@ -156,6 +159,17 @@ export async function authMiddleware(
                 ),
             );
 
+        }
+
+        // Token validity alone must never reactivate a suspended or unpaid tenant.
+        const tenant = await authDatabase.prisma.tenant.findUnique({
+            where: { id: payload.tenantId },
+            select: { status: true },
+        });
+
+        if (tenant?.status !== "ACTIVE") {
+            await recordAuthenticationFailure(req, "TENANT_NOT_ACTIVE");
+            return next(new UnauthorizedException("Tenant is not active"));
         }
 
         const authenticatedUser = {
