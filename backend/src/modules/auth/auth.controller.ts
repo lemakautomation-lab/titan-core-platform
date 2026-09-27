@@ -24,6 +24,24 @@ import {
 
 
 export class AuthController {
+    async ensureMyBillingAccount(req: AuthRequest, res: Response): Promise<void> {
+        res.set("Cache-Control", "no-store");
+        const actor = req.user;
+        if (!actor) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+        const account = await authModule.billingAccountService
+            .ensureForAuthenticatedUser(actor.tenantId, actor.userId);
+        if (!account) {
+            res.status(403).json({ error: "Active account required." });
+            return;
+        }
+        res.status(200).json({
+            id: account.id,
+            createdAt: account.createdAt,
+        });
+    }
     async getMyPersonalDetails(req: AuthRequest, res: Response): Promise<void> {
         res.set("Cache-Control", "no-store");
         const authUser = req.user;

@@ -56,6 +56,7 @@ import { PrismaPerformanceMetricRepository } from "../repositories/performance-m
 import { PrismaPerformanceMeasurementRepository } from "../repositories/performance-measurement/performance-measurement.repository";
 
 import { PrismaPaymentRepository } from "../repositories/payment.repository";
+import { BillingAccountService } from "../../application/billing/billing-account.service";
 import { PrismaUserTypeEntitlementRepository } from "../repositories/user-type-entitlement.repository";
 const databaseService =
     new DatabaseService();
@@ -93,6 +94,8 @@ const paymentRepository =
     new PrismaPaymentRepository(
         databaseService,
     );
+
+const billingAccountService = new BillingAccountService(databaseService);
 
 const userTypeEntitlementRepository =
     new PrismaUserTypeEntitlementRepository(
@@ -165,6 +168,7 @@ const trainerProfileRepository =
         databaseService,
     );
 export const authModule = {
+    billingAccountService,
     athleteRepository,
 
     userRepository,

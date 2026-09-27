@@ -99,6 +99,11 @@ export function createAuthRoutes(
         authMiddleware,
         authController.updateMe.bind(authController),
     );
+    router.put(
+        "/me/billing-account",
+        authMiddleware,
+        authController.ensureMyBillingAccount.bind(authController),
+    );
     router.get(
         "/me/personal-details",
         authMiddleware,
