@@ -58,6 +58,10 @@ Staging release `fd448f3` was built from commit `fd448f35986380994e7a72c0ee35267
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** IMPLEMENTED / TEST DATABASE MIGRATED / LOCAL VERIFICATION GREEN / RELEASE PENDING
+
+**Evidence (27 September 2026):** A proposed `BillingSubscription` records tenant, user, product and monthly or annual interval. Each `BillingSubscriptionPeriod` links one confirmed source payment to a bounded paid period; composite foreign keys enforce matching tenant, user and product, and a unique payment link prevents replay across subscriptions. An internal service prepares first and renewal periods, validates payment confirmation and ownership, and treats repeated requests for the same payment idempotently. UTC month-end and leap-day clamping is shared with entitlement expiry. No public subscription write endpoint or automatic charge is introduced. A subscription alone does not grant access; entitlement and source-payment checks remain authoritative, with subscription-to-entitlement linkage under Control 110.5. Migration 20260927163000_add_billing_subscription_periods was applied to titan_core_test only. Prisma schema validation and client generation passed. Targeted tests passed 16/16, the TypeScript build passed, and full backend serial regression passed 231/231 files and 1413/1413 tests. January 31 renewal retains the billing-day anchor through February and returns to March 31. Staging migration and provider payment integration remain pending.
+
 ### Control 110.5 - Entitlement linkage
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

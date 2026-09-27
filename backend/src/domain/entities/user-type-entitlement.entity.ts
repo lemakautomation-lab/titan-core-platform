@@ -6,6 +6,7 @@ import { BillingInterval } from "../enums/billing-interval.enum";
 import { EntitlementStatus } from "../enums/entitlement-status.enum";
 import { OnboardingUserType } from "../enums/onboarding-user-type.enum";
 import { PaymentStatus } from "../enums/payment-status.enum";
+import { recurringPeriodEnd } from "../services/billing-period";
 
 export class UserTypeEntitlement {
 
@@ -149,40 +150,7 @@ export class UserTypeEntitlement {
             return null;
         }
 
-        const validUntil =
-            new Date(validFrom);
-
-        if (
-            billingInterval ===
-            BillingInterval.MONTHLY
-        ) {
-            validUntil.setUTCMonth(
-                validUntil.getUTCMonth() + 1,
-            );
-        }
-        else if (
-            billingInterval ===
-            BillingInterval.QUARTERLY
-        ) {
-            validUntil.setUTCMonth(
-                validUntil.getUTCMonth() + 3,
-            );
-        }
-        else if (
-            billingInterval ===
-            BillingInterval.ANNUALLY
-        ) {
-            validUntil.setUTCFullYear(
-                validUntil.getUTCFullYear() + 1,
-            );
-        }
-        else {
-            throw new Error(
-                "Unsupported billing interval.",
-            );
-        }
-
-        return validUntil;
+        return recurringPeriodEnd(validFrom, billingInterval);
     }
 
 }

@@ -237,6 +237,18 @@ describe(
             },
         );
 
+        it("clamps monthly entitlement expiry at month end", () => {
+            const entitlement = UserTypeEntitlement.issue(
+                createPayment(BillingInterval.MONTHLY),
+                createProduct(),
+                OnboardingUserType.ATHLETE,
+                new Date("2027-01-31T10:30:00.000Z"),
+            );
+            expect(entitlement.validUntil).toEqual(
+                new Date("2027-02-28T10:30:00.000Z"),
+            );
+        });
+
         it(
             "denies access after revocation",
             () => {
