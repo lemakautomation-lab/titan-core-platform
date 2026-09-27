@@ -23,6 +23,10 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** INTERNAL FOUNDATION VERIFIED / STAGING RELEASE PENDING
+
+**Evidence (27 September 2026):** A tenant-scoped, one-per-user billing identity is introduced through `BillingAccount` with a composite foreign key to the existing user. An internal service checks the active user in the supplied tenant and idempotently ensures the account. Its caller must supply tenant and user IDs from the authenticated server context; no public billing route is wired yet. The migration creates no historical accounts and changes no existing payments, invoices, or entitlements. Focused integration coverage checks tenant isolation, inactive users, uniqueness, and absence of payment or entitlement side effects. Prisma schema validation, client generation, backend build, and focused lint passed locally. The migration and focused integration test passed on titan_core_test; adjacent payment and entitlement regression passed (18 tests). Staging migration and release verification remain pending.
+
 ### Control 110.2 - Invoices/charges
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
