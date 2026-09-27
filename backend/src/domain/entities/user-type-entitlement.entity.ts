@@ -91,6 +91,8 @@ export class UserTypeEntitlement {
             payment.id === this.paymentId &&
             payment.tenantId === this.tenantId &&
             payment.userId === this.userId &&
+            payment.productId === this.productId &&
+            at >= this.validFrom &&
             (
                 this.validUntil === null ||
                 at < this.validUntil

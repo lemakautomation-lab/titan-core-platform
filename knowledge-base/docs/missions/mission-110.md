@@ -66,17 +66,37 @@ Staging release `fd448f3` was built from commit `fd448f35986380994e7a72c0ee35267
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** INTERNAL BOUNDARY VERIFIED LOCALLY / RELEASE PENDING
+
+**Evidence (27 September 2026):** A proposed internal service issues one entitlement from a subscription period only when the matching tenant-scoped payment remains confirmed with provider evidence and the active user's selected type matches the product. The entitlement uses the period's exact start and end dates; repeated issuance for the same payment is idempotent. Access still checks the source payment, so refunds deny access. No public client can issue an entitlement.
+
 ### Control 110.6 - Payment failures
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+
+**Status:** INTERNAL BOUNDARY VERIFIED LOCALLY / RELEASE PENDING
+
+**Evidence (27 September 2026):** Proposed verified-event handling conditionally moves pending payments to failed or cancelled and confirmed payments to refunded. A failed payment creates no subscription period, entitlement, or invoice. Refunds make existing entitlements fail their source-payment access check.
 
 ### Control 110.7 - Reconciliation
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** READ-ONLY INTERNAL BOUNDARY VERIFIED LOCALLY / RELEASE PENDING
+
+**Evidence (27 September 2026):** A proposed tenant-scoped internal query identifies confirmed payments missing a paid period, entitlement or invoice, and refunded payments whose entitlement still bears an active persistence status. The report makes no payment or access mutation. Operational scheduling and provider settlement comparison remain pending.
+
 ### Control 110.8 - Secure payment integration boundary
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+
+**Status:** PROVIDER-NEUTRAL BOUNDARY VERIFIED LOCALLY / LIVE PROVIDER ADAPTER PENDING
+
+**Evidence (27 September 2026):** A proposed internal entry point requires a verifier to authenticate the exact raw provider payload before returning a payment outcome. It checks tenant, payment ID, amount and currency against the immutable payment snapshot, uses conditional state writes, and resumes partially completed confirmation through idempotent subscription, entitlement and invoice steps. There is no public webhook route, checkout initiation, configured provider verifier, or live payment claim. Those remain required before launch.
+
+## Controls 110.5-110.8 Internal Verification
+
+**Evidence (27 September 2026):** Backend TypeScript build passed. Verified-payment fulfillment and future-entitlement access tests passed 4/4. Adjacent subscription, invoice, trainer-access and entitlement regression passed 22/22. Focused lint and git diff --check passed. The provider verifier is an interface exercised with a test fake; no real checkout, signed provider webhook, invoice email delivery or live payment has been verified. Full backend regression and staging release remain pending.
 
 ## Mission Exit Gate
 
