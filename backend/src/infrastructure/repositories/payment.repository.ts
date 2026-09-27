@@ -1,5 +1,6 @@
 import { Payment } from "../../domain/entities/payment.entity";
 import { PaymentRepository } from "../../domain/repositories/payment.repository";
+import { PaymentStatus } from "../../domain/enums/payment-status.enum";
 import { DatabaseService } from "../database/database.service";
 import { PaymentMapper } from "../mappers/payment.mapper";
 
@@ -71,18 +72,57 @@ implements PaymentRepository {
         payment: Payment,
     ): Promise<Payment> {
 
+        const previousStatus = payment.status === PaymentStatus.REFUNDED
+            ? PaymentStatus.CONFIRMED
+            : PaymentStatus.PENDING;
+
+        if(payment.status === PaymentStatus.PENDING) {
+            throw new Error("A payment state transition is required.");
+        }
+
+        if(
+            payment.status === PaymentStatus.CONFIRMED &&
+            (!payment.providerReference || !payment.confirmedAt)
+        ) {
+            throw new Error("Confirmed payment requires provider evidence.");
+        }
+
+        if(
+            payment.status === PaymentStatus.REFUNDED &&
+            (!payment.providerReference || !payment.confirmedAt)
+        ) {
+            throw new Error("Refunded payment requires prior confirmation evidence.");
+        }
+
+        if(
+            (payment.status === PaymentStatus.FAILED ||
+                payment.status === PaymentStatus.CANCELLED) &&
+            (payment.providerReference !== null || payment.confirmedAt !== null)
+        ) {
+            throw new Error("Unconfirmed payment cannot carry confirmation evidence.");
+        }
+
         const result=
             await this.database.prisma.payment.updateMany({
                 where: {
                     id: payment.id,
                     tenantId: payment.tenantId,
+                    status: previousStatus,
                 },
-                data: PaymentMapper.toPersistence(payment),
+                data: {
+                    status: payment.status,
+                    ...(payment.status === PaymentStatus.CONFIRMED
+                        ? {
+                            providerReference: payment.providerReference,
+                            confirmedAt: payment.confirmedAt,
+                        }
+                        : {}),
+                },
             });
 
         if(result.count !== 1) {
             throw new Error(
-                "Payment was not found in the tenant.",
+                "Payment was not found in the tenant or its state changed.",
             );
         }
 

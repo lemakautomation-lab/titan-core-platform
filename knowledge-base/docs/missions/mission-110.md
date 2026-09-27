@@ -50,6 +50,10 @@ Staging release `fd448f3` was built from commit `fd448f35986380994e7a72c0ee35267
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** STATE PERSISTENCE IMPLEMENTED / LOCAL VERIFICATION GREEN / RELEASE PENDING
+
+**Evidence (27 September 2026):** The existing domain model permits `PENDING` to transition to `CONFIRMED`, `FAILED` or `CANCELLED`, and `CONFIRMED` to `REFUNDED`. A proposed repository change makes each tenant-scoped state update conditional on its required prior state, rejects stale competing transitions, and updates only state and confirmation evidence so the payment price snapshot cannot be rewritten by this method. Integration cases for competing confirmation, stale failure, and refund persistence are prepared. The changes were applied in the authoritative repository. Targeted payment tests passed 16/16; the backend TypeScript build and focused lint passed. Full backend serial regression passed 229/229 files and 1405/1405 tests. The Knowledge Base production build and git diff --check passed. There is no payment provider writer or public state-changing route; live provider verification remains pending under Control 110.8. No user-supplied status can grant access.
+
 ### Control 110.4 - Subscription linkage
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

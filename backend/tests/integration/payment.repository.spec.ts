@@ -8,6 +8,7 @@ import {
 
 import { Payment } from "../../src/domain/entities/payment.entity";
 import { BillingInterval } from "../../src/domain/enums/billing-interval.enum";
+import { PaymentStatus } from "../../src/domain/enums/payment-status.enum";
 import { PrismaPaymentRepository } from "../../src/infrastructure/repositories/payment.repository";
 import { DatabaseService } from "../../src/infrastructure/database/database.service";
 import { testPrisma } from "../helpers/prisma-test.client";
@@ -236,6 +237,63 @@ describe("Payment repository tenant isolation", () => {
                 tenantBId,
             ),
         ).toBeNull();
+
+    });
+
+    it("rejects a stale confirmation without overwriting the first provider reference", async () => {
+
+        const created=await repository.create(createPayment());
+        const first=await repository.findById(created.id, tenantAId);
+        const stale=await repository.findById(created.id, tenantAId);
+        if(!first || !stale) throw new Error("Payment fixture missing.");
+
+        first.confirm(`first-${crypto.randomUUID()}`);
+        stale.confirm(`second-${crypto.randomUUID()}`);
+        await repository.update(first);
+
+        await expect(repository.update(stale)).rejects.toThrow(
+            "Payment was not found in the tenant or its state changed.",
+        );
+        const stored=await repository.findById(created.id, tenantAId);
+        expect(stored?.status).toBe(PaymentStatus.CONFIRMED);
+        expect(stored?.providerReference).toBe(first.providerReference);
+
+    });
+
+    it("rejects a stale failure after confirmation", async () => {
+
+        const created=await repository.create(createPayment());
+        const stale=await repository.findById(created.id, tenantAId);
+        if(!stale) throw new Error("Payment fixture missing.");
+        created.confirm(`confirmed-${crypto.randomUUID()}`);
+        await repository.update(created);
+
+        stale.fail();
+        await expect(repository.update(stale)).rejects.toThrow(
+            "Payment was not found in the tenant or its state changed.",
+        );
+        expect((await repository.findById(created.id, tenantAId))?.status)
+            .toBe(PaymentStatus.CONFIRMED);
+
+    });
+
+    it("preserves the confirmed payment snapshot when refunded", async () => {
+
+        const created=await repository.create(createPayment());
+        created.confirm(`refund-${crypto.randomUUID()}`);
+        await repository.update(created);
+        created.refund();
+        await repository.update(created);
+
+        const stored=await repository.findById(created.id, tenantAId);
+        expect(stored?.status).toBe(PaymentStatus.REFUNDED);
+        expect(stored?.providerReference).toBe(created.providerReference);
+        expect(stored?.confirmedAt).not.toBeNull();
+        expect(stored?.amountMinor).toBe(19900);
+
+        await expect(repository.update(created)).rejects.toThrow(
+            "Payment was not found in the tenant or its state changed.",
+        );
 
     });
 
