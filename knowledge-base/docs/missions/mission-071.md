@@ -103,6 +103,12 @@ Combine platform performance data into intelligence.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** LOCAL IMPLEMENTATION VERIFIED / RELEASE PENDING
+
+- Added an internal, read-only aggregation service over the existing Control 71.1 Athlete identity boundary and the independently authorised readers from Controls 71.2–71.8. Each source retains its own tenant, Athlete, relationship and permission checks; a denied source remains `null`, distinct from an authorised empty snapshot. The aggregate does not create a broad intelligence permission, public API, database write, inferred score or new data source.
+- A denied Athlete context invokes no source reader. If any reader fails, the aggregate fails without returning partial intelligence. Existing source record limits and consent rules remain in the underlying readers. A wearable snapshot is only historical authorised data; a live provider connector remains pending under Control 71.5.
+- Focused unit coverage passed locally (1 file, 3 tests). Prisma client generation and backend TypeScript build passed. This is local implementation evidence only; publication, deployment and live provider verification are not claimed.
+
 ## Mission Exit Gate
 
 all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
