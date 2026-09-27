@@ -63,6 +63,14 @@ enum OrganisationOnboardingStatus {
   CANCELLED
   EXPIRED
 }
+enum OrganisationOnboardingPaymentAttemptStatus {
+  PENDING
+  SESSION_CREATED
+  CONFIRMED
+  FAILED
+  CANCELLED
+  EXPIRED
+}
 
 model OrganisationOnboardingPlan {
   id              String          @id @default(uuid())
@@ -92,9 +100,33 @@ model OrganisationOnboardingApplication {
   createdAt          DateTime                     @default(now())
   updatedAt          DateTime                     @updatedAt
   plan               OrganisationOnboardingPlan   @relation(fields: [planId], references: [id], onDelete: Restrict)
+  paymentAttempts OrganisationOnboardingPaymentAttempt[]
 
   @@index([administratorEmail, status])
   @@index([expiresAt, status])
+}
+model OrganisationOnboardingPaymentAttempt {
+  id                           String                                      @id @default(uuid())
+  applicationId                String
+  requestId                    String                                      @unique
+  provider                     String
+  amountMinor                  Int
+  currency                     String
+  billingInterval              BillingInterval
+  status                       OrganisationOnboardingPaymentAttemptStatus @default(PENDING)
+  providerSessionReference     String?
+  providerTransactionReference String?
+  sessionExpiresAt             DateTime?
+  confirmedAt                  DateTime?
+  createdAt                    DateTime                                    @default(now())
+  updatedAt                    DateTime                                    @updatedAt
+
+  application OrganisationOnboardingApplication @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+
+  @@unique([provider, providerSessionReference])
+  @@unique([provider, providerTransactionReference])
+  @@index([applicationId, status])
+  @@index([status, createdAt])
 }
 
 model Sport {
