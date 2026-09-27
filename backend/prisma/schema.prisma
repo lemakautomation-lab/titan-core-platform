@@ -8,30 +8,30 @@ datasource db {
 }
 
 model Tenant {
-  id                      String                   @id @default(uuid())
-  name                    String
-  slug                    String                   @unique
-  status                  RecordStatus             @default(ACTIVE)
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime                 @updatedAt
-  auditLogs               AuditLog[]
-  organisations           Organisation[]
-  sports                  Sport[]
-  users                   User[]
-  roles                   Role[]
-  permissions             Permission[]
-  athletes                Athlete[]
+  id                       String                         @id @default(uuid())
+  name                     String
+  slug                     String                         @unique
+  status                   RecordStatus                   @default(ACTIVE)
+  createdAt                DateTime                       @default(now())
+  updatedAt                DateTime                       @updatedAt
+  auditLogs                AuditLog[]
+  organisations            Organisation[]
+  sports                   Sport[]
+  users                    User[]
+  roles                    Role[]
+  permissions              Permission[]
+  athletes                 Athlete[]
   athleteSportRequirements AthleteSportRequirement[]
   performanceTestProtocols PerformanceTestProtocol[]
-  performanceTestResults AthletePerformanceTestResult[]
-  wearableConnections WearableConnection[]
-  wearableObservations WearableObservation[]
-  mealPlans               MealPlan[]
-  athleteRelationships    AthleteRelationship[]
-  athleteDigitalTwins     AthleteDigitalTwin[]
-  performanceMetrics      PerformanceMetric[]
-  performanceMeasurements PerformanceMeasurement[]
-  exercises               Exercise[]
+  performanceTestResults   AthletePerformanceTestResult[]
+  wearableConnections      WearableConnection[]
+  wearableObservations     WearableObservation[]
+  mealPlans                MealPlan[]
+  athleteRelationships     AthleteRelationship[]
+  athleteDigitalTwins      AthleteDigitalTwin[]
+  performanceMetrics       PerformanceMetric[]
+  performanceMeasurements  PerformanceMeasurement[]
+  exercises                Exercise[]
 
   workoutProgrammes         WorkoutProgramme[]
   products                  Product[]
@@ -43,6 +43,8 @@ model Tenant {
   trainingStresses          TrainingStress[]
   payments                  Payment[]                  @relation("PaymentTenant")
   billingAccounts           BillingAccount[]
+  billingInvoices           BillingInvoice[]           @relation("BillingInvoiceTenant")
+  billingInvoiceCounters    BillingInvoiceCounter[]    @relation("BillingInvoiceCounterTenant")
   userTypeEntitlements      UserTypeEntitlement[]      @relation("EntitlementTenant")
   passwordResetTokens       PasswordResetToken[]
   accountAssistanceRequests AccountAssistanceRequest[]
@@ -50,22 +52,22 @@ model Tenant {
   trainerSessionSchedules   TrainerSessionSchedule[]
   coachSquads               CoachSquad[]
   coachTeams                CoachTeam[]
-  coachSquadAthletes CoachSquadAthlete[]
+  coachSquadAthletes        CoachSquadAthlete[]
 }
 
 model Sport {
-  id                 String              @id @default(uuid())
-  tenantId           String
-  name               String
-  slug               String
-  status             RecordStatus        @default(ACTIVE)
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  tenant             Tenant              @relation(fields: [tenantId], references: [id])
-  performanceMetrics PerformanceMetric[] @relation("PerformanceMetricSportTenant")
-  workoutProgrammes  WorkoutProgramme[]
-  exercises          Exercise[]          @relation("ExerciseSportTenant")
-  athleteRequirements AthleteSportRequirement[]
+  id                       String                    @id @default(uuid())
+  tenantId                 String
+  name                     String
+  slug                     String
+  status                   RecordStatus              @default(ACTIVE)
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
+  tenant                   Tenant                    @relation(fields: [tenantId], references: [id])
+  performanceMetrics       PerformanceMetric[]       @relation("PerformanceMetricSportTenant")
+  workoutProgrammes        WorkoutProgramme[]
+  exercises                Exercise[]                @relation("ExerciseSportTenant")
+  athleteRequirements      AthleteSportRequirement[]
   performanceTestProtocols PerformanceTestProtocol[]
 
   @@unique([tenantId, slug])
@@ -116,11 +118,12 @@ model User {
   athletes                 Athlete[]
   payments                 Payment[]                @relation("PaymentUserTenant")
   billingAccount           BillingAccount?
+  billingInvoices          BillingInvoice[]         @relation("BillingInvoiceUserTenant")
   userTypeEntitlements     UserTypeEntitlement[]    @relation("EntitlementUserTenant")
   passwordResetTokens      PasswordResetToken[]
   trainerProfile           TrainerProfile?
   trainerSessionSchedules  TrainerSessionSchedule[] @relation("TrainerSessionScheduleTrainerTenant")
-  wearableConsents         WearableConnection[] @relation("WearableConsentActor")
+  wearableConsents         WearableConnection[]     @relation("WearableConsentActor")
   coachSquads              CoachSquad[]             @relation("CoachSquadCoachTenant")
 
   coachTeams CoachTeam[] @relation("CoachTeamCoachTenant")
@@ -165,8 +168,8 @@ model CoachSquad {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  coach  User   @relation("CoachSquadCoachTenant", fields: [coachUserId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  tenant   Tenant              @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  coach    User                @relation("CoachSquadCoachTenant", fields: [coachUserId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
   athletes CoachSquadAthlete[]
 
   @@unique([id, tenantId], map: "CoachSquad_id_tenantId_key")
@@ -175,7 +178,7 @@ model CoachSquad {
 }
 
 model Athlete {
-  id                      String                    @id @default(uuid())
+  id                      String                         @id @default(uuid())
   tenantId                String
   organisationId          String?
   userId                  String?
@@ -184,18 +187,18 @@ model Athlete {
   dateOfBirth             DateTime?
   bodyModelType           PerformanceBodyModelType?
   countryCode             String?
-  status                  RecordStatus              @default(ACTIVE)
-  createdAt               DateTime                  @default(now())
-  updatedAt               DateTime                  @updatedAt
-  tenant                  Tenant                    @relation(fields: [tenantId], references: [id])
-  organisation            Organisation?             @relation(fields: [organisationId], references: [id])
-  user                    User?                     @relation(fields: [userId], references: [id])
+  status                  RecordStatus                   @default(ACTIVE)
+  createdAt               DateTime                       @default(now())
+  updatedAt               DateTime                       @updatedAt
+  tenant                  Tenant                         @relation(fields: [tenantId], references: [id])
+  organisation            Organisation?                  @relation(fields: [organisationId], references: [id])
+  user                    User?                          @relation(fields: [userId], references: [id])
   relationships           AthleteRelationship[]
-  coachSquadMemberships    CoachSquadAthlete[]
+  coachSquadMemberships   CoachSquadAthlete[]
   athleteDigitalTwins     AthleteDigitalTwin[]
-  performanceMetrics      PerformanceMetric[]       @relation("PerformanceMetricAthleteTenant")
-  performanceMeasurements PerformanceMeasurement[]  @relation("PerformanceMeasurementAthleteTenant")
-  workoutProgrammes       WorkoutProgramme[]        @relation("WorkoutProgrammeAthleteTenant")
+  performanceMetrics      PerformanceMetric[]            @relation("PerformanceMetricAthleteTenant")
+  performanceMeasurements PerformanceMeasurement[]       @relation("PerformanceMeasurementAthleteTenant")
+  workoutProgrammes       WorkoutProgramme[]             @relation("WorkoutProgrammeAthleteTenant")
   nutritionPlans          NutritionPlan[]
   mealPlans               MealPlan[]
   shoppingLists           ShoppingList[]
@@ -203,13 +206,13 @@ model Athlete {
   sleepTrackings          SleepTracking[]
   restTrackings           RestTracking[]
   trainingStresses        TrainingStress[]
-  goals                   AthleteGoal[]             @relation("AthleteGoalAthleteTenant")
+  goals                   AthleteGoal[]                  @relation("AthleteGoalAthleteTenant")
   sportRequirements       AthleteSportRequirement[]
   performanceTestResults  AthletePerformanceTestResult[]
   wearableConnections     WearableConnection[]
   wearableObservations    WearableObservation[]
-  bodyMeasurements        AthleteBodyMeasurement[]  @relation("AthleteBodyMeasurementAthleteTenant")
-  trainerSessionSchedules TrainerSessionSchedule[]  @relation("TrainerSessionScheduleAthleteTenant")
+  bodyMeasurements        AthleteBodyMeasurement[]       @relation("AthleteBodyMeasurementAthleteTenant")
+  trainerSessionSchedules TrainerSessionSchedule[]       @relation("TrainerSessionScheduleAthleteTenant")
 
   @@unique([id, tenantId], map: "Athlete_id_tenantId_key")
   @@index([tenantId])
@@ -217,39 +220,41 @@ model Athlete {
   @@index([userId])
 }
 
-/** Explicit, tenant-scoped assignment of a governed sport target to an Athlete. */
+/**
+ * Explicit, tenant-scoped assignment of a governed sport target to an Athlete.
+ */
 model AthleteSportRequirement {
-  id              String       @id @default(uuid())
-  tenantId        String
-  athleteId       String
-  sportId         String
-  code            String
-  targetValue     Decimal      @db.Decimal(20, 6)
-  unit            String
-  version         Int
-  status          RecordStatus @default(ACTIVE)
-  createdAt       DateTime     @default(now())
-  tenant          Tenant       @relation(fields: [tenantId], references: [id])
-  athlete         Athlete      @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  sport           Sport        @relation(fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  id          String       @id @default(uuid())
+  tenantId    String
+  athleteId   String
+  sportId     String
+  code        String
+  targetValue Decimal      @db.Decimal(20, 6)
+  unit        String
+  version     Int
+  status      RecordStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  athlete     Athlete      @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  sport       Sport        @relation(fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
 
   @@unique([tenantId, athleteId, sportId, code, version])
   @@index([tenantId, athleteId, status])
 }
 
 model PerformanceTestProtocol {
-  id          String       @id @default(uuid())
-  tenantId    String
-  sportId     String
-  code        String
-  name        String
-  unit        String
-  version     Int
-  status      RecordStatus @default(ACTIVE)
-  createdAt   DateTime     @default(now())
-  tenant      Tenant       @relation(fields: [tenantId], references: [id])
-  sport       Sport        @relation(fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  results     AthletePerformanceTestResult[]
+  id        String                         @id @default(uuid())
+  tenantId  String
+  sportId   String
+  code      String
+  name      String
+  unit      String
+  version   Int
+  status    RecordStatus                   @default(ACTIVE)
+  createdAt DateTime                       @default(now())
+  tenant    Tenant                         @relation(fields: [tenantId], references: [id])
+  sport     Sport                          @relation(fields: [sportId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  results   AthletePerformanceTestResult[]
 
   @@unique([id, tenantId])
   @@unique([tenantId, sportId, code, version])
@@ -257,18 +262,18 @@ model PerformanceTestProtocol {
 }
 
 model AthletePerformanceTestResult {
-  id               String   @id @default(uuid())
+  id               String                         @id @default(uuid())
   tenantId         String
   athleteId        String
   protocolId       String
-  value            Decimal  @db.Decimal(20, 6)
+  value            Decimal                        @db.Decimal(20, 6)
   recordedAt       DateTime
-  correctsResultId String?  @unique
-  createdAt        DateTime @default(now())
-  tenant           Tenant   @relation(fields: [tenantId], references: [id])
-  athlete          Athlete  @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  protocol         PerformanceTestProtocol @relation(fields: [protocolId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
-  corrects         AthletePerformanceTestResult? @relation("PerformanceTestCorrection", fields: [correctsResultId, tenantId, athleteId, protocolId], references: [id, tenantId, athleteId, protocolId], onDelete: Restrict, onUpdate: Cascade)
+  correctsResultId String?                        @unique
+  createdAt        DateTime                       @default(now())
+  tenant           Tenant                         @relation(fields: [tenantId], references: [id])
+  athlete          Athlete                        @relation(fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  protocol         PerformanceTestProtocol        @relation(fields: [protocolId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  corrects         AthletePerformanceTestResult?  @relation("PerformanceTestCorrection", fields: [correctsResultId, tenantId, athleteId, protocolId], references: [id, tenantId, athleteId, protocolId], onDelete: Restrict, onUpdate: Cascade)
   correctedBy      AthletePerformanceTestResult[] @relation("PerformanceTestCorrection")
 
   @@unique([id, tenantId, athleteId, protocolId])
@@ -397,40 +402,44 @@ model Session {
   @@index([userId])
 }
 
-/** Consent and verified provider identity are separate from free-form source labels. */
+/**
+ * Consent and verified provider identity are separate from free-form source labels.
+ */
 model WearableConnection {
-  id              String   @id @default(uuid())
-  tenantId        String
-  athleteId       String
-  provider        String
+  id                    String                @id @default(uuid())
+  tenantId              String
+  athleteId             String
+  provider              String
   providerSubjectDigest String
-  consentedById   String
-  consentedAt     DateTime @default(now())
-  revokedAt       DateTime?
-  createdAt       DateTime @default(now())
-  tenant          Tenant   @relation(fields: [tenantId], references: [id])
-  athlete         Athlete  @relation(fields: [athleteId, tenantId], references: [id, tenantId])
-  consentedBy     User     @relation("WearableConsentActor", fields: [consentedById, tenantId], references: [id, tenantId])
-  observations    WearableObservation[]
+  consentedById         String
+  consentedAt           DateTime              @default(now())
+  revokedAt             DateTime?
+  createdAt             DateTime              @default(now())
+  tenant                Tenant                @relation(fields: [tenantId], references: [id])
+  athlete               Athlete               @relation(fields: [athleteId, tenantId], references: [id, tenantId])
+  consentedBy           User                  @relation("WearableConsentActor", fields: [consentedById, tenantId], references: [id, tenantId])
+  observations          WearableObservation[]
 
   @@unique([id, tenantId, athleteId])
   @@index([tenantId, athleteId, revokedAt])
 }
 
-/** Immutable provider observations, retained for audit but hidden after revocation. */
+/**
+ * Immutable provider observations, retained for audit but hidden after revocation.
+ */
 model WearableObservation {
-  id               String   @id @default(uuid())
+  id               String             @id @default(uuid())
   tenantId         String
   athleteId        String
   connectionId     String
   providerRecordId String
   metricCode       String
-  value            Decimal  @db.Decimal(20, 6)
+  value            Decimal            @db.Decimal(20, 6)
   unit             String
   observedAt       DateTime
-  ingestedAt       DateTime @default(now())
-  tenant           Tenant   @relation(fields: [tenantId], references: [id])
-  athlete          Athlete  @relation(fields: [athleteId, tenantId], references: [id, tenantId])
+  ingestedAt       DateTime           @default(now())
+  tenant           Tenant             @relation(fields: [tenantId], references: [id])
+  athlete          Athlete            @relation(fields: [athleteId, tenantId], references: [id, tenantId])
   connection       WearableConnection @relation(fields: [connectionId, tenantId, athleteId], references: [id, tenantId, athleteId])
 
   @@unique([connectionId, providerRecordId])
@@ -514,6 +523,7 @@ model CoachSquadAthlete {
   @@index([tenantId, squadId])
   @@index([tenantId, athleteId])
 }
+
 model AthleteDigitalTwin {
   id        String       @id @default(uuid())
   tenantId  String
@@ -1046,6 +1056,7 @@ model Payment {
   product      Product              @relation("PaymentProductTenant", fields: [productId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
   productPrice ProductPrice         @relation("PaymentPriceProduct", fields: [productPriceId, productId], references: [id, productId], onDelete: Restrict, onUpdate: Cascade)
   entitlement  UserTypeEntitlement? @relation("EntitlementPaymentOwnership")
+  invoice      BillingInvoice?      @relation("BillingInvoicePaymentOwnership")
 
   @@unique([tenantId, providerReference])
   @@unique([id, tenantId, userId, productId], map: "Payment_id_tenantId_userId_productId_key")
@@ -1056,7 +1067,9 @@ model Payment {
   @@index([status])
 }
 
-/** Billing identity only. It never grants an entitlement or confirms a payment. */
+/**
+ * Billing identity only. It never grants an entitlement or confirms a payment.
+ */
 model BillingAccount {
   id        String   @id @default(uuid())
   tenantId  String
@@ -1148,4 +1161,77 @@ model CoachTeam {
   @@unique([id, tenantId], map: "CoachTeam_id_tenantId_key")
   @@index([tenantId, coachUserId], map: "CoachTeam_tenantId_coachUserId_idx")
   @@index([tenantId, coachUserId, status], map: "CoachTeam_tenantId_coachUserId_status_idx")
+}
+
+enum InvoiceDeliveryStatus {
+  PENDING
+  SENDING
+  SENT
+  FAILED
+}
+
+model BillingInvoiceCounter {
+  tenantId     String
+  issueYear    Int
+  nextSequence Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant Tenant @relation("BillingInvoiceCounterTenant", fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([tenantId, issueYear])
+}
+
+model BillingInvoice {
+  id             String @id @default(uuid())
+  tenantId       String
+  userId         String
+  paymentId      String
+  productId      String
+  productPriceId String
+
+  invoiceNumber String
+  issueYear     Int
+  sequence      Int
+
+  recipientEmail    String
+  recipientName     String?
+  accountsCopyEmail String
+
+  issuerName               String
+  issuerRegistrationNumber String?
+  issuerAddressText        String?
+
+  productName              String
+  amountMinor              Int
+  currency                 String
+  billingInterval          BillingInterval
+  paymentProviderReference String?
+  confirmedAt              DateTime
+  issuedAt                 DateTime        @default(now())
+
+  pdfContent Bytes
+  pdfSha256  String
+
+  deliveryStatus            InvoiceDeliveryStatus @default(PENDING)
+  deliveryAttempts          Int                   @default(0)
+  deliveryProvider          String?
+  deliveryProviderMessageId String?
+  deliveryLastAttemptAt     DateTime?
+  deliverySentAt            DateTime?
+  deliveryLastError         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant  Tenant  @relation("BillingInvoiceTenant", fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user    User    @relation("BillingInvoiceUserTenant", fields: [userId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  payment Payment @relation("BillingInvoicePaymentOwnership", fields: [paymentId, tenantId, userId, productId], references: [id, tenantId, userId, productId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([tenantId, paymentId], map: "BillingInvoice_tenantId_paymentId_key")
+  @@unique([paymentId, tenantId, userId, productId], map: "BillingInvoice_payment_ownership_key")
+  @@unique([tenantId, invoiceNumber], map: "BillingInvoice_tenantId_invoiceNumber_key")
+  @@unique([tenantId, issueYear, sequence], map: "BillingInvoice_tenantId_issueYear_sequence_key")
+  @@index([tenantId, userId])
+  @@index([tenantId, deliveryStatus])
 }
