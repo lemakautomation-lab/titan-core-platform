@@ -97,6 +97,11 @@ model OrganisationOnboardingApplication {
   currency           String
   billingInterval    BillingInterval
   status             OrganisationOnboardingStatus @default(PENDING_VERIFICATION)
+  provisionedTenantId String? @unique
+  provisionedOrganisationId String? @unique
+  provisionedAdministratorId String? @unique
+  provisionedPaymentAttemptId String? @unique
+  provisionedAt DateTime?
   expiresAt          DateTime
   createdAt          DateTime                     @default(now())
   updatedAt          DateTime                     @updatedAt

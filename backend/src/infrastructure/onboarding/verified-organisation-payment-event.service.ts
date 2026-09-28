@@ -117,6 +117,7 @@ export class VerifiedOrganisationPaymentEventService {
 
         if(event.outcome === "CONFIRMED") {
             if(
+                attempt.status !== "CONFIRMED" &&
                 attempt.application.expiresAt.getTime() <=
                 Date.now()
             ) {
@@ -149,8 +150,16 @@ export class VerifiedOrganisationPaymentEventService {
                         if(
                             current.providerTransactionReference !==
                                 transactionReference ||
-                            current.application.status !==
-                                "PAYMENT_CONFIRMED"
+                            !(
+                                current.application.status ===
+                                    "PAYMENT_CONFIRMED" ||
+                                (
+                                    current.application.status ===
+                                        "PROVISIONED" &&
+                                    current.application.provisionedPaymentAttemptId ===
+                                        current.id
+                                )
+                            )
                         ) {
                             throw new Error(
                                 "Organisation payment is not confirmable with this provider reference.",
@@ -158,7 +167,7 @@ export class VerifiedOrganisationPaymentEventService {
                         }
 
                         return {
-                            status: "PAYMENT_CONFIRMED" as const,
+                            status: current.application.status,
                             applicationId:
                                 current.applicationId,
                             attemptId:
@@ -242,12 +251,20 @@ export class VerifiedOrganisationPaymentEventService {
                                 "CONFIRMED" &&
                             settled.providerTransactionReference ===
                                 transactionReference &&
-                            settled.application.status ===
-                                "PAYMENT_CONFIRMED"
+                            (
+                                settled.application.status ===
+                                    "PAYMENT_CONFIRMED" ||
+                                (
+                                    settled.application.status ===
+                                        "PROVISIONED" &&
+                                    settled.application.provisionedPaymentAttemptId ===
+                                        settled.id
+                                )
+                            )
                         ) {
                             return {
                                 status:
-                                    "PAYMENT_CONFIRMED" as const,
+                                    settled.application.status,
                                 applicationId:
                                     settled.applicationId,
                                 attemptId:
