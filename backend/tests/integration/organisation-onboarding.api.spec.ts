@@ -10,15 +10,25 @@ import { randomUUID } from "node:crypto";
 
 import { DatabaseService } from "../../src/infrastructure/database/database.service";
 import { createOrganisationOnboardingRoutes } from "../../src/modules/organisation-onboarding/organisation-onboarding.routes";
+import { OrganisationVerificationEmailDelivery } from "../../src/infrastructure/onboarding/organisation-email-verification.service";
 import { testPrisma } from "../helpers/prisma-test.client";
 
 const database = new DatabaseService();
+const verificationEmails: Array<{ recipientEmail: string; verificationUrl: string }> = [];
+const delivery: OrganisationVerificationEmailDelivery = {
+    async deliver(message) {
+        verificationEmails.push({
+            recipientEmail: message.recipientEmail,
+            verificationUrl: message.verificationUrl,
+        });
+    },
+};
 
 const app = express();
 app.use(express.json());
 app.use(
     "/api/v1/organisation-onboarding",
-    createOrganisationOnboardingRoutes(database),
+    createOrganisationOnboardingRoutes(database, delivery),
 );
 
 const planIds: string[] = [];
@@ -51,6 +61,9 @@ async function createPlan(
 }
 
 afterAll(async () => {
+    await testPrisma.organisationOnboardingEmailVerificationToken.deleteMany({
+        where: { application: { requestId: { in: requestIds } } },
+    });
     await testPrisma.organisationOnboardingApplication.deleteMany({
         where: {
             requestId: {
@@ -210,6 +223,30 @@ describe(
                 ).toBe(
                     before.users,
                 );
+                const firstToken = new URL(verificationEmails.at(-2)!.verificationUrl)
+                    .searchParams.get("token");
+                const secondEmail = verificationEmails.at(-1)!;
+                expect(secondEmail.recipientEmail).toBe("admin@example.test");
+                expect(first.body).not.toHaveProperty("token");
+                await request(app)
+                    .post("/api/v1/organisation-onboarding/verify-email")
+                    .send({ token: firstToken })
+                    .expect(400);
+                const token = new URL(secondEmail.verificationUrl)
+                    .searchParams.get("token");
+                const verified = await request(app)
+                    .post("/api/v1/organisation-onboarding/verify-email")
+                    .send({ token })
+                    .expect(200);
+                expect(verified.body).toMatchObject({
+                    applicationId: first.body.application.id,
+                    status: "PENDING_PAYMENT",
+                });
+                await request(app)
+                    .post("/api/v1/organisation-onboarding/verify-email")
+                    .send({ token })
+                    .expect(400);
+                expect(await testPrisma.tenant.count()).toBe(before.tenants);
             },
         );
 

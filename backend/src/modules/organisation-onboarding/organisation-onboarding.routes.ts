@@ -1,8 +1,18 @@
 ﻿import { Router } from "express";
 import rateLimit from "express-rate-limit";
+import { Resend } from "resend";
 
 import { DatabaseService } from "../../infrastructure/database/database.service";
 import { OrganisationRegistrationService } from "../../infrastructure/onboarding/organisation-registration.service";
+import {
+    OrganisationEmailVerificationService,
+    OrganisationVerificationEmailDelivery,
+} from "../../infrastructure/onboarding/organisation-email-verification.service";
+import { ResendOrganisationVerificationEmailDelivery } from "../../infrastructure/email/resend-organisation-verification-email-delivery";
+import {
+    getPasswordResetFrontendUrl,
+    getResendPasswordResetConfig,
+} from "../../config/password-reset.config";
 
 const organisationRegistrationLimiter = rateLimit({
     windowMs: 60_000,
@@ -16,10 +26,26 @@ const organisationRegistrationLimiter = rateLimit({
 
 export function createOrganisationOnboardingRoutes(
     database: DatabaseService,
+    verificationDelivery?: OrganisationVerificationEmailDelivery,
 ) {
     const router = Router();
     const registrationService =
         new OrganisationRegistrationService(database);
+    const emailConfig = verificationDelivery ? null : getResendPasswordResetConfig();
+    const delivery = verificationDelivery ??
+        (emailConfig
+            ? new ResendOrganisationVerificationEmailDelivery(
+                new Resend(emailConfig.apiKey),
+                emailConfig.fromEmail,
+            )
+            : null);
+    const verificationService = delivery
+        ? new OrganisationEmailVerificationService(
+            database,
+            delivery,
+            getPasswordResetFrontendUrl(),
+        )
+        : null;
 
     router.get(
         "/plans",
@@ -90,6 +116,14 @@ export function createOrganisationOnboardingRoutes(
                         planId:
                             request.body?.planId,
                     });
+                if (application.status === "PENDING_VERIFICATION") {
+                    if (!verificationService) {
+                        return response.status(503).json({
+                            message: "Organisation verification email is temporarily unavailable.",
+                        });
+                    }
+                    await verificationService.issue(application.id);
+                }
 
                 response.setHeader(
                     "Cache-Control",
@@ -155,6 +189,27 @@ export function createOrganisationOnboardingRoutes(
                 return response.status(500).json({
                     message:
                         "Organisation registration could not be completed.",
+                });
+            }
+        },
+    );
+
+    router.post(
+        "/verify-email",
+        organisationRegistrationLimiter,
+        async (request, response) => {
+            response.setHeader("Cache-Control", "no-store");
+            if (!verificationService) {
+                return response.status(503).json({
+                    message: "Organisation email verification is temporarily unavailable.",
+                });
+            }
+            try {
+                const result = await verificationService.verify(request.body?.token);
+                return response.status(200).json(result);
+            } catch {
+                return response.status(400).json({
+                    message: "Verification token is invalid or expired.",
                 });
             }
         },
