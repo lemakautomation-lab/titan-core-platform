@@ -1,0 +1,2 @@
+ALTER TYPE "OrganisationOnboardingStatus"
+    ADD VALUE 'PAYMENT_CONFIRMED' BEFORE 'PROVISIONED';

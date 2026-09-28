@@ -59,6 +59,7 @@ model Tenant {
 enum OrganisationOnboardingStatus {
   PENDING_VERIFICATION
   PENDING_PAYMENT
+  PAYMENT_CONFIRMED
   PROVISIONED
   CANCELLED
   EXPIRED
