@@ -10,6 +10,11 @@ import {
 } from "../../infrastructure/onboarding/organisation-email-verification.service";
 import { ResendOrganisationVerificationEmailDelivery } from "../../infrastructure/email/resend-organisation-verification-email-delivery";
 import {
+    OrganisationAdministratorSetupEmailDelivery,
+    OrganisationAdministratorSetupService,
+} from "../../infrastructure/onboarding/organisation-administrator-setup.service";
+import { ResendOrganisationAdministratorSetupEmailDelivery } from "../../infrastructure/email/resend-organisation-administrator-setup-email-delivery";
+import {
     getPasswordResetFrontendUrl,
     getResendPasswordResetConfig,
 } from "../../config/password-reset.config";
@@ -27,6 +32,7 @@ const organisationRegistrationLimiter = rateLimit({
 export function createOrganisationOnboardingRoutes(
     database: DatabaseService,
     verificationDelivery?: OrganisationVerificationEmailDelivery,
+    administratorSetupDelivery?: OrganisationAdministratorSetupEmailDelivery,
 ) {
     const router = Router();
     const registrationService =
@@ -43,6 +49,23 @@ export function createOrganisationOnboardingRoutes(
         ? new OrganisationEmailVerificationService(
             database,
             delivery,
+            getPasswordResetFrontendUrl(),
+        )
+        : null;
+    const setupEmailConfig = administratorSetupDelivery
+        ? null
+        : emailConfig ?? getResendPasswordResetConfig();
+    const setupDelivery = administratorSetupDelivery ??
+        (setupEmailConfig
+            ? new ResendOrganisationAdministratorSetupEmailDelivery(
+                new Resend(setupEmailConfig.apiKey),
+                setupEmailConfig.fromEmail,
+            )
+            : null);
+    const setupService = setupDelivery
+        ? new OrganisationAdministratorSetupService(
+            database,
+            setupDelivery,
             getPasswordResetFrontendUrl(),
         )
         : null;
@@ -210,6 +233,56 @@ export function createOrganisationOnboardingRoutes(
             } catch {
                 return response.status(400).json({
                     message: "Verification token is invalid or expired.",
+                });
+            }
+        },
+    );
+
+    router.post(
+        "/request-administrator-setup",
+        organisationRegistrationLimiter,
+        async (request, response) => {
+            response.setHeader("Cache-Control", "no-store");
+            if (!setupService) {
+                return response.status(503).json({
+                    message: "Administrator setup email is temporarily unavailable.",
+                });
+            }
+            try {
+                await setupService.request(
+                    request.body?.applicationId,
+                    request.body?.administratorEmail,
+                );
+                return response.status(202).json({
+                    message: "If the application is eligible, setup instructions will be emailed.",
+                });
+            } catch {
+                return response.status(503).json({
+                    message: "Administrator setup email is temporarily unavailable.",
+                });
+            }
+        },
+    );
+
+    router.post(
+        "/complete-administrator-setup",
+        organisationRegistrationLimiter,
+        async (request, response) => {
+            response.setHeader("Cache-Control", "no-store");
+            if (!setupService) {
+                return response.status(503).json({
+                    message: "Administrator setup is temporarily unavailable.",
+                });
+            }
+            try {
+                const result = await setupService.complete(
+                    request.body?.token,
+                    request.body?.newPassword,
+                );
+                return response.status(200).json(result);
+            } catch {
+                return response.status(400).json({
+                    message: "Administrator setup is invalid or expired.",
                 });
             }
         },

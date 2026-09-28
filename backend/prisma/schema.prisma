@@ -108,11 +108,26 @@ model OrganisationOnboardingApplication {
   plan               OrganisationOnboardingPlan   @relation(fields: [planId], references: [id], onDelete: Restrict)
   paymentAttempts OrganisationOnboardingPaymentAttempt[]
   emailVerificationTokens OrganisationOnboardingEmailVerificationToken[]
+  administratorSetupTokens OrganisationAdministratorSetupToken[]
 
   @@index([administratorEmail, status])
   @@index([expiresAt, status])
 }
 model OrganisationOnboardingEmailVerificationToken {
+  id            String   @id @default(uuid())
+  applicationId String
+  tokenHash     String   @unique
+  expiresAt     DateTime
+  consumedAt    DateTime?
+  revokedAt     DateTime?
+  createdAt     DateTime @default(now())
+
+  application OrganisationOnboardingApplication @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+
+  @@index([applicationId, consumedAt, revokedAt])
+}
+
+model OrganisationAdministratorSetupToken {
   id            String   @id @default(uuid())
   applicationId String
   tokenHash     String   @unique
