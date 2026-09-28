@@ -62,16 +62,21 @@ describe("Mission 111 administrator setup and paid activation", () => {
         const application = await createApplication();
         const provisioned = await provisioning.provision(application.id);
         tenants.push(provisioned.tenantId);
+        const role = await testPrisma.role.findFirstOrThrow({
+            where: { tenantId: provisioned.tenantId, name: "Organisation Administrator" },
+        });
+        const permission = await testPrisma.permission.findUniqueOrThrow({
+            where: { tenantId_code: { tenantId: provisioned.tenantId, code: "organisations.read" } },
+        });
+        await testPrisma.rolePermission.delete({
+            where: { tenantId_roleId_permissionId: {
+                tenantId: provisioned.tenantId, roleId: role.id, permissionId: permission.id,
+            } },
+        });
         await service.request(application.id, application.administratorEmail);
         const unprivilegedToken = tokenFromLastEmail();
         await expect(service.complete(unprivilegedToken, "SecurePassword123!")).rejects.toThrow();
         expect((await testPrisma.tenant.findUniqueOrThrow({ where: { id: provisioned.tenantId } })).status).toBe("INACTIVE");
-        const role = await testPrisma.role.findFirstOrThrow({
-            where: { tenantId: provisioned.tenantId, name: "Organisation Administrator" },
-        });
-        const permission = await testPrisma.permission.create({
-            data: { tenantId: provisioned.tenantId, code: "organisation.read", name: "Read organisation" },
-        });
         await testPrisma.rolePermission.create({
             data: { tenantId: provisioned.tenantId, roleId: role.id, permissionId: permission.id },
         });

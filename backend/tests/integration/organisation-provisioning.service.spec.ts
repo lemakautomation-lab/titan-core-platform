@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { afterAll, describe, expect, it } from "vitest";
 import { DatabaseService } from "../../src/infrastructure/database/database.service";
 import { OrganisationProvisioningService } from "../../src/infrastructure/onboarding/organisation-provisioning.service";
+import { INITIAL_ORGANISATION_ADMINISTRATOR_PERMISSIONS } from "../../src/infrastructure/onboarding/organisation-provisioning.service";
 import { VerifiedOrganisationPaymentEventService } from "../../src/infrastructure/onboarding/verified-organisation-payment-event.service";
 import { testPrisma } from "../helpers/prisma-test.client";
 
@@ -56,8 +57,10 @@ async function application(withPayment = true, slug = `provision-${randomUUID()}
 }
 
 afterAll(async () => {
+    await testPrisma.rolePermission.deleteMany({ where: { tenantId: { in: tenants } } });
     await testPrisma.userRole.deleteMany({ where: { user: { tenantId: { in: tenants } } } });
     await testPrisma.role.deleteMany({ where: { tenantId: { in: tenants } } });
+    await testPrisma.permission.deleteMany({ where: { tenantId: { in: tenants } } });
     await testPrisma.user.deleteMany({ where: { tenantId: { in: tenants } } });
     await testPrisma.organisation.deleteMany({ where: { tenantId: { in: tenants } } });
     await testPrisma.organisationOnboardingPaymentAttempt.deleteMany({ where: { applicationId: { in: applications } } });
@@ -106,6 +109,14 @@ describe("Organisation provisioning after verified payment", () => {
             status: "INACTIVE",
             userRoles: [{ role: { tenantId: first.tenantId, name: "Organisation Administrator" } }],
         });
+        const grants = await testPrisma.rolePermission.findMany({
+            where: { tenantId: first.tenantId },
+            include: { permission: true, role: true },
+        });
+        expect(grants.map(grant => grant.permission.code).sort())
+            .toEqual([...INITIAL_ORGANISATION_ADMINISTRATOR_PERMISSIONS].sort());
+        expect(grants.every(grant => grant.role.name === "Organisation Administrator" &&
+            grant.permission.tenantId === first.tenantId)).toBe(true);
     }, 30000);
 
     it("rolls back the state claim when no matching confirmed payment exists", async () => {

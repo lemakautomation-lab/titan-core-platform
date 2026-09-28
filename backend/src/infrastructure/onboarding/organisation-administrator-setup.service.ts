@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { DatabaseService } from "../database/database.service";
 import { passwordSecurity } from "../../security/bcrypt";
 import { PasswordValidator } from "../../shared/validation/validators/password.validator";
+import { INITIAL_ORGANISATION_ADMINISTRATOR_PERMISSIONS } from "./organisation-provisioning.service";
 
 export interface OrganisationAdministratorSetupEmailDelivery {
     deliver(input: Readonly<{
@@ -119,7 +120,7 @@ export class OrganisationAdministratorSetupService {
                 tx.organisationOnboardingPaymentAttempt.findUnique({ where: { id: application.provisionedPaymentAttemptId } }),
                 tx.tenant.findUnique({ where: { id: application.provisionedTenantId } }),
                 tx.organisation.findUnique({ where: { id: application.provisionedOrganisationId } }),
-                tx.user.findUnique({ where: { id: application.provisionedAdministratorId }, include: { userRoles: { include: { role: { include: { permissions: true } } } } } }),
+                tx.user.findUnique({ where: { id: application.provisionedAdministratorId }, include: { userRoles: { include: { role: { include: { permissions: { include: { permission: true } } } } } } } }),
             ]);
             if (!payment || payment.applicationId !== application.id || payment.status !== "CONFIRMED" ||
                 !payment.confirmedAt || !payment.providerTransactionReference ||
@@ -131,7 +132,10 @@ export class OrganisationAdministratorSetupService {
                 administrator.email !== application.administratorEmail ||
                 !administrator.userRoles.some(link => link.role.tenantId === tenant.id &&
                     link.role.name === "Organisation Administrator" &&
-                    link.role.permissions.length > 0)) throw new Error(INVALID);
+                    INITIAL_ORGANISATION_ADMINISTRATOR_PERMISSIONS.every(code =>
+                        link.role.permissions.some(grant => grant.tenantId === tenant.id &&
+                            grant.permission.tenantId === tenant.id &&
+                            grant.permission.code === code)))) throw new Error(INVALID);
             const claimed = await tx.organisationAdministratorSetupToken.updateMany({
                 where: { id: token.id, consumedAt: null, revokedAt: null, expiresAt: { gt: now } },
                 data: { consumedAt: now },

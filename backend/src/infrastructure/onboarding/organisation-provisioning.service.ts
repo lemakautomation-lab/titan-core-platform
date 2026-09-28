@@ -3,6 +3,18 @@ import { randomBytes } from "node:crypto";
 import { passwordSecurity } from "../../security/bcrypt";
 import { DatabaseService } from "../database/database.service";
 
+/** Minimum tenant administration access; no delete or role/permission mutation. */
+export const INITIAL_ORGANISATION_ADMINISTRATOR_PERMISSIONS = [
+    "tenants.read",
+    "organisations.read",
+    "organisations.update",
+    "users.read",
+    "users.create",
+    "users.update",
+    "roles.read",
+    "permissions.read",
+] as const;
+
 /** Internal boundary. Never expose this operation as an unauthenticated route. */
 export class OrganisationProvisioningService {
     constructor(private readonly database: DatabaseService) {}
@@ -100,6 +112,23 @@ export class OrganisationProvisioningService {
             await tx.userRole.create({
                 data: { userId: administrator.id, roleId: role.id },
             });
+            for (const code of INITIAL_ORGANISATION_ADMINISTRATOR_PERMISSIONS) {
+                const permission = await tx.permission.create({
+                    data: {
+                        tenantId: tenant.id,
+                        code,
+                        name: code,
+                        description: "Initial organisation administrator access.",
+                    },
+                });
+                await tx.rolePermission.create({
+                    data: {
+                        tenantId: tenant.id,
+                        roleId: role.id,
+                        permissionId: permission.id,
+                    },
+                });
+            }
             await tx.organisationOnboardingApplication.update({
                 where: { id: applicationId },
                 data: {
