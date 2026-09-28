@@ -10,7 +10,7 @@ export default function SignupChoicePage() {
         <Link to="/signup/athlete"><strong>Athlete</strong><span>Track your training and performance.</span></Link>
         <Link to="/signup/trainer"><strong>Trainer</strong><span>Build your professional profile.</span></Link>
         <div><strong>Coach</strong><span>Coach registration and approval are being prepared.</span></div>
-        <div><strong>Club or organisation manager</strong><span>Organisation registration and approval are being prepared.</span></div>
+        <Link to="/signup/organisation"><strong>Club or organisation manager</strong><span>Register an organisation and verify your email.</span></Link>
       </div>
       <p><Link to="/login">Back to sign in</Link></p>
     </main>

@@ -11,6 +11,10 @@ import AccountAssistancePage from "../auth/AccountAssistancePage";
 import ResetPasswordPage from "../auth/ResetPasswordPage";
 import AthleteSignupPage from "../auth/AthleteSignupPage";
 import SignupChoicePage from "../auth/SignupChoicePage";
+import OrganisationSignupPage from "../auth/OrganisationSignupPage";
+import OrganisationVerificationPage from "../auth/OrganisationVerificationPage";
+import OrganisationAdministratorSetupPage from "../auth/OrganisationAdministratorSetupPage";
+import OrganisationSetupRequestPage from "../auth/OrganisationSetupRequestPage";
 import TrainerSignupPage from "../auth/TrainerSignupPage";
 import AthleteOnboardingPage from "../auth/AthleteOnboardingPage";
 import AthleteProfilePage from "../auth/AthleteProfilePage";
@@ -209,6 +213,10 @@ export default function AppRouter({
           )
         }
       />
+      <Route path="/signup/organisation" element={<OrganisationSignupPage />} />
+      <Route path="/verify-organisation-email" element={<OrganisationVerificationPage />} />
+      <Route path="/request-organisation-administrator-setup" element={<OrganisationSetupRequestPage />} />
+      <Route path="/setup-organisation-administrator" element={<OrganisationAdministratorSetupPage />} />
       <Route
         path="/signup/athlete"
         element={

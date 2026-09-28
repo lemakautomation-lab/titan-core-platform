@@ -444,12 +444,12 @@ describe("AppRouter", () => {
     );
   });
 
-  it("shows account choices without enabling unimplemented roles", () => {
+  it("links available signup routes while leaving coach registration pending", () => {
     renderRouter("/signup", false);
     expect(screen.getByRole("link", { name: /Athlete/ })).toHaveAttribute("href", "/signup/athlete");
     expect(screen.getByRole("link", { name: /Trainer/ })).toHaveAttribute("href", "/signup/trainer");
     expect(screen.getByText("Coach registration and approval are being prepared.")).toBeInTheDocument();
-    expect(screen.getByText("Organisation registration and approval are being prepared.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Club or organisation manager/ })).toHaveAttribute("href", "/signup/organisation");
   });
 
   it("shows Trainer onboarding for an unentitled Trainer", () => {
