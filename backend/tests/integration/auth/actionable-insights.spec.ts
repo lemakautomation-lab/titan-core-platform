@@ -72,7 +72,7 @@ describe("Authenticated actionable insights", () => {
     });
 
     it("does not cross tenant boundaries", async () => {
-        const userA = await createTestUser(); const userB = await createTestUser(); const aA = await athlete(userA.user); const aB = await athlete(userB.user);
+        const userA = await createTestUser(); const userB = await createTestUser(); await athlete(userA.user); const aB = await athlete(userB.user);
         await metric(userB, aB);
         const tokenA = await login(userA);
         const response = await request(app).get("/api/v1/auth/me/actionable-insights").set("Authorization", `Bearer ${tokenA}`);

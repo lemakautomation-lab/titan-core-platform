@@ -4,13 +4,50 @@ import { CreatePerformanceMeasurementUseCase } from "../../application/use-cases
 import { CreatePerformanceMeasurementCorrectionUseCase } from "../../application/use-cases/create-performance-measurement-correction.use-case";
 import { ListRecentPerformanceMeasurementsUseCase } from "../../application/use-cases/list-recent-performance-measurements.use-case";
 import { PerformanceMeasurementMapper } from "../../application/mappers/performance-measurement.mapper";
+import { CreateAthleteBaselineUseCase } from "../../application/use-cases/create-athlete-baseline.use-case";
+import { BaselineDefinitionValidationError } from "../../domain/entities/athlete-baseline/baseline-definition";
 
 export class PerformanceMeasurementController {
     constructor(
         private readonly createUseCase: CreatePerformanceMeasurementUseCase,
         private readonly correctionUseCase: CreatePerformanceMeasurementCorrectionUseCase,
         private readonly listUseCase: ListRecentPerformanceMeasurementsUseCase,
+        private readonly createBaselineUseCase: CreateAthleteBaselineUseCase,
     ) {}
+
+    async createBaseline(req: AuthRequest, res: Response) {
+        if (!req.user) return void res.status(401).json({ error: "Unauthorized" });
+        const body = req.body as Record<string, unknown> | undefined;
+        if (!body || typeof body !== "object" || Array.isArray(body) ||
+            typeof body.athleteId !== "string" ||
+            typeof body.metricId !== "string" ||
+            body.asOf !== undefined || body.tenantId !== undefined ||
+            body.method !== undefined) {
+            return void res.status(400).json({ error: "Invalid baseline request." });
+        }
+        try {
+            const data = await this.createBaselineUseCase.execute({
+                tenantId: req.user.tenantId,
+                athleteId: body.athleteId,
+                metricId: body.metricId,
+                lookbackDays: body.lookbackDays === undefined ? 90 : body.lookbackDays as number,
+                minimumSamples: body.minimumSamples === undefined ? 3 : body.minimumSamples as number,
+                method: "ARITHMETIC_MEAN",
+            });
+            return void res.status(201).json({ data });
+        } catch (error) {
+            if (error instanceof BaselineDefinitionValidationError) {
+                return void res.status(400).json({ error: error.message });
+            }
+            if (error instanceof Error && (
+                error.message === "Athlete not found." ||
+                error.message === "Performance metric not found for athlete."
+            )) {
+                return void res.status(404).json({ error: error.message });
+            }
+            throw error;
+        }
+    }
 
     async create(req: AuthRequest, res: Response) {
         if (!req.user) return void res.status(401).json({ error: "Unauthorized" });

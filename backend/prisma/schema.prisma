@@ -8,6 +8,7 @@ datasource db {
 }
 
 model Tenant {
+  athleteBaselineVersions AthleteBaselineVersion[]
   id                       String                         @id @default(uuid())
   name                     String
   slug                     String                         @unique
@@ -290,6 +291,7 @@ model CoachSquad {
 }
 
 model Athlete {
+  baselineVersions        AthleteBaselineVersion[]           @relation("BaselineAthleteTenant")
   id                      String                         @id @default(uuid())
   tenantId                String
   organisationId          String?
@@ -707,6 +709,7 @@ model ExercisePrescriptionProfile {
 }
 
 model PerformanceMetric {
+  baselineVersions        AthleteBaselineVersion[]       @relation("BaselineMetricTenantAthlete")
   id          String       @id @default(uuid())
   tenantId    String
   athleteId   String
@@ -1393,4 +1396,30 @@ model BillingInvoice {
   @@unique([tenantId, issueYear, sequence], map: "BillingInvoice_tenantId_issueYear_sequence_key")
   @@index([tenantId, userId])
   @@index([tenantId, deliveryStatus])
+}
+
+/** Immutable snapshot of a governed athlete metric baseline calculation. */
+model AthleteBaselineVersion {
+  id                 String   @id @default(uuid())
+  tenantId           String
+  athleteId          String
+  metricId           String
+  version            Int
+  status             String
+  method             String
+  lookbackDays       Int
+  minimumSamples     Int
+  asOf               DateTime
+  sampleCount        Int
+  value              Decimal? @db.Decimal(20, 6)
+  earliestRecordedAt DateTime?
+  latestRecordedAt   DateTime?
+  createdAt          DateTime @default(now())
+
+  tenant  Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  athlete Athlete           @relation("BaselineAthleteTenant", fields: [athleteId, tenantId], references: [id, tenantId], onDelete: Restrict, onUpdate: Cascade)
+  metric  PerformanceMetric @relation("BaselineMetricTenantAthlete", fields: [metricId, tenantId, athleteId], references: [id, tenantId, athleteId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([tenantId, athleteId, metricId, version])
+  @@index([tenantId, athleteId, metricId, createdAt])
 }

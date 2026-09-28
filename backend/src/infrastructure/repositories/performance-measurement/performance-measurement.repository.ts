@@ -94,6 +94,53 @@ implements PerformanceMeasurementRepository {
         return rows.map(row => this.toDomain(row));
     }
 
+    async listEffectiveHistoryForBaseline(
+        tenantId: string, athleteId: string, metricId: string,
+        asOf: Date, lookbackDays: number,
+    ): Promise<PerformanceMeasurement[]> {
+        for (const [name, value] of [
+            ["tenantId", tenantId], ["athleteId", athleteId], ["metricId", metricId],
+        ] as const) {
+            if (typeof value !== "string" || !value.trim()) {
+                throw new Error(`${name} is required for baseline history.`);
+            }
+        }
+        if (!(asOf instanceof Date) || !Number.isFinite(asOf.getTime())) {
+            throw new Error("Baseline asOf must be a valid date.");
+        }
+        if (!Number.isSafeInteger(lookbackDays) || lookbackDays < 1 || lookbackDays > 3650) {
+            throw new Error("Baseline lookbackDays must be an integer from 1 to 3650.");
+        }
+        const startMs = asOf.getTime() - lookbackDays * 86_400_000;
+        if (!Number.isFinite(startMs)) {
+            throw new Error("Baseline date window is invalid.");
+        }
+        const start = new Date(startMs);
+        const rows = await this.database.prisma.$queryRaw<MeasurementRow[]>`
+            SELECT measurement.* FROM "PerformanceMeasurement" measurement
+            WHERE measurement."tenantId" = ${tenantId}
+              AND measurement."athleteId" = ${athleteId}
+              AND measurement."metricId" = ${metricId}
+              AND measurement."recordedAt" > ${start}
+              AND measurement."recordedAt" <= ${asOf}
+              AND measurement."createdAt" <= ${asOf}
+              AND NOT EXISTS (
+                  SELECT 1 FROM "PerformanceMeasurement" correction
+                  WHERE correction."correctsMeasurementId" = measurement."id"
+                    AND correction."tenantId" = measurement."tenantId"
+                    AND correction."athleteId" = measurement."athleteId"
+                    AND correction."metricId" = measurement."metricId"
+                    AND correction."createdAt" <= ${asOf}
+              )
+            ORDER BY measurement."recordedAt" ASC, measurement."id" ASC
+            LIMIT 10001
+        `;
+        if (rows.length > 10000) {
+            throw new Error("Baseline history exceeds the supported measurement limit.");
+        }
+        return rows.map(row => this.toDomain(row));
+    }
+
     private validateLimit(limit: number) {
         if (!Number.isInteger(limit) || limit <= 0) {
             throw new Error("Performance measurement limit must be positive.");
