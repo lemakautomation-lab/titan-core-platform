@@ -49,7 +49,7 @@ all controls implemented or explicitly verified as already satisfied; targeted t
 
 ## Delivery Evidence — 28 September 2026
 
-**Status:** LOCALLY VERIFIED / RELEASE PENDING. Backend-only; no frontend change. Staging deployment and Knowledge Base publication have not been verified.
+**Status:** RELEASED TO STAGING / KNOWLEDGE BASE PUBLISHED. Backend-only; no frontend change. Production release is not claimed.
 
 | Control | Local evidence |
 | --- | --- |
@@ -65,3 +65,8 @@ Endpoint: `POST /api/v1/performance-measurements/baselines`. The server derives 
 Verification: migration applied to `titan_core_test`; Prisma schema valid and client generated; focused baseline unit, repository and API tests passed; full backend serial regression **247/247 files and 1470/1470 tests passed** with a 15-second test timeout; backend TypeScript build passed; lint passed with 31 existing warnings and zero errors; `git diff --check` passed. An unrelated unused binding in the actionable-insights test was removed to restore the lint gate.
 
 **Release remaining:** commit and push the controlled files through GitHub Desktop; deploy the migration and backend to staging with backup and rollback readiness; run authenticated staging smoke and verify the published Knowledge Base page. Do not classify Mission 072 as RELEASED until those checks pass.
+### Staging and publication verification — 28 September 2026
+
+Implementation commit `dd7f50bcb384f49d81b21cbbf1c9ba378143b078` was deployed to staging after a verified PostgreSQL backup. All 86 migrations are current. Staging health returned HTTP 200; unauthenticated baseline creation returned HTTP 401. An authenticated synthetic fixture logged in with HTTP 200 and created baseline version 1 with HTTP 201, `INSUFFICIENT_DATA`, and zero samples. Fixture cleanup completed. The Cloudflare Knowledge Base deployment `7d860143` and canonical page were verified in an authenticated browser.
+
+Mission 072 is released to staging and its Knowledge Base evidence is published. Production deployment remains a separate release gate.
