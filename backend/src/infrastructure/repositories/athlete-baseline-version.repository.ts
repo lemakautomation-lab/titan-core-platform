@@ -7,6 +7,18 @@ import { DatabaseService } from "../database/database.service";
 export class PrismaAthleteBaselineVersionRepository implements AthleteBaselineVersionRepository {
   constructor(private readonly database: DatabaseService) {}
 
+  async findLatest(tenantId: string, athleteId: string, metricId: string) {
+    const row = await this.database.prisma.athleteBaselineVersion.findFirst({
+      where: { tenantId, athleteId, metricId },
+      orderBy: { version: "desc" },
+      select: { id: true, version: true, status: true, value: true, asOf: true },
+    });
+    if (!row) return null;
+    const value = row.value === null ? null : Number(row.value);
+    if (value !== null && !Number.isFinite(value)) throw new Error("Baseline value is not finite.");
+    return { id: row.id, version: row.version, status: row.status, value, asOf: row.asOf };
+  }
+
   async append(definition: BaselineDefinition, asOf: Date, result: BaselineCalculationResult) {
     return this.database.transaction(async tx => {
       // Same athlete/metric scope is serialized even when two workers append concurrently.

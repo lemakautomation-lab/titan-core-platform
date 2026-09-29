@@ -18,6 +18,10 @@ export interface PerformanceMeasurementRepository {
     listRecentEffectiveForMetric(
         tenantId: string, athleteId: string, metricId: string, limit: number,
     ): Promise<PerformanceMeasurement[]>;
+    findLatestEffectiveAfter(
+        tenantId: string, athleteId: string, metricId: string,
+        after: Date, asOf: Date,
+    ): Promise<PerformanceMeasurement | null>;
     /**
      * Effective measurements in (asOf - lookbackDays, asOf].
      * Both recordedAt and createdAt must be no later than asOf.

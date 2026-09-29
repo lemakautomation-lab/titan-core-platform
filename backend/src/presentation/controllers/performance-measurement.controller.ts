@@ -10,6 +10,7 @@ import { DetectAthleteImprovementUseCase } from "../../application/use-cases/det
 import { DetectAthleteDeclineUseCase } from "../../application/use-cases/detect-athlete-decline.use-case";
 import { DetectAthletePlateauUseCase } from "../../application/use-cases/detect-athlete-plateau.use-case";
 import { DetectAthleteChangeUseCase } from "../../application/use-cases/detect-athlete-change.use-case";
+import { DetectAthleteDeviationUseCase } from "../../application/use-cases/detect-athlete-deviation.use-case";
 import type { ImprovementDirection } from "../../domain/services/athlete-improvement-detector.service";
 
 export class PerformanceMeasurementController {
@@ -22,7 +23,39 @@ export class PerformanceMeasurementController {
         private readonly detectDeclineUseCase: DetectAthleteDeclineUseCase,
         private readonly detectPlateauUseCase: DetectAthletePlateauUseCase,
         private readonly detectChangeUseCase: DetectAthleteChangeUseCase,
+        private readonly detectDeviationUseCase: DetectAthleteDeviationUseCase,
     ) {}
+
+    async detectDeviation(req: AuthRequest, res: Response) {
+        if (!req.user) return void res.status(401).json({ error: "Unauthorized" });
+        const query = req.query;
+        if (Object.keys(query).some(key => !["athleteId", "metricId", "relativeThreshold",
+            "absoluteThreshold"].includes(key)) ||
+            typeof query.athleteId !== "string" || !query.athleteId.trim() ||
+            typeof query.metricId !== "string" || !query.metricId.trim()) {
+            return void res.status(400).json({ error: "Invalid deviation request." });
+        }
+        const decimal = (value: unknown, fallback: number) => value === undefined ? fallback :
+            typeof value === "string" && /^(?:\d+)(?:\.\d+)?$/.test(value) ? Number(value) : NaN;
+        const relativeThreshold = decimal(query.relativeThreshold, 0.05);
+        const absoluteThreshold = decimal(query.absoluteThreshold, 0);
+        if (!Number.isFinite(relativeThreshold) || relativeThreshold < 0 || relativeThreshold > 1 ||
+            !Number.isFinite(absoluteThreshold) || absoluteThreshold < 0 || absoluteThreshold > 1_000_000_000) {
+            return void res.status(400).json({ error: "Invalid deviation policy." });
+        }
+        try {
+            const data = await this.detectDeviationUseCase.execute({
+                tenantId: req.user.tenantId, athleteId: query.athleteId, metricId: query.metricId,
+                relativeThreshold, absoluteThreshold,
+            });
+            return void res.status(200).json({ data });
+        } catch (error) {
+            if (error instanceof Error && ["Athlete not found.", "Performance metric not found for athlete."].includes(error.message)) {
+                return void res.status(404).json({ error: error.message });
+            }
+            throw error;
+        }
+    }
 
     async detectChange(req: AuthRequest, res: Response) {
         if (!req.user) return void res.status(401).json({ error: "Unauthorized" });

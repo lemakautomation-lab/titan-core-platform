@@ -242,6 +242,7 @@ const performanceMeasurementController =
         performanceMeasurementModule.detectDeclineUseCase,
         performanceMeasurementModule.detectPlateauUseCase,
         performanceMeasurementModule.detectChangeUseCase,
+        performanceMeasurementModule.detectDeviationUseCase,
     );
 const nutritionPlanController =
     new NutritionPlanController(

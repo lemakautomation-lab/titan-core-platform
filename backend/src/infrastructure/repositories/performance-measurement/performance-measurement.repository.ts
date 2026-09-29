@@ -94,6 +94,35 @@ implements PerformanceMeasurementRepository {
         return rows.map(row => this.toDomain(row));
     }
 
+    async findLatestEffectiveAfter(
+        tenantId: string, athleteId: string, metricId: string, after: Date, asOf: Date,
+    ): Promise<PerformanceMeasurement | null> {
+        if (![tenantId, athleteId, metricId].every(value => typeof value === "string" && value.trim()) ||
+            !(after instanceof Date) || !Number.isFinite(after.getTime()) ||
+            !(asOf instanceof Date) || !Number.isFinite(asOf.getTime()) || after.getTime() > asOf.getTime()) {
+            throw new Error("Invalid deviation scope or dates.");
+        }
+        const rows = await this.database.prisma.$queryRaw<MeasurementRow[]>`
+            SELECT measurement.* FROM "PerformanceMeasurement" measurement
+            WHERE measurement."tenantId" = ${tenantId}
+              AND measurement."athleteId" = ${athleteId}
+              AND measurement."metricId" = ${metricId}
+              AND measurement."recordedAt" > ${after}
+              AND measurement."recordedAt" <= ${asOf}
+              AND measurement."createdAt" <= ${asOf}
+              AND NOT EXISTS (
+                  SELECT 1 FROM "PerformanceMeasurement" correction
+                  WHERE correction."correctsMeasurementId" = measurement."id"
+                    AND correction."tenantId" = measurement."tenantId"
+                    AND correction."athleteId" = measurement."athleteId"
+                    AND correction."metricId" = measurement."metricId"
+                    AND correction."createdAt" <= ${asOf}
+              )
+            ORDER BY measurement."recordedAt" DESC, measurement."id" DESC LIMIT 1
+        `;
+        return rows[0] ? this.toDomain(rows[0]) : null;
+    }
+
     async listEffectiveHistoryForBaseline(
         tenantId: string, athleteId: string, metricId: string,
         asOf: Date, lookbackDays: number,

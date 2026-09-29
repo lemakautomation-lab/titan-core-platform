@@ -12,6 +12,7 @@ import { DetectAthleteImprovementUseCase } from "../../application/use-cases/det
 import { DetectAthleteDeclineUseCase } from "../../application/use-cases/detect-athlete-decline.use-case";
 import { DetectAthletePlateauUseCase } from "../../application/use-cases/detect-athlete-plateau.use-case";
 import { DetectAthleteChangeUseCase } from "../../application/use-cases/detect-athlete-change.use-case";
+import { DetectAthleteDeviationUseCase } from "../../application/use-cases/detect-athlete-deviation.use-case";
 
 const database = new DatabaseService();
 const measurements = new PrismaPerformanceMeasurementRepository(database);
@@ -29,6 +30,9 @@ export const performanceMeasurementModule = {
     ),
     detectChangeUseCase: new DetectAthleteChangeUseCase(
         new DetectAthleteImprovementUseCase(athletes, metrics, measurements),
+    ),
+    detectDeviationUseCase: new DetectAthleteDeviationUseCase(
+        athletes, metrics, measurements, new PrismaAthleteBaselineVersionRepository(database),
     ),
     createUseCase: new CreatePerformanceMeasurementUseCase(measurements, athletes, metrics),
     createCorrectionUseCase: new CreatePerformanceMeasurementCorrectionUseCase(

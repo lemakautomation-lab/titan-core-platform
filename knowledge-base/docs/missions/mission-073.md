@@ -54,13 +54,20 @@ Detect meaningful performance trends and deviations.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
-**Status:** IN PROGRESS / LOCAL VERIFICATION PENDING (29 September 2026).
+**Status:** LOCALLY VERIFIED / RELEASE PENDING (29 September 2026). Mission remains ACTIVE.
 
 **Design:** Authenticated `GET /api/v1/performance-measurements/trends/change` requires `performance-measurements.read` and derives tenant scope from the session. It compares two adjacent UTC windows of effective observations for the requested athlete and metric. Each window needs the configured sample minimum (default three). A change strictly greater than the greater of 2% of the absolute previous mean or an optional nonnegative absolute threshold returns `CHANGE`; otherwise `NO_CHANGE`. Sparse windows return `INSUFFICIENT_DATA` without a change classification. Results expose window means, counts, absolute change, raw increase/decrease direction and effective threshold. This is a two-window signal, not a statistical confidence or persistence claim. No frontend or database change is included.
+
+
+**Local evidence:** Targeted 73.4 unit/API tests, backend TypeScript build, lint with zero errors, Knowledge Base build and `git diff --check` passed. Adjacent regression: 9 files, 46 tests passed. Implementation commit `07f2d6835bf3cc5d62eddf943e3692e55ed5c184` synchronized with `origin/main`. Staging smoke and Knowledge Base publication remain outstanding; no production release is claimed.
 
 ### Control 73.5 - Deviation detection
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+
+**Status:** IN PROGRESS / LOCAL VERIFICATION PENDING (29 September 2026).
+
+**Design:** Authenticated `GET /api/v1/performance-measurements/trends/deviation` requires `performance-measurements.read` and derives tenant scope from the session. The latest immutable baseline version for the athlete/metric is authoritative; a missing or not-ready latest version cannot silently fall back to an older baseline. A ready baseline is compared against the latest effective measurement recorded after its `asOf` and no later than the request time. Default tolerance is 5% of the absolute baseline value, with optional nonnegative absolute threshold in metric units; the effective threshold is the greater value. Absolute deviation strictly above the threshold returns `DEVIATION`; otherwise `NO_DEVIATION`. Missing baseline, not-ready baseline and no post-baseline observation are explicit states. The result identifies the baseline version and measurement, signed deviation and above/below direction. This is a single-observation deviation signal, not a statistical confidence claim. No frontend or database migration is included.
 
 ### Control 73.6 - Trend confidence/context
 
