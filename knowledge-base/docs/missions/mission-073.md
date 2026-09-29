@@ -23,6 +23,12 @@ Detect meaningful performance trends and deviations.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** LOCALLY VERIFIED / RELEASE PENDING (29 September 2026). Mission remains ACTIVE.
+
+**Implementation:** Authenticated `GET /api/v1/performance-measurements/trends/improvement` requires `performance-measurements.read`. The server derives tenant identity from the session and verifies tenant-scoped athlete and metric ownership. It selects effective measurements, including correction supersession, within two adjacent UTC windows and compares their arithmetic means. The request must explicitly state `HIGHER_IS_BETTER` or `LOWER_IS_BETTER`; the metric model does not yet store performance direction. Default policy is 30 days per window and three samples per window. Sparse windows return `INSUFFICIENT_DATA` without a calculated change. The response includes both means, counts, direction and signed change. A positive signed change is an improvement signal, without a statistical confidence claim. This read-only operation creates no baseline or trend record. No frontend change is included.
+
+**Local evidence:** Targeted unit/API gate: 2 files, 7 tests passed. Adjacent baseline/history/measurement/trend regression: 5 files, 22 tests passed. Backend TypeScript build passed. Lint: zero errors, 31 existing warnings. `git diff --check` passed. Staging deployment, authenticated staging smoke, full backend regression and Knowledge Base publication remain outstanding; these results do not establish a production release.
+
 ### Control 73.2 - Decline detection
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

@@ -6,6 +6,10 @@ import { requirePermission } from "../../middleware/authorization.middleware";
 export function createPerformanceMeasurementRoutes(controller: PerformanceMeasurementController) {
     const router = Router();
     router.use(authMiddleware);
+    router.get("/trends/improvement",
+        requirePermission("performance-measurements.read"),
+        controller.detectImprovement.bind(controller),
+    );
     router.post("/baselines",
         requirePermission("performance-measurements.create"),
         requirePermission("performance-measurements.read"),

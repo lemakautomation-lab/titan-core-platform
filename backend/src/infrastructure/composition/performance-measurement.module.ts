@@ -8,6 +8,7 @@ import { CreatePerformanceMeasurementCorrectionUseCase } from "../../application
 import { ListRecentPerformanceMeasurementsUseCase } from "../../application/use-cases/list-recent-performance-measurements.use-case";
 import { CreateAthleteBaselineUseCase } from "../../application/use-cases/create-athlete-baseline.use-case";
 import { PrismaAthleteBaselineVersionRepository } from "../repositories/athlete-baseline-version.repository";
+import { DetectAthleteImprovementUseCase } from "../../application/use-cases/detect-athlete-improvement.use-case";
 
 const database = new DatabaseService();
 const measurements = new PrismaPerformanceMeasurementRepository(database);
@@ -16,6 +17,7 @@ const metrics = new PrismaPerformanceMetricRepository(database);
 const correctionTransaction = new PrismaPerformanceMeasurementCorrectionTransaction(database);
 
 export const performanceMeasurementModule = {
+    detectImprovementUseCase: new DetectAthleteImprovementUseCase(athletes, metrics, measurements),
     createUseCase: new CreatePerformanceMeasurementUseCase(measurements, athletes, metrics),
     createCorrectionUseCase: new CreatePerformanceMeasurementCorrectionUseCase(
         measurements, athletes, metrics, correctionTransaction,

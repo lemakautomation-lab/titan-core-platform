@@ -6,6 +6,8 @@ import { ListRecentPerformanceMeasurementsUseCase } from "../../application/use-
 import { PerformanceMeasurementMapper } from "../../application/mappers/performance-measurement.mapper";
 import { CreateAthleteBaselineUseCase } from "../../application/use-cases/create-athlete-baseline.use-case";
 import { BaselineDefinitionValidationError } from "../../domain/entities/athlete-baseline/baseline-definition";
+import { DetectAthleteImprovementUseCase } from "../../application/use-cases/detect-athlete-improvement.use-case";
+import type { ImprovementDirection } from "../../domain/services/athlete-improvement-detector.service";
 
 export class PerformanceMeasurementController {
     constructor(
@@ -13,7 +15,42 @@ export class PerformanceMeasurementController {
         private readonly correctionUseCase: CreatePerformanceMeasurementCorrectionUseCase,
         private readonly listUseCase: ListRecentPerformanceMeasurementsUseCase,
         private readonly createBaselineUseCase: CreateAthleteBaselineUseCase,
+        private readonly detectImprovementUseCase: DetectAthleteImprovementUseCase,
     ) {}
+
+    async detectImprovement(req: AuthRequest, res: Response) {
+        if (!req.user) return void res.status(401).json({ error: "Unauthorized" });
+        const query = req.query;
+        const keys = Object.keys(query);
+        if (keys.some(key => !["athleteId", "metricId", "direction", "windowDays", "minimumSamplesPerWindow"].includes(key)) ||
+            typeof query.athleteId !== "string" || !query.athleteId.trim() ||
+            typeof query.metricId !== "string" || !query.metricId.trim() ||
+            (query.direction !== "HIGHER_IS_BETTER" && query.direction !== "LOWER_IS_BETTER")) {
+            return void res.status(400).json({ error: "Invalid improvement request." });
+        }
+        const parseInteger = (value: unknown, fallback: number) =>
+            value === undefined ? fallback : typeof value === "string" && /^\d+$/.test(value) ? Number(value) : NaN;
+        const windowDays = parseInteger(query.windowDays, 30);
+        const minimumSamplesPerWindow = parseInteger(query.minimumSamplesPerWindow, 3);
+        if (!Number.isSafeInteger(windowDays) || windowDays < 1 || windowDays > 1825 ||
+            !Number.isSafeInteger(minimumSamplesPerWindow) ||
+            minimumSamplesPerWindow < 2 || minimumSamplesPerWindow > 5000) {
+            return void res.status(400).json({ error: "Invalid improvement policy." });
+        }
+        try {
+            const data = await this.detectImprovementUseCase.execute({
+                tenantId: req.user.tenantId, athleteId: query.athleteId,
+                metricId: query.metricId, direction: query.direction as ImprovementDirection,
+                windowDays, minimumSamplesPerWindow,
+            });
+            return void res.status(200).json({ data });
+        } catch (error) {
+            if (error instanceof Error && ["Athlete not found.", "Performance metric not found for athlete."].includes(error.message)) {
+                return void res.status(404).json({ error: error.message });
+            }
+            throw error;
+        }
+    }
 
     async createBaseline(req: AuthRequest, res: Response) {
         if (!req.user) return void res.status(401).json({ error: "Unauthorized" });
