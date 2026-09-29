@@ -43,13 +43,20 @@ Detect meaningful performance trends and deviations.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
-**Status:** IN PROGRESS / LOCAL VERIFICATION PENDING (29 September 2026).
+**Status:** LOCALLY VERIFIED / RELEASE PENDING (29 September 2026). Mission remains ACTIVE.
 
 **Design:** Authenticated `GET /api/v1/performance-measurements/trends/plateau` compares two adjacent UTC windows of tenant-scoped effective observations. Both windows need the configured sample minimum. The default tolerance is 2% of the previous mean, with optional nonnegative absolute tolerance in the metric unit; the effective tolerance is the greater of the two. Absolute change within the tolerance returns `PLATEAU`; outside returns `NO_PLATEAU`; sparse windows return `INSUFFICIENT_DATA`. The response exposes both means and effective tolerance. It is a two-window signal and makes no confidence or long-duration persistence claim. No frontend or database change is included.
+
+
+**Local evidence:** Targeted unit/API tests: 2 files, 6 tests passed. Adjacent Mission 073 regression: 7 files, 41 tests passed. Backend TypeScript build and Knowledge Base build passed; lint had zero errors and 31 existing warnings; `git diff --check` passed. Implementation commit `6d7b5d93c78e09fd7dbbb981decedbd12513666d` synchronized with `origin/main`. Staging smoke and Knowledge Base publication are outstanding; no production release is claimed.
 
 ### Control 73.4 - Change detection
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+
+**Status:** IN PROGRESS / LOCAL VERIFICATION PENDING (29 September 2026).
+
+**Design:** Authenticated `GET /api/v1/performance-measurements/trends/change` requires `performance-measurements.read` and derives tenant scope from the session. It compares two adjacent UTC windows of effective observations for the requested athlete and metric. Each window needs the configured sample minimum (default three). A change strictly greater than the greater of 2% of the absolute previous mean or an optional nonnegative absolute threshold returns `CHANGE`; otherwise `NO_CHANGE`. Sparse windows return `INSUFFICIENT_DATA` without a change classification. Results expose window means, counts, absolute change, raw increase/decrease direction and effective threshold. This is a two-window signal, not a statistical confidence or persistence claim. No frontend or database change is included.
 
 ### Control 73.5 - Deviation detection
 
