@@ -7,6 +7,7 @@ import { PerformanceMeasurementMapper } from "../../application/mappers/performa
 import { CreateAthleteBaselineUseCase } from "../../application/use-cases/create-athlete-baseline.use-case";
 import { BaselineDefinitionValidationError } from "../../domain/entities/athlete-baseline/baseline-definition";
 import { DetectAthleteImprovementUseCase } from "../../application/use-cases/detect-athlete-improvement.use-case";
+import { DetectAthleteDeclineUseCase } from "../../application/use-cases/detect-athlete-decline.use-case";
 import type { ImprovementDirection } from "../../domain/services/athlete-improvement-detector.service";
 
 export class PerformanceMeasurementController {
@@ -16,9 +17,18 @@ export class PerformanceMeasurementController {
         private readonly listUseCase: ListRecentPerformanceMeasurementsUseCase,
         private readonly createBaselineUseCase: CreateAthleteBaselineUseCase,
         private readonly detectImprovementUseCase: DetectAthleteImprovementUseCase,
+        private readonly detectDeclineUseCase: DetectAthleteDeclineUseCase,
     ) {}
 
     async detectImprovement(req: AuthRequest, res: Response) {
+        return this.detectTrend(req, res, "improvement");
+    }
+
+    async detectDecline(req: AuthRequest, res: Response) {
+        return this.detectTrend(req, res, "decline");
+    }
+
+    private async detectTrend(req: AuthRequest, res: Response, kind: "improvement" | "decline") {
         if (!req.user) return void res.status(401).json({ error: "Unauthorized" });
         const query = req.query;
         const keys = Object.keys(query);
@@ -38,11 +48,14 @@ export class PerformanceMeasurementController {
             return void res.status(400).json({ error: "Invalid improvement policy." });
         }
         try {
-            const data = await this.detectImprovementUseCase.execute({
+            const input = {
                 tenantId: req.user.tenantId, athleteId: query.athleteId,
                 metricId: query.metricId, direction: query.direction as ImprovementDirection,
                 windowDays, minimumSamplesPerWindow,
-            });
+            };
+            const data = kind === "improvement"
+                ? await this.detectImprovementUseCase.execute(input)
+                : await this.detectDeclineUseCase.execute(input);
             return void res.status(200).json({ data });
         } catch (error) {
             if (error instanceof Error && ["Athlete not found.", "Performance metric not found for athlete."].includes(error.message)) {

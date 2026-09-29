@@ -33,6 +33,12 @@ Detect meaningful performance trends and deviations.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** LOCALLY VERIFIED / RELEASE PENDING (29 September 2026). Mission remains ACTIVE.
+
+**Design:** Authenticated `GET /api/v1/performance-measurements/trends/decline` reuses the 73.1 tenant-scoped effective-history comparison, explicit metric direction and adjacent UTC windows. A negative signed change returns `DECLINE`; zero or positive returns `NO_DECLINE`; sparse history returns `INSUFFICIENT_DATA`. This is a directional signal, without a confidence claim. Staging release remains blocked while SSH port 22 to the staging host is unavailable; HTTPS port 443 was reachable at the last network gate.
+
+**Local evidence:** Targeted improvement/decline unit and API gate: 3 files, 10 tests passed. Adjacent baseline/history/measurement/trend regression: 6 files, 25 tests passed. Backend TypeScript build passed; lint had zero errors and 31 existing warnings; Knowledge Base production build and `git diff --check` passed. No staging or production release is claimed.
+
 ### Control 73.3 - Plateau detection
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
