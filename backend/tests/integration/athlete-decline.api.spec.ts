@@ -12,11 +12,11 @@ async function tokenFor(permissions: string[]) {
     tenantId: person.tenant.id, email: person.user.email, password: person.password,
   });
   expect(login.status).toBe(200);
-  return { token: login.body.data.accessToken as string, tenantId: person.tenant.id };
+  return { token: login.body.data.accessToken as string, tenantId: person.tenant.id, userId: person.user.id };
 }
-async function scope(tenantId: string) {
+async function scope(tenantId: string, userId: string) {
   const athlete = await testPrisma.athlete.create({ data: {
-    tenantId, firstName: "Decline", lastName: randomUUID(),
+    tenantId, userId, firstName: "Decline", lastName: randomUUID(),
   } });
   const sport = await testPrisma.sport.create({ data: {
     tenantId, name: "Decline sport", slug: `decline-${randomUUID()}`,
@@ -37,7 +37,7 @@ describe("Mission 073.2 decline API", () => {
   it("enforces policy and tenant ownership", async () => {
     const owner = await tokenFor(["performance-measurements.read"]);
     const foreign = await tokenFor(["performance-measurements.read"]);
-    const ids = await scope(owner.tenantId);
+    const ids = await scope(owner.tenantId, owner.userId);
     const query = { athleteId: ids.athlete.id, metricId: ids.metric.id, direction: "HIGHER_IS_BETTER" };
     expect((await request(app).get(path).set("Authorization", `Bearer ${owner.token}`)
       .query({ ...query, tenantId: owner.tenantId })).status).toBe(400);
@@ -46,7 +46,7 @@ describe("Mission 073.2 decline API", () => {
   });
   it("returns insufficient data, then detects decline with the same signed comparison", async () => {
     const user = await tokenFor(["performance-measurements.read"]);
-    const ids = await scope(user.tenantId);
+    const ids = await scope(user.tenantId, user.userId);
     const auth = { Authorization: `Bearer ${user.token}` };
     const query = { athleteId: ids.athlete.id, metricId: ids.metric.id, direction: "HIGHER_IS_BETTER" };
     const empty = await request(app).get(path).set(auth).query(query);

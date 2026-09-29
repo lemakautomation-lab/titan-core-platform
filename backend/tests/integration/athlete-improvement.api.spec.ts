@@ -12,11 +12,11 @@ async function tokenFor(permissions: string[], tenantId?: string) {
     tenantId: person.tenant.id, email: person.user.email, password: person.password,
   });
   expect(login.status).toBe(200);
-  return { token: login.body.data.accessToken as string, tenantId: person.tenant.id };
+  return { token: login.body.data.accessToken as string, tenantId: person.tenant.id, userId: person.user.id };
 }
-async function scope(tenantId: string) {
+async function scope(tenantId: string, userId: string) {
   const athlete = await testPrisma.athlete.create({ data: {
-    tenantId, firstName: "Trend", lastName: randomUUID(),
+    tenantId, userId, firstName: "Trend", lastName: randomUUID(),
   } });
   const sport = await testPrisma.sport.create({ data: {
     tenantId, name: "Trend sport", slug: `trend-${randomUUID()}`,
@@ -37,7 +37,7 @@ describe("Mission 073.1 improvement API", () => {
   it("rejects client tenant, missing direction and foreign athlete", async () => {
     const owner = await tokenFor(["performance-measurements.read"]);
     const foreign = await tokenFor(["performance-measurements.read"]);
-    const ids = await scope(owner.tenantId);
+    const ids = await scope(owner.tenantId, owner.userId);
     const query = { athleteId: ids.athlete.id, metricId: ids.metric.id, direction: "LOWER_IS_BETTER" };
     const auth = { Authorization: `Bearer ${owner.token}` };
     expect((await request(app).get(path).set(auth).query({ ...query, tenantId: owner.tenantId })).status).toBe(400);
@@ -47,7 +47,7 @@ describe("Mission 073.1 improvement API", () => {
   });
   it("compares effective observations in two windows without persisting a baseline", async () => {
     const user = await tokenFor(["performance-measurements.read"]);
-    const ids = await scope(user.tenantId);
+    const ids = await scope(user.tenantId, user.userId);
     const now = Date.now();
     for (const [daysAgo, value] of [[45, 12], [44, 12], [43, 12], [5, 10], [4, 10], [3, 10]]) {
       await testPrisma.performanceMeasurement.create({ data: {

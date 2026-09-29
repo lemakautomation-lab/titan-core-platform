@@ -15,6 +15,9 @@ import { DetectAthleteChangeUseCase } from "../../application/use-cases/detect-a
 import { DetectAthleteDeviationUseCase } from "../../application/use-cases/detect-athlete-deviation.use-case";
 import { GetAthleteTrendContextUseCase } from "../../application/use-cases/get-athlete-trend-context.use-case";
 
+import { PrismaAthleteRelationshipRepository } from "../repositories/athlete-relationship.repository";
+import { AuthoriseAthleteTrendVisibilityUseCase } from "../../application/use-cases/authorise-athlete-trend-visibility.use-case";
+
 const database = new DatabaseService();
 const measurements = new PrismaPerformanceMeasurementRepository(database);
 const athletes = new PrismaAthleteRepository(database);
@@ -22,6 +25,9 @@ const metrics = new PrismaPerformanceMetricRepository(database);
 const correctionTransaction = new PrismaPerformanceMeasurementCorrectionTransaction(database);
 
 export const performanceMeasurementModule = {
+    authoriseTrendVisibilityUseCase: new AuthoriseAthleteTrendVisibilityUseCase(
+        athletes, new PrismaAthleteRelationshipRepository(database),
+    ),
     detectImprovementUseCase: new DetectAthleteImprovementUseCase(athletes, metrics, measurements),
     detectDeclineUseCase: new DetectAthleteDeclineUseCase(
         new DetectAthleteImprovementUseCase(athletes, metrics, measurements),

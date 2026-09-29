@@ -76,11 +76,17 @@ Detect meaningful performance trends and deviations.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
-**Status:** IN PROGRESS / LOCAL VERIFICATION PENDING (29 September 2026).
+**Status:** LOCALLY VERIFIED / RELEASE PENDING (29 September 2026).
 
 **Design:** Authenticated `GET /api/v1/performance-measurements/trends/context` requires `performance-measurements.read` and explicitly supplied metric direction. It reuses the tenant-scoped effective-history comparison and returns adjacent UTC window boundaries, each sample count, configured sample minimum, and an evidence level of `INSUFFICIENT`, `MINIMUM_COVERAGE` or `EXTRA_COVERAGE`. The level reflects sample counts only; `statisticalConfidence` is explicitly `null`, and the response claims no probability, causality or significance. Sparse windows withhold the means and signed change. No frontend, persisted trend record or migration is included.
 
 ### Control 73.7 - Authorised trend visibility
+
+**Status:** LOCALLY VERIFIED / RELEASE PENDING (29 September 2026).
+
+**Design:** All six trend reads require `performance-measurements.read`, a tenant-scoped athlete, and either the athlete account itself or an active Trainer, Coach, or Performance Professional relationship. Unauthorised and nonexistent athletes both return 404. Scope is checked before trend computation; the request cannot supply a tenant identity. This read-only authorization gate changes no schema or stored data.
+
+**Local evidence:** Six trend API files passed (19 tests), followed by an additional active/inactive relationship regression (one file, five tests). Backend TypeScript build passed. Lint had zero errors and 31 existing warnings. Knowledge Base build and `git diff --check` passed. Staging smoke and Knowledge Base publication remain outstanding; no production release is claimed.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 

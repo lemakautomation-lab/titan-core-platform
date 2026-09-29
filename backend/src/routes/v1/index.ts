@@ -399,7 +399,9 @@ router.use(
 
 router.use(
     "/performance-measurements",
-    createPerformanceMeasurementRoutes(performanceMeasurementController),
+    createPerformanceMeasurementRoutes(
+        performanceMeasurementController, performanceMeasurementModule.authoriseTrendVisibilityUseCase,
+    ),
 );
 
 router.use(

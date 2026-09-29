@@ -12,11 +12,11 @@ async function tokenFor(permissions: string[], tenantId?: string) {
     tenantId: person.tenant.id, email: person.user.email, password: person.password,
   });
   expect(login.status).toBe(200);
-  return { token: login.body.data.accessToken as string, tenantId: person.tenant.id };
+  return { token: login.body.data.accessToken as string, tenantId: person.tenant.id, userId: person.user.id };
 }
-async function scope(tenantId: string) {
+async function scope(tenantId: string, userId: string) {
   const athlete = await testPrisma.athlete.create({ data: {
-    tenantId, firstName: "Trend", lastName: randomUUID(),
+    tenantId, userId, firstName: "Trend", lastName: randomUUID(),
   } });
   const sport = await testPrisma.sport.create({ data: {
     tenantId, name: "Trend sport", slug: `trend-${randomUUID()}`,
@@ -37,7 +37,7 @@ describe("Mission 073.6 trend context API", () => {
   it("rejects client tenant, missing direction and foreign athlete", async () => {
     const owner = await tokenFor(["performance-measurements.read"]);
     const foreign = await tokenFor(["performance-measurements.read"]);
-    const ids = await scope(owner.tenantId);
+    const ids = await scope(owner.tenantId, owner.userId);
     const query = { athleteId: ids.athlete.id, metricId: ids.metric.id, direction: "LOWER_IS_BETTER" };
     const auth = { Authorization: `Bearer ${owner.token}` };
     expect((await request(app).get(path).set(auth).query({ ...query, tenantId: owner.tenantId })).status).toBe(400);
@@ -45,9 +45,36 @@ describe("Mission 073.6 trend context API", () => {
     expect((await request(app).get(path).set(auth).query({ ...query, windowDays: 0 })).status).toBe(400);
     expect((await request(app).get(path).set("Authorization", `Bearer ${foreign.token}`).query(query)).status).toBe(404);
   });
+  it("conceals another athlete in the same tenant across every trend route", async () => {
+    const owner = await tokenFor(["performance-measurements.read"]);
+    const stranger = await tokenFor(["performance-measurements.read"], owner.tenantId);
+    const ids = await scope(owner.tenantId, owner.userId);
+    for (const route of ["improvement", "decline", "plateau", "change", "deviation", "context"]) {
+      const response = await request(app).get(`/api/v1/performance-measurements/trends/${route}`)
+        .set("Authorization", `Bearer ${stranger.token}`)
+        .query({ athleteId: ids.athlete.id, metricId: ids.metric.id,
+          ...(route === "improvement" || route === "decline" || route === "context"
+            ? { direction: "HIGHER_IS_BETTER" } : {}) });
+      expect(response.status).toBe(404);
+    }
+  });
+  it("allows an active professional relationship and denies it after deactivation", async () => {
+    const owner = await tokenFor(["performance-measurements.read"]);
+    const professional = await tokenFor(["performance-measurements.read"], owner.tenantId);
+    const ids = await scope(owner.tenantId, owner.userId);
+    const relationship = await testPrisma.athleteRelationship.create({ data: {
+      tenantId: owner.tenantId, athleteId: ids.athlete.id,
+      relatedEntityId: professional.userId, relationshipType: "PERFORMANCE_PROFESSIONAL",
+    } });
+    const query = { athleteId: ids.athlete.id, metricId: ids.metric.id, direction: "LOWER_IS_BETTER" };
+    const auth = { Authorization: `Bearer ${professional.token}` };
+    expect((await request(app).get(path).set(auth).query(query)).status).toBe(200);
+    await testPrisma.athleteRelationship.update({ where: { id: relationship.id }, data: { status: "INACTIVE" } });
+    expect((await request(app).get(path).set(auth).query(query)).status).toBe(404);
+  });
   it("reports sparse and sufficient sample coverage without a probability claim", async () => {
     const user = await tokenFor(["performance-measurements.read"]);
-    const ids = await scope(user.tenantId);
+    const ids = await scope(user.tenantId, user.userId);
     const query = { athleteId: ids.athlete.id, metricId: ids.metric.id, direction: "LOWER_IS_BETTER" };
     const sparse = await request(app).get(path).set("Authorization", `Bearer ${user.token}`).query(query);
     expect(sparse.body.data).toMatchObject({ evidenceLevel: "INSUFFICIENT", comparison: null,
