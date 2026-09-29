@@ -240,6 +240,7 @@ const performanceMeasurementController =
         performanceMeasurementModule.createBaselineUseCase,
         performanceMeasurementModule.detectImprovementUseCase,
         performanceMeasurementModule.detectDeclineUseCase,
+        performanceMeasurementModule.detectPlateauUseCase,
     );
 const nutritionPlanController =
     new NutritionPlanController(

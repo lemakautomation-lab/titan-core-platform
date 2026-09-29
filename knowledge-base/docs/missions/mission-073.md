@@ -43,6 +43,10 @@ Detect meaningful performance trends and deviations.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
+**Status:** IN PROGRESS / LOCAL VERIFICATION PENDING (29 September 2026).
+
+**Design:** Authenticated `GET /api/v1/performance-measurements/trends/plateau` compares two adjacent UTC windows of tenant-scoped effective observations. Both windows need the configured sample minimum. The default tolerance is 2% of the previous mean, with optional nonnegative absolute tolerance in the metric unit; the effective tolerance is the greater of the two. Absolute change within the tolerance returns `PLATEAU`; outside returns `NO_PLATEAU`; sparse windows return `INSUFFICIENT_DATA`. The response exposes both means and effective tolerance. It is a two-window signal and makes no confidence or long-duration persistence claim. No frontend or database change is included.
+
 ### Control 73.4 - Change detection
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.

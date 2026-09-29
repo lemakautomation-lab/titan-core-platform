@@ -8,6 +8,7 @@ import { CreateAthleteBaselineUseCase } from "../../application/use-cases/create
 import { BaselineDefinitionValidationError } from "../../domain/entities/athlete-baseline/baseline-definition";
 import { DetectAthleteImprovementUseCase } from "../../application/use-cases/detect-athlete-improvement.use-case";
 import { DetectAthleteDeclineUseCase } from "../../application/use-cases/detect-athlete-decline.use-case";
+import { DetectAthletePlateauUseCase } from "../../application/use-cases/detect-athlete-plateau.use-case";
 import type { ImprovementDirection } from "../../domain/services/athlete-improvement-detector.service";
 
 export class PerformanceMeasurementController {
@@ -18,7 +19,47 @@ export class PerformanceMeasurementController {
         private readonly createBaselineUseCase: CreateAthleteBaselineUseCase,
         private readonly detectImprovementUseCase: DetectAthleteImprovementUseCase,
         private readonly detectDeclineUseCase: DetectAthleteDeclineUseCase,
+        private readonly detectPlateauUseCase: DetectAthletePlateauUseCase,
     ) {}
+
+    async detectPlateau(req: AuthRequest, res: Response) {
+        if (!req.user) return void res.status(401).json({ error: "Unauthorized" });
+        const query = req.query;
+        const keys = Object.keys(query);
+        if (keys.some(key => !["athleteId", "metricId", "windowDays", "minimumSamplesPerWindow",
+            "relativeTolerance", "absoluteTolerance"].includes(key)) ||
+            typeof query.athleteId !== "string" || !query.athleteId.trim() ||
+            typeof query.metricId !== "string" || !query.metricId.trim()) {
+            return void res.status(400).json({ error: "Invalid plateau request." });
+        }
+        const integer = (value: unknown, fallback: number) => value === undefined ? fallback :
+            typeof value === "string" && /^\d+$/.test(value) ? Number(value) : NaN;
+        const decimal = (value: unknown, fallback: number) => value === undefined ? fallback :
+            typeof value === "string" && /^(?:\d+)(?:\.\d+)?$/.test(value) ? Number(value) : NaN;
+        const windowDays = integer(query.windowDays, 30);
+        const minimumSamplesPerWindow = integer(query.minimumSamplesPerWindow, 3);
+        const relativeTolerance = decimal(query.relativeTolerance, 0.02);
+        const absoluteTolerance = decimal(query.absoluteTolerance, 0);
+        if (!Number.isSafeInteger(windowDays) || windowDays < 1 || windowDays > 1825 ||
+            !Number.isSafeInteger(minimumSamplesPerWindow) || minimumSamplesPerWindow < 2 ||
+            minimumSamplesPerWindow > 5000 || !Number.isFinite(relativeTolerance) ||
+            relativeTolerance < 0 || relativeTolerance > 1 || !Number.isFinite(absoluteTolerance) ||
+            absoluteTolerance < 0 || absoluteTolerance > 1_000_000_000) {
+            return void res.status(400).json({ error: "Invalid plateau policy." });
+        }
+        try {
+            const data = await this.detectPlateauUseCase.execute({
+                tenantId: req.user.tenantId, athleteId: query.athleteId, metricId: query.metricId,
+                windowDays, minimumSamplesPerWindow, relativeTolerance, absoluteTolerance,
+            });
+            return void res.status(200).json({ data });
+        } catch (error) {
+            if (error instanceof Error && ["Athlete not found.", "Performance metric not found for athlete."].includes(error.message)) {
+                return void res.status(404).json({ error: error.message });
+            }
+            throw error;
+        }
+    }
 
     async detectImprovement(req: AuthRequest, res: Response) {
         return this.detectTrend(req, res, "improvement");

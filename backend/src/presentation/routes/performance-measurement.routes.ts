@@ -14,6 +14,10 @@ export function createPerformanceMeasurementRoutes(controller: PerformanceMeasur
         requirePermission("performance-measurements.read"),
         controller.detectDecline.bind(controller),
     );
+    router.get("/trends/plateau",
+        requirePermission("performance-measurements.read"),
+        controller.detectPlateau.bind(controller),
+    );
     router.post("/baselines",
         requirePermission("performance-measurements.create"),
         requirePermission("performance-measurements.read"),
