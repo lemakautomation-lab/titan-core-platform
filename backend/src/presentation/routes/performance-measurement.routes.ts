@@ -14,6 +14,10 @@ export function createPerformanceMeasurementRoutes(controller: PerformanceMeasur
         requirePermission("performance-measurements.read"),
         controller.detectDecline.bind(controller),
     );
+    router.get("/trends/context",
+        requirePermission("performance-measurements.read"),
+        controller.getTrendContext.bind(controller),
+    );
     router.get("/trends/deviation",
         requirePermission("performance-measurements.read"),
         controller.detectDeviation.bind(controller),

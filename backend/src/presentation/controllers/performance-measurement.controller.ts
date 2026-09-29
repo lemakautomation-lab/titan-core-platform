@@ -11,6 +11,7 @@ import { DetectAthleteDeclineUseCase } from "../../application/use-cases/detect-
 import { DetectAthletePlateauUseCase } from "../../application/use-cases/detect-athlete-plateau.use-case";
 import { DetectAthleteChangeUseCase } from "../../application/use-cases/detect-athlete-change.use-case";
 import { DetectAthleteDeviationUseCase } from "../../application/use-cases/detect-athlete-deviation.use-case";
+import { GetAthleteTrendContextUseCase } from "../../application/use-cases/get-athlete-trend-context.use-case";
 import type { ImprovementDirection } from "../../domain/services/athlete-improvement-detector.service";
 
 export class PerformanceMeasurementController {
@@ -24,7 +25,41 @@ export class PerformanceMeasurementController {
         private readonly detectPlateauUseCase: DetectAthletePlateauUseCase,
         private readonly detectChangeUseCase: DetectAthleteChangeUseCase,
         private readonly detectDeviationUseCase: DetectAthleteDeviationUseCase,
+        private readonly trendContextUseCase: GetAthleteTrendContextUseCase,
     ) {}
+
+    async getTrendContext(req: AuthRequest, res: Response) {
+        if (!req.user) return void res.status(401).json({ error: "Unauthorized" });
+        const query = req.query;
+        if (Object.keys(query).some(key => !["athleteId", "metricId", "direction", "windowDays",
+            "minimumSamplesPerWindow"].includes(key)) ||
+            typeof query.athleteId !== "string" || !query.athleteId.trim() ||
+            typeof query.metricId !== "string" || !query.metricId.trim() ||
+            (query.direction !== "HIGHER_IS_BETTER" && query.direction !== "LOWER_IS_BETTER")) {
+            return void res.status(400).json({ error: "Invalid trend context request." });
+        }
+        const integer = (value: unknown, fallback: number) => value === undefined ? fallback :
+            typeof value === "string" && /^\d+$/.test(value) ? Number(value) : NaN;
+        const windowDays = integer(query.windowDays, 30);
+        const minimumSamplesPerWindow = integer(query.minimumSamplesPerWindow, 3);
+        if (!Number.isSafeInteger(windowDays) || windowDays < 1 || windowDays > 1825 ||
+            !Number.isSafeInteger(minimumSamplesPerWindow) || minimumSamplesPerWindow < 2 ||
+            minimumSamplesPerWindow > 5000) {
+            return void res.status(400).json({ error: "Invalid trend context policy." });
+        }
+        try {
+            const data = await this.trendContextUseCase.execute({
+                tenantId: req.user.tenantId, athleteId: query.athleteId, metricId: query.metricId,
+                direction: query.direction as ImprovementDirection, windowDays, minimumSamplesPerWindow,
+            });
+            return void res.status(200).json({ data });
+        } catch (error) {
+            if (error instanceof Error && ["Athlete not found.", "Performance metric not found for athlete."].includes(error.message)) {
+                return void res.status(404).json({ error: error.message });
+            }
+            throw error;
+        }
+    }
 
     async detectDeviation(req: AuthRequest, res: Response) {
         if (!req.user) return void res.status(401).json({ error: "Unauthorized" });

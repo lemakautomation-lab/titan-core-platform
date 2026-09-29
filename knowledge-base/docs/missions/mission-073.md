@@ -65,13 +65,20 @@ Detect meaningful performance trends and deviations.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
-**Status:** IN PROGRESS / LOCAL VERIFICATION PENDING (29 September 2026).
+**Status:** LOCALLY VERIFIED / RELEASE PENDING (29 September 2026). Mission remains ACTIVE.
 
 **Design:** Authenticated `GET /api/v1/performance-measurements/trends/deviation` requires `performance-measurements.read` and derives tenant scope from the session. The latest immutable baseline version for the athlete/metric is authoritative; a missing or not-ready latest version cannot silently fall back to an older baseline. A ready baseline is compared against the latest effective measurement recorded after its `asOf` and no later than the request time. Default tolerance is 5% of the absolute baseline value, with optional nonnegative absolute threshold in metric units; the effective threshold is the greater value. Absolute deviation strictly above the threshold returns `DEVIATION`; otherwise `NO_DEVIATION`. Missing baseline, not-ready baseline and no post-baseline observation are explicit states. The result identifies the baseline version and measurement, signed deviation and above/below direction. This is a single-observation deviation signal, not a statistical confidence claim. No frontend or database migration is included.
+
+
+**Local evidence:** Targeted unit/API tests: 2 files, 6 tests passed. Adjacent Mission 073 regression, backend TypeScript build, lint with zero errors and 31 existing warnings, Knowledge Base build, and `git diff --check` passed. Implementation commit `76327834b10f1cf4bb7f7fa6be5c2ba87f06e172` synchronized with `origin/main`. Staging smoke and Knowledge Base publication remain outstanding; no production release is claimed.
 
 ### Control 73.6 - Trend confidence/context
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+
+**Status:** IN PROGRESS / LOCAL VERIFICATION PENDING (29 September 2026).
+
+**Design:** Authenticated `GET /api/v1/performance-measurements/trends/context` requires `performance-measurements.read` and explicitly supplied metric direction. It reuses the tenant-scoped effective-history comparison and returns adjacent UTC window boundaries, each sample count, configured sample minimum, and an evidence level of `INSUFFICIENT`, `MINIMUM_COVERAGE` or `EXTRA_COVERAGE`. The level reflects sample counts only; `statisticalConfidence` is explicitly `null`, and the response claims no probability, causality or significance. Sparse windows withhold the means and signed change. No frontend, persisted trend record or migration is included.
 
 ### Control 73.7 - Authorised trend visibility
 
