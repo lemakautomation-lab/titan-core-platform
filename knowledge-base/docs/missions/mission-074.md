@@ -31,7 +31,13 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 74.2 - Authorised data retrieval
 
+**Status:** LOCALLY VERIFIED / RELEASE PENDING (30 September 2026). Mission remains ACTIVE.
+
+**Design:** Authenticated personal `GET /api/v1/ai-athlete-assistant/data` resolves the signed-in athlete through 74.1 and composes Mission 071 sources. Training, nutrition, recovery, wearables, performance tests, goals and sport requirements each retain their independent read permission and active identity checks. Denied sources are null; authorised empty snapshots remain distinguishable. Query scope overrides are rejected, responses are no-store, and no prompt, provider request, generated guidance or persisted assistant record is created. Existing bounded source readers determine each snapshot size.
+
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+
+**Local evidence:** Assistant/intelligence regression: 11 files, 27 tests passed. Backend TypeScript build passed; lint had zero errors and 31 existing warnings. Knowledge Base build and git diff --check passed. Staging verification and publication remain pending.
 
 ### Control 74.3 - Performance guidance
 
