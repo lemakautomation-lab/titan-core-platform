@@ -41,7 +41,7 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 74.3 - Performance guidance
 
-**Status:** IMPLEMENTED / LOCAL VERIFICATION PENDING (30 September 2026). Not released.
+**Status:** LOCAL AND STAGING VERIFICATION PASSED / KB PUBLICATION PENDING (30 September 2026). Mission remains ACTIVE.
 
 **Design:** Authenticated personal `POST /api/v1/ai-athlete-assistant/guidance` accepts only `{consent: true}`; query overrides and arbitrary prompts are rejected. It reuses 74.2 independent source permission checks. The outbound projection includes only governed goal categories and bounded existing training frequencies; identities, names, free text, health observations and other source records are excluded. Insufficient permitted facts prevent an API call. The dashboard provides an explicit per-request transfer acknowledgement and generation button, plain-text guidance, loading, insufficient-data and unavailable states. No automatic generation occurs on mount.
 
@@ -50,6 +50,8 @@ Local frontend expectation: visible change is expected only where the listed mis
 **Privacy and release limits:** `store:false` does not imply zero retention; provider abuse-monitoring retention policies apply. This slice does not send recovery, nutrition or wearable measurements. No persistence, migration or package dependency is introduced. Model access/billing, live provider behavior, UI verification and staging deployment remain pending. Distributed quota enforcement, richer explanations/confidence, escalation controls and the AI audit trail are not claimed complete; 74.4–74.7 remain outstanding. Mission remains ACTIVE.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+
+**Verification evidence (30 September 2026):** Backend assistant/intelligence regression passed: 13 files, 40 tests. After the control-character lint correction, guidance unit tests, backend build/lint, dashboard tests, frontend build and Docusaurus build passed. Implementation commit: `7baa65269193a4409624f91a62a8895db218fc43`. Staging configuration and deployed revision: `675490ce63dec4c039c0e2263eecb734aaa30a41`. Backend and web rebuilt successfully. The dashboard insufficient-data state was verified. Live OpenAI returned HTTP 200 and validated structured guidance. Authenticated synthetic API smoke verified denied goals withheld, supplied scope rejected with 400, and permitted generation returned 200/GENERATED. Synthetic fixtures were removed; security history retained. Existing staging athlete permissions were unchanged. Broader AI safety evaluation, remaining controls 74.4–74.7, mission regression and production readiness are not claimed complete.
 
 ### Control 74.4 - Explainable responses
 
