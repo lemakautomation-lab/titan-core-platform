@@ -55,15 +55,17 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 74.4 - Explainable responses
 
-**Status:** IMPLEMENTED / LOCAL VERIFICATION PENDING (30 September 2026). Mission remains ACTIVE.
+**Status:** LOCAL AND STAGING VERIFICATION PASSED / KB PUBLICATION PENDING (30 September 2026). Mission remains ACTIVE.
 
 **Design:** Both generated and insufficient-data responses include an additive server-generated `explanation` envelope: version, source retrieval timestamp, the exact bounded goal/frequency projection, and independent source states `WITHHELD`, `NO_USABLE_FACTS` or `USED`. The explanation is captured before provider invocation and is not accepted from model output. It contains no names, account IDs or raw text. Denied sources remain withheld; authorised empty or filtered snapshots are distinguished. This records the input basis, not a claim that every generated statement is supported or an account of the model's internal reasoning.
 
 **Visible workflow:** The existing assistant panel labels AI-generated suggestions separately from the TITAN source summary. It shows which categories and per-programme frequencies were shared, unavailable/withheld sources, retrieval time and the bounded selection size. It explicitly distinguishes planned frequency from completed workouts or measured progress. Insufficient-data responses explain that no facts were sent to OpenAI. The existing endpoint, provider request, consent and permission boundaries remain in place. No migration, new provider call or package dependency is introduced.
 
-**Pending gates:** Targeted/backend and dashboard regression, builds/lint, staging explanation smoke, visible UI verification and KB publication. No completed 74.5–74.7 or production readiness claim.
+**Remaining gates:** KB publication and live verification. Remaining controls and production readiness are not claimed complete.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
+
+**Verification evidence (30 September 2026):** Assistant/intelligence and dashboard regression, backend/frontend builds, backend lint, Docusaurus build and diff check passed. Implementation and staging revision: `b2e5563fe559da1f21a4301124c88f861d4df2d4`. Backend and web containers were rebuilt and verified running. Visible insufficient-data explanation verified withheld sources, retrieval timestamp and no-provider-call notice. Authenticated synthetic generation returned HTTP 200/GENERATED with explanation version 1, goals `[STRENGTH]`, no training frequencies, goals USED and training WITHHELD. The retrieval timestamp was valid. Synthetic fixture removed; security history retained.
 
 ### Control 74.5 - Limitations/confidence where appropriate
 
