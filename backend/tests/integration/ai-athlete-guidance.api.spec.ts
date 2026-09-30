@@ -31,9 +31,11 @@ describe("Mission 074.3 personal guidance API", () => {
         expect(response.status).toBe(200);
         expect(response.headers["cache-control"]).toBe("no-store");
         expect(response.body.data).toMatchObject({ status: "INSUFFICIENT_DATA", guidance: null,
+            escalation: { professionalReviewRequired: true, automaticContact: false },
             limitations: { confidence: "NOT_ASSESSED", coverage: "NONE" },
             explanation: { version: 1, facts: { goals: [], trainingFrequencies: [] },
                 sources: { goals: "WITHHELD", training: "WITHHELD" } } });
+        expect(response.body.data.escalation.notices).toHaveLength(3);
         expect(Number.isFinite(Date.parse(response.body.data.explanation.retrievedAt))).toBe(true);
     });
 });

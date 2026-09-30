@@ -8,6 +8,12 @@ const coverageLabels = {
   GOALS_AND_TRAINING: "Goal categories and planned programme frequencies",
 };
 
+const escalationNotices = [
+  "Review AI suggestions with your coach or qualified performance professional before changing your training plan.",
+  "For health concerns, contact a qualified healthcare professional. This assistant cannot diagnose, treat or assess whether exercise is safe for you.",
+  "You must contact the professional yourself. TITAN does not send a referral or notify anyone, and this panel is not monitored for urgent help.",
+];
+
 export default function AiAthleteGuidancePanel() {
   const [consent, setConsent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -36,6 +42,10 @@ export default function AiAthleteGuidancePanel() {
       <h2>Personal AI performance assistant</h2>
       <p>For your own athlete account. General fitness support based on permitted goals and programme frequency.</p>
       <p>AI can make mistakes. This is not medical advice or a replacement for your coach’s plan. Discuss changes with a qualified professional.</p>
+      <div aria-label="Professional review boundary">
+        <h3>When to contact a professional</h3>
+        <ul>{(result?.escalation?.notices ?? escalationNotices).map(notice => <li key={notice}>{notice}</li>)}</ul>
+      </div>
       <label>
         <input type="checkbox" checked={consent} disabled={loading}
           onChange={(event) => setConsent(event.target.checked)} />

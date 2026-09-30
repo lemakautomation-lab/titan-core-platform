@@ -90,3 +90,22 @@ export function guidanceLimitations(facts: GuidanceFacts): GuidanceLimitations {
         ],
     };
 }
+
+export interface GuidanceEscalation {
+    professionalReviewRequired: true;
+    automaticContact: false;
+    notices: string[];
+}
+
+/** A review boundary, not symptom assessment or an automated referral. */
+export function guidanceEscalation(): GuidanceEscalation {
+    return {
+        professionalReviewRequired: true,
+        automaticContact: false,
+        notices: [
+            "Review AI suggestions with your coach or qualified performance professional before changing your training plan.",
+            "For health concerns, contact a qualified healthcare professional. This assistant cannot diagnose, treat or assess whether exercise is safe for you.",
+            "You must contact the professional yourself. TITAN does not send a referral or notify anyone, and this panel is not monitored for urgent help.",
+        ],
+    };
+}

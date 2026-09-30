@@ -83,6 +83,14 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 74.6 - Human/professional escalation boundary
 
+**Status:** IMPLEMENTED / LOCAL VERIFICATION PENDING (30 September 2026). Mission remains ACTIVE.
+
+**Design:** Generated and insufficient-data responses carry a server-owned escalation envelope requiring professional review and explicitly declaring automatic contact false. Fixed notices direct training-plan changes to a coach or qualified performance professional and health concerns to a qualified healthcare professional. No symptom assessment, diagnosis, exercise-safety decision, referral, message or notification is performed. The user must contact the professional; the panel is not monitored for urgent help. This boundary is independent of model output and is not sent as personal context to the provider.
+
+**Visible workflow:** Professional contact instructions appear before generation, after generated or insufficient-data responses, and during provider failure. Existing consent, personal scope and source permissions remain in force. No migration, dependency or extra provider call is introduced.
+
+**Pending gates:** Targeted and affected regression tests, backend/frontend builds, lint, staging response and visible UI verification, and KB publication. Automated professional referral and clinical triage are outside this control. Controls 74.7 and the mission exit gate remain pending.
+
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
 ### Control 74.7 - AI audit trail
