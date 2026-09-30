@@ -38,6 +38,9 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: staging
+      ATHLETE_AI_ENABLED: ${ATHLETE_AI_ENABLED:-false}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini-2025-04-14}
       SERVER_HOST: 0.0.0.0
       SERVER_PORT: "3000"
       DATABASE_URL: postgresql://titan_app:${POSTGRES_APP_PASSWORD:?Set in staging secrets file}@postgres:5432/titan_staging
