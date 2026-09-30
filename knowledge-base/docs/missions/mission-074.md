@@ -97,8 +97,26 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 74.7 - AI audit trail
 
+**Status:** LOCAL AND STAGING VERIFICATION PASSED / KB PUBLICATION PENDING (30 September 2026). Mission remains ACTIVE pending final publication verification.
+
+**Design:** Personal AI guidance now writes a tenant-scoped audit record through the existing TITAN audit infrastructure before a guidance result is returned. No new audit table, Prisma migration or dependency is introduced. The authoritative audit identity remains the authenticated tenant and user. The resource is `AI_ATHLETE_ASSISTANT`, the action is `AI_ATHLETE_GUIDANCE`, and the athlete ID is used as the resource identifier when available.
+
+Audit metadata is explicitly allowlisted and versioned. It records only the audit schema/policy version, explicit consent state, request correlation identifier, outcome, bounded source coverage/state, provider identity, configured model identity and whether the provider was invoked. Raw prompts, generated guidance text, provider payloads, goal values, health/performance measurements, authentication tokens, API keys, authorization headers and provider error bodies are not persisted in the AI audit metadata.
+
+Audited outcomes include successful generated guidance, insufficient authorised data, athlete-not-found, provider failure and invalid provider output. Provider failure and malformed/invalid provider output remain client-safe and do not expose upstream response bodies. Required audit persistence is fail-closed: if the audit record cannot be written, successful guidance is not returned. Existing personal authentication, tenant scope, explicit consent, source permissions, no-store behavior, bounded provider projection, rate limiting and the 74.6 professional-review/escalation boundary remain intact.
+
+**Verification evidence (30 September 2026):** Implementation commit `6218641a277ee69f4d8dd6747c4a33d92c9a8b36` was pushed with the controlled 74.7 implementation. Targeted 74.7 verification passed: 5 test files, 30 tests. The affected AI/intelligence regression passed, backend TypeScript build passed, and backend lint completed with zero errors and 31 warnings. Security/diff review confirmed the controlled file boundary, no Prisma/schema/dependency change and a clean `git diff --check`. Full backend regression passed: 265 test files, 1541 tests.
+
+Staging was fast-forwarded to implementation commit `6218641a277ee69f4d8dd6747c4a33d92c9a8b36`; the backend image was rebuilt and the backend container recreated. Public application readiness returned `status: ok`, service `titan-core-backend` and database `connected`.
+
+Authenticated isolated staging smoke returned HTTP 200 with `GENERATED`. Request correlation matched the persisted audit event; tenant/user scope and SUCCESS status were verified; audit metadata matched the exact ten-field allowlist; sensitive guidance, goal, identity, token and credential content was absent. Existing escalation behavior remained intact with professional review required, automatic contact disabled and three notices. Synthetic business data was removed after verification; inactive tenant/user references and the AI audit evidence were retained for traceability.
+
+**Pending gate:** Knowledge Base publication and published-page verification. Production release is not implied by this control.
+
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
 ## Mission Exit Gate
 
-all controls implemented or explicitly verified as already satisfied; targeted tests GREEN; relevant regression GREEN; build GREEN; security/tenant/RBAC implications verified; migration/API contract verified where applicable; documentation/evidence captured.
+**Status:** TECHNICAL EXIT CRITERIA SATISFIED / FINAL KB PUBLICATION PENDING (30 September 2026). Mission remains ACTIVE until publication is verified.
+
+Controls 74.1–74.7 are implemented and/or verified against their defined boundaries. Targeted verification is GREEN; affected and full backend regression are GREEN; backend build is GREEN; tenant, authentication, authorization, privacy and AI audit implications have been reviewed; no 74.7 migration or dependency change was required; staging deployment and authenticated behavioral smoke are GREEN. Final mission closure requires publication of this evidence and verification of the published Mission 074 page.
