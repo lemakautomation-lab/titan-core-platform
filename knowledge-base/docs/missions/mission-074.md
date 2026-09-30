@@ -37,9 +37,17 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
-**Local evidence:** Assistant/intelligence regression: 11 files, 27 tests passed. Backend TypeScript build passed; lint had zero errors and 31 existing warnings. Knowledge Base build and git diff --check passed. Staging verification and publication remain pending.
+**Local evidence:** Assistant/intelligence regression: 11 files, 27 tests passed. Backend TypeScript build passed; lint had zero errors and 31 existing warnings. Knowledge Base build and diff check passed. Commit `9ac34a4cd3cf113fa21d837634fd5a1915528a05` pushed. Staging verification/publication remain pending.
 
 ### Control 74.3 - Performance guidance
+
+**Status:** IMPLEMENTED / LOCAL VERIFICATION PENDING (30 September 2026). Not released.
+
+**Design:** Authenticated personal `POST /api/v1/ai-athlete-assistant/guidance` accepts only `{consent: true}`; query overrides and arbitrary prompts are rejected. It reuses 74.2 independent source permission checks. The outbound projection includes only governed goal categories and bounded existing training frequencies; identities, names, free text, health observations and other source records are excluded. Insufficient permitted facts prevent an API call. The dashboard provides an explicit per-request transfer acknowledgement and generation button, plain-text guidance, loading, insufficient-data and unavailable states. No automatic generation occurs on mount.
+
+**Provider:** Server-only OpenAI Responses API; disabled unless `ATHLETE_AI_ENABLED=true` and `OPENAI_API_KEY` is configured. `OPENAI_MODEL` defaults to `gpt-4.1-mini-2025-04-14`. Strict structured outputs, `store:false`, no tools, 700 output tokens, 20-second timeout, no retries and three requests per authenticated account per minute per backend instance. Provider bodies/errors and credentials are not returned. Output is validated for exact shape, bounded lengths and plain text. Prompts constrain guidance to conservative support, without diagnosis, prescriptions or changing a professional plan. Prompt constraints and structural checks do not prove all generated content safe; live evaluation remains required.
+
+**Privacy and release limits:** `store:false` does not imply zero retention; provider abuse-monitoring retention policies apply. This slice does not send recovery, nutrition or wearable measurements. No persistence, migration or package dependency is introduced. Model access/billing, live provider behavior, UI verification and staging deployment remain pending. Distributed quota enforcement, richer explanations/confidence, escalation controls and the AI audit trail are not claimed complete; 74.4–74.7 remain outstanding. Mission remains ACTIVE.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 

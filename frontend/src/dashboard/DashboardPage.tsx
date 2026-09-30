@@ -1,3 +1,4 @@
+import AiAthleteGuidancePanel from "./AiAthleteGuidancePanel";
 import TrainingOverviewPanel from "./TrainingOverviewPanel";
 import RelevantContextPanel from "./RelevantContextPanel";
 import ActionableInsightsPanel from "./ActionableInsightsPanel";
@@ -187,6 +188,7 @@ export default function DashboardPage({
       />
 
       <ActionableInsightsPanel />
+      <AiAthleteGuidancePanel />
 
     </section>
   );

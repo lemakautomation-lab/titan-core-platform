@@ -1,3 +1,5 @@
+import { OpenAiPerformanceGuidance } from "../ai/openai-performance-guidance";
+import { GetMyAiAthleteGuidanceUseCase } from "../../application/use-cases/get-my-ai-athlete-guidance.use-case";
 import { DatabaseService } from "../database/database.service";
 import { PrismaAthleteRepository } from "../repositories/athlete.repository";
 import { PrismaAthleteIntelligenceContextReader } from "../queries/athlete-intelligence-context.query";
@@ -35,4 +37,11 @@ const aggregate = new ReadAthleteIntelligenceAggregate(
     new ReadAthleteIntelligenceGoals(identity, permissions, new PrismaAthleteGoalsReader(database)),
     new ReadAthleteIntelligenceSportRequirements(identity, permissions, new PrismaAthleteSportRequirementsReader(database)),
 );
-export const aiAthleteAssistantModule = { context, data: new GetMyAiAthleteDataUseCase(context, aggregate) };
+const data = new GetMyAiAthleteDataUseCase(context, aggregate);
+const provider = new OpenAiPerformanceGuidance({
+    enabled: process.env.ATHLETE_AI_ENABLED === "true",
+    apiKey: process.env.OPENAI_API_KEY,
+    model: process.env.OPENAI_MODEL ?? "gpt-4.1-mini-2025-04-14",
+});
+export const aiAthleteAssistantModule = { context, data,
+    guidance: new GetMyAiAthleteGuidanceUseCase(data, provider) };
