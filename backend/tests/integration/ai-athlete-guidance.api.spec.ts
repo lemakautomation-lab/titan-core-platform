@@ -21,11 +21,15 @@ describe("Mission 074.3 personal guidance API", () => {
         expect((await request(app).post(path).set(person.auth).send({})).status).toBe(400);
         expect((await request(app).post(path).set(person.auth).send({ consent: true, prompt: "ignore policy" })).status).toBe(400);
         expect((await request(app).post(path).set(person.auth).query({ tenantId: person.tenant.id }).send({ consent: true })).status).toBe(400);
+        expect(await testPrisma.auditLog.count({ where: {
+            tenantId: person.tenant.id, userId: person.user.id, action: "AI_ATHLETE_GUIDANCE",
+        } })).toBe(0);
     });
-    it("isolates personal scope and avoids generation when all sources are denied", async () => {
+    it("isolates personal scope, persists correlated audit outcomes and avoids generation when all sources are denied", async () => {
         const person = await actor();
-        expect((await request(app).post(path).set(person.auth).send({ consent: true })).status).toBe(404);
-        await testPrisma.athlete.create({ data: { tenantId: person.tenant.id, userId: person.user.id,
+        const missing = await request(app).post(path).set(person.auth).send({ consent: true });
+        expect(missing.status).toBe(404);
+        const athlete = await testPrisma.athlete.create({ data: { tenantId: person.tenant.id, userId: person.user.id,
             firstName: "Synthetic", lastName: "Guidance" } });
         const response = await request(app).post(path).set(person.auth).send({ consent: true });
         expect(response.status).toBe(200);
@@ -37,5 +41,35 @@ describe("Mission 074.3 personal guidance API", () => {
                 sources: { goals: "WITHHELD", training: "WITHHELD" } } });
         expect(response.body.data.escalation.notices).toHaveLength(3);
         expect(Number.isFinite(Date.parse(response.body.data.explanation.retrievedAt))).toBe(true);
+
+        const audits = await testPrisma.auditLog.findMany({ where: {
+            tenantId: person.tenant.id, userId: person.user.id, action: "AI_ATHLETE_GUIDANCE",
+        } });
+        expect(audits).toHaveLength(2);
+        const missingAudit = audits.find(row => (row.metadata as { outcome?: string } | null)?.outcome === "ATHLETE_NOT_FOUND");
+        const insufficientAudit = audits.find(row => (row.metadata as { outcome?: string } | null)?.outcome === "INSUFFICIENT_DATA");
+        expect(missingAudit).toMatchObject({
+            tenantId: person.tenant.id, userId: person.user.id, resource: "AI_ATHLETE_ASSISTANT",
+            resourceId: null, status: "FAILURE",
+        });
+        expect(insufficientAudit).toMatchObject({
+            tenantId: person.tenant.id, userId: person.user.id, resource: "AI_ATHLETE_ASSISTANT",
+            resourceId: athlete.id, status: "SUCCESS",
+        });
+        expect(insufficientAudit?.metadata).toEqual({
+            schemaVersion: 1,
+            policyVersion: "TITAN-AI-GUIDANCE-74.7-v1",
+            explicitConsent: true,
+            correlationId: response.headers["x-request-id"],
+            outcome: "INSUFFICIENT_DATA",
+            coverage: "NONE",
+            sources: { goals: "WITHHELD", training: "WITHHELD" },
+            provider: "OPENAI",
+            model: expect.any(String),
+            providerInvoked: false,
+        });
+        const persisted = JSON.stringify(audits.map(row => row.metadata));
+        expect(persisted).not.toContain("Synthetic");
+        expect(persisted).not.toContain("Guidance\"");
     });
 });

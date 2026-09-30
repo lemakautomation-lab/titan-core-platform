@@ -12,8 +12,12 @@ export interface PerformanceGuidance {
 export interface PerformanceGuidanceProvider {
     generate(facts: GuidanceFacts): Promise<PerformanceGuidance>;
 }
+export type GuidanceUnavailableReason = "PROVIDER_FAILURE" | "INVALID_OUTPUT";
 export class GuidanceUnavailableError extends Error {
-    constructor() { super("Performance guidance is temporarily unavailable."); }
+    constructor(public readonly reason: GuidanceUnavailableReason = "PROVIDER_FAILURE") {
+        super("Performance guidance is temporarily unavailable.");
+        this.name = "GuidanceUnavailableError";
+    }
 }
 
 /** Only bounded, governed goals and programme frequencies leave the server in 74.3.
@@ -33,14 +37,14 @@ export function guidanceFacts(sources: AthleteIntelligenceAggregate): GuidanceFa
 }
 
 export function validateGuidance(value: unknown): PerformanceGuidance {
-    if (!value || typeof value !== "object") throw new GuidanceUnavailableError();
+    if (!value || typeof value !== "object") throw new GuidanceUnavailableError("INVALID_OUTPUT");
     const record = value as Record<string, unknown>;
     const safeText = (text: unknown, limit: number): text is string => typeof text === "string"
         && text.trim().length > 0 && text.length <= limit && !Array.from(text).some(character => character.charCodeAt(0) < 32 || character === "<" || character === ">");
     if (Object.keys(record).sort().join(",") !== "actions,summary"
         || !safeText(record.summary, 600) || !Array.isArray(record.actions)
         || record.actions.length < 1 || record.actions.length > 3
-        || !record.actions.every(action => safeText(action, 300))) throw new GuidanceUnavailableError();
+        || !record.actions.every(action => safeText(action, 300))) throw new GuidanceUnavailableError("INVALID_OUTPUT");
     return { summary: record.summary, actions: record.actions as string[] };
 }
 

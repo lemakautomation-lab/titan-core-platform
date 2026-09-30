@@ -45,8 +45,12 @@ export function createAiAthleteAssistantRoutes(context: GetMyAiAthleteContextUse
             || Object.keys(body).join(",") !== "consent" || (body as { consent?: unknown }).consent !== true) {
             return void res.status(400).json({ error: "Explicit consent is required; scope and prompts cannot be supplied." });
         }
+        const requestId = (req as AuthRequest & { requestId?: string }).requestId;
+        if (!requestId) return next(new Error("Request correlation identifier missing."));
         try {
-            const result = await guidance.execute({ tenantId: req.user.tenantId, userId: req.user.userId });
+            const result = await guidance.execute({
+                tenantId: req.user.tenantId, userId: req.user.userId, consent: true, requestId,
+            });
             if (!result) return void res.status(404).json({ error: "Athlete not found." });
             res.status(200).json({ data: result });
         } catch (error) {

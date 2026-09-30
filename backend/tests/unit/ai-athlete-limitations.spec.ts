@@ -2,11 +2,14 @@ import { describe, expect, it, vi } from "vitest";
 import { GetMyAiAthleteGuidanceUseCase } from "../../src/application/use-cases/get-my-ai-athlete-guidance.use-case";
 import { ProgrammeGoalClassification } from "../../src/domain/enums/programme-goal-classification.enum";
 import type { AthleteIntelligenceAggregate } from "../../src/application/intelligence/athlete-aggregation";
-import type { GuidanceFacts } from "../../src/application/ai-athlete/performance-guidance";
+import type { GuidanceFacts, PerformanceGuidanceProvider } from "../../src/application/ai-athlete/performance-guidance";
 const empty: AthleteIntelligenceAggregate = { athleteId: "private", goals: null, training: null,
     nutrition: null, recovery: null, wearables: null, performanceTests: null, sportRequirements: null };
 const advice = { summary: "Review your goals with your coach.", actions: ["Track attendance."] };
-const input = { tenantId: "tenant", userId: "user" };
+const input = { tenantId: "tenant", userId: "user", consent: true as const,
+    requestId: "11111111-1111-4111-8111-111111111111" };
+const auditIdentity = { provider: "OPENAI" as const, model: "gpt-4.1-mini-2025-04-14",
+    policyVersion: "TITAN-AI-GUIDANCE-74.7-v1" };
 function sources(goals: boolean, training: boolean): AthleteIntelligenceAggregate {
     return { ...empty,
         goals: goals ? { athleteId: "private", primaryGoal: ProgrammeGoalClassification.STRENGTH, secondaryGoals: [] } : null,
@@ -14,15 +17,18 @@ function sources(goals: boolean, training: boolean): AthleteIntelligenceAggregat
             status: "ACTIVE", trainingFrequency: 3, updatedAt: new Date() }] } : null,
     };
 }
+function useCase(value: AthleteIntelligenceAggregate, provider: PerformanceGuidanceProvider) {
+    return new GetMyAiAthleteGuidanceUseCase({ execute: vi.fn().mockResolvedValue({
+        context: { athleteId: value.athleteId }, sources: value, generatedAt: new Date().toISOString(),
+    }) }, provider, { log: vi.fn().mockResolvedValue(undefined) }, auditIdentity);
+}
 describe("Mission 074.5 guidance limitations", () => {
     it.each([
         [false, false, "NONE"], [true, false, "GOALS_ONLY"],
         [false, true, "TRAINING_ONLY"], [true, true, "GOALS_AND_TRAINING"],
     ] as const)("classifies usable facts without implying calibrated confidence (%s, %s)", async (goals, training, coverage) => {
         const generate = vi.fn().mockResolvedValue(advice);
-        const result = await new GetMyAiAthleteGuidanceUseCase({ execute: vi.fn().mockResolvedValue({
-            sources: sources(goals, training), generatedAt: new Date().toISOString(),
-        }) }, { generate }).execute(input);
+        const result = await useCase(sources(goals, training), { generate }).execute(input);
         expect(result?.limitations.coverage).toBe(coverage);
         expect(result?.limitations.confidence).toBe("NOT_ASSESSED");
         expect(result?.limitations.notices).toHaveLength(5);
@@ -32,19 +38,15 @@ describe("Mission 074.5 guidance limitations", () => {
     });
     it("does not upgrade coverage for authorised empty or invalid records", async () => {
         const generate = vi.fn();
-        const result = await new GetMyAiAthleteGuidanceUseCase({ execute: vi.fn().mockResolvedValue({
-            sources: { ...sources(false, true), goals: { athleteId: "private", primaryGoal: null, secondaryGoals: [] },
-                training: { ...sources(false, true).training, programmes: [{ trainingFrequency: 100 }] } },
-            generatedAt: new Date().toISOString(),
-        }) }, { generate }).execute(input);
+        const value = { ...sources(false, true), goals: { athleteId: "private", primaryGoal: null, secondaryGoals: [] },
+            training: { ...sources(false, true).training, programmes: [{ trainingFrequency: 100 }] } } as AthleteIntelligenceAggregate;
+        const result = await useCase(value, { generate }).execute(input);
         expect(result?.limitations.coverage).toBe("NONE");
         expect(generate).not.toHaveBeenCalled();
     });
     it("does not let provider mutation upgrade coverage", async () => {
         const generate = vi.fn(async (facts: GuidanceFacts) => { facts.trainingFrequencies.push(3); return advice; });
-        const result = await new GetMyAiAthleteGuidanceUseCase({ execute: vi.fn().mockResolvedValue({
-            sources: sources(true, false), generatedAt: new Date().toISOString(),
-        }) }, { generate }).execute(input);
+        const result = await useCase(sources(true, false), { generate }).execute(input);
         expect(result?.limitations.coverage).toBe("GOALS_ONLY");
         expect(result?.limitations.confidence).toBe("NOT_ASSESSED");
     });
