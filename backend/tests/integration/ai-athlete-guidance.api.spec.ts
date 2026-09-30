@@ -30,6 +30,9 @@ describe("Mission 074.3 personal guidance API", () => {
         const response = await request(app).post(path).set(person.auth).send({ consent: true });
         expect(response.status).toBe(200);
         expect(response.headers["cache-control"]).toBe("no-store");
-        expect(response.body.data).toMatchObject({ status: "INSUFFICIENT_DATA", guidance: null });
+        expect(response.body.data).toMatchObject({ status: "INSUFFICIENT_DATA", guidance: null,
+            explanation: { version: 1, facts: { goals: [], trainingFrequencies: [] },
+                sources: { goals: "WITHHELD", training: "WITHHELD" } } });
+        expect(Number.isFinite(Date.parse(response.body.data.explanation.retrievedAt))).toBe(true);
     });
 });

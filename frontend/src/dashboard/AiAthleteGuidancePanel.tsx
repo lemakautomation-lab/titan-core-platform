@@ -43,9 +43,33 @@ export default function AiAthleteGuidancePanel() {
       {result?.status === "INSUFFICIENT_DATA" && <p role="status">No permitted goals or training frequency are available to support guidance.</p>}
       {result?.status === "GENERATED" && result.guidance && (
         <div aria-label="Generated performance guidance">
+          <h3>AI-generated suggestions</h3>
           <p>{result.guidance.summary}</p>
           <ul>{result.guidance.actions.map((action, index) => <li key={`${index}-${action}`}>{action}</li>)}</ul>
           <p>Generated {new Date(result.generatedAt).toLocaleString()}. Review against your current plan.</p>
+        </div>
+      )}
+      {result?.explanation && (
+        <div aria-label="Guidance source explanation">
+          <h3>Basis of this response</h3>
+          <p>This source summary is supplied by TITAN. Any generated suggestions are produced by AI and may be incorrect.</p>
+          <dl>
+            <dt>Goal categories shared</dt>
+            <dd>{result.explanation.sources.goals === "WITHHELD"
+              ? "Not shared: read access is unavailable."
+              : result.explanation.facts.goals.length
+                ? result.explanation.facts.goals.join(", ")
+                : "No usable goal categories available."}</dd>
+            <dt>Programme frequencies shared</dt>
+            <dd>{result.explanation.sources.training === "WITHHELD"
+              ? "Not shared: read access is unavailable."
+              : result.explanation.facts.trainingFrequencies.length
+                ? `${result.explanation.facts.trainingFrequencies.join(", ")} sessions per week (per selected programme).`
+                : "No usable programme frequencies available."}</dd>
+          </dl>
+          <p>Programme frequency describes a plan, not completed workouts or measured progress. The snapshot includes at most five selected programme frequencies and nine distinct goal categories.</p>
+          <p>Source snapshot retrieved {new Date(result.explanation.retrievedAt).toLocaleString()}.</p>
+          {result.status === "INSUFFICIENT_DATA" && <p>No facts were sent to OpenAI for this request.</p>}
         </div>
       )}
     </section>

@@ -43,3 +43,25 @@ export function validateGuidance(value: unknown): PerformanceGuidance {
         || !record.actions.every(action => safeText(action, 300))) throw new GuidanceUnavailableError();
     return { summary: record.summary, actions: record.actions as string[] };
 }
+
+export interface GuidanceExplanation {
+    version: 1;
+    retrievedAt: string;
+    facts: GuidanceFacts;
+    sources: { goals: "WITHHELD" | "NO_USABLE_FACTS" | "USED";
+        training: "WITHHELD" | "NO_USABLE_FACTS" | "USED" };
+}
+
+/** Provenance is constructed by the server from the outbound projection, never by the model. */
+export function explainGuidance(sources: AthleteIntelligenceAggregate,
+    facts: GuidanceFacts, retrievedAt: string): GuidanceExplanation {
+    return {
+        version: 1,
+        retrievedAt,
+        facts: { goals: [...facts.goals], trainingFrequencies: [...facts.trainingFrequencies] },
+        sources: {
+            goals: !sources.goals ? "WITHHELD" : facts.goals.length ? "USED" : "NO_USABLE_FACTS",
+            training: !sources.training ? "WITHHELD" : facts.trainingFrequencies.length ? "USED" : "NO_USABLE_FACTS",
+        },
+    };
+}
