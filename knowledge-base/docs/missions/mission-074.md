@@ -69,6 +69,14 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 74.5 - Limitations/confidence where appropriate
 
+**Status:** IMPLEMENTED / LOCAL VERIFICATION PENDING (30 September 2026). Mission remains ACTIVE.
+
+**Design:** Both generated and insufficient-data responses include an additive server-generated `limitations` envelope. Coverage is derived solely from the usable outbound projection: `NONE`, `GOALS_ONLY`, `TRAINING_ONLY` or `GOALS_AND_TRAINING`. This is input coverage, not model quality, clinical confidence, completeness of an athlete profile or measured progress. Confidence is always `NOT_ASSESSED`; no numeric score or inferred high-confidence state is created. Metadata is captured before the provider call and is not supplied by the model.
+
+**Visible workflow:** The dashboard shows plain-language data coverage, confidence not assessed, and fixed limitations: unassessed response accuracy, plans versus completed training/progress/readiness, excluded measurements and health context, retrieval time versus underlying record currency, and the need to check suggestions against the current professional plan. Coverage of both input categories still retains every limitation. Denied or unusable sources do not increase coverage. Existing personal scope, consent, bounded projection and no-data/no-call behavior remain in place. No migration, new provider request or package dependency is introduced.
+
+**Pending gates:** Assistant/intelligence and dashboard regression, builds/lint, staging coverage smoke, visible UI verification and KB publication. Clinical advice, calibrated model confidence, complete AI safety verification, 74.6–74.7 and production readiness are not claimed complete.
+
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
 ### Control 74.6 - Human/professional escalation boundary

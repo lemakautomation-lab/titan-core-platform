@@ -5,6 +5,11 @@ export interface AthleteGuidanceResult {
     status: "GENERATED" | "INSUFFICIENT_DATA";
     guidance: { summary: string; actions: string[] } | null;
     generatedAt: string;
+    limitations: {
+      confidence: "NOT_ASSESSED";
+      coverage: "NONE" | "GOALS_ONLY" | "TRAINING_ONLY" | "GOALS_AND_TRAINING";
+      notices: string[];
+    };
     explanation: {
       version: 1;
       retrievedAt: string;

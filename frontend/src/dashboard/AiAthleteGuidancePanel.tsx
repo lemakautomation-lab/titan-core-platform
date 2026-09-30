@@ -1,6 +1,13 @@
 import { useRef, useState } from "react";
 import { generateMyAthleteGuidance, type AthleteGuidanceResult } from "./ai-athlete-guidance.api";
 
+const coverageLabels = {
+  NONE: "No usable facts available",
+  GOALS_ONLY: "Goal categories only",
+  TRAINING_ONLY: "Planned programme frequencies only",
+  GOALS_AND_TRAINING: "Goal categories and planned programme frequencies",
+};
+
 export default function AiAthleteGuidancePanel() {
   const [consent, setConsent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -70,6 +77,14 @@ export default function AiAthleteGuidancePanel() {
           <p>Programme frequency describes a plan, not completed workouts or measured progress. The snapshot includes at most five selected programme frequencies and nine distinct goal categories.</p>
           <p>Source snapshot retrieved {new Date(result.explanation.retrievedAt).toLocaleString()}.</p>
           {result.status === "INSUFFICIENT_DATA" && <p>No facts were sent to OpenAI for this request.</p>}
+        </div>
+      )}
+      {result?.limitations && (
+        <div aria-label="Guidance limitations">
+          <h3>Limitations and confidence</h3>
+          <p>Data coverage: {coverageLabels[result.limitations.coverage]}.</p>
+          <p>Confidence: not assessed.</p>
+          <ul>{result.limitations.notices.map(notice => <li key={notice}>{notice}</li>)}</ul>
         </div>
       )}
     </section>

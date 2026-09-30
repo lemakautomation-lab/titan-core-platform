@@ -65,3 +65,28 @@ export function explainGuidance(sources: AthleteIntelligenceAggregate,
         },
     };
 }
+
+export interface GuidanceLimitations {
+    confidence: "NOT_ASSESSED";
+    coverage: "NONE" | "GOALS_ONLY" | "TRAINING_ONLY" | "GOALS_AND_TRAINING";
+    notices: string[];
+}
+
+/** Coverage describes the outbound facts, never model accuracy or measured performance. */
+export function guidanceLimitations(facts: GuidanceFacts): GuidanceLimitations {
+    const goals = facts.goals.length > 0;
+    const training = facts.trainingFrequencies.length > 0;
+    const coverage = goals && training ? "GOALS_AND_TRAINING"
+        : goals ? "GOALS_ONLY" : training ? "TRAINING_ONLY" : "NONE";
+    return {
+        confidence: "NOT_ASSESSED",
+        coverage,
+        notices: [
+            "Response accuracy has not been assessed; no confidence score is available.",
+            "Goals and planned programme frequencies do not establish completed training, improvement or readiness.",
+            "Measurements, health observations and other personal context are excluded from this guidance.",
+            "Retrieval time is when TITAN read the snapshot, not proof that the underlying plan or goals are current.",
+            "AI may make unsupported suggestions. Check the response against your current professional plan.",
+        ],
+    };
+}
