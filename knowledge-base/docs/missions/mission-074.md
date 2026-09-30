@@ -69,13 +69,15 @@ Local frontend expectation: visible change is expected only where the listed mis
 
 ### Control 74.5 - Limitations/confidence where appropriate
 
-**Status:** IMPLEMENTED / LOCAL VERIFICATION PENDING (30 September 2026). Mission remains ACTIVE.
+**Status:** LOCAL AND STAGING VERIFICATION PASSED / KB PUBLICATION PENDING (30 September 2026). Mission remains ACTIVE.
 
 **Design:** Both generated and insufficient-data responses include an additive server-generated `limitations` envelope. Coverage is derived solely from the usable outbound projection: `NONE`, `GOALS_ONLY`, `TRAINING_ONLY` or `GOALS_AND_TRAINING`. This is input coverage, not model quality, clinical confidence, completeness of an athlete profile or measured progress. Confidence is always `NOT_ASSESSED`; no numeric score or inferred high-confidence state is created. Metadata is captured before the provider call and is not supplied by the model.
 
 **Visible workflow:** The dashboard shows plain-language data coverage, confidence not assessed, and fixed limitations: unassessed response accuracy, plans versus completed training/progress/readiness, excluded measurements and health context, retrieval time versus underlying record currency, and the need to check suggestions against the current professional plan. Coverage of both input categories still retains every limitation. Denied or unusable sources do not increase coverage. Existing personal scope, consent, bounded projection and no-data/no-call behavior remain in place. No migration, new provider request or package dependency is introduced.
 
-**Pending gates:** Assistant/intelligence and dashboard regression, builds/lint, staging coverage smoke, visible UI verification and KB publication. Clinical advice, calibrated model confidence, complete AI safety verification, 74.6–74.7 and production readiness are not claimed complete.
+**Verified evidence:** Implementation commit `f08b79a196960be978166feed243daf5bbf7d2a9`. Local verification gates passed. Staging backend and web deployed at that revision. Live dashboard limitations and confidence display verified. Authenticated synthetic guidance returned HTTP 200 with `GENERATED`, coverage `GOALS_ONLY`, confidence `NOT_ASSESSED`, five limitation notices and training source `WITHHELD`. Synthetic fixture removed; security history retained.
+
+**Pending gates:** KB publication and live verification. Clinical advice, calibrated model confidence, complete AI safety verification, 74.6–74.7 and production readiness are not claimed complete.
 
 **Acceptance:** Implement the capability within the mission boundary; enforce appropriate authentication/authorization and tenant scope; validate inputs; preserve database/API integrity; handle failures safely; add targeted automated regression coverage; verify build/tests; document evidence. Do not introduce unrelated functionality.
 
