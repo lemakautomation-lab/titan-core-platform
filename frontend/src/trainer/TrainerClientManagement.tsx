@@ -12,6 +12,7 @@ import {
   type TrainerClientDto,
   type TrainerClientProfileDto,
 } from "./trainer-clients.api";
+import TrainerAiAssistant from "./TrainerAiAssistant";
 
 export default function TrainerClientManagement() {
   const [clients, setClients] =
@@ -339,6 +340,12 @@ export default function TrainerClientManagement() {
               </article>
             ))}
           </section>
+        )}
+
+      {!loading &&
+        !loadError &&
+        clients.length > 0 && (
+          <TrainerAiAssistant clients={clients} />
         )}
     </section>
   );
