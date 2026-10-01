@@ -22,7 +22,7 @@ Mission 075 provides an authenticated Trainer AI decision-support workflow while
 
 ### Control 75.1 - Trainer-authorised portfolio context
 
-**Status:** COMPLETE / VERIFIED / PUBLICATION PENDING (1 October 2026).
+**Status:** COMPLETE / VERIFIED / PUBLISHED (1 October 2026).
 
 Authenticated `GET /api/v1/ai-trainer-assistant/context` derives portfolio scope exclusively from the signed-in Trainer account and tenant. It requires authentication and `workout-programmes.read`, reuses the active Trainer commercial-access boundary and returns only active authorised Trainer-client relationships.
 
@@ -32,7 +32,7 @@ Client, tenant, user, prompt or other scope overrides cannot be supplied. Query 
 
 ### Control 75.2 - Client adherence queries
 
-**Status:** COMPLETE / VERIFIED / PUBLICATION PENDING (1 October 2026).
+**Status:** COMPLETE / VERIFIED / PUBLISHED (1 October 2026).
 
 The `ADHERENCE` task derives bounded facts from the previous 28 days of Trainer session scheduling data. It reports total past sessions, completed sessions, cancelled sessions, unresolved scheduled sessions and completion percentage.
 
@@ -44,7 +44,7 @@ No session title, notes or arbitrary free text are included in the AI projection
 
 ### Control 75.3 - Performance trend queries
 
-**Status:** COMPLETE / VERIFIED / PUBLICATION PENDING (1 October 2026).
+**Status:** COMPLETE / VERIFIED / PUBLISHED (1 October 2026).
 
 The `PERFORMANCE_TRENDS` task uses a bounded maximum of 12 performance metric snapshots. Only safe metric slugs, safe units, latest value, previous value, numeric delta, measurement count and direction are exposed.
 
@@ -54,7 +54,7 @@ Direction is restricted to `UP`, `DOWN`, `UNCHANGED` or `INSUFFICIENT_DATA`. TIT
 
 ### Control 75.4 - Programme proposal support
 
-**Status:** COMPLETE / VERIFIED / PUBLICATION PENDING (1 October 2026).
+**Status:** COMPLETE / VERIFIED / PUBLISHED (1 October 2026).
 
 The `PROGRAMME_PROPOSAL` task provides conservative decision support for Trainer review. Programme facts are restricted to a maximum of five active programmes and expose only training frequency, session duration and status.
 
@@ -64,7 +64,7 @@ Programme names, descriptions, goals and free-text content are excluded from the
 
 ### Control 75.5 - Progress report generation
 
-**Status:** COMPLETE / VERIFIED / PUBLICATION PENDING (1 October 2026).
+**Status:** COMPLETE / VERIFIED / PUBLISHED (1 October 2026).
 
 The `PROGRESS_REPORT` task produces a bounded professional summary from the same authorised factual projection used by Mission 075.
 
@@ -80,7 +80,7 @@ Plain-text length and character restrictions are applied. Invalid or malformed p
 
 ### Control 75.6 - Authorisation enforcement
 
-**Status:** COMPLETE / VERIFIED / PUBLICATION PENDING (1 October 2026).
+**Status:** COMPLETE / VERIFIED / PUBLISHED (1 October 2026).
 
 Mission 075 enforces multiple independent access boundaries:
 
@@ -101,7 +101,7 @@ Generation is limited to three requests per authenticated tenant/user per minute
 
 ### Control 75.7 - Explainability
 
-**Status:** COMPLETE / VERIFIED / PUBLICATION PENDING (1 October 2026).
+**Status:** COMPLETE / VERIFIED / PUBLISHED (1 October 2026).
 
 Generated and insufficient-data responses include a server-generated explanation envelope rather than model-generated reasoning.
 
@@ -122,7 +122,7 @@ Confidence is explicitly `NOT_ASSESSED`.
 
 ### Control 75.8 - AI auditability
 
-**Status:** COMPLETE / VERIFIED / PUBLICATION PENDING (1 October 2026).
+**Status:** COMPLETE / VERIFIED / PUBLISHED (1 October 2026).
 
 Mission 075 uses the existing TITAN audit infrastructure. No new audit table or Prisma migration was introduced.
 
@@ -288,10 +288,30 @@ The live staging gate ended:
 
 `MISSION 075 LIVE STAGING VERIFICATION GREEN`
 
+## Publication Evidence
+
+Mission 075 delivery evidence was committed in:
+
+`aa7e5c7089e2f1c564631aa39d8c08a847bfdc02`
+
+Subject:
+
+`Mission 075: Record verified delivery evidence`
+
+The Knowledge Base production build passed and the evidence page was deployed to Cloudflare Pages.
+
+Authenticated publication verification was completed on 1 October 2026 against both:
+
+- immutable Mission 075 page: `https://1eff50e3.titan-core-platform.pages.dev/docs/missions/075/`;
+- canonical Mission 075 page: `https://titan-core-platform.pages.dev/docs/missions/075/`.
+
+Both pages were user-verified as displaying the authoritative Mission 075 delivery evidence.
+
+Production publication of this mission evidence does not imply overall TITAN Health production launch readiness; that remains governed by completion of the wider mission programme through Mission 145.
 ## Mission Exit Gate
 
-**Status:** IMPLEMENTATION AND STAGING VERIFIED / KNOWLEDGE BASE PUBLICATION PENDING.
+**Status:** CLOSED (1 October 2026).
 
 Controls 75.1 through 75.8 are implemented and verified against their defined boundaries. Targeted and full regression verification is GREEN. Backend and frontend production builds are GREEN. Authentication, tenant scope, Trainer commercial access, RBAC, Trainer-client relationship boundaries, request validation, AI provider constraints, explainability, privacy and audit implications have been verified. No Mission 075 migration or package dependency change was required. Staging deployment and authenticated live behavioral verification are GREEN.
 
-Mission 075 will be marked **CLOSED** after Knowledge Base production publication and verification of the immutable and canonical Mission 075 pages.
+Knowledge Base production publication and authenticated verification of both immutable and canonical Mission 075 pages are complete. Mission 075 is **CLOSED**.
