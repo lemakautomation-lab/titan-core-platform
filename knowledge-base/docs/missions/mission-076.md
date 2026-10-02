@@ -379,22 +379,85 @@ The final release-verification gate ended:
 
 ## Publication Evidence
 
-**Status:** PENDING PUBLICATION.
+**Status:** PUBLISHED / AUTHENTICATED / VERIFIED (2 October 2026).
 
-Mission 076 delivery evidence has been captured locally after successful implementation, full regression, staging deployment and authenticated live behavioral verification.
+Mission 076 delivery evidence was committed in:
 
-Production Knowledge Base publication and authenticated immutable/canonical page verification remain required before Mission 076 may be marked CLOSED.
+`9f34d03ce46755411e31a0c280079f56332c627a`
 
-Production publication of this mission evidence does not imply overall TITAN Health production launch readiness. Overall launch readiness remains governed by completion of the wider mission programme through Mission 145.
+Subject:
+
+`Mission 076: Record verified delivery evidence`
+
+The Knowledge Base production build passed and the Mission 076 evidence page was deployed to Cloudflare Pages.
+
+Production deployment:
+
+`7a94dcea-08ce-4f21-a984-e71548919ee0`
+
+Immutable publication:
+
+`https://7a94dcea.titan-core-platform.pages.dev/docs/missions/076/`
+
+Canonical publication:
+
+`https://titan-core-platform.pages.dev/docs/missions/076/`
+
+Authenticated publication verification was completed on 2 October 2026 against both the immutable and canonical Mission 076 pages.
+
+Both pages were user-verified as displaying:
+
+- Mission 076 - AI COACH ASSISTANT;
+- Controls 76.1 through 76.7;
+- implementation and engineering verification evidence;
+- staging deployment evidence;
+- authenticated live AI smoke evidence;
+- publication evidence.
+
+Production publication of Mission 076 does not imply overall TITAN Health production launch readiness. Overall launch readiness remains governed by completion and closure of the wider mission programme through Mission 145.
 
 ## Mission Exit Gate
 
-**Status:** IMPLEMENTED / VERIFIED / PUBLICATION PENDING (2 October 2026).
+**Status:** CLOSED (2 October 2026).
 
-Controls 76.1 through 76.7 are implemented and verified against their defined boundaries. Targeted and full regression verification is GREEN. Backend and frontend production builds are GREEN. Authentication, tenant scope, Coach RBAC, active Coach relationship boundaries, cross-tenant isolation, bounded provider projection, request validation, provider controls, explainability, privacy and audit implications have been verified.
+Controls 76.1 through 76.7 are implemented and verified against their defined boundaries.
 
-No Mission 076 migration or package dependency change was required.
+Mission 076 closure evidence includes:
 
-Staging deployment and authenticated live behavioral verification are GREEN.
+- controlled implementation commit verified;
+- exact implementation file boundary verified;
+- targeted verification GREEN;
+- full backend regression GREEN;
+- full frontend regression GREEN;
+- backend production build GREEN;
+- frontend production build GREEN;
+- backend lint completed with zero errors;
+- frontend lint completed with zero errors;
+- authentication verified;
+- tenant scope verified;
+- Coach RBAC verified;
+- active Coach-Athlete relationship enforcement verified;
+- cross-tenant isolation verified;
+- bounded AI provider projection verified;
+- explicit transfer acknowledgement verified;
+- arbitrary prompt and scope override rejection verified;
+- AI provider runtime configuration verified;
+- explainability verified;
+- limitations and confidence boundary verified;
+- generated AI audit persistence verified;
+- denied-request AI audit persistence verified;
+- authorization security-event persistence verified;
+- staging deployment GREEN;
+- external backend health GREEN;
+- authenticated live behavioral smoke GREEN;
+- temporary staging fixture cleanup verified;
+- remote repository boundary verified;
+- Knowledge Base production publication verified;
+- immutable Mission 076 page authenticated and verified;
+- canonical Mission 076 page authenticated and verified.
 
-Mission 076 remains open only for Knowledge Base production publication and authenticated immutable/canonical publication verification.
+No Mission 076 Prisma schema change, database migration, package addition or dependency change was required.
+
+The four protected untracked governance files remained untouched throughout implementation, verification, deployment, publication and closure.
+
+Mission 076 is **CLOSED**.
