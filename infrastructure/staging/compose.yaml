@@ -40,6 +40,7 @@ services:
       NODE_ENV: staging
       ATHLETE_AI_ENABLED: ${ATHLETE_AI_ENABLED:-false}
       TRAINER_AI_ENABLED: ${TRAINER_AI_ENABLED:-false}
+      COACH_AI_ENABLED: ${COACH_AI_ENABLED:-false}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini-2025-04-14}
       SERVER_HOST: 0.0.0.0

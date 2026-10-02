@@ -1,3 +1,5 @@
+import CoachAiAssistant from "./CoachAiAssistant";
+
 import {
   type FormEvent,
   useEffect,
@@ -466,6 +468,10 @@ export default function CoachPlatformPage() {
           </p>
         </section>
       )}
+      <CoachAiAssistant
+        athletes={athletes}
+        squads={squads}
+      />
     </main>
   );
 }

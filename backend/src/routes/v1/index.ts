@@ -2,6 +2,8 @@ import { aiAthleteAssistantModule } from "../../infrastructure/composition/ai-at
 import { createAiAthleteAssistantRoutes } from "../../presentation/routes/ai-athlete-assistant.routes";
 import { aiTrainerAssistantModule } from "../../infrastructure/composition/ai-trainer-assistant.module";
 import { createAiTrainerAssistantRoutes } from "../../presentation/routes/ai-trainer-assistant.routes";
+import { aiCoachAssistantModule } from "../../infrastructure/composition/ai-coach-assistant.module";
+import { createAiCoachAssistantRoutes } from "../../presentation/routes/ai-coach-assistant.routes";
 import { Router } from "express";
 
 import { createRoleRoutes } from "../../presentation/routes/role.routes";
@@ -102,6 +104,7 @@ import { performanceProfessionalModule } from "../../infrastructure/composition/
 const router = Router();
 router.use("/ai-athlete-assistant", createAiAthleteAssistantRoutes(aiAthleteAssistantModule.context, aiAthleteAssistantModule.data, aiAthleteAssistantModule.guidance));
 router.use("/ai-trainer-assistant", createAiTrainerAssistantRoutes(aiTrainerAssistantModule.context, aiTrainerAssistantModule.assistance));
+router.use("/ai-coach-assistant", createAiCoachAssistantRoutes(aiCoachAssistantModule.context, aiCoachAssistantModule.assistance));
 
 const healthController =
     new HealthController(
