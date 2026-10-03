@@ -4,6 +4,8 @@ import { GetPerformanceProfessionalWorkflowUseCase } from "../../application/use
 import { GetStrengthConditioningWorkflowUseCase } from "../../application/use-cases/get-strength-conditioning-workflow.use-case";
 import { GetNutritionProfessionalWorkflowUseCase } from "../../application/use-cases/get-nutrition-professional-workflow.use-case";
 import { GetRehabilitationProfessionalWorkflowUseCase } from "../../application/use-cases/get-rehabilitation-professional-workflow.use-case";
+import { GeneratePerformanceProfessionalAiAssistanceUseCase } from "../../application/use-cases/generate-performance-professional-ai-assistance.use-case";
+import { PerformanceProfessionalAiUnavailableError } from "../../application/ai-performance-professional/performance-professional-assistance";
 
 export class PerformanceProfessionalController {
     constructor(
@@ -15,6 +17,8 @@ export class PerformanceProfessionalController {
             GetNutritionProfessionalWorkflowUseCase,
         private readonly getRehabilitationProfessionalWorkflowUseCase:
             GetRehabilitationProfessionalWorkflowUseCase,
+        private readonly generateAiAssistanceUseCase:
+            GeneratePerformanceProfessionalAiAssistanceUseCase,
     ) {}
 
     async getAthleteWorkflow(
@@ -125,6 +129,111 @@ export class PerformanceProfessionalController {
         }
 
         res.status(200).json(result.value);
+    }
+
+    async generateAiAssistance(
+        req: AuthRequest,
+        res: Response,
+    ): Promise<void> {
+        res.set("Cache-Control", "no-store");
+
+        const authUser = req.user;
+
+        if (!authUser) {
+            res.status(401).json({
+                error: "Unauthorized",
+            });
+            return;
+        }
+
+        const body: unknown = req.body;
+
+        if (
+            Object.keys(req.query).length > 0 ||
+            !body ||
+            typeof body !== "object" ||
+            Array.isArray(body)
+        ) {
+            res.status(400).json({
+                error:
+                    "Explicit AI data-transfer acknowledgement is required.",
+            });
+            return;
+        }
+
+        const record =
+            body as Record<string, unknown>;
+
+        const keys =
+            Object.keys(record)
+                .sort()
+                .join(",");
+
+        if (
+            keys !== "acknowledgement" ||
+            record.acknowledgement !== true
+        ) {
+            res.status(400).json({
+                error:
+                    "Explicit AI data-transfer acknowledgement is required; prompts and scope overrides are not accepted.",
+            });
+            return;
+        }
+
+        const requestId = (
+            req as AuthRequest & {
+                requestId?: string;
+            }
+        ).requestId;
+
+        if (!requestId) {
+            throw new Error(
+                "Request correlation identifier missing.",
+            );
+        }
+
+        try {
+            const result =
+                await this.generateAiAssistanceUseCase.execute({
+                    tenantId: authUser.tenantId,
+                    userId: authUser.userId,
+                    athleteId:
+                        String(req.params.athleteId),
+                    acknowledgement: true,
+                    requestId,
+                });
+
+            if (!result.isSuccess) {
+                const status =
+                    result.error ===
+                    "Athlete not found."
+                        ? 404
+                        : 400;
+
+                res.status(status).json({
+                    error: result.error,
+                });
+                return;
+            }
+
+            res.status(200).json({
+                data: result.value,
+            });
+        }
+        catch (error) {
+            if (
+                error instanceof
+                PerformanceProfessionalAiUnavailableError
+            ) {
+                res.status(503).json({
+                    error:
+                        "Performance Professional AI assistance is temporarily unavailable.",
+                });
+                return;
+            }
+
+            throw error;
+        }
     }
 
     async getRehabilitationProfessionalWorkflow(

@@ -1,6 +1,10 @@
+import { rateLimit } from "express-rate-limit";
 import { Router } from "express";
 import { PerformanceProfessionalController } from "../controllers/performance-professional.controller";
-import { authMiddleware } from "../../middleware/auth.middleware";
+import {
+    authMiddleware,
+    AuthRequest,
+} from "../../middleware/auth.middleware";
 import { requirePermission } from "../../middleware/authorization.middleware";
 
 export function createPerformanceProfessionalRoutes(
@@ -33,6 +37,29 @@ export function createPerformanceProfessionalRoutes(
         "/athletes/:athleteId/rehabilitation",
         requirePermission("performance-professional.rehabilitation.read"),
         controller.getRehabilitationProfessionalWorkflow.bind(controller),
+    );
+
+    const aiLimit = rateLimit({
+        windowMs: 60_000,
+        limit: 3,
+        standardHeaders: "draft-8",
+        legacyHeaders: false,
+        keyGenerator: (req: AuthRequest) =>
+            `${req.user?.tenantId}:${req.user?.userId}`,
+    });
+
+    router.post(
+        "/athletes/:athleteId/ai-assistance",
+        requirePermission(
+            "performance-measurements.read",
+        ),
+        requirePermission(
+            "workout-programmes.read",
+        ),
+        aiLimit,
+        controller.generateAiAssistance.bind(
+            controller,
+        ),
     );
 
     return router;

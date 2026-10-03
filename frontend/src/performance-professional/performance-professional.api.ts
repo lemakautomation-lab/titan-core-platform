@@ -21,6 +21,7 @@ export function getSportsScientistWorkflow(
     )}/workflow?limit=${limit}`,
   );
 }
+
 export interface StrengthConditioningWorkflowDto {
   athleteId: string;
   trainingStress: unknown[];
@@ -38,7 +39,6 @@ export function getStrengthConditioningWorkflow(
   );
 }
 
-
 export interface NutritionProfessionalWorkflowDto {
   athleteId: string;
   latestNutritionPlan: {
@@ -48,7 +48,9 @@ export interface NutritionProfessionalWorkflowDto {
     generatorVersion: string;
     planSnapshot: {
       planType: "AUTOMATED_NUTRITION_PLAN";
-      goalClassification?: "GENERAL_FITNESS" | "SPORT_PERFORMANCE";
+      goalClassification?:
+        | "GENERAL_FITNESS"
+        | "SPORT_PERFORMANCE";
       macroTargets: {
         caloriesKcal: number;
         proteinGrams: number;
@@ -75,7 +77,6 @@ export function getNutritionProfessionalWorkflow(
   );
 }
 
-
 export interface RehabilitationProfessionalWorkflowDto {
   athleteId: string;
   recovery: unknown[];
@@ -89,5 +90,49 @@ export function getRehabilitationProfessionalWorkflow(
     `/performance-professional/athletes/${encodeURIComponent(
       athleteId,
     )}/rehabilitation?limit=${limit}`,
+  );
+}
+
+export interface PerformanceProfessionalAiAssistanceDto {
+  status: "GENERATED" | "INSUFFICIENT_DATA";
+  assistance: {
+    summary: string;
+    observations: string[];
+    considerations: string[];
+  } | null;
+  confidence: "NOT_ASSESSED";
+  professionalReviewRequired: true;
+  automaticAction: false;
+  explanation: {
+    retrievedAt: string;
+    provenance: {
+      performanceMetricCount: number;
+      performanceMeasurementCount: number;
+      recoveryObservationCount: number;
+      trainingStressObservationCount: number;
+      workoutProgrammeCount: number;
+    };
+  };
+  limitations: string[];
+  generatedAt: string;
+}
+
+export interface PerformanceProfessionalAiResponse {
+  data: PerformanceProfessionalAiAssistanceDto;
+}
+
+export function generatePerformanceProfessionalAiAssistance(
+  athleteId: string,
+): Promise<PerformanceProfessionalAiResponse> {
+  return apiRequest<PerformanceProfessionalAiResponse>(
+    `/performance-professional/athletes/${encodeURIComponent(
+      athleteId,
+    )}/ai-assistance`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        acknowledgement: true,
+      }),
+    },
   );
 }

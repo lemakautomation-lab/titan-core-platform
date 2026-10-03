@@ -36,6 +36,31 @@ function mockNutritionWorkflow() {
   });
 }
 
+function mockAiReadyWorkflows() {
+  vi.spyOn(
+    professionalApi,
+    "getSportsScientistWorkflow",
+  ).mockResolvedValue({
+    athleteId: "athlete-1",
+    performance: [],
+    recovery: [],
+    trainingStress: [],
+    workoutProgrammes: [],
+  });
+
+  vi.spyOn(
+    professionalApi,
+    "getStrengthConditioningWorkflow",
+  ).mockResolvedValue({
+    athleteId: "athlete-1",
+    trainingStress: [],
+    workoutProgrammes: [],
+  });
+
+  mockNutritionWorkflow();
+  mockRehabilitationWorkflow();
+}
+
 describe("PerformanceProfessionalPage", () => {
   afterEach(() => {
     vi.restoreAllMocks();
@@ -455,5 +480,208 @@ describe("PerformanceProfessionalPage", () => {
         "Rehabilitation recovery observations",
       ).nextElementSibling,
     ).toHaveTextContent("2");
+  });
+
+  it("requires explicit acknowledgement before requesting AI assistance", async () => {
+    mockAiReadyWorkflows();
+
+    const generate = vi.spyOn(
+      professionalApi,
+      "generatePerformanceProfessionalAiAssistance",
+    );
+
+    render(<PerformanceProfessionalPage />);
+
+    fireEvent.change(
+      screen.getByLabelText("Athlete ID"),
+      {
+        target: {
+          value: "athlete-1",
+        },
+      },
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Load workflow",
+      }),
+    );
+
+    await screen.findByRole("region", {
+      name: "AI Performance Professional assistance",
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Generate AI assistance",
+      }),
+    );
+
+    expect(
+      await screen.findByRole("alert"),
+    ).toHaveTextContent(
+      "Acknowledge the bounded AI data transfer before requesting assistance.",
+    );
+
+    expect(generate)
+      .not.toHaveBeenCalled();
+  });
+
+  it("renders bounded AI decision support and human oversight controls", async () => {
+    mockAiReadyWorkflows();
+
+    const generate = vi.spyOn(
+      professionalApi,
+      "generatePerformanceProfessionalAiAssistance",
+    ).mockResolvedValue({
+      data: {
+        status: "GENERATED",
+        assistance: {
+          summary:
+            "Review the authorised TITAN observations.",
+          observations: [
+            "One bounded performance observation is available.",
+          ],
+          considerations: [
+            "Review the observation in the Athlete's wider training context.",
+          ],
+        },
+        confidence: "NOT_ASSESSED",
+        professionalReviewRequired: true,
+        automaticAction: false,
+        explanation: {
+          retrievedAt:
+            "2026-10-02T20:00:00.000Z",
+          provenance: {
+            performanceMetricCount: 1,
+            performanceMeasurementCount: 2,
+            recoveryObservationCount: 3,
+            trainingStressObservationCount: 4,
+            workoutProgrammeCount: 1,
+          },
+        },
+        limitations: [
+          "A qualified Performance Professional remains the decision authority.",
+        ],
+        generatedAt:
+          "2026-10-02T20:00:01.000Z",
+      },
+    });
+
+    render(<PerformanceProfessionalPage />);
+
+    fireEvent.change(
+      screen.getByLabelText("Athlete ID"),
+      {
+        target: {
+          value: "athlete-1",
+        },
+      },
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Load workflow",
+      }),
+    );
+
+    await screen.findByRole("region", {
+      name: "AI Performance Professional assistance",
+    });
+
+    fireEvent.click(
+      screen.getByRole("checkbox", {
+        name: /I acknowledge the bounded Athlete data/i,
+      }),
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Generate AI assistance",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(generate)
+        .toHaveBeenCalledWith(
+          "athlete-1",
+        );
+    });
+
+    const result =
+      await screen.findByRole(
+        "region",
+        {
+          name: "AI assistance result",
+        },
+      );
+
+    expect(
+      within(result)
+        .getByText("GENERATED"),
+    ).toBeInTheDocument();
+
+    expect(
+      within(result)
+        .getByText("NOT_ASSESSED"),
+    ).toBeInTheDocument();
+
+    expect(
+      within(result)
+        .getByText(
+          "Review the authorised TITAN observations.",
+        ),
+    ).toBeInTheDocument();
+
+    expect(
+      within(result)
+        .getByText(
+          "One bounded performance observation is available.",
+        ),
+    ).toBeInTheDocument();
+
+    expect(
+      within(result)
+        .getByText(
+          "A qualified Performance Professional remains the decision authority.",
+        ),
+    ).toBeInTheDocument();
+
+    expect(
+      within(result)
+        .getByText(
+          "Professional review required",
+        ).nextElementSibling,
+    ).toHaveTextContent("Yes");
+
+    expect(
+      within(result)
+        .getByText(
+          "Autonomous action",
+        ).nextElementSibling,
+    ).toHaveTextContent(
+      "Disabled",
+    );
+
+    expect(
+      within(result)
+        .getByText(
+          "Performance measurements",
+        ).nextElementSibling,
+    ).toHaveTextContent("2");
+
+    expect(
+      within(result)
+        .getByText(
+          "AI recovery observations",
+        ).nextElementSibling,
+    ).toHaveTextContent("3");
+
+    expect(
+      within(result)
+        .getByText(
+          "AI training stress observations",
+        ).nextElementSibling,
+    ).toHaveTextContent("4");
   });
 });

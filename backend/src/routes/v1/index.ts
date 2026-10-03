@@ -298,6 +298,7 @@ const performanceProfessionalController =
         performanceProfessionalModule.getStrengthConditioningWorkflowUseCase,
         performanceProfessionalModule.getNutritionProfessionalWorkflowUseCase,
         performanceProfessionalModule.getRehabilitationProfessionalWorkflowUseCase,
+        performanceProfessionalModule.aiAssistanceUseCase,
     );
 const permissionController =
     new PermissionController(
